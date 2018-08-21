@@ -1,0 +1,1 @@
+Adds lockpicks to Minetest and updates most locked objects to be breakable.

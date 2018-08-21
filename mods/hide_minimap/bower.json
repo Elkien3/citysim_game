@@ -1,0 +1,16 @@
+{
+  "name": "hide_minimap",
+  "description": "A mod which makes the minimap require a priv to use.",
+  "keywords": [
+    "minimap", "map"
+  ],
+  "homepage": "http://example.com/",
+  "forum": "https://forum.minetest.net/viewtopic.php?f=9&t=13038",
+  "screenshots": [],
+  "authors": [
+    "Amaz"
+  ],
+  "license": "MIT",
+  "dependencies": { },
+  "ignore": [ ]
+}

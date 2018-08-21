@@ -1,0 +1,29 @@
+Initial Clump:
+    +New group "clump_fall_node" created that applies to nodes that aren't, air, ignore, or part of the groups falling_node, attached_node, or liquid
+    +Set the above + to occur after every other mod has registered nodes, so that nodes from every mod will be affected
+    +Added a check between two points for clump_fall_nodes that are susceptible to falling
+    +Created a seperate clump_fall function that performes the above + once every second
+        +It also, upon looping, changes the area to be checked in response to the locations of the last nodes that fell
+        +Furthermore, it removes nodes to fall and spawns the appropriate falling_nodes in their place
+    +Made a method to spawn a falling node while also automatically giving it the node and metadata information about the node that is trying to fall
+    +This clump_fall function has lastly been registered to occur automatically on nodes that are punched, broken, and placed
+    +Beds have been excluded from the clump_fall_node group due to major issues with how they fall
+    +Documented most of the above
+
+Clump The Second:
+    +Created this changelog
+    +Added an actual description to the documentation of spawn_falling_node (whoops), also revisioned a few other random pieces of documentation
+    +Whenever a node falls, all nearby falling_nodes and attached_nodes are updated to prevent such nodes from floating after clump_fall_nodes fall
+    +Clump Fall Nodes no longer repeatedly try to fall when placed on top of nodes in the falling_node group like sand or gravel
+    +Split a majority of init.lua into functions.lua and override.lua, with clumpfall as the global variable
+    *Renamed function clump_fall to do_clump_fall to be less confusable with global clumpfall
+    -Re-included beds in the clump_fall_node group
+    +Made override_entity method and used it to fix issue where sand can land on a floating block without causing that floating block to fall by making falling nodes punch themselves after landing
+    *Moved that override_entity method to the entitycontrol mod and added a dependency and depends.txt for that
+    *Turned the individual checks inside of the check_group_for_fall function into the function check_individual_for_fall, so it can be used for other purposes
+    +Heavily modified behavior of objects that are in both clump_fall_node and bed groups:
+        +You can now fix half beds by punching them (Well, unless they're the untouchable top parts, for now...)
+        +More importantly, beds' on_destruct method has been fixed to account for the possibility of half beds being destroyed.
+        +Also, beds are more thorough when checking their other halves, so a destroyed bed will only destroy its own other half, given that such exists
+    +Added functions that will add to existing on_dig, on_place, and on_punch events instead of replacing them completely. This fixes issues with nodes like Mesecon Switches that will either turn on/off when punched, or will fall down when punched and without support. Now, these kinds of nodes properly do both.
+    *Overrides the previously changed on_place in this mod now change the after_place_node event because that gives a pos argument usable for the clump_fall function

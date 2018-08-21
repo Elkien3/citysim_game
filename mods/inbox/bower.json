@@ -1,0 +1,17 @@
+{
+  "name": "inbox",
+  "description": "Safely share nodes and items with your neighbours",
+  "keywords": [
+    "inbox",
+    "chest",
+    "mail"
+  ],
+  "homepage": "https://github.com/bas080/inbox/",
+  "screenshots": [
+    "https://dl.dropboxusercontent.com/u/419967/Screenshots/screenshot_3163443807.png"
+  ],
+  "authors": [
+    "Bas080"
+  ],
+  "license": "WTFPL"
+}

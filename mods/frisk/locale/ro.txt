@@ -1,0 +1,3 @@
+@1\'s inventory = Inventarul lui @1
+Screening Device = Dispozitivul de scanare
+You do not have the 'frisk' privilege = Nu ai arivilegiul 'frisk'

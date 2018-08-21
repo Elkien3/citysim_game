@@ -1,0 +1,5 @@
+# Translation by Xanthin
+
+Mailbox = Briefkasten
+%s's Mailbox = %s's Briefkasten
+[Mod]Inbox Loaded! = [Mod]Inbox Geladen!

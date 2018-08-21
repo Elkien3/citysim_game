@@ -1,0 +1,5 @@
+# Template
+
+Mailbox = 
+%s's Mailbox = 
+[Mod]Inbox Loaded! = 

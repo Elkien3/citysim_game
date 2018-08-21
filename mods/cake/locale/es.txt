@@ -1,0 +1,2 @@
+Cake = Pastel
+Sugar = Azúcar

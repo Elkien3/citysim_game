@@ -1,0 +1,8 @@
+Changelog:
+
+0.0.2
+* Mod renamed from 'inspector' to 'frisk' (another 'inspector' mod exists)
+* Fixed inventory permissions (dropping and moving disabled)
+
+0.0.1
+* Initial release

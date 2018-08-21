@@ -1,0 +1,28 @@
+--- memorandum.old/init.lua
++++ memorandum/init.lua
+@@ -52,6 +52,12 @@
+ 		--[[print((sender:get_player_name() or "").." wrote \""..fields.text..
+ 				"\" to paper at "..minetest.pos_to_string(pos))]]
+ 		local direction = minetest.env:get_node(pos).param2
++		if fields.text == nil then
++			fields.text = ""
++		end
++		if fields.signed == nil then
++			fields.signed = ""
++		end
+ 		if fields.text ~= "" then
+ 			minetest.env:add_node(pos, {name="memorandum:letter_written", param2=direction})
+ 		end
+@@ -144,6 +150,12 @@
+ 			local meta = minetest.get_meta(pos)
+ 			fields.text = fields.text
+ 			fields.signed = fields.signed
++			if fields.text == nil then
++				fields.text = ""
++			end
++			if fields.signed == nil then
++				fields.signed = ""
++			end
+ 			--[[print((sender:get_player_name() or "").." wrote \""..fields.text..
+ 				"\" to paper at "..minetest.pos_to_string(pos))]]
+ 			local direction = minetest.env:get_node(pos).param2

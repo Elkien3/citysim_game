@@ -1,0 +1,2 @@
+Cake = Gâteau
+Sugar = Sucre

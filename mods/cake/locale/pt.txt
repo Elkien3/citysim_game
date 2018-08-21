@@ -1,0 +1,2 @@
+Cake = Bolo
+Sugar = Açúcar
