@@ -200,8 +200,11 @@ for _, data in pairs(recipes) do
 		
 		on_use = function(itemstack, player, pointed_thing)
 			local player_inv = player:get_inventory()
-			minetest.item_eat(data[3])
-			player_inv:add_item("main", "vessels:drinking_glass")
+			if itemstack:take_item(1) ~= nil then
+				thirsty.drink(player, 6, 20)
+				player_inv:add_item("main", "vessels:drinking_glass")
+				return itemstack
+			end
 		end,
 		
 		selection_box = {
