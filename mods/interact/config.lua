@@ -10,10 +10,10 @@ interact.default_language = "english"
 --1 is the top one by the question, 2 is the bottom left one, 3 is the bottom right one.
 --Make sure these agree with your answers!
 
-interact.quiz1 = true
-interact.quiz2 = true
-interact.quiz3 = false
-interact.quiz4 = true
+interact.quiz1 = false
+interact.quiz2 = false
+interact.quiz3 = true
+interact.quiz4 = false
 interact.quiz_multi = 3
 
 --Which screens to show.

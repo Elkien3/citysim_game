@@ -8,34 +8,32 @@ secondaryname = nil, --secondary name, usually the language name in english, or 
 rules = [[
 Rules:
 
-1. PVP is allowed. Don't Combat log!
+1. PVP is allowed.
 2. Don't be *overly* cruel, destructive, or inappropriate.
 3. Keep swearing to a minimum, and don't spam.
-4. No "Dating" or the like.
-5. Don't clear out entire forests without replanting.
-6. If you raid a kingdom while it's members are offline, you may not destroy or steal much.
-7. Please keep your builds medieval-ish times, and follow the laws of physics.
-8. Hacked clients or csms that give a pvp advantage are disallowed. (However, lagging through walls is allowed.)
+4. No "Dating" in global chat.
+5. Alternate accounts (alts) are not allowed. contact admin if you have a friend that needs an account.
+6. Hacked clients or csms that give a pvp advantage are not allowed.
 
-Remember: A some destruction during war is O.K. just "Don't be *overly* cruel"
+Remember: these are only the server rules. players can still lock you up for other crimes.
 ]],
 
 --The questions on the rules, if the quiz is used.
 --The checkboxes for the first 4 questions are in config.lua
-question1 = "Is PVP is allowed?",
-question2 = "Should you replant after your tree genocide?",
-question3 = "Can you give online girls big, online smooches?",
-question4 = "Can you destroy a bit of your enemies's stuff every once in a while?",
-multiquestion = "What building style to use?",
+question1 = "Are hacked clients or mods that give you a pvp advantage allowed?",
+question2 = "Are alternative accounts allowed?",
+question3 = "Can you get locked up by players if you steal?",
+question4 = "Will you be banned for stealing a little bit?",
+multiquestion = "Is PVP allowed?",
 
 --The answers to the multiple choice questions. Only one of these should be true.
-mq_answer1 = "Modern, super tall Skyscrapers.",
-mq_answer2 = "Space stations, up in the sky.",
-mq_answer3 = "Medieval, with no flying parts.",
+mq_answer1 = "No.",
+mq_answer2 = "Only if you agree.",
+mq_answer3 = "Yes, even if you don't agree.",
 
 --The first screen--
 --The text at the top.
-s1_header = "Hello, welcome to Persistent Kingdoms!",
+s1_header = "Hello, welcome to CitySim!",
 --Lines one and two. Make sure each line is less than 70 characters, or they will run off the screen.
 s1_l2 = "Could you please tell me if you like to grief a lot?",
 s1_l3 = "Griefing is destroying places and generally making a mess.",
@@ -44,7 +42,7 @@ s1_b1 = "No, I don't.",
 s1_b2 = "Yes, I do!",
 
 --The message to send kicked griefers.
-msg_grief = "A *lot* of griefing is looked down upon, though some war destruction might be ok.",
+msg_grief = "A *lot* of griefing is looked down upon, even though some is allowed by the server.",
 
 --The second screen--
 --Lines one and two. Make sure each line is less than 70 characters, or they will run off the screen.
@@ -99,5 +97,5 @@ quiz_fail_msg = "You answered a question incorrectly. type in '/rules' to try ag
 
 --The messages send to the player after interact is granted.
 interact_msg1 = "Thanks for accepting the rules, you now are able to interact with things.",
-interact_msg2 = "Happy Kingdoming! Do /guide for help getting started!",
+interact_msg2 = "Have fun! do /guide to help getting started!",
 }
