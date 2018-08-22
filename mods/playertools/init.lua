@@ -191,7 +191,7 @@ minetest.register_chatcommand("setjump", {
 		player:set_physics_override(nil, nil, jump_height)
 	end,
 })
-
+--[[
 minetest.register_chatcommand("pulverizeall", {
 	params = "",
 	description = "Destroys all items in your player inventory and crafting grid.",
@@ -204,6 +204,12 @@ minetest.register_chatcommand("pulverizeall", {
 		inv:set_list("main", {})
 		inv:set_list("craft", {})
 	end,
+})
+--]]
+minetest.register_chatcommand("pulverize", {
+	func = function(name, param)
+		minetest.chat_send_player(name, "/msg is disabled!! Use a trash bin or drop the item.")
+	end
 })
 
 minetest.register_chatcommand("grief_check", {
