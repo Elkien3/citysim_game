@@ -14,6 +14,8 @@
    limitations under the License.
 --]]
 
+local blacklist = {"walking_light:light", "technic:light"}
+
 clumpfall.override = {} --global override variable
 
 --[[
@@ -40,7 +42,9 @@ function clumpfall.override.add_dig_event(nodename, new_on_dig)
     end
 
     --Override the given node with the combination of old and new on_dig functions
-    minetest.override_item(nodename, {on_dig = master_on_dig})
+	if not blacklist[nodename] then
+		minetest.override_item(nodename, {on_dig = master_on_dig})
+	end
 end
 
 --[[
