@@ -8,7 +8,7 @@ secondaryname = nil, --secondary name, usually the language name in english, or 
 rules = [[
 Rules:
 
-1. PVP is allowed.
+1. PVP is allowed, excessive RDM is not.
 2. Don't be *overly* cruel, destructive, or inappropriate.
 3. Keep swearing to a minimum, and don't spam.
 4. No "Dating" in global chat.
@@ -29,7 +29,7 @@ multiquestion = "Is PVP allowed?",
 --The answers to the multiple choice questions. Only one of these should be true.
 mq_answer1 = "No.",
 mq_answer2 = "Only if you agree.",
-mq_answer3 = "Yes, even if you don't agree.",
+mq_answer3 = "Yes, but there must be a valid reason.",
 
 --The first screen--
 --The text at the top.
