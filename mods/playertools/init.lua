@@ -208,7 +208,7 @@ minetest.register_chatcommand("pulverizeall", {
 --]]
 minetest.register_chatcommand("pulverize", {
 	func = function(name, param)
-		minetest.chat_send_player(name, "/msg is disabled!! Use a trash bin or drop the item.")
+		minetest.chat_send_player(name, "/pulverize is disabled!! Use a trash bin or drop the item.")
 	end
 })
 
