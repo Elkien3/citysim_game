@@ -1,5 +1,7 @@
 minetest.register_privilege("whois", {
     description = "Allows player to see other player IPs"})
+minetest.register_privilege("more_ip_names", {
+    description = "Allows player have more account on the same ip."})
 
 -- Created by Krock to stop mass-account-creators
 -- License: WTFPL
@@ -84,7 +86,8 @@ minetest.register_on_prejoinplayer(function(name, ip)
 		
 		if count > ipnames.name_per_ip_limit then
 			ipnames.tmp_data[name] = nil
-			if tostring(ip) ~= "127.0.0.1" then
+			local privs = minetest.get_player_privs(name)
+			if tostring(ip) ~= "127.0.0.1" and not privs.more_ip_names then
 				return ("\nYou exceeded the limit of accounts (" .. ipnames.name_per_ip_limit ..
 				").\nYou already have the following accounts:\n" .. names)
 			end
