@@ -71,12 +71,17 @@ minetest.register_on_prejoinplayer(function(name, ip)
 	-- Only stop new accounts:
 	ipnames.tmp_data[name] = ip
 	if not ipnames.data[name] then
+		local hasprivs = false
 		local count = 1
 		local names = ""
 		for k, v in pairs(ipnames.data) do
 			if v == ip then
 				count = count + 1
 				names = names .. k .. ", "
+				local privs = minetest.get_player_privs(k)
+				if privs.more_ip_names then
+					hasprivs = true
+				end
 			end
 		end
 		
@@ -86,8 +91,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
 		
 		if count > ipnames.name_per_ip_limit then
 			ipnames.tmp_data[name] = nil
-			local privs = minetest.get_player_privs(name)
-			if tostring(ip) ~= "127.0.0.1" and not privs.more_ip_names then
+			if tostring(ip) ~= "127.0.0.1" and not hasprivs then
 				return ("\nYou exceeded the limit of accounts (" .. ipnames.name_per_ip_limit ..
 				").\nYou already have the following accounts:\n" .. names)
 			end
