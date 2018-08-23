@@ -49,7 +49,7 @@ local car01_def = {
 	max_speed_reverse = 7,
 	accel = 2,
 	braking = 4,
-	turn_speed = 2,
+	turn_speed = 4,
 	stepheight = 1.1,
 	--model specific stuff
 	visual = "mesh",
