@@ -13,7 +13,7 @@ interact.default_language = "english"
 interact.quiz1 = false
 interact.quiz2 = false
 interact.quiz3 = true
-interact.quiz4 = false
+interact.quiz4 = true
 interact.quiz_multi = 3
 
 --Which screens to show.

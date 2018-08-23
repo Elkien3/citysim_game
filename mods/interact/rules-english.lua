@@ -14,6 +14,7 @@ Rules:
 4. No "Dating" in global chat.
 5. Alternate accounts (alts) are not allowed. contact admin if you have a friend that needs an account.
 6. Hacked clients or csms that give a pvp advantage are not allowed.
+7. Do not steal. (may be temporary)
 
 Remember: these are only the server rules. players can still lock you up for other crimes.
 ]],
@@ -23,7 +24,7 @@ Remember: these are only the server rules. players can still lock you up for oth
 question1 = "Are hacked clients or mods that give you a pvp advantage allowed?",
 question2 = "Are alternative accounts allowed?",
 question3 = "Can you get locked up by players if you steal?",
-question4 = "Will you be banned for stealing a little bit?",
+question4 = "Can you be banned for stealing?",
 multiquestion = "Is PVP allowed?",
 
 --The answers to the multiple choice questions. Only one of these should be true.
