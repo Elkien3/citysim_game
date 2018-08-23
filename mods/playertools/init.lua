@@ -109,7 +109,7 @@ minetest.register_chatcommand("sethealth", {
 	end,
 })
 
-
+--[[
 minetest.register_chatcommand("killme", {
 	params = "",
 	description = "Kills yourself.",
@@ -124,7 +124,7 @@ minetest.register_chatcommand("killme", {
 			minetest.chat_send_player(name, "Damage is disabled on this server. This command does not work when damage is disabled.")
 		end
 	end,
-})
+})--]]
 
 --[[ Player physics commands ]]
 
