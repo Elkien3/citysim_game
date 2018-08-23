@@ -4,7 +4,7 @@ local uswarn = {
 	{ "arrow_right", "Right Arrow", { yellow = 3, black = 3 } },
 	{ "arrow_leftright", "Left/Right Arrow", { yellow = 3, black = 3 } },
 	{ "bepreparedtostop", "Be Prepared to Stop", { yellow = 3, black = 2 } },
-	{ "crossbuck", "Railroad Crossing Crossbuck", { white = 3, black = 1 } },
+	--{ "crossbuck", "Railroad Crossing Crossbuck", { white = 3, black = 1 } },
 	{ "deadend", "Dead End", { yellow = 3, black = 3 } },
 	{ "divhwyend", "Divided Highway End", { yellow = 3, black = 3 } },
 	{ "divhwystart", "Divided Highway Start", { yellow = 3, black = 3 } },
