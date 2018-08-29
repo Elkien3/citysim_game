@@ -42,7 +42,7 @@ function clumpfall.override.add_dig_event(nodename, new_on_dig)
     end
 
     --Override the given node with the combination of old and new on_dig functions
-	if not blacklist[nodename] then
+	if blacklist[nodename] == nil then
 		minetest.override_item(nodename, {on_dig = master_on_dig})
 	end
 end
