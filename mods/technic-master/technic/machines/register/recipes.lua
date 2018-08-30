@@ -66,6 +66,7 @@ function technic.register_recipe(typename, data)
 end
 
 function technic.get_recipe(typename, items)
+	if not items then return end
 	if typename == "cooking" then -- Already builtin in Minetest, so use that
 		local result, new_input = minetest.get_craft_result({
 			method = "cooking",
