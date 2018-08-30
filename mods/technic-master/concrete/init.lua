@@ -24,7 +24,7 @@ else
 end
 
 minetest.register_craft({
-	output = 'technic:rebar 6',
+	output = 'technic:rebar 12',
 	recipe = {
 		{'','', steel_ingot},
 		{'',steel_ingot,''},
