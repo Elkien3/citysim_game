@@ -108,17 +108,18 @@ function vehicle_mash.register_vehicle(name, def)
 						self.enginesound = nil
 				-end--]]
 				end
-				if self.driver then
-					lib_mount.detach(self.driver, self.offset)
-				if self.passenger then
-					lib_mount.detach(self.passenger, self.offset)
+				elseif self.driver or self.passenger then
+					if self.driver then
+						lib_mount.detach(self.driver, self.offset)
+					else
+						lib_mount.detach(self.passenger, self.offset)
+					end
 				end
 				if self.enginesound ~= nil then
 					minetest.sound_stop(self.enginesound)
 					self.enginesound = nil
 				end
 				return
-			end
 			--[[local punchername = puncher:get_player_name()
 			if self.owner == punchername or minetest.get_player_privs(punchername).protection_bypass then
 			  self.removed = true
