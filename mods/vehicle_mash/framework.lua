@@ -107,8 +107,11 @@ function vehicle_mash.register_vehicle(name, def)
 						minetest.sound_stop(self.enginesound)
 						self.enginesound = nil
 				-end--]]
-				elseif self.driver then
+				end
+				if self.driver then
 					lib_mount.detach(self.driver, self.offset)
+				if self.passenger then
+					lib_mount.detach(self.passenger, self.offset)
 				end
 				if self.enginesound ~= nil then
 					minetest.sound_stop(self.enginesound)
