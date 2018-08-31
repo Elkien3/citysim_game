@@ -107,6 +107,8 @@ function vehicle_mash.register_vehicle(name, def)
 						minetest.sound_stop(self.enginesound)
 						self.enginesound = nil
 				-end--]]
+				elseif self.driver then
+					lib_mount.detach(self.driver, self.offset)
 				end
 				if self.enginesound ~= nil then
 					minetest.sound_stop(self.enginesound)
@@ -114,7 +116,7 @@ function vehicle_mash.register_vehicle(name, def)
 				end
 				return
 			end
-			local punchername = puncher:get_player_name()
+			--[[local punchername = puncher:get_player_name()
 			if self.owner == punchername or minetest.get_player_privs(punchername).protection_bypass then
 			  self.removed = true
 			  -- delay remove to ensure player is detached
@@ -122,7 +124,7 @@ function vehicle_mash.register_vehicle(name, def)
 			  		self.object:remove()
 			  end)
 			  puncher:get_inventory():add_item("main", self.name)
-			end
+			end--]]
 		end,
 		on_step = function(self, dtime)
 			drive(self, dtime, false, nil, nil, 0, false)
