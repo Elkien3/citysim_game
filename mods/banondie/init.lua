@@ -1,5 +1,6 @@
 local deadbanned = {}
-local deathlength = 3600
+local deathlength = 900
+local message = "You must wait 15 minutes after dying before joining again."
 
 local world_path = minetest.get_worldpath()
 local file = world_path .. "/deadpeople.txt"
@@ -42,7 +43,7 @@ end)
 
 minetest.register_on_respawnplayer(function(player)
 	if minetest.get_player_privs(player:get_player_name()).ban == nil then
-		minetest.kick_player(player:get_player_name(), "You died. You must wait in hour before joining again.")
+		minetest.kick_player(player:get_player_name(), message)
 	end
 end)
 
@@ -52,7 +53,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
 			deadbanned[name] = nil
 			banondie_save()
 		elseif minetest.get_player_privs(name).ban == nil then
-			return "You died. You must wait in hour before joining again."
+			return message
 		end
 	end
 end)
