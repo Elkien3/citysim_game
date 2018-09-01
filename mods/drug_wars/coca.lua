@@ -33,7 +33,8 @@ minetest.register_craftitem("drug_wars:coca_leaf", {
 
 minetest.register_craftitem("drug_wars:cocaine", {
     description = "Cocaine",
-    inventory_image = "drugwars_cocaine.png",
+	inventory_image = "drugwars_cocaine.png",
+	max_stack = 20,
     on_use = function(itemstack, player, pointed_thing)
         local playername = player:get_player_name()
         local newhunger = hbhunger.hunger[playername] + drug_wars.COCAINE_HUNGER_BUFF 
@@ -64,6 +65,7 @@ minetest.register_craftitem("drug_wars:cocaine", {
 minetest.register_craftitem("drug_wars:crack", {
 	description = "Crack",
 	inventory_image = "drugwars_crack.png",
+	max_stack = 30,
 	on_smoke_glasspipe = function(player)
         local playername = player:get_player_name()
         local newhunger = hbhunger.hunger[playername] + drug_wars.CRACK_HUNGER_BUFF 

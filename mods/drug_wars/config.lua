@@ -13,10 +13,10 @@ drug_wars.DEFENSE_BUFF_CEILING = 0.75
 drug_wars.DAMAGE_BUFF_CEILING = 0.75
 
 --addiction options
-drug_wars.ADDICTION_TICK = 30
+drug_wars.ADDICTION_TICK = 60
 drug_wars.ADDICTION_REDUCTION = 0.05
 drug_wars.ADDICTION_REDUCTION_THRESHOLD = 0.05
-drug_wars.ADDICTION_DAMAGE = 3
+drug_wars.ADDICTION_DAMAGE = 4 
 drug_wars.ADDICTION_DAMAGE_THRESHOLD = 0.35
 
 -- weed stats 

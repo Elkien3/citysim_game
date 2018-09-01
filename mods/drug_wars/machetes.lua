@@ -22,15 +22,6 @@ minetest.register_craft({
     }
 })
 
-minetest.register_craft({
-	output = "drug_wars:machete_steel",
-	recipe = {
-        {"", "default:steel_ingot", "default:steel_ingot"},
-        {"", "default:steel_ingot", ""},
-        {"", "default:stick", ""}
-    }
-})
-
 minetest.register_tool("drug_wars:machete_mese", {
 	description = "Mese Machete",
 	inventory_image = "drugwars_mese_machete.png",
@@ -45,4 +36,13 @@ minetest.register_tool("drug_wars:machete_mese", {
 		damage_groups = {fleshy=5},
 	},
 	sound = {breaks = "default_tool_breaks"},
+})
+
+minetest.register_craft({
+	output = "drug_wars:machete_mese",
+	recipe = {
+        {"", "default:mese_crystal", "default:mese_crystals"},
+        {"", "default:mese_crystals", ""},
+        {"", "default:stick", ""}
+    }
 })

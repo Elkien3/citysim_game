@@ -43,7 +43,7 @@ minetest.register_craftitem("drug_wars:cannabis_resin", {
 minetest.register_craftitem("drug_wars:weed", {
 	description = "Weed",
 	inventory_image = "drugwars_weed.png",
-	stack_max = 10,
+	stack_max = 20,
 	on_smoke_woodenpipe = function(player)
 		if player ~= nil then
 			local playername = player:get_player_name()
@@ -84,7 +84,7 @@ minetest.register_craftitem("drug_wars:weed", {
 minetest.register_craftitem("drug_wars:hashish", {
 	description = "Hashish",
 	inventory_image = "drugwars_hashish.png",
-	stack_max = 10,
+	stack_max = 20,
 	on_smoke_woodenpipe = function(player)
 		if player ~= nil then
 			local playername = player:get_player_name()
@@ -161,11 +161,23 @@ local crop_def = {
 
 -- plant stages 
 
-for i = 1,7 do
+for i = 1,5 do
 	crop_def.tiles = {"drugwars_cannabis_"..i..".png"}
 	crop_def.visual_scale = 0.9 + i / 10.0
 	minetest.register_node("drug_wars:cannabis_"..i, table.copy(crop_def))
+end
 
+crop_def.drop = {
+	items = {
+		{items = {'drug_wars:cannabis_inflorescence'}, rarity = 3},
+		{items = {'drug_wars:seed_cannabis'}, rarity = 1}
+	}
+}
+
+for i = 6,7 do
+	crop_def.tiles = {"drugwars_cannabis_"..i..".png"}
+	crop_def.visual_scale = 0.9 + i / 10.0
+	minetest.register_node("drug_wars:cannabis_"..i, table.copy(crop_def))
 end
 
 crop_def.tiles = {"drugwars_cannabis_8.png"}

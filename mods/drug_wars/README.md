@@ -14,15 +14,17 @@ Drug seed are rarely dropped by common grass. They can be used to grow plants wh
 
 ## **Drugs**
 
-Using drugs leads to immediate buffs and debuffs and aftereffects. Everytime a player consumes any drug it will, more or less, increase its drugs addiction, which will progressively cause damage over time, reduced drugs buffs and harder aftereffects. A player's addiction will reduce gradually while not using any narcotic.
+Using drugs leads to immediate buffs and debuffs and aftereffects.
+
+Everytime a player consumes any drug it will, more or less, increase its drugs addiction, which will progressively cause damage over time, reduced drugs buffs and harder aftereffects. A player's addiction will reduce gradually while not using any narcotic.
 
 If a drug is assumable using pipes, It should be placed in the inventory stack staying on the right of pipe's one and consumed right-clicking while wielding the pipe. Otherwise they can be directly assumed and right-clicking while wielding it should do the trick.
 
 Name | Assumption tool | Immediate effects | Aftereffects | Addiction's increase
 --- | --- | --- | --- | ---
-**Weed** | Wooden pipe | Slighly heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage if drugs addiction is moderately high | Low 
-**Hashish** | Wooden pipe | Moderately heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage if drugs addiction is moderately high. | Low 
-**Cocaine** | Direct | Increases movement speed, damage and reduces hunger | Gives damage which increases with addiction | High
+**Weed** | Wooden pipe | Slighly heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage | Low 
+**Hashish** | Wooden pipe | Moderately heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage | Low 
+**Cocaine** | Direct | Increases movement speed, damage and reduces hunger | Gives moderate damage | High
 **Crack** | Glass pipe | Same as cocaine, but less durable and higher addictive | Same as cocaine, but less durable and higher addictive | High
 
 ## **Weapons and tools**
