@@ -41,8 +41,8 @@ minetest.register_tool("drug_wars:machete_mese", {
 minetest.register_craft({
 	output = "drug_wars:machete_mese",
 	recipe = {
-        {"", "default:mese_crystal", "default:mese_crystals"},
-        {"", "default:mese_crystals", ""},
+        {"", "default:mese_crystal", "default:mese_crystal"},
+        {"", "default:mese_crystal", ""},
         {"", "default:stick", ""}
     }
 })
