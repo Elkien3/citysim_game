@@ -12,7 +12,7 @@ interact.default_language = "english"
 
 interact.quiz1 = false
 interact.quiz2 = false
-interact.quiz3 = true
+interact.quiz3 = false
 interact.quiz4 = true
 interact.quiz_multi = 3
 
