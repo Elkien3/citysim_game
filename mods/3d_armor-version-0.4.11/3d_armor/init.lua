@@ -71,7 +71,7 @@ if minetest.get_modpath("technic") then
 		"label[5,2.5;"..F("Radiation")..":  armor_group_radiation]"
 	armor:register_armor_group("radiation")
 end
-local skin_mods = {"skins", "u_skins", "simple_skins", "wardrobe"}
+local skin_mods = {"skins", "u_skins", "simple_skins", "wardrobe", "charactercreation"}
 for _, mod in pairs(skin_mods) do
 	local path = minetest.get_modpath(mod)
 	if path then
