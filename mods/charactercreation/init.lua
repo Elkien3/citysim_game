@@ -90,12 +90,14 @@ local hudpreview = {}
 
 local function do_HSL_formspec(player, name, fields)
 	if fields.apply then
+		if previewcolor[name] and previewcolor[name] ~= "" then
+			return previewcolor[name]
+		end
+	end
+	if fields.quit then
 		if hudpreview[name] then
 			player:hud_remove(hudpreview[name])
 			hudpreview[name] = nil
-			if previewcolor[name] and previewcolor[name] ~= "" then
-				return previewcolor[name]
-			end
 		end
 	end
 	local hue = 0
