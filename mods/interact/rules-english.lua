@@ -16,7 +16,7 @@ Rules:
 6. Hacked clients or csms that give a pvp advantage are not allowed.
 7. Do not steal. (temporary, you will see when the rules change)
 
-Remember: these are only the server rules. players can still lock you up for other crimes.
+Players may also lock you up for other crimes. (like dealing drugs or carrying unlawful weapons)
 ]],
 
 --The questions on the rules, if the quiz is used.
