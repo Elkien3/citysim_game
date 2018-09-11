@@ -30,6 +30,7 @@ end
 function rope:remove(pos, oldnode, digger, rope_name)
 	local num = 0
 	local below = {x=pos.x, y=pos.y, z=pos.z}
+	if not digger or digger == nil then return end
 	local digger_inv = digger:get_inventory()
 
 	while minetest.get_node(below).name == rope_name do
