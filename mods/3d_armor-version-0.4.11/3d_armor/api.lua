@@ -399,9 +399,9 @@ armor.get_player_skin = function(self, name)
 	elseif self.skin_mod == "charactercreation" and skindata[name] then
 		local skin = "(skin"..skindata[name].skintype..".png^[multiply:#"..skindata[name].skincolor..")"
 		local eyes = "(eye"..skindata[name].eyetype..".png)^(eye"..skindata[name].eyetype.."color.png^[multiply:#"..skindata[name].eyecolor..")"
-		local beard = "(beard"..skindata[name].beardtype..".png^[multiply:#"..skindata[name].beardcolor..")"
+		local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
 		local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
-		return skin.."^"..eyes.."^"..beard.."^"..hair
+		return skin.."^"..eyes.."^"..face.."^"..hair
 	end
 	return armor.default_skin..".png"
 end

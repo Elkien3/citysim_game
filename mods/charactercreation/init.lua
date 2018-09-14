@@ -1,6 +1,6 @@
 local mod_storage = minetest.get_mod_storage()
 skindata = minetest.deserialize(mod_storage:get_string("skindata")) or {}
-local defaultskin = {haircolor = "513C24", hairtype = "1", beardcolor = "513C24", beardtype = "1", eyecolor = "513C24", eyetype = "3", skintype = "1", skincolor = "e6b27e"}
+local defaultskin = {haircolor = "513C24", hairtype = "1", facecolor = "513C24", facetype = "1", eyecolor = "513C24", eyetype = "3", skintype = "1", skincolor = "e6b27e"}
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 local function number_of_textures(type)
@@ -16,7 +16,7 @@ end
 
 local eye_num = number_of_textures("eye")
 local hair_num = number_of_textures("hair")
-local beard_num = number_of_textures("beard")
+local face_num = number_of_textures("face")
 local skin_num = number_of_textures("skin")
 
 --[[
@@ -34,7 +34,7 @@ local function doskinny(self, player)
 	if not skindata[name] then skindata[name] = defaultskin end
 	local skin = "(skin"..skindata[name].skintype..".png^[multiply:#"..skindata[name].skincolor..")"
 	local eyes = "(eye"..skindata[name].eyetype..".png)^(eye"..skindata[name].eyetype.."color.png^[multiply:#"..skindata[name].eyecolor..")"
-	local beard = "(beard"..skindata[name].beardtype..".png^[multiply:#"..skindata[name].beardcolor..")"
+	local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
 	local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
 	if minetest.get_modpath("3d_armor") then
 		local skin = armor:get_player_skin(name)
@@ -42,7 +42,7 @@ local function doskinny(self, player)
 		armor:set_player_armor(player)
 	else
 		player:set_properties({
-			textures = { skin.."^"..eyes.."^"..beard.."^"..hair }
+			textures = { skin.."^"..eyes.."^"..face.."^"..hair }
 		})
 	end
 	mod_storage:set_string("skindata", minetest.serialize(skindata))
@@ -139,7 +139,7 @@ local function do_HSL_formspec(player, name, fields)
 	return ""
 end
 local function formspec_hair(name) minetest.show_formspec(name,"charcreate:hair",make_HSL_formspec("Hair", "hair", skindata[name].haircolor, skindata[name].hairtype)) end
-local function formspec_beard(name) minetest.show_formspec(name,"charcreate:beard",make_HSL_formspec("Beard", "beard", skindata[name].beardcolor, skindata[name].beardtype)) end
+local function formspec_face(name) minetest.show_formspec(name,"charcreate:face",make_HSL_formspec("Face", "face", skindata[name].facecolor, skindata[name].facetype)) end
 local function formspec_skin(name) minetest.show_formspec(name,"charcreate:skin",make_HSL_formspec("Skin", "skin", skindata[name].skincolor, skindata[name].skintype)) end
 local function formspec_eye(name) minetest.show_formspec(name,"charcreate:eye",make_HSL_formspec("Eyes", "eye", skindata[name].eyecolor, skindata[name].eyetype)) end
 
@@ -152,7 +152,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			return
 		end
 		if fields.next then
-			formspec_beard(name)
+			formspec_face(name)
 			return
 		end
 		if fields.prevtype then
@@ -184,7 +184,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			end
 		end
     end
-	if formname == "charcreate:beard" then
+	if formname == "charcreate:face" then
 		local input = do_HSL_formspec(player, name, fields)
 		if fields.prev then
 			formspec_hair(name)
@@ -195,38 +195,38 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			return
 		end
 		if fields.prevtype then
-			if skindata[name].beardtype == 0 then
-				skindata[name].beardtype = beard_num
+			if skindata[name].facetype == 0 then
+				skindata[name].facetype = face_num
 			else
-				skindata[name].beardtype = tonumber(skindata[name].beardtype)-1
+				skindata[name].facetype = tonumber(skindata[name].facetype)-1
 			end
 			doskinny(self, player)
-			formspec_beard(name)
+			formspec_face(name)
 			return
 		end
 		if fields.nexttype then
-			if skindata[name].beardtype == beard_num then
-				skindata[name].beardtype = 0
+			if skindata[name].facetype == face_num then
+				skindata[name].facetype = 0
 			else
-				skindata[name].beardtype = tonumber(skindata[name].beardtype)+1
+				skindata[name].facetype = tonumber(skindata[name].facetype)+1
 			end
 			doskinny(self, player)
-			formspec_beard(name)
+			formspec_face(name)
 			return
 		end
 		if fields.apply then
 			if input and input ~= "" then
-				skindata[name].beardcolor = input
+				skindata[name].facecolor = input
 				previewcolor[name] = nil
 				doskinny(self, player)
-				formspec_beard(name)
+				formspec_face(name)
 			end
 		end
     end
 	if formname == "charcreate:skin" then
 		local input = do_HSL_formspec(player, name, fields)
 		if fields.prev then
-			formspec_beard(name)
+			formspec_face(name)
 			return
 		end
 		if fields.next then
