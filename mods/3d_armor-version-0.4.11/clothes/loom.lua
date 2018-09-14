@@ -96,7 +96,6 @@ minetest.register_node("clothes:loom", {
 		end
 		local output = nil
 		for id, item in pairs(clothes_table) do
-			minetest.chat_send_all(dump(item))
 			if fields[item] then
 				output = item
 			end
