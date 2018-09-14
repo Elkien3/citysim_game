@@ -1475,6 +1475,24 @@ minetest.register_node("default:coral_skeleton", {
 	sounds = default.node_sound_stone_defaults(),
 })
 
+minetest.register_abm({
+    nodenames = {"default:coral_skeleton"},
+    neighbors = {"water"},
+    interval = 300,
+    chance = 5,
+    action = function(pos, node)
+            local pos = minetest.find_node_near(pos, 1, "default:water_source")
+            if pos == nil then return end
+            pos.y = pos.y+1
+            if minetest.get_node(pos).name ~= "default:water_source" then return end
+            pos.y = pos.y-1
+            if math.random(1,2) == 1 then
+                    minetest.set_node(pos, { name = "default:coral_brown" })
+            else
+                    minetest.set_node(pos, { name = "default:coral_orange" })
+            end
+    end,
+})
 
 --
 -- Liquids
