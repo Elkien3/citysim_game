@@ -31,3 +31,7 @@ end
 if drug_wars.ENABLE_COCA then
     dofile(drug_wars.path.."/coca.lua")
 end
+
+if drug_wars.ENABLE_OPIUMPOPPY then
+    dofile(drug_wars.path.."/opiumpoppy.lua")
+end
