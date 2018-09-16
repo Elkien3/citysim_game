@@ -19,7 +19,7 @@ minetest.register_node("drug_wars:seed_coca", {
 for i = 4, 5 do
     local node_name = "default:grass_" .. i
 
-    drug_wars.add_node_drops(node_name, {items = {'drug_wars:seed_coca'}, rarity = 20});
+    drug_wars.add_node_drops(node_name, {items = {'drug_wars:seed_coca'}, rarity = 45});
 end
 
 -- coca drops

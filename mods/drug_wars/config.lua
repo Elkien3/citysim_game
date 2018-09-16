@@ -1,6 +1,7 @@
 --partial enabling/disabling options
 drug_wars.ENABLE_CANNABIS = true 
 drug_wars.ENABLE_COCA = true
+drug_wars.ENABLE_OPIUMPOPPY = true
 drug_wars.ENABLE_INVSEARCH = true
 drug_wars.ENABLE_MACHETES = true
 drug_wars.ENABLE_PIPES = true 
@@ -17,14 +18,14 @@ drug_wars.ADDICTION_TICK = 60
 drug_wars.ADDICTION_REDUCTION = 0.05
 drug_wars.ADDICTION_REDUCTION_THRESHOLD = 0.05
 drug_wars.ADDICTION_DAMAGE = 4 
-drug_wars.ADDICTION_DAMAGE_THRESHOLD = 0.35
+drug_wars.ADDICTION_DAMAGE_THRESHOLD = 0.2
 
 -- weed stats 
 drug_wars.WEED_SPEED_DEBUFF = 0.2
 drug_wars.WEED_SPEED_DEBUFF_THRESHOLD = 0.4
 drug_wars.WEED_HUNGER_DEBUFF = 4 
-drug_wars.WEED_HEAL = 2
-drug_wars.WEED_DEFENSE_BUFF = 0.15
+drug_wars.WEED_HEAL = 2 
+drug_wars.WEED_DEFENSE_BUFF = 0.1
 drug_wars.WEED_ADDICTION = 0.02
 drug_wars.WEED_ADDICTION_THRESHOLD = 0.5
 drug_wars.WEED_DURATION = 30
@@ -34,7 +35,7 @@ drug_wars.HASHISH_SPEED_DEBUFF = 0.25
 drug_wars.HASHISH_SPEED_DEBUFF_THRESHOLD = 0.4
 drug_wars.HASHISH_HUNGER_DEBUFF = 6 
 drug_wars.HASHISH_HEAL = 3 
-drug_wars.HASHISH_DEFENSE_BUFF = 0.3
+drug_wars.HASHISH_DEFENSE_BUFF = 0.15
 drug_wars.HASHISH_ADDICTION = 0.05
 drug_wars.HASHISH_ADDICTION_THRESHOLD = 0.5
 drug_wars.HASHISH_DURATION = 60
@@ -45,7 +46,7 @@ drug_wars.COCAINE_HUNGER_BUFF = 8
 drug_wars.COCAINE_DAMAGE_BUFF = 0.2
 drug_wars.COCAINE_ADDICTION = 0.1
 drug_wars.COCAINE_DAMAGE = 4 
-drug_wars.COCAINE_DURATION = 10
+drug_wars.COCAINE_DURATION = 100
 
 -- crack stats
 drug_wars.CRACK_SPEED_BUFF = 0.8
@@ -54,3 +55,11 @@ drug_wars.CRACK_DAMAGE_BUFF = 0.25
 drug_wars.CRACK_ADDICTION = 0.15
 drug_wars.CRACK_DAMAGE = 3 
 drug_wars.CRACK_DURATION = 60
+
+-- opium stats
+drug_wars.OPIUM_SPEED_DEBUFF = 0.5
+drug_wars.OPIUM_SPEED_DEBUFF_THRESHOLD = 0.3
+drug_wars.OPIUM_HEAL = 4 
+drug_wars.OPIUM_DEFENSE_BUFF = 0.25
+drug_wars.OPIUM_ADDICTION = 0.2
+drug_wars.OPIUM_DURATION = 90
