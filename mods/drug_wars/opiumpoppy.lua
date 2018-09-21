@@ -111,7 +111,6 @@ end
 crop_def.drop = {
 	items = {
 		{items = {'drug_wars:raw_opium'}, rarity = 5},
-		{items = {'drug_wars:seed_opiumpoppy'}, rarity = 1}
 	}
 }
 
@@ -135,7 +134,8 @@ crop_def.drop = {
 	items = {
         {items = {'drug_wars:raw_opium'}, rarity = 10},
         {items = {'drug_wars:poppy_petal'}, rarity = 1},
-		{items = {'drug_wars:seed_opiumpoppy'}, rarity = 1}
+		{items = {'drug_wars:seed_opiumpoppy'}, rarity = 1},
+		{items = {'drug_wars:seed_opiumpoppy'}, rarity = 2}
 	}
 }
 

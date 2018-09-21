@@ -136,7 +136,6 @@ crop_def.drop = {
 	items = {
 		{items = {'drug_wars:coca_leaf 1'}, rarity = 1},
 		{items = {'drug_wars:seed_coca'}, rarity = 1},
-		{items = {'drug_wars:seed_coca'}, rarity = 2},
 	}
 }
 minetest.register_node("drug_wars:coca_7", table.copy(crop_def))
