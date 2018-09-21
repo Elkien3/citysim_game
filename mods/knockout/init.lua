@@ -55,14 +55,43 @@ minetest.register_entity("knockout:entity", {
     on_rightclick = function(e, clicker)
 		local cName = clicker:get_player_name()
 		if cName == e.grabbed_name then return end
-		for carryer, carried in pairs(knockout.carrying) do
-			if carryer == cName or carried == e.grabbed_name then return end
-		end
-		victim = minetest.get_player_by_name(e.grabbed_name)
-		if victim then
-			victim:set_attach(clicker, "", {x = 0, y = 0, z = -15}, {x = 0, y = 0, z = 0})
-			knockout.carrying[cName] = e.grabbed_name
-			e.object:remove()
+		local p = clicker
+		if not p:get_player_control().sneak then
+			local pName = e.grabbed_name
+			local player_inv = minetest.get_inventory({type='player', name = pName}) --InvRef
+			local detached_inv = minetest.create_detached_inventory(pName, {
+			on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+				player_inv:set_list('main', inv:get_list('main'))
+				player_inv:set_list('craft', inv:get_list('craft'))
+			end,
+			on_put = function(inv, listname, index, stack, player)
+				player_inv:set_list('main', inv:get_list('main'))
+				player_inv:set_list('craft', inv:get_list('craft'))
+			end,
+			on_take = function(inv, listname, index, stack, player)
+				player_inv:set_list('main', inv:get_list('main'))
+				player_inv:set_list('craft', inv:get_list('craft'))
+			end,
+			}) --InvRef
+			detached_inv:set_list('main', player_inv:get_list('main'))
+			detached_inv:set_list('craft', player_inv:get_list('craft'))
+			local formspec =
+				'size[8,12]' ..
+				'label[0,0;' .. pName.."'s inventory]"..
+				'list[detached:'.. pName..';craft;3,0;3,3;]'..
+				'list[detached:'.. pName..';main;0,4;8,4;]'..
+				"list[current_player;main;0,8;8,4;]"
+			minetest.show_formspec(clicker:get_player_name(), 'knockout:inventory', formspec)
+		else
+			for carryer, carried in pairs(knockout.carrying) do
+				if carryer == cName or carried == e.grabbed_name then return end
+			end
+			victim = minetest.get_player_by_name(e.grabbed_name)
+			if victim then
+				victim:set_attach(clicker, "", {x = 0, y = 0, z = -15}, {x = 0, y = 0, z = 0})
+				knockout.carrying[cName] = e.grabbed_name
+				e.object:remove()
+			end
 		end
     end,
     on_step = function(e, dtime)
