@@ -329,7 +329,7 @@ local function create_environment(pos, mem, event)
 		port = vports_copy,
 		event = event,
 		mem = mem,
-		heat = mesecon.get_heat(pos),
+		--heat = mesecon.get_heat(pos),
 		heat_max = mesecon.setting("overheat_max", 20),
 		print = safe_print,
 		interrupt = get_interrupt(pos),
