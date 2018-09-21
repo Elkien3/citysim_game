@@ -10,7 +10,12 @@ Most aspects of the mod are configurable by editing config.lua
 Dependencies are stored in depends.txt
 
 ## **Plants**
+
 Drug seed are rarely dropped by common grass. They can be used to grow plants which produce raw elements to be refined to drugs.
+
+### **Harvesting notes**
+
+**Opium Poppy** : The plant drops more raw opium on not mature stages (6 and 7) while dropping more petals when bloomed.
 
 ## **Drugs**
 
@@ -23,9 +28,10 @@ If a drug is assumable using pipes, It should be placed in the inventory stack s
 Name | Assumption tool | Immediate effects | Aftereffects | Addiction's increase
 --- | --- | --- | --- | ---
 **Weed** | Wooden pipe | Slighly heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage | Low 
-**Hashish** | Wooden pipe | Moderately heals and increases defense while reducing movement speed and increasing hunger | Gives weak damage | Low 
+**Hashish** | Wooden pipe | Same as weed, but with increased effects and duration | Same as weed, but with increased effects and duration | Low 
 **Cocaine** | Direct | Increases movement speed, damage and reduces hunger | Gives moderate damage | High
 **Crack** | Glass pipe | Same as cocaine, but less durable and higher addictive | Same as cocaine, but less durable and higher addictive | High
+**Opium** | Wooden pipe | Moderately heals and increases defense while reducing movement speed | Gives moderate damage | Very high
 
 ## **Weapons and tools**
 
