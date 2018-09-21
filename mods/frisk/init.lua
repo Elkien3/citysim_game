@@ -1,5 +1,6 @@
 minetest.log('action', '[MOD] Frisk loading ...')
 local frisk_version = "0.0.2"
+local take_items = false
 
 local i18n --internationalization
 if minetest.get_modpath("intllib") then
@@ -22,6 +23,7 @@ local function finishfrisk(player, pName, oldpos)
 		minetest.chat_send_player(name, pName.." moved, fisk canceled.")
 		return
 	end
+	local player_inv = minetest.get_inventory({type='player', name = pName}) --InvRef
 	local detached_inv = minetest.create_detached_inventory(pName, {
 	allow_move = function()
 		return 0
@@ -33,14 +35,31 @@ local function finishfrisk(player, pName, oldpos)
 		return 0
 	end,
 	}) --InvRef
-	local player_inv = minetest.get_inventory({type='player', name = pName}) --InvRef
+	if take_items then
+		detached_inv = minetest.create_detached_inventory(pName, {
+		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			player_inv:set_list('main', inv:get_list('main'))
+			player_inv:set_list('craft', inv:get_list('craft'))
+		end,
+
+		on_put = function(inv, listname, index, stack, player)
+			player_inv:set_list('main', inv:get_list('main'))
+			player_inv:set_list('craft', inv:get_list('craft'))
+		end,
+		on_take = function(inv, listname, index, stack, player)
+			player_inv:set_list('main', inv:get_list('main'))
+			player_inv:set_list('craft', inv:get_list('craft'))
+		end,
+		})
+	end	--InvRef
 	detached_inv:set_list('main', player_inv:get_list('main'))
 	detached_inv:set_list('craft', player_inv:get_list('craft'))
 	local formspec =
-		'size[8,8]' ..
+		'size[8,12]' ..
 		'label[0,0;' .. i18n("@1\'s inventory", pName) ..']'..
 		'list[detached:'.. pName..';craft;3,0;3,3;]'..
-		'list[detached:'.. pName..';main;0,4;8,4;]'
+		'list[detached:'.. pName..';main;0,4;8,4;]'..
+		"list[current_player;main;0,8;8,4;]"
 	minetest.show_formspec(player:get_player_name(), 'frisk:frisk', formspec)
 	minetest.chat_send_player(pName, "You were frisked by "..name..".")
 end
