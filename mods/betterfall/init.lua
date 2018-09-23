@@ -1,6 +1,7 @@
 -- MOD STRUCT INITIALIZATION
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
+betterfall.ghost_nodes = { "walking_light:light" } -- those nodes will just disappear instead of falling
 
 dofile(betterfall.path.."/attached.lua")
 
@@ -14,9 +15,7 @@ for nodeName, nodeDef in pairs(minetest.registered_nodes) do
 end
 
 local function convert_to_falling_node(pos, node)
-    print("converting a node to falling node, pos = "..pos.x..", "..pos.y..", "..pos.z)
-
-    if minetest.registered_nodes[node.name].paramtype ~= "light" then
+    if betterfall.ghost_nodes[node.name] == nil then
         local obj = core.add_entity(pos, "__builtin:falling_node")
         if not obj then
             return false
@@ -36,8 +35,6 @@ local function isNodeSupporting(n, p_bottom)
     local n_bottom = core.get_node_or_nil(p_bottom)
     local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 
-    print("checking supporting node "..n_bottom.name..", pos = "..p_bottom.x..", "..p_bottom.y..", "..p_bottom.z)
-
     if d_bottom and
         (core.get_item_group(n.name, "float") == 0 or
         d_bottom.liquidtype == "none") and
@@ -54,7 +51,6 @@ local function isNodeSupporting(n, p_bottom)
 end
 
 local function mayNodeFall(n, p, range)
-    print("not trivial case, name = "..n.name..", range = "..range..", pos = "..p.x..", "..p.y..", "..p.z)
     local result = false
 
     if not isNodeSupporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
