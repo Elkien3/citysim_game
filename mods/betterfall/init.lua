@@ -2,6 +2,7 @@
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
 betterfall.ghost_nodes = { "walking_light:light" } -- those nodes will just disappear instead of falling
+betterfall.falling_time = 0.25 
 
 dofile(betterfall.path.."/attached.lua")
 
@@ -15,6 +16,8 @@ for nodeName, nodeDef in pairs(minetest.registered_nodes) do
 end
 
 local function convert_to_falling_node(pos, node)
+    -- print("converting to falling node")
+
     if betterfall.ghost_nodes[node.name] == nil then
         local obj = core.add_entity(pos, "__builtin:falling_node")
         if not obj then
@@ -27,8 +30,8 @@ local function convert_to_falling_node(pos, node)
         obj:get_luaentity():set_node(node, metatable)
     end
 
-	core.remove_node(pos)
-	return true
+    core.remove_node(pos)
+    return true
 end
 
 local function isNodeSupporting(n, p_bottom)
@@ -78,17 +81,24 @@ local function mayNodeFall(n, p, range)
     return result 
 end
 
-
-
 minetest.check_single_for_falling = function(p)
     local n = core.get_node(p)
+    local meta = minetest.get_meta(p);
 
-    local falling_node_group = core.get_item_group(n.name, "falling_node") 
-	if falling_node_group ~= 0 then
-        local result =  mayNodeFall(n, p, falling_node_group - 1)
+    local falling_node_group = core.get_item_group(n.name, "falling_node")
 
-        if result then 
-            convert_to_falling_node(p, n)
+	if falling_node_group ~= 0 and meta:get_int("falling") ~= 1 then
+        local result = mayNodeFall(n, p, falling_node_group - 1)
+
+        if result then
+            meta:set_int("falling", 1)
+            minetest.after(betterfall.falling_time, function()
+                result =  mayNodeFall(n, p, falling_node_group - 1)
+
+                if result then
+                    convert_to_falling_node(p, n)
+                end
+            end)
         end
 
         return result
