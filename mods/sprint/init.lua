@@ -9,8 +9,8 @@ distributed without any warranty.
 
 --Configuration variables, these are all explained in README.md
 SPRINT_METHOD = 1
-SPRINT_SPEED = 1.5
-SPRINT_JUMP = 1.1
+SPRINT_SPEED = .5
+SPRINT_JUMP = .1
 SPRINT_STAMINA = 10
 SPRINT_TIMEOUT = 0.5 --Only used if SPRINT_METHOD = 0
 
