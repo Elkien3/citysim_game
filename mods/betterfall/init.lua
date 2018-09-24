@@ -1,17 +1,19 @@
 -- MOD STRUCT INITIALIZATION
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
-betterfall.ghost_nodes = { "walking_light:light" } -- those nodes will just disappear instead of falling
-betterfall.falling_time = 0.25 
+betterfall.ghost_nodes = {} -- those nodes will just disappear instead of falling
+betterfall.falling_time = 0.25
 
+dofile(betterfall.path.."/helpers.lua")
+dofile(betterfall.path.."/config.lua")
 dofile(betterfall.path.."/attached.lua")
 
-for nodeName, nodeDef in pairs(minetest.registered_nodes) do
-    if nodeDef.groups.falling_node == nil and
-         nodeDef.name ~= "air" and
-         minetest.get_item_group(nodeDef.name, "attached_node") == 0
+for nodename, nodedef in pairs(minetest.registered_nodes) do
+    if nodedef.groups.falling_node == nil and
+         nodedef.name ~= "air" and
+         minetest.get_item_group(nodedef.name, "attached_node") == 0
         then
-            nodeDef.groups.falling_node = 2
+            nodedef.groups.falling_node = 2
     end
 end
 
@@ -34,7 +36,7 @@ local function convert_to_falling_node(pos, node)
     return true
 end
 
-local function isNodeSupporting(n, p_bottom)
+local function is_node_supporting(n, p_bottom)
     local n_bottom = core.get_node_or_nil(p_bottom)
     local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 
@@ -53,29 +55,31 @@ local function isNodeSupporting(n, p_bottom)
     return true
 end
 
-local function mayNodeFall(n, p, range)
+local function should_node_fall(n, p, range)
     local result = false
 
-    if not isNodeSupporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
+    if not is_node_supporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
         result = true
     end
 
     if range > 0 then
-        for xAdd = -range, range do
-                local p_bottom = {x = p.x + xAdd, y = p.y - 1, z = p.z}
+        for nadd = -range, -1 do
+            local p_bottomx = {x = p.x + nadd, y = p.y - 1, z = p.z}
+            local p_bottomz = {x = p.x, y = p.y - 1, z = p.z + nadd}
 
-                if isNodeSupporting(p, p_bottom, n) then
-                    return false
-                end
+            if is_node_supporting(p, p_bottomx, n) or is_node_supporting(p, p_bottomz, n) then
+                return false
             end
         end
 
-        for zAdd = -range, range do
-            local p_bottom = {x = p.x, y = p.y - 1, z = p.z + zAdd}
+        for padd = 1, range do
+            local p_bottomx = {x = p.x + padd, y = p.y - 1, z = p.z}
+            local p_bottomz = {x = p.x, y = p.y - 1, z = p.z + padd}
 
-            if isNodeSupporting(p, p_bottom, n) then
+            if is_node_supporting(p, p_bottomx, n) or is_node_supporting(p, p_bottomz, n) then
                 return false
             end
+        end
     end
 
     return result 
@@ -88,14 +92,15 @@ minetest.check_single_for_falling = function(p)
     local falling_node_group = core.get_item_group(n.name, "falling_node")
 
 	if falling_node_group ~= 0 and meta:get_int("falling") ~= 1 then
-        local result = mayNodeFall(n, p, falling_node_group - 1)
+        local result = should_node_fall(n, p, falling_node_group - 1)
 
         if result then
             meta:set_int("falling", 1)
             minetest.after(betterfall.falling_time, function()
-                result =  mayNodeFall(n, p, falling_node_group - 1)
+                result = should_node_fall(n, p, falling_node_group - 1)
 
                 if result then
+                    meta:set_int("falling", 0)
                     convert_to_falling_node(p, n)
                 end
             end)
@@ -131,7 +136,9 @@ local check_for_falling_neighbors = {
 	{x = 1, y = 1, z = 0},
 	{x = 0, y = 1, z = 1},
 	{x = 0, y = 1, z = -1},
-	{x = 0, y = 1, z = 0},
+    {x = 0, y = 1, z = 0},
+    
+    {x = 0, y = 2, z = 0}
 }
 
 minetest.check_for_falling = function(p)
