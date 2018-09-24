@@ -14,11 +14,18 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 	local player = minetest.get_player_by_name(playerName)
 	if players[playerName] then
 		players[playerName]["sprinting"] = sprinting
+		local currentPhy = player:get_physics_override()
+		local newPhy = currentPhy
+
 		if sprinting == true then
-			player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
+			newPhy.speed = newPhy.speed + SPRINT_SPEED
+			newPhy.jump = newPhy.jump + SPRINT_JUMP
 		elseif sprinting == false then
-			player:set_physics_override({speed=1.0,jump=1.0})
+			newPhy.speed = newPhy.speed - SPRINT_SPEED
+			newPhy.jump = newPhy.jump - SPRINT_JUMP
 		end
+
+		player:set_physics_override(newPhy)
 		return true
 	end
 	return false
@@ -89,9 +96,9 @@ minetest.register_globalstep(function(dtime)
 			end
 
 			--Adjust player states
-			if players[playerName]["shouldSprint"] == true then --Stopped
+			if players[playerName]["shouldSprint"] == true and players[playerName].sprinting == false then --Stopped
 				setSprinting(playerName, true)
-			elseif players[playerName]["shouldSprint"] == false then
+			elseif players[playerName]["shouldSprint"] == false and players[playerName].sprinting == true then
 				setSprinting(playerName, false)
 			end
 			
