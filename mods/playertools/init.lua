@@ -32,6 +32,15 @@ minetest.register_chatcommand("ip", {
 	end
 })
 
+minetest.register_chatcommand("kickme", {
+	params = "",
+	description = "Kicks yourself from the server.",
+	privs = {},
+	func = function(name)
+		minetest.kick_player(name, "/kickme")
+	end
+})
+
 --[[ HUD commands ]]
 minetest.register_chatcommand("sethotbarsize", {
 	params = "<1...23>",
