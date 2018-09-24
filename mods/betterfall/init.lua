@@ -18,8 +18,6 @@ for nodename, nodedef in pairs(minetest.registered_nodes) do
 end
 
 local function convert_to_falling_node(pos, node)
-    -- print("converting to falling node")
-
     if betterfall.ghost_nodes[node.name] == nil then
         local obj = core.add_entity(pos, "__builtin:falling_node")
         if not obj then
@@ -33,6 +31,7 @@ local function convert_to_falling_node(pos, node)
     end
 
     core.remove_node(pos)
+    minetest.check_for_falling(pos)
     return true
 end
 
@@ -63,23 +62,16 @@ local function should_node_fall(n, p, range)
     end
 
     if range > 0 then
-        for nadd = -range, -1 do
-            local p_bottomx = {x = p.x + nadd, y = p.y - 1, z = p.z}
-            local p_bottomz = {x = p.x, y = p.y - 1, z = p.z + nadd}
+        for xadd = -range, range do
+            for zadd = -range, range do
+                local p_bottom = {x = p.x + xadd, y = p.y - 1, z = p.z + zadd}
 
-            if is_node_supporting(p, p_bottomx, n) or is_node_supporting(p, p_bottomz, n) then
-                return false
+                if is_node_supporting(p, p_bottom, n) then
+                    return false
+                end
             end
         end
 
-        for padd = 1, range do
-            local p_bottomx = {x = p.x + padd, y = p.y - 1, z = p.z}
-            local p_bottomz = {x = p.x, y = p.y - 1, z = p.z + padd}
-
-            if is_node_supporting(p, p_bottomx, n) or is_node_supporting(p, p_bottomz, n) then
-                return false
-            end
-        end
     end
 
     return result 
@@ -131,13 +123,23 @@ local check_for_falling_neighbors = {
 	{x = 0, y = 0, z = 1},
 	{x = 0, y = 0, z = -1},
     {x = 0, y = 0, z = 0},
+    
+    {x = -1, y = 0, z = -1},
+	{x = 1, y = 0, z = 1},
+	{x = -1, y = 0, z = 1},
+	{x = 1, y = 0, z = -1},
 
 	{x = -1, y = 1, z = 0},
 	{x = 1, y = 1, z = 0},
 	{x = 0, y = 1, z = 1},
 	{x = 0, y = 1, z = -1},
     {x = 0, y = 1, z = 0},
-    
+
+    {x = -1, y = 1, z = -1},
+	{x = 1, y = 1, z = 1},
+	{x = -1, y = 1, z = 1},
+	{x = 1, y = 1, z = -1},
+
     {x = 0, y = 2, z = 0}
 }
 
@@ -165,7 +167,7 @@ minetest.check_for_falling = function(p)
 			until v < #check_for_falling_neighbors 
 			v = v + 1
 		else
-			v = 1
+            v = 1
 		end
 	end
 end
