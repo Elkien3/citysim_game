@@ -89,11 +89,14 @@ minetest.check_single_for_falling = function(p)
         if result then
             meta:set_int("falling", 1)
             minetest.after(betterfall.falling_time, function()
-                result = should_node_fall(n, p, falling_node_group - 1)
+                n = core.get_node(p)
+                if n.name ~= "air" then
+                    result = should_node_fall(n, p, falling_node_group - 1)
 
-                if result then
-                    meta:set_int("falling", 0)
-                    convert_to_falling_node(p, n)
+                    if result then
+                        meta:set_int("falling", 0)
+                        convert_to_falling_node(p, n)
+                    end
                 end
             end)
         end
