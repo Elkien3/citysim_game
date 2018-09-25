@@ -11,7 +11,8 @@ dofile(betterfall.path.."/attached.lua")
 for nodename, nodedef in pairs(minetest.registered_nodes) do
     if nodedef.groups.falling_node == nil and
          nodedef.name ~= "air" and
-         minetest.get_item_group(nodedef.name, "attached_node") == 0
+         minetest.get_item_group(nodedef.name, "attached_node") == 0 and
+         minetest.get_item_group(nodedef.name, "liquid") == 0
         then
             nodedef.groups.falling_node = 2
     end
