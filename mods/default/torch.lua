@@ -58,7 +58,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-1/8, -1/2, -1/8, 1/8, 2/16, 1/8},
 	},
 	sounds = default.node_sound_wood_defaults(),
-	after_place_node = function(pos, placer, itemstack, pointed_thing)
+	on_place = function(itemstack, placer, pointed_thing)
 		local under = pointed_thing.under
 		local node = minetest.get_node(under)
 		local def = minetest.registered_nodes[node.name]
