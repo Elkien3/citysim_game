@@ -114,7 +114,7 @@ minetest.register_node("walking_light:light", {
 	is_ground_content = true,
 	light_propagates = true,
 	sunlight_propagates = true,
-	light_source = 8,
+	light_source = 10,
 	selection_box = {
         type = "fixed",
         fixed = {0, 0, 0, 0, 0, 0},
