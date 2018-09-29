@@ -34,7 +34,7 @@ shooter:register_weapon("shooter:shotgun", {
 		range = 50,
 		step = 15,
 		tool_caps = {full_punch_interval=1.5, damage_groups={fleshy=10}},
-		groups = {cracky=3, snappy=2, crumbly=2, choppy=2, fleshy=1, oddly_breakable_by_hand=1},
+		groups = {cracky=3, snappy=2, crumbly=2, choppy=2, fleshy=1, oddly_breakable_by_hand=2},
 		sound = "shooter_shotgun",
 		particle = "smoke_puff.png",
 	},
