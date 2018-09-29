@@ -2,10 +2,12 @@ default.shop = {}
 default.shop.current_shop = {}
 default.shop.formspec = {
 	customer = function(pos)
+		local counter = minetest.get_meta(pos):get_string("counter")
 		local list_name = "nodemeta:"..pos.x..','..pos.y..','..pos.z
 		local formspec = "size[8,9.5]"..
 		"label[0,0;Customer gives (pay here !)]"..
 		"list[current_player;customer_gives;0,0.5;3,2;]"..
+		"label[3,0;Transactions counter]"..
 		"label[0,2.5;Customer gets]"..
 		"list[current_player;customer_gets;0,3;3,2;]"..
 		"label[5,0;Owner wants]"..
@@ -14,13 +16,16 @@ default.shop.formspec = {
 		"list["..list_name..";owner_gives;5,3;3,2;]"..
 		"list[current_player;main;0,5.5;8,4;]"..
 		"button[3,2;2,1;exchange;Exchange]"
+		if counter then formspec = formspec.."label[4,.25;"..tostring(counter).."]" end
 		return formspec
 	end,
 	owner = function(pos)
+		local counter = minetest.get_meta(pos):get_string("counter")
 		local list_name = "nodemeta:"..pos.x..','..pos.y..','..pos.z
 		local formspec = "size[8,9.5]"..
 		"label[0,0;Customers gave:]"..
 		"list["..list_name..";customers_gave;0,0.5;3,2;]"..
+		"label[3,0;Transactions counter]"..
 		"label[0,2.5;Your stock:]"..
 		"list["..list_name..";stock;0,3;3,2;]"..
 		"label[5,0;You want:]"..
@@ -29,6 +34,7 @@ default.shop.formspec = {
 		"list["..list_name..";owner_gives;5,3;3,2;]"..
 		"label[0,5;Owner, Use(E)+Place(RMB) for customer interface]"..
 		"list[current_player;main;0,5.5;8,4;]"
+		if counter then formspec = formspec.."label[4,.25;"..tostring(counter).."]" end--.."button[3,.75;2,1;resetcounter;Reset Counter]" end
 		return formspec
 	end,
 }
@@ -97,6 +103,7 @@ minetest.register_node("currency:shop", {
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", "Exchange shop (owned by "..owner..")")
 		meta:set_string("owner",owner)
+		meta:set_string("counter", 0)
 		--[[meta:set_string("pl1","")
 		meta:set_string("pl2","")]]
 		local inv = meta:get_inventory()
@@ -202,6 +209,10 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 					pinv:add_item("customer_gets",item)
 				end
 				minetest.chat_send_player(name,"Exchanged!")
+				local counter = meta:get_string("counter")
+				if counter == nil then counter = 0 end
+				counter = counter + 1
+				meta:set_string("counter", counter)
 			else
 				if owners_fault then
 					minetest.chat_send_player(name,"Exchange can not be done, contact the shop owner.")
@@ -209,6 +220,15 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 					minetest.chat_send_player(name,"Exchange can not be done, check if you put all items !")
 				end
 			end
+		end
+	end
+	if formname == "currency:shop_formspec" and fields.resetcounter and fields.resetcounter ~= nil then
+		local name = sender:get_player_name()
+		local pos = default.shop.current_shop[name]
+		local meta = minetest.get_meta(pos)
+		if meta:get_string("owner") == name or meta:get_string("owner") == nil then
+			meta:set_string("counter", 0)
+			minetest.show_formspec(name,"currency:shop_formspec",default.shop.formspec.owner(pos))
 		end
 	end
 end)
