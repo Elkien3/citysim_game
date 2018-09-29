@@ -1,6 +1,6 @@
 
 local enable_crash = true
-local crash_threshold = 6.5		-- ignored if enable_crash=false
+local crash_threshold = 8		-- ignored if enable_crash=false
 
 ------------------------------------------------------------------------------
 
