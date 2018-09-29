@@ -1,6 +1,6 @@
 
 local enable_crash = true
-local crash_threshold = 8		-- ignored if enable_crash=false
+local crash_threshold = 6.5		-- ignored if enable_crash=false
 
 ------------------------------------------------------------------------------
 
@@ -308,15 +308,25 @@ function lib_mount.drive(entity, dtime, is_mob, moving_anim, stand_anim, jump_he
 					local drvr = entity.driver
 					lib_mount.detach(drvr, {x=0, y=0, z=0})
 					drvr:setvelocity(new_velo)
-					drvr:set_hp(drvr:get_hp() - intensity)
+					--drvr:set_hp(drvr:get_hp() - intensity)
 				end
 				if entity.passenger then
 					local pass = entity.passenger
 					lib_mount.detach(pass, {x=0, y=0, z=0})
 					pass:setvelocity(new_velo)
-					pass:set_hp(pass:get_hp() - intensity)
+					--pass:set_hp(pass:get_hp() - intensity)
 				end
 				local pos = entity.object:getpos()
+				local all_objects = minetest.get_objects_inside_radius(pos, 1)
+				for _,obj in ipairs(all_objects) do
+					if obj:is_player() then
+						if obj == entity.passenger or obj == entity.driver then
+							obj:set_hp(obj:get_hp() - intensity)
+						else
+							obj:set_hp(obj:get_hp() - (intensity*2))
+						end
+					end
+				end
 				minetest.add_item(pos, entity.drop_on_destroy)
 				entity.removed = true
 				-- delay remove to ensure player is detached

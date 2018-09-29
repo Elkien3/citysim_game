@@ -66,7 +66,7 @@ local car01_def = {
 	passenger_attach_at = {x=3.5,y=12,z=-3.5},
 	passenger_eye_offset = {x=4, y=0, z=0},
 	--drop and recipe
-	drop_on_destroy = "",
+	drop_on_destroy = "default:mese_crystal",
 	recipe = nil
 }
 
