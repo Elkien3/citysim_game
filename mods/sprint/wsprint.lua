@@ -129,9 +129,10 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 		if state == 0 then--Stopped
 			player:set_physics_override({speed=1.0,jump=1.0})
 			
-			players[playerName].hasinteract = privs.interact
-			privs.interact = players[playerName].hasinteract
-			player:hud_set_flags({wielditem=true})
+			minetest.after(0.2, function()
+			  		privs.interact = players[playerName].hasinteract
+					player:hud_set_flags({wielditem=true})
+			end)
 		elseif state == 2 then --Primed
 			players[playerName]["timeOut"] = gameTime
 		elseif state == 3 then --Sprinting
