@@ -36,6 +36,9 @@ minetest.register_on_joinplayer(function(player)
 end)
 minetest.register_on_leaveplayer(function(player)
 	local playerName = player:get_player_name()
+	local privs = minetest.get_player_privs(playerName)
+	privs.interact = players[playerName].hasinteract
+	minetest.set_player_privs(playerName, privs)
 	players[playerName] = nil
 end)
 minetest.register_globalstep(function(dtime)
@@ -122,12 +125,22 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 	local gameTime = minetest.get_gametime()
 	if players[playerName] then
 		players[playerName]["state"] = state
+		local privs = minetest.get_player_privs(playerName)
 		if state == 0 then--Stopped
 			player:set_physics_override({speed=1.0,jump=1.0})
+			
+			players[playerName].hasinteract = privs.interact
+			privs.interact = players[playerName].hasinteract
+			player:hud_set_flags({wielditem=true})
 		elseif state == 2 then --Primed
 			players[playerName]["timeOut"] = gameTime
 		elseif state == 3 then --Sprinting
 			player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
+			
+			players[playerName].hasinteract = privs.interact
+			privs.interact = nil
+			player:hud_set_flags({wielditem=false})
+			minetest.set_player_privs(playerName, privs)
 		end
 		return true
 	end

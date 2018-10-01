@@ -16,14 +16,21 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 		players[playerName]["sprinting"] = sprinting
 		local currentPhy = player:get_physics_override()
 		local newPhy = currentPhy
+		local privs = minetest.get_player_privs(playerName)
 
 		if sprinting == true then
 			newPhy.speed = newPhy.speed + SPRINT_SPEED
 			newPhy.jump = newPhy.jump + SPRINT_JUMP
+			players[playerName].hasinteract = privs.interact
+			privs.interact = nil
+			player:hud_set_flags({wielditem=false})
 		elseif sprinting == false then
 			newPhy.speed = newPhy.speed - SPRINT_SPEED
 			newPhy.jump = newPhy.jump - SPRINT_JUMP
+			privs.interact = players[playerName].hasinteract
+			player:hud_set_flags({wielditem=true})
 		end
+		minetest.set_player_privs(playerName, privs)
 
 		player:set_physics_override(newPhy)
 		return true
@@ -57,6 +64,9 @@ minetest.register_on_joinplayer(function(player)
 end)
 minetest.register_on_leaveplayer(function(player)
 	local playerName = player:get_player_name()
+	local privs = minetest.get_player_privs(playerName)
+	privs.interact = players[playerName].hasinteract
+	minetest.set_player_privs(playerName, privs)
 	players[playerName] = nil
 end)
 minetest.register_globalstep(function(dtime)
