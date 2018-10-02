@@ -29,7 +29,7 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 			newPhy.speed = newPhy.speed - SPRINT_SPEED
 			newPhy.jump = newPhy.jump - SPRINT_JUMP
 			minetest.after(0.2, function()
-					if sprinting == false then
+					if players[playerName]["sprinting"] == false then
 						privs.interact = players[playerName].hasinteract
 						player:hud_set_flags({wielditem=true})
 						minetest.set_player_privs(playerName, privs)

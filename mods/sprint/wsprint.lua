@@ -130,7 +130,7 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			player:set_physics_override({speed=1.0,jump=1.0})
 			
 			minetest.after(0.2, function()
-				if state == 0 then
+				if players[playerName]["state"] == 0 then
 			  		privs.interact = players[playerName].hasinteract
 					player:hud_set_flags({wielditem=true})
 					minetest.set_player_privs(playerName, privs)
