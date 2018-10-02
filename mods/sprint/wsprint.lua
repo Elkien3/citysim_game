@@ -132,6 +132,7 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			minetest.after(0.2, function()
 			  		privs.interact = players[playerName].hasinteract
 					player:hud_set_flags({wielditem=true})
+					minetest.set_player_privs(playerName, privs)
 			end)
 		elseif state == 2 then --Primed
 			players[playerName]["timeOut"] = gameTime
