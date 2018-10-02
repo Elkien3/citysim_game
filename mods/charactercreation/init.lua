@@ -29,7 +29,7 @@ See colortools.lua for more details
 ]]--
 dofile(modpath.."/colortools.lua")
 
-local function doskinny(self, player)
+local function doskinny(player)
 	local name = player:get_player_name()
 	if not skindata[name] then skindata[name] = defaultskin end
 	local skin = "(skin"..skindata[name].skintype..".png^[multiply:#"..skindata[name].skincolor..")"
@@ -49,7 +49,7 @@ local function doskinny(self, player)
 end
 
 minetest.register_on_joinplayer(function(player)
-	minetest.after(0, doskinny, self, player)
+	minetest.after(0, doskinny, player)
 end)
 
 local function make_HSL_formspec(name, item, itemcolor, itemtype)
@@ -161,7 +161,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].hairtype = tonumber(skindata[name].hairtype)-1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_hair(name)
 			return
 		end
@@ -171,7 +171,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].hairtype = tonumber(skindata[name].hairtype)+1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_hair(name)
 			return
 		end
@@ -179,7 +179,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if input and input ~= "" then
 				skindata[name].haircolor = input
 				previewcolor[name] = nil
-				doskinny(self, player)
+				doskinny(player)
 				formspec_hair(name)
 			end
 		end
@@ -200,7 +200,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].facetype = tonumber(skindata[name].facetype)-1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_face(name)
 			return
 		end
@@ -210,7 +210,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].facetype = tonumber(skindata[name].facetype)+1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_face(name)
 			return
 		end
@@ -218,7 +218,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if input and input ~= "" then
 				skindata[name].facecolor = input
 				previewcolor[name] = nil
-				doskinny(self, player)
+				doskinny(player)
 				formspec_face(name)
 			end
 		end
@@ -239,7 +239,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].skintype = tonumber(skindata[name].skintype)-1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_skin(name)
 			return
 		end
@@ -249,7 +249,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].skintype = tonumber(skindata[name].skintype)+1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_skin(name)
 			return
 		end
@@ -257,7 +257,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if input and input ~= "" then
 				skindata[name].skincolor = input
 				previewcolor[name] = nil
-				doskinny(self, player)
+				doskinny(player)
 				formspec_skin(name)
 			end
 		end
@@ -278,7 +278,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].eyetype = tonumber(skindata[name].eyetype)-1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_eye(name)
 			return
 		end
@@ -288,7 +288,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			else
 				skindata[name].eyetype = tonumber(skindata[name].eyetype)+1
 			end
-			doskinny(self, player)
+			doskinny(player)
 			formspec_eye(name)
 			return
 		end
@@ -296,7 +296,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if input and input ~= "" then
 				skindata[name].eyecolor = input
 				previewcolor[name] = nil
-				doskinny(self, player)
+				doskinny(player)
 				formspec_eye(name)
 			end
 		end
