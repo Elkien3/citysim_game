@@ -210,7 +210,7 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 				end
 				minetest.chat_send_player(name,"Exchanged!")
 				local counter = meta:get_string("counter")
-				if counter == nil then counter = 0 end
+				if counter == nil or counter == "" then counter = 0 end
 				counter = counter + 1
 				meta:set_string("counter", counter)
 			else
