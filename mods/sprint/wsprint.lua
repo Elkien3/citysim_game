@@ -140,11 +140,12 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			players[playerName]["timeOut"] = gameTime
 		elseif state == 3 then --Sprinting
 			player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
-			
-			players[playerName].hasinteract = privs.interact
-			privs.interact = nil
-			player:hud_set_flags({wielditem=false})
-			minetest.set_player_privs(playerName, privs)
+			if player:hud_get_flags().wielditem then
+				players[playerName].hasinteract = privs.interact
+				privs.interact = nil
+				player:hud_set_flags({wielditem=false})
+				minetest.set_player_privs(playerName, privs)
+			end
 		end
 		return true
 	end
