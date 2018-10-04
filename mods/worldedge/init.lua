@@ -90,7 +90,7 @@ function get_surface_pos(pos)
 	}
 	local maxp = {
 		x = pos.x + radius - 1,
-		y = 50,
+		y = 200,
 		z = pos.z + radius - 1
 	}
 	
