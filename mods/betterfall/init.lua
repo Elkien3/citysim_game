@@ -2,11 +2,12 @@
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
 betterfall.ghost_nodes = {} -- those nodes will just disappear instead of falling
-betterfall.falling_time = 0.25
+betterfall.falling_timer = 0.0
 
 dofile(betterfall.path.."/helpers.lua")
 dofile(betterfall.path.."/config.lua")
 dofile(betterfall.path.."/attached.lua")
+dofile(betterfall.path.."/fallingqueue.lua")
 
 for nodename, nodedef in pairs(minetest.registered_nodes) do
     if nodedef.groups.falling_node == nil and
@@ -16,24 +17,6 @@ for nodename, nodedef in pairs(minetest.registered_nodes) do
         then
             nodedef.groups.falling_node = 2
     end
-end
-
-local function convert_to_falling_node(pos, node)
-    if betterfall.ghost_nodes[node.name] == nil then
-        local obj = core.add_entity(pos, "__builtin:falling_node")
-        if not obj then
-            return false
-        end
-        node.level = core.get_node_level(pos)
-        local meta = core.get_meta(pos)
-        local metatable = meta and meta:to_table() or {}
-
-        obj:get_luaentity():set_node(node, metatable)
-    end
-
-    core.remove_node(pos)
-    minetest.check_for_falling(pos)
-    return true
 end
 
 local function is_node_supporting(n, p_bottom)
@@ -55,7 +38,7 @@ local function is_node_supporting(n, p_bottom)
     return true
 end
 
-local function should_node_fall(n, p, range)
+function betterfall.should_node_fall(n, p, range)
     local result = false
 
     if not is_node_supporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
@@ -85,21 +68,12 @@ minetest.check_single_for_falling = function(p)
     local falling_node_group = core.get_item_group(n.name, "falling_node")
 
 	if falling_node_group ~= 0 and meta:get_int("falling") ~= 1 then
-        local result = should_node_fall(n, p, falling_node_group - 1)
+        local result = betterfall.should_node_fall(n, p, 1)
 
         if result then
             meta:set_int("falling", 1)
-            minetest.after(betterfall.falling_time, function()
-                n = core.get_node(p)
-                if n.name ~= "air" then
-                    result = should_node_fall(n, p, falling_node_group - 1)
-
-                    if result then
-                        meta:set_int("falling", 0)
-                        convert_to_falling_node(p, n)
-                    end
-                end
-            end)
+            n = core.get_node(p)
+            betterfall.enqueue_falling_node(p, n, meta)
         end
 
         return result
