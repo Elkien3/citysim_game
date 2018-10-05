@@ -199,6 +199,18 @@ local function safe_print(param)
 	print(dump(param))
 end
 
+local function safe_serlialize(param)
+	if not param then return end
+	if type(param) ~= "table" then return end
+	return minetest.serialize(param)
+end
+
+local function safe_deserlialize(param)
+	if not param then return end
+	if type(param) ~= "string" then return end
+	return minetest.deserialize(param)
+end
+
 local function safe_date()
 	return(os.date("*t",os.time()))
 end
@@ -318,6 +330,8 @@ local function create_environment(pos, mem, event)
 		heat = minetest.get_meta(pos):get_int("heat"),
 		heat_max = mesecon.setting("overheat_max", 20),
 		print = safe_print,
+		serialize = safe_serlialize,
+		deserialize = safe_deserlialize,
 		interrupt = get_interrupt(pos),
 		digiline_send = get_digiline_send(pos),
 		string = {
