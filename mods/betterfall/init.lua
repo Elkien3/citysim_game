@@ -15,7 +15,7 @@ for nodename, nodedef in pairs(minetest.registered_nodes) do
          minetest.get_item_group(nodedef.name, "attached_node") == 0 and
          minetest.get_item_group(nodedef.name, "liquid") == 0
         then
-            nodedef.groups.falling_node = 2
+            nodedef.groups.falling_node = 2 
     end
 end
 
@@ -38,27 +38,74 @@ local function is_node_supporting(n, p_bottom)
     return true
 end
 
-function betterfall.should_node_fall(n, p, range)
-    local result = false
+local supporting_neighbours_lateral = {
+    {x = 1, y = 0, z = 0},
+    {x = -1, y = 0, z = 0},
+    
+    {x = 0, y = 0, z = -1},
+    {x = 0, y = 0, z = 1},
+    
+    {x = 1, y = 0, z = 1},
+    {x = -1, y = 0, z = -1},
+    
+    {x = 1, y = 0, z = -1},    
+    {x = -1, y = 0, z = 1},
+}
 
-    if not is_node_supporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
-        result = true
+local supporting_neighbours_diagonal = {
+    {x = 1, y = -1, z = 0},
+    {x = -1, y = -1, z = 0},
+    
+    {x = 0, y = -1, z = -1},
+    {x = 0, y = -1, z = 1},
+    
+    {x = 1, y = -1, z = 1},
+    {x = -1, y = -1, z = -1},
+    
+    {x = 1, y = -1, z = -1},    
+    {x = -1, y = -1, z = 1}
+}
+
+function betterfall.should_node_fall(n, p, range)
+    if is_node_supporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
+        return false
     end
 
     if range > 0 then
-        for xadd = -range, range do
-            for zadd = -range, range do
-                local p_bottom = {x = p.x + xadd, y = p.y - 1, z = p.z + zadd}
+        for i, diagneighpos in pairs(supporting_neighbours_diagonal) do
+            local dp = { 
+                x = p.x + diagneighpos.x,
+                y = p.y + diagneighpos.y,
+                z = p.z + diagneighpos.z
+            }
 
-                if is_node_supporting(p, p_bottom, n) then
-                    return false
+            if is_node_supporting(p, dp, n) then
+                return false
+            else
+                for i, latneighpos in pairs(supporting_neighbours_lateral) do
+                    local lp = {
+                        x = p.x + latneighpos.x,
+                        y = p.y + latneighpos.y,
+                        z = p.z + latneighpos.z
+                    }
+                    
+                    if is_node_supporting(p, lp, n) then
+                        local ldp = {
+                            x = dp.x + latneighpos.x,
+                            y = dp.y + latneighpos.y,
+                            z = dp.z + latneighpos.z
+                        }
+
+                        if is_node_supporting(p, ldp, n) then
+                            return false
+                        end
+                    end
                 end
             end
         end
-
     end
 
-    return result 
+    return true 
 end
 
 minetest.check_single_for_falling = function(p)
@@ -68,7 +115,7 @@ minetest.check_single_for_falling = function(p)
     local falling_node_group = core.get_item_group(n.name, "falling_node")
 
 	if falling_node_group ~= 0 and meta:get_int("falling") ~= 1 then
-        local result = betterfall.should_node_fall(n, p, 1)
+        local result = betterfall.should_node_fall(n, p, falling_node_group - 1)
 
         if result then
             meta:set_int("falling", 1)
