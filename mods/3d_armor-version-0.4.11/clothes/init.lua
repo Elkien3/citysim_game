@@ -162,5 +162,33 @@ armor:register_armor("clothes:boots_hiking", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:shirt_suit", {
+	description = ("Suit Coat"),
+	inventory_image = "clothes_inv_shirt_suit.png",
+	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:pants_suit", {
+	description = ("Suit Pants"),
+	inventory_image = "clothes_inv_pants_suit.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:shirt_prisoner", {
+	description = ("Prisoner Shirt"),
+	inventory_image = "clothes_inv_shirt_prisoner.png",
+	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:pants_prisoner", {
+	description = ("Prisoner Pants"),
+	inventory_image = "clothes_inv_pants_prisoner.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 local modpath = minetest.get_modpath("clothes")
 dofile(modpath.."/loom.lua")
