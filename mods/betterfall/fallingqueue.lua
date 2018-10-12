@@ -56,8 +56,6 @@ minetest.register_globalstep(function(dtime)
     betterfall.next_fall_time = betterfall.next_fall_time + dtime
 
     if betterfall.next_fall_time >= betterfall.falling_timer then
-        print("dequeueing node")
-
         betterfall.next_fall_time = 0.0
         local node_entry = betterfall.falling_queue.dequeue()
 
@@ -65,11 +63,11 @@ minetest.register_globalstep(function(dtime)
             if node_entry.node.name ~= "air" then
                 result = betterfall.should_node_fall(node_entry.node, node_entry.pos, 1)
 
+                node_entry.meta:set_int("falling", 0)
+
                 if result then
                     convert_to_falling_node(node_entry.pos, node_entry.node)
                 end
-
-                node_entry.meta:set_int("falling", 0)
             end
         end
     end
