@@ -191,6 +191,9 @@ armor.set_player_armor = function(self, player)
 	local levels = {}
 	local groups = {}
 	local change = {}
+	local clothes = ""
+	local hat = ""
+	local abovehair = false
 	for _, phys in pairs(self.physics) do
 		physics[phys] = 1
 	end
@@ -233,7 +236,11 @@ armor.set_player_armor = function(self, player)
 			local prev = def.preview or tex.."_preview"
 			prev = prev:gsub(".png$", "")
 			if def.groups["clothing"] then
-				skintexture = skintexture.."^"..tex..".png"
+				if def.groups["armor_head"] then
+					hat = hat.."^"..tex..".png"
+				else
+					clothes = clothes.."^"..tex..".png"
+				end
 			else
 				texture = texture.."^"..tex..".png"
 			end
@@ -256,6 +263,14 @@ armor.set_player_armor = function(self, player)
 			else
 				material.name = mat
 			end
+		end
+	end
+	if clothes ~= "" or hat ~= "" then
+		if self.skin_mod == "charactercreation"  then
+			local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
+			skintexture = skintexture..clothes.."^"..hair..hat
+		else
+			skintexture = skintexture..clothes..hat
 		end
 	end
 	for group, level in pairs(levels) do
@@ -400,8 +415,8 @@ armor.get_player_skin = function(self, name)
 		local skin = "(skin"..skindata[name].skintype..".png^[multiply:#"..skindata[name].skincolor..")"
 		local eyes = "(eye"..skindata[name].eyetype..".png)^(eye"..skindata[name].eyetype.."color.png^[multiply:#"..skindata[name].eyecolor..")"
 		local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
-		local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
-		return skin.."^"..eyes.."^"..face.."^"..hair
+		--local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
+		return skin.."^"..eyes.."^"..face--.."^"..hair
 	end
 	return armor.default_skin..".png"
 end

@@ -116,7 +116,7 @@ armor:register_armor("clothes:hat_wool", {
 armor:register_armor("clothes:hat_balaclava", {
 	description = ("Balaclava"),
 	inventory_image = "clothes_inv_hat_balaclava.png",
-	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=800},
+	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=800, abovehair = 1},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
