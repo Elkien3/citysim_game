@@ -265,13 +265,11 @@ armor.set_player_armor = function(self, player)
 			end
 		end
 	end
-	if clothes ~= "" or hat ~= "" then
-		if self.skin_mod == "charactercreation"  then
-			local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
-			skintexture = skintexture..clothes.."^"..hair..hat
-		else
-			skintexture = skintexture..clothes..hat
-		end
+	if self.skin_mod == "charactercreation"  then
+		local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
+		skintexture = skintexture..clothes.."^"..hair..hat
+	else
+		skintexture = skintexture..clothes..hat
 	end
 	for group, level in pairs(levels) do
 		if level > 0 then
