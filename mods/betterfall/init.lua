@@ -169,7 +169,7 @@ local check_for_falling_neighbors = {
 }
 
 minetest.check_for_falling = function(p)
-    print("check for falling " .. p.x .. " " .. p.y .. " " .. p.z)
+   -- print("check for falling " .. p.x .. " " .. p.y .. " " .. p.z)
 
 	p = vector.round(p)
 
