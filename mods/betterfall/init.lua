@@ -71,7 +71,7 @@ function betterfall.should_node_fall(n, p, range)
         return false
     end
 
-    if range > 0 then
+    if range > 1 then
         for i, diagneighpos in pairs(supporting_neighbours_diagonal) do
             local dp = { 
                 x = p.x + diagneighpos.x,
