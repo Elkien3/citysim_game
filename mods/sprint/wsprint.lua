@@ -37,7 +37,9 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	local playerName = player:get_player_name()
 	local privs = minetest.get_player_privs(playerName)
-	privs.interact = players[playerName].hasinteract
+	if players[playerName].hasinteract then
+		privs.interact = players[playerName].hasinteract
+	end
 	minetest.set_player_privs(playerName, privs)
 	players[playerName] = nil
 end)
