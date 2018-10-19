@@ -66,12 +66,14 @@ local supporting_neighbours_diagonal = {
     {x = -1, y = -1, z = 1}
 }
 
-function betterfall.should_node_fall(n, p, range)
+function betterfall.should_node_fall(n, p)
     if is_node_supporting(p, {x = p.x, y = p.y - 1, z = p.z}) then
         return false
     end
 
-    if range > 1 then
+    local range = core.get_item_group(n.name, "falling_node") - 1
+
+    if range > 0 then
         for i, diagneighpos in pairs(supporting_neighbours_diagonal) do
             local dp = { 
                 x = p.x + diagneighpos.x,
