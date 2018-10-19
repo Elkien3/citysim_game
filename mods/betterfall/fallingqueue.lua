@@ -61,7 +61,7 @@ minetest.register_globalstep(function(dtime)
 
         if node_entry then
             if node_entry.node.name ~= "air" then
-                result = betterfall.should_node_fall(node_entry.node, node_entry.pos, 1)
+                result = betterfall.should_node_fall(node_entry.node, node_entry.pos)
 
                 node_entry.meta:set_int("falling", 0)
 
