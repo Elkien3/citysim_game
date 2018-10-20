@@ -437,10 +437,10 @@ minetest.register_node("protector:protect", {
 })
 
 minetest.register_craft({
-	output = "protector:protect",
+	output = "protector:protect 2",
 	recipe = {
 		{"default:stone", "default:stone", "default:stone"},
-		{"default:stone", "default:gold_ingot", "default:stone"},
+		{"default:stone", "default:steel_ingot", "default:stone"},
 		{"default:stone", "default:stone", "default:stone"},
 	}
 })
