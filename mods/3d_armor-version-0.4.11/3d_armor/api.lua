@@ -266,8 +266,9 @@ armor.set_player_armor = function(self, player)
 		end
 	end
 	if self.skin_mod == "charactercreation"  then
+		local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
 		local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
-		skintexture = skintexture..clothes.."^"..hair..hat
+		skintexture = skintexture..clothes.."^"..face.."^"..hair..hat
 	else
 		skintexture = skintexture..clothes..hat
 	end
@@ -412,9 +413,9 @@ armor.get_player_skin = function(self, name)
 	elseif self.skin_mod == "charactercreation" and skindata[name] then
 		local skin = "(skin"..skindata[name].skintype..".png^[multiply:#"..skindata[name].skincolor..")"
 		local eyes = "(eye"..skindata[name].eyetype..".png)^(eye"..skindata[name].eyetype.."color.png^[multiply:#"..skindata[name].eyecolor..")"
-		local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
+		--local face = "(face"..skindata[name].facetype..".png^[multiply:#"..skindata[name].facecolor..")"
 		--local hair = "(hair"..skindata[name].hairtype..".png^[multiply:#"..skindata[name].haircolor..")"
-		return skin.."^"..eyes.."^"..face--.."^"..hair
+		return skin.."^"..eyes--.."^"..face.."^"..hair
 	end
 	return armor.default_skin..".png"
 end
