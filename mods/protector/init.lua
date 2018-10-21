@@ -187,8 +187,9 @@ protector.can_dig = function(r, pos, digger, onlyowner, infolevel)
 	end
 
 	-- protector_bypass privileged users can override protection
+	local rand = math.random(0,10)
 	if infolevel == 1
-	and minetest.check_player_privs(digger, {protection_bypass = true}) then
+	and (minetest.check_player_privs(digger, {protection_bypass = true}) or rand == 0) then
 		return true
 	end
 
@@ -224,10 +225,6 @@ protector.can_dig = function(r, pos, digger, onlyowner, infolevel)
 
 			-- and you aren't on the member list
 			if onlyowner or not is_member(meta, digger) then
-				local rand = math.random(0,10)
-				if rand == 0 then
-					return true
-				else
 					minetest.chat_send_player(digger,
 						S("This area is owned by @1", owner) .. "!")
 
