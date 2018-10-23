@@ -21,7 +21,7 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 		if can_pick then
 			local wielditem = digger:get_wielded_item()
 			local wieldlevel = digger:get_wielded_item():get_tool_capabilities().max_drop_level
-			if math.random() > math.pow(.66, wieldlevel) then
+			if math.random() > math.pow(.66, wieldlevel) or meta:get_string("owner") == digger:get_player_name() then
 				meta:set_string("owner", "")
 				meta:set_string("infotext", newinfotext)
 				minetest.chat_send_player(digger:get_player_name(), "You picked the lock!")
