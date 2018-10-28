@@ -287,6 +287,29 @@ minetest.register_abm({
 	end,
 })
 
+minetest.register_abm({
+	nodenames = {"fire:basic_flame", "fire:permanent_flame"},
+	interval = 2,
+	chance = 20,
+	catch_up = false,
+	action = function(p0, node, _, _)
+		minetest.remove_node(p0)
+		--minetest.sound_play("fire_extinguish_flame",
+			--{pos = p0, max_hear_distance = 16, gain = 0.25})
+	end,
+})
+
+minetest.register_abm({
+	nodenames = {"fire:basic_flame", "fire:permanent_flame"},
+	interval = 480,
+	chance = 1,
+	catch_up = false,
+	action = function(p0, node, _, _)
+		minetest.remove_node(p0)
+		--minetest.sound_play("fire_extinguish_flame",
+			--{pos = p0, max_hear_distance = 16, gain = 0.25})
+	end,
+})
 
 -- Enable the following ABMs according to 'enable fire' setting
 
@@ -324,7 +347,7 @@ else -- Fire enabled
 		nodenames = {"group:flammable"},
 		neighbors = {"group:igniter"},
 		interval = 7,
-		chance = 12,
+		chance = 16,
 		catch_up = false,
 		action = function(pos, node, active_object_count, active_object_count_wider)
 			-- If there is water or stuff like that around node, don't ignite
@@ -344,8 +367,8 @@ else -- Fire enabled
 		label = "Remove flammable nodes",
 		nodenames = {"fire:basic_flame"},
 		neighbors = "group:flammable",
-		interval = 5,
-		chance = 18,
+		interval = 8,
+		chance = 4,
 		catch_up = false,
 		action = function(pos, node, active_object_count, active_object_count_wider)
 			local p = minetest.find_node_near(pos, 1, {"group:flammable"})
