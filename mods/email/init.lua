@@ -198,7 +198,7 @@ minetest.register_chatcommand("inbox", {
 
 minetest.register_chatcommand("mail", {
 	params = "name msg",
-        privs = {kick = true},
+	privs = {shout = true},
 	description = "mail: add a message to a player's inbox",
 	func = function(name, param)
 		local to, msg = string.match(param, "^([%a%d_-]+) (.+)")
