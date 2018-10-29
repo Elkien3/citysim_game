@@ -128,9 +128,9 @@ local dgroups = ""
 for s in ipairs(states) do
 
 	if states[s] == "off" then
-		dgroups = {snappy=3, pipe=1}
+		dgroups = {cracky=3, pipe=1}
 	else
-		dgroups = {snappy=3, pipe=1, not_in_creative_inventory=1}
+		dgroups = {cracky=3, pipe=1, not_in_creative_inventory=1}
 	end
 
 	local pumpname = "pipeworks:pump_"..states[s]
@@ -239,7 +239,7 @@ minetest.register_node(nodename_valve_loaded, {
              	type = "fixed",
 		fixed = { -5/16, -4/16, -8/16, 5/16, 5/16, 8/16 }
 	},
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -288,7 +288,7 @@ minetest.register_node("pipeworks:grating", {
 	},
 	sunlight_propagates = true,
 	paramtype = "light",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	pipe_connections = { top = 1 },
@@ -312,7 +312,7 @@ minetest.register_node(nodename_spigot_empty, {
 	sunlight_propagates = true,
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	pipe_connections = { left=1, right=1, front=1, back=1,
@@ -354,7 +354,7 @@ minetest.register_node(nodename_spigot_loaded, {
 	sunlight_propagates = true,
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	pipe_connections = { left=1, right=1, front=1, back=1,
@@ -408,7 +408,7 @@ minetest.register_node(nodename_panel_empty, {
 	tiles = { "pipeworks_entry_panel.png" },
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -428,7 +428,7 @@ minetest.register_node(nodename_panel_loaded, {
 	tiles = { "pipeworks_entry_panel.png" },
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -455,7 +455,7 @@ minetest.register_node(nodename_sensor_empty, {
 	sunlight_propagates = true,
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -494,7 +494,7 @@ minetest.register_node(nodename_sensor_loaded, {
 	sunlight_propagates = true,
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -537,12 +537,12 @@ new_flow_logic_register.transition_simple_set(sensor_pressure_set, { mesecons=pi
 -- TODO flow-logic-stub: these don't currently do anything under the new flow logic.
 for fill = 0, 10 do
 	local filldesc="empty"
-	local sgroups = {snappy=3, pipe=1, tankfill=fill+1}
+	local sgroups = {cracky=3, pipe=1, tankfill=fill+1}
 	local image = nil
 
 	if fill ~= 0 then
 		filldesc=fill.."0% full"
-		sgroups = {snappy=3, pipe=1, tankfill=fill+1, not_in_creative_inventory=1}
+		sgroups = {cracky=3, pipe=1, tankfill=fill+1, not_in_creative_inventory=1}
 		image = "pipeworks_storage_tank_fittings.png"
 	end
 
@@ -559,7 +559,7 @@ for fill = 0, 10 do
 		inventory_image = image,
 		paramtype = "light",
 		paramtype2 = "facedir",
-		groups = {snappy=3, pipe=1, tankfill=fill+1, not_in_creative_inventory=1},
+		groups = {cracky=3, pipe=1, tankfill=fill+1, not_in_creative_inventory=1},
 		sounds = default.node_sound_wood_defaults(),
 		walkable = true,
 		drop = "pipeworks:storage_tank_0",
@@ -613,7 +613,7 @@ minetest.register_node(nodename_fountain_empty, {
 	tiles = { "pipeworks_fountainhead.png" },
 	sunlight_propagates = true,
 	paramtype = "light",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	pipe_connections = { bottom = 1 },
@@ -647,7 +647,7 @@ minetest.register_node(nodename_fountain_loaded, {
 	tiles = { "pipeworks_fountainhead.png" },
 	sunlight_propagates = true,
 	paramtype = "light",
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	pipe_connections = { bottom = 1 },
@@ -697,7 +697,7 @@ minetest.register_node(nodename_sp_empty, {
 	tiles = { "pipeworks_straight_pipe_empty.png" },
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1},
+	groups = {cracky=3, pipe=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,
@@ -717,7 +717,7 @@ minetest.register_node(nodename_sp_loaded, {
 	tiles = { "pipeworks_straight_pipe_loaded.png" },
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {snappy=3, pipe=1, not_in_creative_inventory=1},
+	groups = {cracky=3, pipe=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	walkable = true,
 	on_place = pipeworks.rotate_on_place,

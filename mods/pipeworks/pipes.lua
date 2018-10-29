@@ -34,11 +34,11 @@ for index, connects in ipairs(cconnects) do
 		v = v-1 + 2*(v%2) -- Opposite side
 	end
 	
-	local pgroups = {snappy = 3, pipe = 1, not_in_creative_inventory = 1}
+	local pgroups = {cracky = 3, pipe = 1, not_in_creative_inventory = 1}
 	local pipedesc = "Pipe segement".." "..dump(connects).."... You hacker, you."
 
 	if #connects == 0 then
-		pgroups = {snappy = 3, tube = 1}
+		pgroups = {cracky = 3, tube = 1}
 		pipedesc = "Pipe segment"
 	end
 	
@@ -85,7 +85,7 @@ for index, connects in ipairs(cconnects) do
 		on_rotate = false
 	})
 	
-	local pgroups = {snappy = 3, pipe = 1, not_in_creative_inventory = 1}
+	local pgroups = {cracky = 3, pipe = 1, not_in_creative_inventory = 1}
 
 	minetest.register_node("pipeworks:pipe_"..index.."_loaded", {
 		description = pipedesc,
