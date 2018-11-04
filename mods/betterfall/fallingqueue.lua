@@ -60,7 +60,7 @@ minetest.register_globalstep(function(dtime)
         local node_entry = betterfall.falling_queue.dequeue()
 
         if node_entry then
-            if node_entry.node.name ~= "air" then
+            if node_entry.node.name ~= "air" and minetest.get_node(node_entry.pos).name == node_entry.node.name then
                 result = betterfall.should_node_fall(node_entry.node, node_entry.pos)
 
                 node_entry.meta:set_int("falling", 0)
