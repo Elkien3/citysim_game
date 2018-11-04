@@ -120,3 +120,22 @@ minetest.register_node("walking_light:light", {
         fixed = {0, 0, 0, 0, 0, 0},
     },
 })
+
+minetest.register_abm({
+	nodenames = {"walking_light:light", "technic:light"},
+	interval = 10,
+	chance = 1,
+	catch_up = false,
+	action = function(p0, node, _, _)
+		local killlight = true
+		local objs = minetest.get_objects_inside_radius(p0, 2)
+		for _, obj in pairs(objs) do
+			if obj:is_player() then
+				killlight = false
+			end
+		end
+		if killlight then
+			minetest.remove_node(p0)
+		end
+	end,
+})
