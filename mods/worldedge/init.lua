@@ -51,6 +51,7 @@ minetest.register_globalstep(function(dtime)
 	local players = minetest.get_connected_players()
 	for i, player in ipairs(players) do
 		local name = player:get_player_name()
+		if minetest.check_player_privs(name, {server=true}) then return end
 		if not waiting_list[name] then
 			local pos = vector.round(player:getpos())
 			local newpos = nil
