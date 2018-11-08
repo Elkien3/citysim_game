@@ -26,7 +26,7 @@ local function filter_init(pos)
 end
 
 local function filter_receive_fields(pos, formname, fields, sender)
-	if minetest.is_protected(pos, sender) and not minetest.check_player_privs(sender, "protection_bypass") then
+	if minetest.is_protected(pos, sender:get_player_name()) and not minetest.check_player_privs(sender, "protection_bypass") then
 		minetest.record_protection_violation(pos, sender)
 		return
 	end
