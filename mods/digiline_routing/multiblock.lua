@@ -89,7 +89,7 @@ digiline_routing.multiblock.dig2 = function(pos, node)
 	removing_head = true
 	local dir = minetest.facedir_to_dir(node.param2)
 	local tail = vector.add(pos, dir)
-	minetest.dig_node(tail)
+	minetest.remove_node(tail)
 	removing_head = false
 end
 
@@ -97,6 +97,6 @@ digiline_routing.multiblock.dig2b = function(pos, node)
 	local dir = minetest.facedir_to_dir(node.param2)
 	local head = vector.subtract(pos, dir)
 	if not removing_head then
-		minetest.dig_node(head)
+		minetest.remove_node(head)
 	end
 end
