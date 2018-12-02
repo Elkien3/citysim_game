@@ -24,7 +24,7 @@ on use.
 
 if minetest.get_modpath("vessels") and thirsty.config.register_vessels then
     -- add "drinking" to vessels
-    thirsty.augment_item_for_drinking('vessels:drinking_glass', 22)
+    --thirsty.augment_item_for_drinking('vessels:drinking_glass', 22)
     thirsty.augment_item_for_drinking('vessels:glass_bottle', 24)
     thirsty.augment_item_for_drinking('vessels:steel_bottle', 26)
 end
