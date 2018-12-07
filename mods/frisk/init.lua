@@ -128,7 +128,7 @@ local function finishcuff(player, pName, oldpos)
 		minetest.chat_send_player(name, pName.." moved, cuff canceled.")
 		local wearcalc
 		if cuffdamage[pName] then
-			wearcalc = cuffdamage[pName]/200*65535
+			wearcalc = cuffdamage[pName]/400*65535
 		else
 			wearcalc = 0
 		end
@@ -158,7 +158,7 @@ local function startcuff(stack, player, pointedThing)
 			if cuffedplayers[pName] == nil then
 				local itemstack = player:get_wielded_item()
 				if itemstack:get_name() == "frisk:handcuffs" then
-					cuffdamage[pName] = itemstack:get_wear()/65535*200 or 0
+					cuffdamage[pName] = itemstack:get_wear()/65535*400 or 0
 					itemstack:take_item()
 					local name = player:get_player_name()
 					minetest.chat_send_player(pName, name.." is cuffing you, move to cancel.")
@@ -193,7 +193,7 @@ local function uncuff(stack, player, pointedThing)
 				local player_inv = player:get_inventory()
 				local wearcalc
 				if cuffdamage[pName] then
-					wearcalc = cuffdamage[pName]/200*65535
+					wearcalc = cuffdamage[pName]/400*65535
 				else
 					wearcalc = 0
 				end
@@ -245,7 +245,7 @@ minetest.register_globalstep(function(dtime)
 						cuffdamage[name] = 0
 					end
 					cuffdamage[name] = cuffdamage[name] + math.random(1,3)
-					if cuffdamage[name] >= 200 then
+					if cuffdamage[name] >= 400 then
 						local privs = minetest.get_player_privs(name)
 						if cuffedplayers[name] == true then
 							privs.interact = true
