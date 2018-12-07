@@ -134,7 +134,10 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			minetest.after(0.2, function()
 				if players[playerName]["state"] == 0 then
 			  		privs.interact = players[playerName].hasinteract
-					player:hud_set_flags({wielditem=true})
+					if players[playerName].haswield then
+						player:hud_set_flags({wielditem=true})
+						players[playerName].haswield = nil
+					end
 					minetest.set_player_privs(playerName, privs)
 				end
 			end)
@@ -145,7 +148,10 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			if player:hud_get_flags().wielditem then
 				players[playerName].hasinteract = privs.interact
 				privs.interact = nil
-				player:hud_set_flags({wielditem=false})
+				if player:hud_get_flags().wielditem then
+					players[playerName].haswield = true
+					player:hud_set_flags({wielditem=false})
+				end
 				minetest.set_player_privs(playerName, privs)
 			end
 		end
