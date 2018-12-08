@@ -132,7 +132,7 @@ local function finishcuff(player, pName, oldpos)
 		else
 			wearcalc = 0
 		end
-		minetest.add_item(pPlayer:get_pos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
+		minetest.add_item(pPlayer:getpos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
 		cuffdamage[pName] = nil
 		return
 	end
@@ -165,6 +165,12 @@ local function startcuff(stack, player, pointedThing)
 					minetest.chat_send_player(name, "You are cuffing "..pName..".")
 					local oldpos = obj:getpos()
 					minetest.after(6, finishcuff, player, pName, oldpos)
+					minetest.sound_play("cuff", {
+						pos = obj:getpos(),
+						max_hear_distance = 20,
+						gain = 1.0,
+						object = obj
+					})
 					return itemstack
 				end
 			else
@@ -197,8 +203,13 @@ local function uncuff(stack, player, pointedThing)
 				else
 					wearcalc = 0
 				end
-				
-				minetest.add_item(player:get_pos(), player_inv:add_item("main", {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""}))
+				minetest.sound_play("uncuff", {
+					pos = obj:getpos(),
+					max_hear_distance = 20,
+					gain = 1.0,
+					object = obj
+				})
+				minetest.add_item(player:getpos(), player_inv:add_item("main", {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""}))
 				cuffdamage[pName] = nil
 			end
 		end
@@ -245,6 +256,14 @@ minetest.register_globalstep(function(dtime)
 						cuffdamage[name] = 0
 					end
 					cuffdamage[name] = cuffdamage[name] + math.random(1,3)
+					if math.random(1,5) == 1 then
+						minetest.sound_play("wriggle", {
+							pos = player:getpos(),
+							max_hear_distance = 20,
+							gain = 1.0,
+							object = player
+						})
+					end
 					if cuffdamage[name] >= 400 then
 						local privs = minetest.get_player_privs(name)
 						if cuffedplayers[name] == true then
@@ -255,6 +274,12 @@ minetest.register_globalstep(function(dtime)
 						cuffdamage[name] = nil
 						minetest.set_player_privs(name, privs)
 						player:hud_set_flags({wielditem=true})
+						minetest.sound_play("uncuff", {
+							pos = player:getpos(),
+							max_hear_distance = 20,
+							gain = 1.0,
+							object = player
+						})
 						cuffedplayers[name] = nil
 						modstorage:set_string("cuffedplayers", minetest.serialize(cuffedplayers))
 					end
