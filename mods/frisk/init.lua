@@ -167,7 +167,7 @@ local function startcuff(stack, player, pointedThing)
 					minetest.after(6, finishcuff, player, pName, oldpos)
 					minetest.sound_play("cuff", {
 						pos = obj:getpos(),
-						max_hear_distance = 20,
+						max_hear_distance = 10,
 						gain = 1.0,
 						object = obj
 					})
@@ -205,11 +205,11 @@ local function uncuff(stack, player, pointedThing)
 				end
 				minetest.sound_play("uncuff", {
 					pos = obj:getpos(),
-					max_hear_distance = 20,
+					max_hear_distance = 10,
 					gain = 1.0,
 					object = obj
 				})
-				minetest.add_item(player:getpos(), player_inv:add_item("main", {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""}))
+				minetest.add_item(obj:getpos(), player_inv:add_item("main", {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""}))
 				cuffdamage[pName] = nil
 			end
 		end
@@ -259,7 +259,7 @@ minetest.register_globalstep(function(dtime)
 					if math.random(1,5) == 1 then
 						minetest.sound_play("wriggle", {
 							pos = player:getpos(),
-							max_hear_distance = 20,
+							max_hear_distance = 10,
 							gain = 1.0,
 							object = player
 						})
@@ -276,7 +276,7 @@ minetest.register_globalstep(function(dtime)
 						player:hud_set_flags({wielditem=true})
 						minetest.sound_play("uncuff", {
 							pos = player:getpos(),
-							max_hear_distance = 20,
+							max_hear_distance = 10,
 							gain = 1.0,
 							object = player
 						})
@@ -291,6 +291,31 @@ minetest.register_globalstep(function(dtime)
 				end
 			end
 		end
+	end
+end)
+
+minetest.register_on_dieplayer(function(player)
+	local pName = player:get_player_name()
+	if cuffedplayers[pName] ~= nil then
+		local privs = minetest.get_player_privs(pName)
+		if cuffedplayers[pName] == true then
+			privs.interact = true
+		else
+			privs.interact = nil
+		end
+		minetest.set_player_privs(pName, privs)
+		player:hud_set_flags({wielditem=true})
+		cuffedplayers[pName] = nil
+		modstorage:set_string("cuffedplayers", minetest.serialize(cuffedplayers))
+		local player_inv = player:get_inventory()
+		local wearcalc
+		if cuffdamage[pName] then
+			wearcalc = cuffdamage[pName]/400*65535
+		else
+			wearcalc = 0
+		end
+		minetest.add_item(player:getpos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
+		cuffdamage[pName] = nil
 	end
 end)
 
