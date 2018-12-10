@@ -6,7 +6,7 @@ shooter = {
 	update_time = 0,
 	reload_time = 0,
 }
-
+local cars = {"black", "blue", "brown", "cyan", "dark_green", "dark_grey", "green", "grey", "magenta", "orange", "pink", "red", "violet", "white", "yellow"}
 SHOOTER_ADMIN_WEAPONS = false
 SHOOTER_ENABLE_BLASTING = false
 SHOOTER_ENABLE_CROSSBOW = true
@@ -28,7 +28,10 @@ SHOOTER_OBJECT_UPDATE_TIME = 0.25
 SHOOTER_ROUNDS_UPDATE_TIME = 0.4
 SHOOTER_PLAYER_OFFSET = {x=0, y=1, z=0}
 SHOOTER_ENTITY_OFFSET = {x=0, y=0, z=0}
-SHOOTER_ENTITIES = {"creatures:zombie", "creatures:ghost", "creatures:milzombie", "creatures:sheep", "creatures:chicken"}
+SHOOTER_ENTITIES = {"carts:cart", "boats:boat"}
+for id, color in pairs(cars) do
+	table.insert(SHOOTER_ENTITIES, "vehicle_mash:car_"..color)
+end
 for k, v in pairs(minetest.registered_entities) do
 	if string.find(k, "^mobs") then
 		table.insert(SHOOTER_ENTITIES, k)
