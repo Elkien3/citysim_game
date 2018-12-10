@@ -107,11 +107,16 @@ function vehicle_mash.register_vehicle(name, def)
 						minetest.sound_stop(self.enginesound)
 						self.enginesound = nil
 				-end--]]
-				end
-				elseif self.driver or self.passenger then
+				elseif (self.driver or self.passenger)
+					and (puncher:get_wielded_item():get_name() == "")
+					and (time_from_last_punch >= tool_capabilities.full_punch_interval)
+					and math.random(1, 4) == 1
+				then
+				
 					if self.driver then
 						lib_mount.detach(self.driver, self.offset)
-					else
+					end
+					if self.passenger then
 						lib_mount.detach(self.passenger, self.offset)
 					end
 				end
@@ -120,6 +125,7 @@ function vehicle_mash.register_vehicle(name, def)
 					self.enginesound = nil
 				end
 				return
+			end
 			--[[local punchername = puncher:get_player_name()
 			if self.owner == punchername or minetest.get_player_privs(punchername).protection_bypass then
 			  self.removed = true
