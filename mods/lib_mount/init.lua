@@ -327,12 +327,12 @@ function lib_mount.drive(entity, dtime, is_mob, moving_anim, stand_anim, jump_he
 						end
 					end
 				end
-				minetest.add_item(pos, entity.drop_on_destroy)
+				--[[minetest.add_item(pos, entity.drop_on_destroy)
 				entity.removed = true
 				-- delay remove to ensure player is detached
 				minetest.after(0.1, function()
 					entity.object:remove()
-				end)
+				end)--]]
 			end
 		end
 	end
