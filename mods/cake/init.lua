@@ -49,10 +49,12 @@ for i, size in ipairs(sizes) do
 		on_rightclick = function(pos, node, clicker)
 		--	clicker:set_hp(clicker:get_hp() + 1)
 			local name = clicker:get_player_name()
-			local h = tonumber(hud.hunger[name])
-			h = h + 2
-			hud.hunger[name] = h
-			hud.set_hunger(clicker)
+			local h = tonumber(hbhunger.get_hunger_raw(clicker)) + 2
+			if h > 30 then
+				h = 30
+			end
+			hbhunger.hunger[name] = h
+			hbhunger.set_hunger_raw(clicker)
 			if i < #sizes then
 				minetest.swap_node(pos, {name="cake:cake_"..i})
 			else
