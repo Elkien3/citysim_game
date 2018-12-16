@@ -9,6 +9,7 @@ local PTIMEOUT = 120
 
 -- Detect optional mods.
 local technic_path = minetest.get_modpath("technic")
+local xdecor_path = minetest.get_modpath("xdecor")
 local chains_path = minetest.get_modpath("chains")
 local homedecor_path = minetest.get_modpath("homedecor")
 local armor_path = minetest.get_modpath("3d_armor")
@@ -907,6 +908,34 @@ if technic_path and chains_path then
             {"chains:chain", "default:diamond", "chains:chain"}
         },
     })
+elseif technic_path and xdecor_path then
+   -- add alternative recipe with xdecor rope
+       minetest.register_craft({
+        output = "elevator:elevator",
+        recipe = {
+            {"technic:cast_iron_ingot", "xdecor:rope", "technic:cast_iron_ingot"},
+            {"technic:cast_iron_ingot", "default:mese_crystal", "technic:cast_iron_ingot"},
+            {"technic:stainless_steel_ingot", "default:glass", "technic:stainless_steel_ingot"},
+        },
+    })
+
+    minetest.register_craft({
+        output = "elevator:shaft",
+        recipe = {
+            {"technic:cast_iron_ingot", "default:glass"},
+            {"default:glass", "xdecor:rope"},
+        },
+    })
+
+    minetest.register_craft({
+        output = "elevator:motor",
+        recipe = {
+            {"default:diamond", "technic:control_logic_unit", "default:diamond"},
+            {"default:steelblock", "technic:motor", "default:steelblock"},
+            {"xdecor:rope", "default:diamond", "xdecor:rope"}
+        },
+    })
+
 elseif technic_path and farming and farming.mod and farming.mod == "redo" then
    -- add alternative recipe with hemp rope
        minetest.register_craft({
@@ -934,7 +963,6 @@ elseif technic_path and farming and farming.mod and farming.mod == "redo" then
             {"farming:hemp_rope", "default:diamond", "farming:hemp_rope"}
         },
     })
-
    -- Recipes without technic & chains required.
 -- Recipes for default dependency fallback.
 else
