@@ -134,6 +134,7 @@ function lib_mount.attach(entity, player, is_passenger)
 	minetest.after(0.2, function()
 		default.player_set_animation(player, "sit" , 30)
 	end)
+	entity.mouselook = true
 	player:set_look_yaw(entity.object:getyaw() - rot_view)
 end
 
@@ -169,12 +170,12 @@ function lib_mount.drive(entity, dtime, is_mob, moving_anim, stand_anim, jump_he
 	-- process controls
 	if entity.driver then
 		local ctrl = entity.driver:get_player_control()
-		if ctrl.aux1 then
+		--[[if ctrl.aux1 then
 			if aux_timer >= 0.2 then
 				entity.mouselook = not entity.mouselook
 				aux_timer = 0
 			end
-		end
+		end--]]
 		if ctrl.up then
 			if get_sign(entity.v) >= 0 then
 				entity.v = entity.v + entity.accel/10
