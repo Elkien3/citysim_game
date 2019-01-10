@@ -6,7 +6,7 @@ rule_table[language] = {
 secondaryname = "русский", --secondary name, usually the language name in english, or in the actual language.
 
 rules = [[
-Rules:
+Правила:
 
 1. PVP разрешен, RDM не разрешен.
 2. Не будь * слишком * жестоким, разрушительным или неуместным
