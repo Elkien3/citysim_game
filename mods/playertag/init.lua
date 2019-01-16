@@ -112,4 +112,5 @@ end)
 
 minetest.register_on_leaveplayer(function (player)
 	remove_tag(player)
+	blueboi[player:get_player_name()] = nil
 end)
