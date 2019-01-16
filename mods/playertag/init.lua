@@ -3,12 +3,15 @@ local nametags = {}
 local function add_tag(player)
 	local pos = player:get_pos()
 	local ent = minetest.add_entity(pos, "playertag:tag")
-
+	local name = player:get_player_name()
 	local color = "W"
+	if minetest.get_modpath("mumblereward") ~= nil then
+		if mumblereward_players[name] then color = "B" end
+	end
 	local texture = "npcf_tag_bg.png"
-	local x = math.floor(134 - ((player:get_player_name():len() * 11) / 2))
+	local x = math.floor(134 - ((name:len() * 11) / 2))
 	local i = 0
-	player:get_player_name():gsub(".", function(char)
+	name:gsub(".", function(char)
 		if char:byte() > 64 and char:byte() < 91 then
 			char = "U"..char
 		end
@@ -19,7 +22,7 @@ local function add_tag(player)
 
 	if ent ~= nil then
 		 ent:set_attach(player, "", {x=0,y=9,z=0}, {x=0,y=0,z=0})
-		 nametags[player:get_player_name()] = ent
+		 nametags[name] = ent
 		 ent = ent:get_luaentity()
 		 ent.wielder = player
 	end
@@ -70,6 +73,11 @@ minetest.register_entity("playertag:tag", nametag)
 
 local function step()
 	for _, player in pairs(minetest.get_connected_players()) do
+		if minetest.get_modpath("mumblereward") ~= nil then
+			if mumblereward_players[player:get_player_name()] then
+				remove_tag(player)
+			end
+		end
 		if nametags[player:get_player_name()]:get_luaentity() == nil then
 			add_tag(player)
 			--minetest.chat_send_all("tag made for "..player:get_player_name())
