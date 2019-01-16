@@ -1,4 +1,5 @@
 local nametags = {}
+local blueboi = {} --to only remove change the white tag to blue for mumble players once
 
 local function add_tag(player)
 	local pos = player:get_pos()
@@ -74,8 +75,10 @@ minetest.register_entity("playertag:tag", nametag)
 local function step()
 	for _, player in pairs(minetest.get_connected_players()) do
 		if minetest.get_modpath("mumblereward") ~= nil then
-			if mumblereward_players[player:get_player_name()] then
+			if mumblereward_players[player:get_player_name()] and not blueboi[player:get_player_name()] then
+				blueboi[player:get_player_name()] = true
 				remove_tag(player)
+				add_tag(player)
 			end
 		end
 		if nametags[player:get_player_name()]:get_luaentity() == nil then
