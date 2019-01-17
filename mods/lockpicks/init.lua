@@ -22,7 +22,7 @@ minetest.register_tool("lockpicks:lockpick_steel", {
 	inventory_image = "steel_lockpick.png",
 	tool_capabilities = {
 		max_drop_level = 2,
-		groupcaps = {locked={maxlevel=2, uses=20, times={[2]=7.00,[3]=4.50}}}
+		groupcaps = {locked={maxlevel=1, uses=20, times={[1]=6.00}}}
 	}
 })
 minetest.register_tool("lockpicks:lockpick_copper", {
@@ -30,7 +30,7 @@ minetest.register_tool("lockpicks:lockpick_copper", {
 	inventory_image = "copper_lockpick.png",
 	tool_capabilities = {
 		max_drop_level = 3,
-		groupcaps = {locked={maxlevel=2, uses=30, times={[2]=6.00,[3]=4.00}}}
+		groupcaps = {locked={maxlevel=1, uses=30, times={[1]=5.50}}}
 	}
 })
 if has_moreores then
@@ -39,7 +39,7 @@ minetest.register_tool("lockpicks:lockpick_silver", {
 	inventory_image = "silver_lockpick.png",
 	tool_capabilities = {
 		max_drop_level = 4,
-		groupcaps = {locked={maxlevel=3, uses=40, times={[1]=20.00,[2]=5.00,[3]=3.00}}}
+		groupcaps = {locked={maxlevel=1, uses=40, times={[1]=3.00}}}
 	}
 })
 end
@@ -48,7 +48,7 @@ minetest.register_tool("lockpicks:lockpick_gold", {
 	inventory_image = "gold_lockpick.png",
 	tool_capabilities = {
 		max_drop_level = 5,
-		groupcaps = {locked={maxlevel=3, uses=50, times={[1]=15.00,[2]=4.50,[3]=2.00}}}
+		groupcaps = {locked={maxlevel=2, uses=50, times={[2]=12.00,[1]=2.00}}}
 	}
 })
 if has_moreores then
@@ -57,7 +57,7 @@ minetest.register_tool("lockpicks:lockpick_mithril", {
 	inventory_image = "mithril_lockpick.png",
 	tool_capabilities = {
 		max_drop_level = 6,
-		groupcaps = {locked={maxlevel=3, uses=50, times={[1]=10.00,[2]=4.00,[3]=1.00}}}
+		groupcaps = {locked={maxlevel=3, uses=50, times={[3]=20.00,[2]=8.00,[1]=1.00}}}
 	}
 })
 end
