@@ -230,6 +230,22 @@ protector.can_dig = function(r, pos, digger, onlyowner, infolevel)
 				else
 					minetest.chat_send_player(digger,
 						S("This area is owned by @1", owner) .. "!")
+					
+					--anti-glitch measures
+					local player = minetest.get_player_by_name(digger)
+					if player then
+						-- if digging below player, move up to avoid falling through hole
+						local pla_pos = player:get_pos()
+						if player:get_look_vertical() > .8 then
+							player:setpos({
+								x = pla_pos.x,
+								y = pla_pos.y + 0.4,
+								z = pla_pos.z
+							})
+						else
+							player:setpos(pla_pos)
+						end
+					end
 
 					return false
 				end
