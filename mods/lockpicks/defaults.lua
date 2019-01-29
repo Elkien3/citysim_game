@@ -27,7 +27,7 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 				meta:set_string("owner", "")
 				meta:set_string("infotext", newinfotext)
 				minetest.chat_send_player(digger:get_player_name(), "You picked the lock!")
-			elseif rand < 4 then
+			elseif rand == 2 then
 				wielditem:clear()
 				digger:set_wielded_item(wieldeditem)
 				minetest.chat_send_player(digger:get_player_name(), "Your lockpick broke!")
