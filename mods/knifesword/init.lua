@@ -28,3 +28,15 @@ minetest.override_item("default:sword_diamond", {
 	inventory_image = "default_tool_diamondsword.png",
 	range = 2,
 })
+if minetest.get_modpath("moreores") ~= nil then
+	minetest.override_item("moreores:sword_mithril", {
+		description = "Mithril Knife",
+		inventory_image = "moreores_tool_mithrilsword.png",
+		range = 2,
+	})
+	minetest.override_item("moreores:sword_silver", {
+		description = "Silver Knife",
+		inventory_image = "moreores_tool_silversword.png",
+		range = 2,
+	})
+end
