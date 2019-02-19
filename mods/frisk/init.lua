@@ -216,6 +216,15 @@ local function uncuff(stack, player, pointedThing)
 	end
 end
 
+minetest.register_craft({
+	output = 'frisk:screen',
+	recipe = {
+		{'', 'default:steel_ingot', ''},
+		{'default:steel_ingot', 'default:glass', 'default:steel_ingot'},
+		{'', 'default:steel_ingot',''},
+	}
+})
+
 minetest.register_tool('frisk:handcuffs', {
 	description = ('Handcuffs'),
 	inventory_image = 'frisk_handcuffs.png',
