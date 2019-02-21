@@ -121,7 +121,7 @@ minetest.register_globalstep(function(dtime)
 			end
 
 			--Adjust player states
-			if players[playerName]["shouldSprint"] == true and players[playerName].sprinting == false then --Stopped
+			if players[playerName]["shouldSprint"] == true and players[playerName].sprinting == false and playerInfo["stamina"] > SPRINT_STAMINA/4 then --Stopped
 				setSprinting(playerName, true)
 			elseif players[playerName]["shouldSprint"] == false and players[playerName].sprinting == true then
 				setSprinting(playerName, false)
