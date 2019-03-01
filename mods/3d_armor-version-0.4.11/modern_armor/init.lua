@@ -12,7 +12,7 @@ armor:register_armor("modern_armor:vest_civilian", {
 	inventory_image = "modern_armor_inv_vest_civilian.png",
 	groups = {armor_torso=1, armor_heal=0, armor_use=800,
 		physics_speed=-0.04, physics_gravity=0.04},
-	armor_groups = {fleshy=7},
+	armor_groups = {fleshy=10},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("modern_armor:vest_police", {
@@ -20,7 +20,7 @@ armor:register_armor("modern_armor:vest_police", {
 	inventory_image = "modern_armor_inv_vest_police.png",
 	groups = {armor_torso=1, armor_heal=0, armor_use=800,
 		physics_speed=-0.04, physics_gravity=0.04},
-	armor_groups = {fleshy=7},
+	armor_groups = {fleshy=12},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("modern_armor:vest_swat", {
@@ -28,7 +28,7 @@ armor:register_armor("modern_armor:vest_swat", {
 	inventory_image = "modern_armor_inv_vest_swat.png",
 	groups = {armor_torso=1, armor_heal=0, armor_use=800,
 		physics_speed=-0.08, physics_gravity=0.08},
-	armor_groups = {fleshy=10},
+	armor_groups = {fleshy=20},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("modern_armor:vest_military", {
@@ -36,7 +36,7 @@ armor:register_armor("modern_armor:vest_military", {
 	inventory_image = "modern_armor_inv_vest_military.png",
 	groups = {armor_torso=1, armor_heal=0, armor_use=800,
 		physics_speed=-0.08, physics_gravity=0.08},
-	armor_groups = {fleshy=10},
+	armor_groups = {fleshy=20},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 
