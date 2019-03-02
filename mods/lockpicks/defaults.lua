@@ -36,8 +36,18 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 			end
 			return false
 		else
-			local inv = meta:get_inventory()
-			if inv:is_empty("main") and default.can_interact_with_node(digger, pos) then
+			if not default.can_interact_with_node(digger, pos) then
+				local pla_pos = digger:get_pos()
+				if digger:get_look_vertical() > .8 then
+					digger:setpos({
+					x = pla_pos.x,
+					y = pla_pos.y + 0.4,
+					z = pla_pos.z
+					})
+				else
+					digger:setpos(pla_pos)
+				end
+			elseif meta:get_inventory():is_empty("main") then
 				minetest.remove_node(pos)
 				digger:get_inventory():add_item('main', itemname or nodename)
 			end
