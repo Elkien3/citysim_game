@@ -60,8 +60,8 @@ minetest.register_node("digilines:rtc", {
  minetest.register_craft({
 	 output = "digilines:rtc",
 	 recipe = {
-		{"",                    "default:glass",                            ""},
-		{"default:stick",       "mesecons_microcontroller:microcontroller", "default:stick"},
-		{"default:steel_ingot", "digilines:wire_std_00000000",              "default:steel_ingot"}
+		{"mesecons_blinkyplant:blinky_plant_off", "default:glass",                                "mesecons_blinkyplant:blinky_plant_off"},
+		{"default:stick",                         "mesecons_microcontroller:microcontroller0000", "default:stick"},
+		{"default:steel_ingot",                   "digilines:wire_std_00000000",                  "default:steel_ingot"}
 	 }
  })
