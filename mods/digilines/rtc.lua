@@ -61,7 +61,7 @@ minetest.register_node("digilines:rtc", {
 	 output = "digilines:rtc",
 	 recipe = {
 		{"mesecons_blinkyplant:blinky_plant_off", "default:glass",                                "mesecons_blinkyplant:blinky_plant_off"},
-		{"default:stick",                         "mesecons_luacontroller:luacontroller",         "default:stick"},
+		{"default:stick",                         "mesecons_luacontroller:luacontroller0000",     "default:stick"},
 		{"default:steel_ingot",                   "digilines:wire_std_00000000",                  "default:steel_ingot"}
 	 }
  })
