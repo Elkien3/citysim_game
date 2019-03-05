@@ -265,7 +265,7 @@ minetest.register_chatcommand("rules",{
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	local language = rule_language[name] or interact.default_language
-	if not minetest.get_player_privs(name).interact then
+	if not minetest.get_player_privs(name).interact and minetest.check_player_privs(name, interact.priv) then
 		if interact.screen1 ~= false then
 			minetest.show_formspec(name, "interact_welcome", make_formspec(player, language))
 		elseif interact.screen2 ~= false then

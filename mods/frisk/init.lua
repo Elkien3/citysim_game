@@ -94,26 +94,17 @@ minetest.register_tool('frisk:screen', {
 --HANDCUFFS
 
 local cuffedplayers = minetest.deserialize(modstorage:get_string("cuffedplayers")) or {}
-local hasshout = {}
+local hasshout = minetest.deserialize(modstorage:get_string("hasshout")) or {}
 minetest.register_on_joinplayer(function(player)
 	local playerName = player:get_player_name()
 	if cuffedplayers[playerName] ~= nil then
 		player:hud_set_flags({wielditem=false})
-		minetest.after(1, function()
-			local privs = minetest.get_player_privs(playerName)
-			privs.shout = hasshout[playerName]
-			hasshout[playerName] = nil
-			minetest.set_player_privs(playerName, privs)
-		end)
 	end
 end)
 
 minetest.register_on_prejoinplayer(function(playerName, ip)
 	if cuffedplayers[playerName] ~= nil then
 		local privs = minetest.get_player_privs(playerName)
-		if hasshout[playerName] == nil then
-			hasshout[playerName] = privs.shout
-		end
 		privs.shout = nil
 		privs.interact = nil
 		minetest.set_player_privs(playerName, privs)
@@ -134,9 +125,19 @@ local function finishcuff(player, pName, oldpos)
 		end
 		minetest.add_item(pPlayer:getpos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
 		cuffdamage[pName] = nil
+		modstorage:set_string("cuffdamage", minetest.serialize(cuffdamage))
 		return
 	end
 	local privs = minetest.get_player_privs(pName)
+	
+	if privs.shout then
+		hasshout[pName] = true
+	else
+		hasshout[pName] = false
+	end
+	privs.shout = nil
+	modstorage:set_string("hasshout", minetest.serialize(hasshout))
+	
 	if privs.interact then
 		cuffedplayers[pName] = true
 	else
@@ -171,6 +172,7 @@ local function startcuff(stack, player, pointedThing)
 						gain = 1.0,
 						object = obj
 					})
+					modstorage:set_string("cuffdamage", minetest.serialize(cuffdamage))
 					return itemstack
 				end
 			else
@@ -192,6 +194,15 @@ local function uncuff(stack, player, pointedThing)
 				else
 					privs.interact = nil
 				end
+				
+				if hasshout[pName] == true then
+					privs.shout = true
+				else
+					privs.shout = nil
+				end
+				hasshout[pName] = nil
+				modstorage:set_string("hasshout", minetest.serialize(hasshout))
+				
 				minetest.set_player_privs(pName, privs)
 				obj:hud_set_flags({wielditem=true})
 				cuffedplayers[pName] = nil
@@ -211,6 +222,7 @@ local function uncuff(stack, player, pointedThing)
 				})
 				minetest.add_item(obj:getpos(), player_inv:add_item("main", {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""}))
 				cuffdamage[pName] = nil
+				modstorage:set_string("cuffdamage", minetest.serialize(cuffdamage))
 			end
 		end
 	end
@@ -280,6 +292,14 @@ minetest.register_globalstep(function(dtime)
 						else
 							privs.interact = nil
 						end
+						if hasshout[name] == true then
+							privs.shout = true
+						else
+							privs.shout = nil
+						end
+						hasshout[name] = nil
+						modstorage:set_string("hasshout", minetest.serialize(hasshout))
+						
 						cuffdamage[name] = nil
 						minetest.set_player_privs(name, privs)
 						player:hud_set_flags({wielditem=true})
@@ -312,6 +332,14 @@ minetest.register_on_dieplayer(function(player)
 		else
 			privs.interact = nil
 		end
+		if hasshout[pName] == true then
+			privs.shout = true
+		else
+			privs.shout = nil
+		end
+		hasshout[pName] = nil
+		modstorage:set_string("hasshout", minetest.serialize(hasshout))
+		
 		minetest.set_player_privs(pName, privs)
 		player:hud_set_flags({wielditem=true})
 		cuffedplayers[pName] = nil
@@ -325,6 +353,7 @@ minetest.register_on_dieplayer(function(player)
 		end
 		minetest.add_item(player:getpos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
 		cuffdamage[pName] = nil
+		modstorage:set_string("cuffdamage", minetest.serialize(cuffdamage))
 	end
 end)
 
