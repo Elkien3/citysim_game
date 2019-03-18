@@ -1,5 +1,5 @@
 local mod_storage = minetest.get_mod_storage()
-local defaultskin = {haircolor = "513C24", hairtype = "1", facecolor = "513C24", facetype = "1", eyecolor = "513C24", eyetype = "3", skintype = "1", skincolor = "e6b27e"}
+local defaultskin = {haircolor = "513C24", hairtype = "1", facecolor = "513C24", facetype = "1", eyecolor = "513C24", eyetype = "3", skintype = "0", skincolor = "e6b27e"}
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 local function number_of_textures(type)
