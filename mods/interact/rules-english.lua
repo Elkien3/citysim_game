@@ -8,7 +8,7 @@ secondaryname = nil, --secondary name, usually the language name in english, or 
 rules = [[
 Rules:
 
-1. PVP is allowed, excessive RDM is not.
+1. PVP is allowed, excessive RDM is not. Do not Combat Log.
 2. Don't be *overly* cruel, destructive, or inappropriate.
 3. Keep swearing to a minimum, and don't spam.
 4. No "Dating" in global chat.
