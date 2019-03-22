@@ -1,5 +1,5 @@
 players_income = {}
-local playerlocs
+local playerlocs = {}
 local timer = 0
 local function income()
     for _,player in ipairs(minetest.get_connected_players()) do
@@ -13,13 +13,13 @@ local function income()
 		if playerlocs[name] and playerlocs[name] == player:get_pos() then
 			givetoplayer = false
 		end
+		playerlocs[name] = player:get_pos()
 		if givetoplayer then
 			local inv = player:get_inventory()
 			inv:add_item("main", "currency:minegeld")
 			minetest.log("info", "[Currency] basic income for "..name.."")
 		end
     end
-	playerlocs[name] = player:get_pos()
 	minetest.after(600, income)
 	
 end
