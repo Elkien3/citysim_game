@@ -10,7 +10,7 @@ local function income()
 				givetoplayer = false 
 			end
 		end
-		if playerlocs[name] and playerlocs[name] == player:get_pos() then
+		if playerlocs[name] and vector.equals(playerlocs[name], player:get_pos()) then
 			givetoplayer = false
 		end
 		playerlocs[name] = player:get_pos()
