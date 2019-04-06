@@ -42,7 +42,7 @@ armor:register_armor("hazmat_suit:suit_hazmat", {
 	groups = {armor_head=1, armor_torso=1, armor_legs=1, armor_feet=1,
 		armor_fire=4, armor_water=1, armor_use=1000,
 		physics_jump=-0.1, physics_speed=-0.2, physics_gravity=0.1},
-	armor_groups = {fleshy=10, radiation=50},
+	armor_groups = {fleshy=10, radiation=250},
 	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
 })
 
