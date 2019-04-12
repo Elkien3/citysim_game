@@ -39,4 +39,13 @@ if minetest.get_modpath("moreores") ~= nil then
 		inventory_image = "moreores_tool_silversword.png",
 		range = 2,
 	})
+	minetest.override_item("moreores:pick_mithril", {
+		tool_capabilities = {damage_groups = {fleshy = 6}}
+	})
+	minetest.override_item("moreores:shovel_mithril", {
+		tool_capabilities = {damage_groups = {fleshy = 6}}
+	})
+	minetest.override_item("moreores:hoe_mithril", {
+		tool_capabilities = {damage_groups = {fleshy = 6}}
+	})
 end
