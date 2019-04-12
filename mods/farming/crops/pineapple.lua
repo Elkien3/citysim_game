@@ -47,6 +47,7 @@ minetest.register_craftitem("farming:pineapple_juice", {
 	description = S("Pineapple Juice"),
 	inventory_image = "farming_pineapple_juice.png",
 	on_use = minetest.item_eat(4, "vessels:drinking_glass"),
+	groups = {vessel = 1},
 })
 
 minetest.register_craft({
@@ -127,3 +128,12 @@ crop_def.drop = {
 	}
 }
 minetest.register_node("farming:pineapple_8", table.copy(crop_def))
+
+-- add to registered_plants
+farming.registered_plants["farming:pineapple"] = {
+	crop = "farming:pineapple",
+	seed = "farming:pineapple_top",
+	minlight = 13,
+	maxlight = 15,
+	steps = 8
+}

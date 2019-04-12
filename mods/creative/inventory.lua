@@ -112,10 +112,10 @@ function creative.register_tab(name, title, items)
 					list[current_player;main;0,5.85;8,3;8]
 					list[detached:creative_trash;main;4,3.3;1,1;]
 					listring[]
-					button[5.4,3.2;0.8,0.9;creative_prev;<]
-					button[7.25,3.2;0.8,0.9;creative_next;>]
-					button[2.1,3.4;0.8,0.5;creative_search;?]
-					button[2.75,3.4;0.8,0.5;creative_clear;X]
+					image_button[5.4,3.25;0.8,0.8;creative_prev_icon.png;creative_prev;]
+					image_button[7.2,3.25;0.8,0.8;creative_next_icon.png;creative_next;]
+					image_button[2.1,3.25;0.8,0.8;creative_search_icon.png;creative_search;]
+					image_button[2.75,3.25;0.8,0.8;creative_clear_icon.png;creative_clear;]
 					tooltip[creative_search;Search]
 					tooltip[creative_clear;Reset]
 					tooltip[creative_prev;Previous page]
@@ -126,9 +126,7 @@ function creative.register_tab(name, title, items)
 				"field[0.3,3.5;2.2,1;creative_filter;;" .. minetest.formspec_escape(inv.filter) .. "]" ..
 				"listring[detached:creative_" .. player_name .. ";main]" ..
 				"list[detached:creative_" .. player_name .. ";main;0,0;8,3;" .. tostring(start_i) .. "]" ..
-				default.get_hotbar_bg(0,4.7) ..
-				default.gui_bg .. default.gui_bg_img .. default.gui_slots
-				.. creative.formspec_add, false)
+				default.get_hotbar_bg(0,4.7) .. creative.formspec_add, false)
 		end,
 		on_enter = function(self, player, context)
 			local player_name = player:get_player_name()

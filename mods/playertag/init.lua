@@ -22,7 +22,7 @@ local function add_tag(player)
 	ent:set_properties({ textures={texture} })
 
 	if ent ~= nil then
-		 ent:set_attach(player, "", {x=0,y=9,z=0}, {x=0,y=0,z=0})
+		 ent:set_attach(player, "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
 		 nametags[name] = ent
 		 ent = ent:get_luaentity()
 		 ent.wielder = player
@@ -66,7 +66,7 @@ function nametag:on_step(dtime)
 	elseif minetest.get_player_by_name(wielder:get_player_name()) == nil then
 		self.object:remove()
 	else
-		--self.object:set_attach(wielder, "", {x=0,y=9,z=0}, {x=0,y=0,z=0})
+		--self.object:set_attach(wielder, "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
 	end
 end
 
@@ -85,7 +85,7 @@ local function step()
 			add_tag(player)
 			--minetest.chat_send_all("tag made for "..player:get_player_name())
 		else
-			nametags[player:get_player_name()]:set_attach(player, "", {x=0,y=9,z=0}, {x=0,y=0,z=0})
+			nametags[player:get_player_name()]:set_attach(player, "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
 		end
 	end
 

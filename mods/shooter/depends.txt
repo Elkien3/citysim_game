@@ -3,3 +3,4 @@ dye
 tnt
 wool
 mobs?
+gunslinger_rangedweapons?
