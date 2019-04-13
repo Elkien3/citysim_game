@@ -425,6 +425,8 @@ function gunslinger.register_gun(name, def)
 
 	def.unit_wear = math.ceil(max_wear / def.clip_size)
 	def.unit_time = 1 / def.fire_rate
+	
+	def.itemdef.wear_represents = "ammunition"
 
 	guns[name] = def
 	minetest.register_tool(name, def.itemdef)
@@ -445,6 +447,7 @@ end
 function gunslinger.register_magazine(magazine, ammunition, size)
 	minetest.override_item(magazine, {
     groups = {gunslinger_magazine=1},
+	wear_represents = "ammunition"
 	})
 	minetest.register_craft({
 		type = "shapeless",
