@@ -302,6 +302,7 @@ end
 
 local function on_q(itemstack, dropper, pos)
 	local name = itemstack:get_name()
+	if dropper:get_wielded_item():get_name() ~= name then return end
 	local def = gunslinger.get_def(name)
 	local inv = dropper:get_inventory()
 	if inv:room_for_item("main", {name = def.ammo}) then
