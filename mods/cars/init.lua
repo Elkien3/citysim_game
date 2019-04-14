@@ -150,13 +150,25 @@ local function car_step(self, dtime)
 	if driver then
 		local ctrl = driver:get_player_control()
 		local yaw = self.object:getyaw()
-		
+		local sign
+		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
 		if ctrl.up then
-			self.v = self.v + 6*dtime
+			if sign >= 0 then
+				self.v = self.v + 4*dtime
+			else
+				self.v = self.v + 10*dtime
+			end
 		elseif ctrl.down then
-			self.v = self.v - 6*dtime
-		else
+			if sign <= 0 then
+				self.v = self.v - 4*dtime
+			else
+				self.v = self.v - 10*dtime
+			end
+		elseif sign ~= 0 then
 			self.v = self.v - 2*dtime*get_sign(self.v)
+		end
+		if get_sign(self.v) ~= sign and sign ~= 0 then
+			self.v = 0
 		end
 		
 		local abs_v = math.abs(self.v)
@@ -188,19 +200,26 @@ local function car_step(self, dtime)
 		self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
 		self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
 
-		else
-			if math.abs(self.wheelpos) > 0 then
-				local yaw = self.object:getyaw()
-				self.wheelpos = 0
-				self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
-				self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
-				self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
-		
-				self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
-			end
-			self.v = self.v - 2*dtime*get_sign(self.v)
+	else
+		if math.abs(self.wheelpos) > 0 then
+			local yaw = self.object:getyaw()
+			self.wheelpos = 0
+			self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
+			self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
+			self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 		end
-	if math.abs(self.v) < .2 then
+		local sign
+		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
+		if sign ~= 0 then
+			self.v = self.v - 2*dtime*get_sign(self.v)
+			if get_sign(self.v) ~= sign then
+				self.v = 0
+			end
+		end
+	end
+	
+	if math.abs(self.v) < .05 then
 		self.object:setvelocity({x = 0, y = 0, z = 0})
 		self.v = 0
 		if self.wheelsound then
