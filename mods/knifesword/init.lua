@@ -33,19 +33,25 @@ if minetest.get_modpath("moreores") ~= nil then
 		description = "Mithril Knife",
 		inventory_image = "moreores_tool_mithrilsword.png",
 		range = 2,
+		tool_capabilities = {
+				full_punch_interval = 1,
+				damage_groups = {fleshy = 7},
+				fleshy = {times = {[2] = 0.65, [3] = 0.25}, uses = 200, maxlevel= 2},
+				snappy = {times = {[2] = 0.70, [3] = 0.25}, uses = 200, maxlevel= 2},
+				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
+			},
 	})
 	minetest.override_item("moreores:sword_silver", {
 		description = "Silver Knife",
 		inventory_image = "moreores_tool_silversword.png",
 		range = 2,
+		tool_capabilities = {
+				full_punch_interval = .5,
+				damage_groups = {fleshy = 6},
+				fleshy = {times = {[2] = 0.65, [3] = 0.25}, uses = 200, maxlevel= 2},
+				snappy = {times = {[2] = 0.70, [3] = 0.25}, uses = 200, maxlevel= 2},
+				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
+			},
 	})
-	minetest.override_item("moreores:pick_mithril", {
-		tool_capabilities = {damage_groups = {fleshy = 6}}
-	})
-	minetest.override_item("moreores:shovel_mithril", {
-		tool_capabilities = {damage_groups = {fleshy = 6}}
-	})
-	minetest.override_item("moreores:hoe_mithril", {
-		tool_capabilities = {damage_groups = {fleshy = 6}}
 	})
 end

@@ -269,7 +269,7 @@ local oredefs = {
 			},
 		},
 		full_punch_interval = 1.0,
-		damage_groups = {fleshy = 6},
+		damage_groups = {fleshy = 4},
 	},
 	mithril = {
 		description = "Mithril",
@@ -300,8 +300,8 @@ local oredefs = {
 				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
 			}
 		},
-		full_punch_interval = 0.45,
-		damage_groups = {fleshy = 9},
+		full_punch_interval = 1,
+		damage_groups = {fleshy = 5},
 	}
 }
 
