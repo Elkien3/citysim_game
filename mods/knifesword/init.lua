@@ -53,5 +53,4 @@ if minetest.get_modpath("moreores") ~= nil then
 				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
 			},
 	})
-	})
 end
