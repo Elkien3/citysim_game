@@ -286,7 +286,7 @@ local function car_step(self, dtime)
 		self.timer1 = 0
 		end
 	end
-	self.timer2 = self.timer2 + dtime
+	--[[self.timer2 = self.timer2 + dtime
 	if self.timer2 > 1.5-self.v/max_speed*1.1 then
 		if math.abs(self.v) > .2 then
 			if math.abs(velocity.y) < .1 then 
@@ -307,7 +307,7 @@ local function car_step(self, dtime)
 			})
 		end
 		self.timer2 = 0
-	end
+	end--]]
 end
 
 local carlist = {"black", "blue", "brown", "cyan", 
