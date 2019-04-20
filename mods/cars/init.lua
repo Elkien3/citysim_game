@@ -191,11 +191,11 @@ local function car_step(self, dtime)
 				self.wheelpos = 0
 			end
 		end
-		--[[self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
-		self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
-		self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+		--self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
+		--self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
+		--self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
 		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
-		
+		--[[
 		self.trunk:set_detach()
 		self.trunk:setpos(self.object:getpos())
 		self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
