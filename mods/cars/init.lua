@@ -392,7 +392,7 @@ for id, color in pairs (carlist) do
 			return serializeContents(self.trunkinv)
 		end,
 		on_step = function(self, dtime)
-			car_step(self, dtime)
+			--car_step(self, dtime)
 		end,
 		on_rightclick = function(self, clicker)
 			if not clicker or not clicker:is_player() then
