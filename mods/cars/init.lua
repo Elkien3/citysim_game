@@ -191,24 +191,24 @@ local function car_step(self, dtime)
 				self.wheelpos = 0
 			end
 		end
-		--self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
-		--self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
-		--self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+		self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
+		self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
+		self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
 		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
-		--[[
-		self.trunk:set_detach()
-		self.trunk:setpos(self.object:getpos())
+		
+		--self.trunk:set_detach()
+		--self.trunk:setpos(self.object:getpos())
 		self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
 		self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
-		self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})--]]
+		self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
 
 	else
 		if math.abs(self.wheelpos) > 0 then
 			local yaw = self.object:getyaw()
 			self.wheelpos = 0
-			--self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
-			--self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
-			--self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+			self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
+			self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
+			self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
 			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 		end
 		local sign
@@ -286,7 +286,7 @@ local function car_step(self, dtime)
 		self.timer1 = 0
 		end
 	end
-	--[[self.timer2 = self.timer2 + dtime
+	self.timer2 = self.timer2 + dtime
 	if self.timer2 > 1.5-self.v/max_speed*1.1 then
 		if math.abs(self.v) > .2 then
 			if math.abs(velocity.y) < .1 then 
@@ -307,7 +307,7 @@ local function car_step(self, dtime)
 			})
 		end
 		self.timer2 = 0
-	end--]]
+	end
 end
 
 local carlist = {"black", "blue", "brown", "cyan", 
@@ -392,7 +392,7 @@ for id, color in pairs (carlist) do
 			return serializeContents(self.trunkinv)
 		end,
 		on_step = function(self, dtime)
-			--car_step(self, dtime)
+			car_step(self, dtime)
 		end,
 		on_rightclick = function(self, clicker)
 			if not clicker or not clicker:is_player() then
