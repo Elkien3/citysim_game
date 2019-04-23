@@ -2182,7 +2182,7 @@ minetest.register_node("default:coral_skeleton", {
 
 minetest.register_abm({
     nodenames = {"default:coral_skeleton"},
-    neighbors = {"water"},
+    neighbors = {"default:water_source"},
     interval = 300,
     chance = 5,
     action = function(pos, node)
