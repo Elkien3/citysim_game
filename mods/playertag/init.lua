@@ -1,4 +1,11 @@
-local nametags = {}
+minetest.register_on_joinplayer(function(player)
+		player:set_nametag_attributes({
+			color = {a = 0, r = 0, g = 0, b = 0}
+		})
+		player:set_properties({infotext = player:get_player_name()})
+end)
+
+--[[local nametags = {}
 local blueboi = {} --to only remove change the white tag to blue for mumble players once
 
 local function add_tag(player)
@@ -113,4 +120,4 @@ end)
 minetest.register_on_leaveplayer(function (player)
 	remove_tag(player)
 	blueboi[player:get_player_name()] = nil
-end)
+end)--]]
