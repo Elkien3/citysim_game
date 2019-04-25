@@ -92,7 +92,6 @@ local function reload(stack, player, ammo)
 			inv:remove_item("main", ammo)
 		end
 		minetest.sound_play("gunslinger_loadmag", {
-			pos = player:get_pos(),
 			object = player,
 			max_hear_distance = 30,
 			pitch = math.random(90,110)*.01
@@ -135,6 +134,15 @@ local function fire(stack, player, base_spread, max_spread, pellets)
 	local dir = player:get_look_dir()
 	local p1 = vector.add(player:get_pos(), eye_offset)
 	p1 = vector.add(p1, dir)
+	
+	if def.horizontal_recoil then
+		local h = player:get_look_horizontal()
+		player:set_look_horizontal(h + (math.random(-1*def.horizontal_recoil, def.horizontal_recoil))*.001)
+	end
+	if def.vertical_recoil then
+		local v = player:get_look_vertical()
+		player:set_look_vertical(v - (math.random(def.vertical_recoil/2, def.vertical_recoil))*.001)
+	end
 	
 	--no point in calculating how much you should spread with distance if it's disabled
 	if max_spread then
@@ -200,14 +208,6 @@ local function fire(stack, player, base_spread, max_spread, pellets)
 			end
 
 			target:punch(player, nil, {damage_groups={fleshy=dmg}})
-		end
-		if def.horizontal_recoil then
-			local h = player:get_look_horizontal()
-			player:set_look_horizontal(h + (math.random(-1*def.horizontal_recoil, def.horizontal_recoil))*.001)
-		end
-		if def.vertical_recoil then
-			local v = player:get_look_vertical()
-			player:set_look_vertical(v - (math.random(def.vertical_recoil/2, def.vertical_recoil))*.001)
 		end
 	end
 
