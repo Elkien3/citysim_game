@@ -19,6 +19,7 @@ streets.register_road_surface({
 		cooktime = 2
 	}
 })
+stairs.register_slab("asphalt", "streets:asphalt", { cracky = 3, asphalt = 1 }, { "streets_asphalt.png" }, "Asphalt Slab", default.node_sound_stone_defaults())
 --[[
 streets.register_road_surface({
 	name = "asphalt_red",
@@ -68,6 +69,7 @@ minetest.register_node("streets:sidewalk", {
 	groups = { cracky = 3, stone = 1 },
 	sounds = default.node_sound_stone_defaults()
 })
+stairs.register_slab("sidewalk", "streets:sidewalk", { cracky = 3, stone = 1 }, { "streets_sidewalk.png" }, "Sidewalk Slab", default.node_sound_stone_defaults())
 
 if minetest.get_modpath("moreblocks") or minetest.get_modpath("stairsplus") then
 	stairsplus:register_all("streets", "sidewalk", "streets:sidewalk", {
