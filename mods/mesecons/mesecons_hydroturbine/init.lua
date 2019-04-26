@@ -68,7 +68,7 @@ nodenames = {"mesecons_hydroturbine:hydro_turbine_off"},
 		local waterpos={x=pos.x, y=pos.y+1, z=pos.z}
 		if is_flowing_water(waterpos) then
 			minetest.set_node(pos, {name="mesecons_hydroturbine:hydro_turbine_on"})
-			nodeupdate(pos)
+			--nodeupdate(pos)
 			mesecon.receptor_on(pos)
 		end
 	end,
@@ -82,7 +82,7 @@ nodenames = {"mesecons_hydroturbine:hydro_turbine_on"},
 		local waterpos={x=pos.x, y=pos.y+1, z=pos.z}
 		if not is_flowing_water(waterpos) then
 			minetest.set_node(pos, {name="mesecons_hydroturbine:hydro_turbine_off"})
-			nodeupdate(pos)
+			--nodeupdate(pos)
 			mesecon.receptor_off(pos)
 		end
 	end,

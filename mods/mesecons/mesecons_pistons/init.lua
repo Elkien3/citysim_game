@@ -74,7 +74,7 @@ local piston_remove_pusher = function(pos, node)
 		max_hear_distance = 20,
 		gain = 0.3,
 	})
-	nodeupdate(pusherpos)
+	--nodeupdate(pusherpos)
 end
 
 local piston_on = function(pos, node)
