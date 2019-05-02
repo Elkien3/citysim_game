@@ -79,7 +79,7 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 160.0
+local STAGE_LENGTH_AVG = 160.0*4
 local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG / 6
 
 
