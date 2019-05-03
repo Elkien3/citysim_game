@@ -416,7 +416,7 @@ for id, color in pairs (carlist) do
 				if i == 1 then
 					self.hud = clicker:hud_add({
 						 hud_elem_type = "text",
-						 position      = {x = 0.5, y = 0.9},
+						 position      = {x = 0.5, y = 0.8},
 						 offset        = {x = 0,   y = 0},
 						 text          = tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH",
 						 alignment     = {x = 0, y = 0},  -- center aligned
