@@ -62,6 +62,39 @@ end
 
 --------------------------------
 
+minetest.register_node("gunslinger:flash", {
+	drawtype = "glasslike",
+	tile_images = {"invisible.png"},
+	-- tile_images = {"walking_light_debug.png"},
+	inventory_image = minetest.inventorycube("walking_light.png"),
+	paramtype = "light",
+	walkable = false,
+	is_ground_content = true,
+	light_propagates = true,
+	sunlight_propagates = true,
+	light_source = 13,
+	on_construct = function(pos)
+		local timer = minetest.get_node_timer(pos)
+		timer:start(.05) -- in seconds
+	end,
+	on_timer = function(pos, elapsed)
+		minetest.remove_node(pos)
+	end,
+	selection_box = {
+        type = "fixed",
+        fixed = {0, 0, 0, 0, 0, 0},
+    },
+})
+minetest.register_abm({
+	nodenames = {"gunslinger:flash"},
+	interval = 10,
+	chance = 1,
+	catch_up = false,
+	action = function(p0, node, _, _)
+		minetest.remove_node(p0)
+	end,
+})
+
 local function reload(stack, player, ammo)
 	-- Check for ammo
 	if not ammo then
@@ -127,13 +160,30 @@ local function fire(stack, player, base_spread, max_spread, pellets)
 	-- Play gunshot sound
 	play_sound(def.fire_sound, player)
 
+
 	-- Take aim
 	local eye_offset = {x = 0, y = 1.45, z = 0} --player:get_eye_offset().offset_first
 	--local first, third = player:get_eye_offset()
 	--eye_offset = vector.add(eye_offset, first)
 	local dir = player:get_look_dir()
 	local p1 = vector.add(player:get_pos(), eye_offset)
-	p1 = vector.add(p1, dir)
+	--p1 = vector.add(p1, dir)
+	
+	minetest.add_particle({
+		pos = p1,
+		velocity = {x=dir.x * 3, y=dir.y * 3, z=dir.z * 3} ,
+        acceleration = {x=dir.x * -4, y=2, z=dir.z * -4},
+		expirationtime = 0.5,
+		size = 3,
+		collisiondetection = false,
+		vertical = false,
+		texture = "tnt_smoke.png",
+		glow = 5,
+	})
+	
+	if minetest.get_node(p1).name == "air" then
+		minetest.set_node(p1, {name = "gunslinger:flash"})
+	end
 	
 	if def.horizontal_recoil then
 		local h = player:get_look_horizontal()
