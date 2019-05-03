@@ -22,6 +22,7 @@ local function detach(player)
 	i = i + 1
 		if attached.passengers[i].player == player then
 			attached.passengers[i].player = nil
+			if i == 1 then player:hud_remove(attached.hud) end
 			break
 		end
 	end
@@ -148,6 +149,7 @@ local function car_step(self, dtime)
 	end
 	local driver = self.passengers[1].player
 	if driver then
+		driver:hud_change(self.hud, "text", tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH")
 		local ctrl = driver:get_player_control()
 		local yaw = self.object:getyaw()
 		local sign
@@ -407,8 +409,21 @@ for id, color in pairs (carlist) do
 					i = i + 1
 					if not self.passengers[i].player then break end
 				end
-				if i == 0 then return end
+				if i == 0 or i == #self.passengers+1 then return end
 				self.passengers[i].player = clicker
+				
+				--add hud for driver
+				if i == 1 then
+					self.hud = clicker:hud_add({
+						 hud_elem_type = "text",
+						 position      = {x = 0.5, y = 0.9},
+						 offset        = {x = 0,   y = 0},
+						 text          = tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH",
+						 alignment     = {x = 0, y = 0},  -- center aligned
+						 scale         = {x = 100, y = 100}, -- covered later
+						 number    = 0xFFFFFF,
+					})
+				end
 				
 				player_attached[name] = self
 				clicker:set_attach(self.object, "",
