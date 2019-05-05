@@ -74,10 +74,40 @@ local function deserializeContents(data)
    return contents
 end
 
+local charset = {}  do -- [A-Z]
+    for c = 65, 90 do table.insert(charset, string.char(c)) end
+end
+local numset = {}  do -- [0-9]
+    for c = 48, 57  do table.insert(numset, string.char(c)) end
+end
+
+local function randomString(length)
+	local text = ""
+	local i = 0
+    if not length or length <= 0 then return text end
+	while i < length do
+		text = text..charset[math.random(1, #charset)]
+		i = i + 1
+	end
+	return text
+end
+
+local function randomNumber(length)
+	local text = ""
+	local i = 0
+    if not length or length <= 0 then return text end
+	while i < length do
+		text = text..numset[math.random(1, #numset)]
+		i = i + 1
+	end
+	return text
+end
+
 local function wheelspeed(car, forced)
 	if not car then return end
 	if not car.object then return end
 	if not car.object:getvelocity() then return end
+	if not car.wheel then return end
 	local direction = 1
 	if car.v then
 		direction = get_sign(car.v)
@@ -201,6 +231,7 @@ local function car_step(self, dtime)
 		--self.trunk:set_detach()
 		--self.trunk:setpos(self.object:getpos())
 		self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
+		self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
 		self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
 		self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
 
@@ -326,7 +357,7 @@ for id, color in pairs (carlist) do
 		visual = "mesh",
 		visual_size = {x=1, y=1},
 		mesh = "car.x",
-		textures = {"car_"..color..".png"}, -- number of required textures depends on visual
+		textures = {"car_"..color..".png^licenseplate.png"}, -- number of required textures depends on visual
 		is_visible = true,
 		makes_footstep_sound = false,
 		automatic_rotate = false,
@@ -335,36 +366,31 @@ for id, color in pairs (carlist) do
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
 			if not self.timer2 then self.timer2 = 0 end
+			if not self.platenumber then
+				self.platenumber = {}
+			end
 			self.passengers = {
 				{loc = {x = -4, y = 3, z = 3}, offset = {x = -4, y = -2, z = 2} },
 				{loc = {x = 4, y = 3, z = 3}, offset = {x = 4, y = -2, z = 2} },
 				{loc = {x = -4, y = 3, z = -4}, offset = {x = -4, y = -2, z = -2} },
 				{loc = {x = 4, y = 3, z = -4}, offset = {x = 4, y = -2, z = -2} },
 			}
-			self.trunkinv = deserializeContents(staticdata)
+			if staticdata then
+				local deserialized = minetest.deserialize(staticdata)
+				if deserialized then
+					self.trunkinv = deserializeContents(deserialized.trunk)
+					if deserialized.plate then
+						self.platenumber.text = deserialized.plate.text
+					end
+				end
+			end
+			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
+			
 			self.object:setacceleration({x=0, y=-10, z=0})
 			self.object:set_armor_groups({immortal = 1})
 			self.wheel = {}
 			wheelspeed(self)
 			local pos = self.object:getpos()
-			if not self.steeringwheel then
-				self.steeringwheel = minetest.add_entity(pos, "cars:steeringwheel")
-			end
-			if self.steeringwheel then
-				self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=0})
-			end
-			--[[if not self.driverseat then
-				self.driverseat = minetest.add_entity(pos, "cars:seat")
-			end
-			if self.driverseat then
-				self.driverseat:set_attach(self.object, "", {x = -4, y = 3, z = 3}, {x = 0, y = 0, z = 0})
-			end--]]
-			if not self.trunk then
-				self.trunk = minetest.add_entity(pos, "cars:trunk")
-			end
-			if self.trunk then
-				self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
-			end
 			if not self.wheel.frontright then
 				self.wheel.frontright = minetest.add_entity(pos, "cars:wheel")
 			end
@@ -389,9 +415,33 @@ for id, color in pairs (carlist) do
 			if self.wheel.backleft then
 				self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
 			end
+			if not self.steeringwheel then
+				self.steeringwheel = minetest.add_entity(pos, "cars:steeringwheel")
+			end
+			if self.steeringwheel then
+				self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=0})
+			end
+			--[[if not self.driverseat then
+				self.driverseat = minetest.add_entity(pos, "cars:seat")
+			end
+			if self.driverseat then
+				self.driverseat:set_attach(self.object, "", {x = -4, y = 3, z = 3}, {x = 0, y = 0, z = 0})
+			end--]]
+			if not self.trunk then
+				self.trunk = minetest.add_entity(pos, "cars:trunk")
+			end
+			if self.trunk then
+				self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
+			end
+			if not self.licenseplate then
+				self.licenseplate = minetest.add_entity(pos, "cars:licenseplate")
+			end
+			if self.licenseplate then
+				self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
+			end
 		end,
 		get_staticdata = function(self)
-			return serializeContents(self.trunkinv)
+			return minetest.serialize({trunk = serializeContents(self.trunkinv), plate = self.platenumber})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -482,6 +532,25 @@ minetest.register_entity("cars:wheel", {
 			end
 		end)
 	end,
+})
+minetest.register_entity("cars:licenseplate", {
+    collisionbox = { 0, 0, 0, 0, 0, 0 },
+    visual = "upright_sprite",
+    textures = {"invisible.png"},
+	visual_size = {x=1.2, y=1.2, z=1.2},
+
+    on_activate = function(self)
+		minetest.after(.1, function()
+			if not self.object:get_attach() then
+				self.object:remove()
+			else
+				self.object:set_armor_groups({immortal = 1})
+				local text = self.object:get_attach():get_luaentity().platenumber.text
+				if not text then return end
+				self.object:set_properties({textures={generate_texture(create_lines(text))}})
+			end
+		end)
+    end
 })
 minetest.register_entity("cars:steeringwheel", {
     hp_max = 1,
