@@ -310,8 +310,11 @@ local function on_lclick(stack, player)
 	end
 	interval[name] = 0
 
-	if def.mode == "automatic" and not automatic[name] then
-		add_auto(name, def, stack)
+	if def.mode == "automatic" then
+		if not automatic[name] then
+			add_auto(name, def, stack)
+		end
+		stack = fire(stack, player, def.base_spread, def.max_spread, def.pellets)
 	elseif def.mode == "hybrid"
 			and not automatic[name] then
 		if scope_overlay[name] then
