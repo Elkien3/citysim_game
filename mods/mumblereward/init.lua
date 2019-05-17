@@ -12,7 +12,7 @@ local function checkfile()
 				local name = player:get_player_name()
 				--minetest.chat_send_player(name, line)
 				--minetest.chat_send_player(name, name.." Minetest "..ip..":"..port)
-				if string.match(line, name.." Minetest "..ip..":"..port.. " " .. channel .. " False") and not mumblereward_players[name] then
+				if line == name.." Minetest "..ip..":"..port.. " " .. channel .. " False") and not mumblereward_players[name] then
 					mumblereward_players[name] = true
 					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
 				end
