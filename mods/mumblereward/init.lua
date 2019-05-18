@@ -17,14 +17,14 @@ local function checkfile()
 			if minetest.get_player_by_name(name) then
 				if game ~= "Minetest" then
 					mumblereward_players[name] = nil
-					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You are not in Minetest.")
-				elseif ipport ~= ip..":"..port then
-					mumblereward_players[name] = nil
-					if ipport == "quit" then
+					if game == "quit" then
 						minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You quit Mumble.")
 					else
-						minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: incorrect context: '"..ipport.."' Double check that you're using minetest-mumble-wrapper, the CSM is enabled, and Mumble PA is enabled.")
+						minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You are not in Minetest.")
 					end
+				elseif ipport ~= ip..":"..port then
+					mumblereward_players[name] = nil
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: incorrect context: '"..ipport.."' Double check that you're using minetest-mumble-wrapper, the CSM is enabled, and Mumble PA is enabled.")
 				elseif chan ~= channel then
 					mumblereward_players[name] = nil
 					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: Not in the correct mumble channel.")
