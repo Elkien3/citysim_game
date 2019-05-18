@@ -12,21 +12,25 @@ local function checkfile()
 			local name = data[1]
 			local game = data [2]
 			local ipport = data[3]
-			local channel = data[4]
+			local chan = data[4]
 			local deaf = data[5] == "True"
 			if minetest.get_player_by_name(name) then
 				if game ~= "Minetest" then
 					mumblereward_players[name] = nil
-					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: Game is not Minetest.")
+					if game == "quit" then
+						minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You quit Mumble.")
+					else
+						minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You are not in Minetest.")
+					end
 				elseif ipport ~= ip..":"..port then
 					mumblereward_players[name] = nil
-					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: IP/Port mismatch")
-				elseif channel ~= channel then
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: incorrect context: '"..ipport.."' Double check that you're using minetest-mumble-wrapper, the CSM is enabled, and Mumble PA is enabled.")
+				elseif chan ~= channel then
 					mumblereward_players[name] = nil
-					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: Not in the correct mumble channel.")
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: Not in the correct mumble channel.")
 				elseif deaf then
 					mumblereward_players[name] = nil
-					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: You have deafened yourself.")
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You have deafened yourself.")
 				else
 					mumblereward_players[name] = true
 					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
