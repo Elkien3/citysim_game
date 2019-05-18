@@ -7,12 +7,27 @@ local formtimer = {}
 local function checkfile()
 	local input = io.open(minetest.get_worldpath().."/mumble.txt","r")
 	if input then
-		for line in input:lines() do
-			for _,player in ipairs(minetest.get_connected_players()) do
-				local name = player:get_player_name()
-				--minetest.chat_send_player(name, line)
-				--minetest.chat_send_player(name, name.." Minetest "..ip..":"..port)
-				if line == name.." Minetest "..ip..":"..port.. " " .. channel .. " False" and not mumblereward_players[name] then
+	for line in input:lines() do
+			local data = string.split(line, " ")
+			local name = data[1]
+			local game = data [2]
+			local ipport = data[3]
+			local channel = data[4]
+			local deaf = data[5] == "True"
+			if minetest.get_player_by_name(name) then
+				if game ~= "Minetest" then
+					mumblereward_players[name] = nil
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: Game is not Minetest.")
+				elseif ipport ~= ip..":"..port then
+					mumblereward_players[name] = nil
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: IP/Port mismatch")
+				elseif channel ~= channel then
+					mumblereward_players[name] = nil
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: Not in the correct mumble channel.")
+				elseif deaf then
+					mumblereward_players[name] = nil
+					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio! Reason: You have deafened yourself.")
+				else
 					mumblereward_players[name] = true
 					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
 				end
