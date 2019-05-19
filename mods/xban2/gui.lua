@@ -9,7 +9,7 @@ local ESC = minetest.formspec_escape
 local function make_list(filter)
 	filter = filter or ""
 	local list, n, dropped = { }, 0, false
-	for k in pairs(minetest.auth_table) do
+	for k in minetest.get_auth_handler().iterate() do
 		if strfind(k, filter, 1, true) then
 			if n >= MAXLISTSIZE then
 				dropped = true
@@ -100,6 +100,11 @@ end
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then return end
 	local name = player:get_player_name()
+	if not minetest.check_player_privs(name, { ban=true }) then
+		minetest.log("warning",
+				"[xban2] Received fields from unauthorized user: "..name)
+		return
+	end
 	local state = get_state(name)
 	if fields.player then
 		local t = minetest.explode_textlist_event(fields.player)
@@ -128,6 +133,7 @@ end)
 minetest.register_chatcommand("xban_gui", {
 	description = "Show XBan GUI",
 	params = "",
+	privs = { ban=true, },
 	func = function(name, params)
 		minetest.show_formspec(name, FORMNAME, make_fs(name))
 	end,
