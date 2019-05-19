@@ -39,14 +39,12 @@ end
 
 function drug_wars.drug_damage(player, value)
     if(player ~= nil) then
-        local changetable = {}
-        changetable["type"] = "punch"
 
         local addiction = drug_wars.addictions[player:get_player_name()]
         if(addiction ~= nil) then
-            player:set_hp(player:get_hp() - (value * (1 + addiction)), changetable)
+            player:set_hp(player:get_hp() - (value * (1 + addiction)))
         else
-            player:set_hp(player:get_hp() - value, changetable)
+            player:set_hp(player:get_hp() - value)
         end
     end
 end
