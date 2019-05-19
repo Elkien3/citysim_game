@@ -17,6 +17,6 @@ minetest.register_node("mesecons_stickyblocks:sticky_block_all", {
 minetest.register_craft({
 	output = "mesecons_stickyblocks:sticky_block_all",
 	recipe = {
-		{"group:mesecon_conductor_craftable","default:stone", "mesecons_pistons:wax"},
+		{"group:mesecon_conductor_craftable","default:stone", "mesecons_materials:glue"},
 	}
 })
