@@ -4,7 +4,55 @@ local port = minetest.settings:get("port") or "30000"
 mumblereward_players = {}
 local formtimer = {}
 
+local mutetags = {}
+minetest.register_entity("mumblereward:tag", {
+	physical = false,
+	collisionbox = {x=0, y=0, z=0},
+	visual = "sprite",
+	textures = {"nomumble.png"},
+	visual_size = {x=.3, y=.3, z=.3},
+	on_activate = function(self, staticdata, dtime_s)
+		minetest.after(.1, function()
+			if not self.owner or not minetest.get_player_by_name(self.owner):is_player() then self.object:remove() end
+		end)
+	end,
+})
+local function addtag(name)
+	local tag = mutetags[name]
+	if tag then return end
+	local player = minetest.get_player_by_name(name)
+	if not player then return end
+	local pos = player:get_pos()
+	local ent = minetest.add_entity(pos, "mumblereward:tag")
+	tag = ent:get_luaentity()
+	tag.owner = name
+	tag.object:set_attach(player, "", {x=0,y=12,z=0}, {x=0,y=0,z=0})
+end
+local function removetag(name)
+	local tag = mutetags[name]
+	if not tag then return end
+	tag.object:remove()
+	tag = nil
+end
+local function dotag()
+	for _, player in pairs (minetest.get_connected_players()) do
+		local name = player:get_player_name()
+		if not mutetags[name] and not mumblereward_players[name] then
+			addtag(name)
+		end
+	end
+	for _, tag in pairs(mutetags) do
+		if tag.owner then
+			tag.object:set_attach(minetest.get_player_by_name(tag.owner), "", {x=0,y=12,z=0}, {x=0,y=0,z=0})
+		else
+			tag.object:remove()
+			tag = nil
+		end
+	end
+end
+
 local function checkfile()
+	dotag()
 	local input = io.open(minetest.get_worldpath().."/mumble.txt","r")
 	if input then
 	for line in input:lines() do
@@ -34,6 +82,7 @@ local function checkfile()
 				else
 					mumblereward_players[name] = true
 					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
+					removetag(name)
 				end
 			end
 		end
@@ -45,6 +94,7 @@ local function checkfile()
 	minetest.after(5, checkfile)
 end
 minetest.after(5, checkfile)
+
 local newline = "                                                                                                     "
 local function mumbleform(name)
 
@@ -78,6 +128,7 @@ end
 
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
+	addtag(name)
 	local privs = minetest.get_player_privs(name)
 	if privs.interact and not privs.ban then
 		minetest.after(25, checkplayer, name)
@@ -86,6 +137,7 @@ end)
 
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	removetag(name)
 	mumblereward_players[name] = nil
 end)
 
