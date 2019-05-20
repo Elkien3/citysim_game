@@ -437,7 +437,9 @@ function gunslinger.register_gun(name, def)
 	end
 	-- Abort when making use of unimplemented features
 	if def.zoom then
-		error("register_gun: Unimplemented feature!")
+		if binoculars and binoculars.items then
+			binoculars.items[name] = def.zoom
+		end
 	end
 
 	if (def.mode == "automatic" or def.mode == "hybrid")
