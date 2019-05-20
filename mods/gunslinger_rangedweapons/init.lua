@@ -438,6 +438,7 @@ gunslinger.register_gun("gunslinger_rangedweapons:awp", {
 	max_spread = 200,
 	vertical_recoil = 100,
 	horizontal_recoil = 10,
+	zoom = 10,
 	scope = "firearms_crosshair_sniper_scope.png",
 	ammo = "gunslinger_rangedweapons:bullet_308mm",
 	fire_sound = "rangedweapons_rifle_a"
@@ -469,6 +470,7 @@ gunslinger.register_gun("gunslinger_rangedweapons:m200", {
 	vertical_recoil = 80,
 	horizontal_recoil = 8,
 	magazine = true,
+	zoom = 15,
 	scope = "firearms_crosshair_sniper_scope.png",
 	ammo = "gunslinger_rangedweapons:mag_sniper",
 	fire_sound = "rangedweapons_rifle_b"
@@ -500,6 +502,7 @@ gunslinger.register_gun("gunslinger_rangedweapons:svd", {
 	vertical_recoil = 80,
 	horizontal_recoil = 8,
 	magazine = true,
+	zoom = 15,
 	scope = "firearms_crosshair_sniper_scope.png",
 	ammo = "gunslinger_rangedweapons:mag_sniper",
 	fire_sound = "rangedweapons_rifle_b"
