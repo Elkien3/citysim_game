@@ -14,6 +14,9 @@ minetest.register_tool('policetools:speedgun', {
 		if pointed and pointed.type == "object" then
 			local target = pointed.ref
 			local v = target:get_velocity() or {x=0,y=0,z=0}
+			if target:is_player() then
+				v = target:get_player_velocity() or {x=0,y=0,z=0}
+			end
 			minetest.chat_send_player(player:get_player_name(), "Speed gun reads "..tostring(math.floor(vector.length(v)*2.237*10)*.1).." MPH")
 		else
 			minetest.chat_send_player(player:get_player_name(), "Speed gun reads 0 MPH")
