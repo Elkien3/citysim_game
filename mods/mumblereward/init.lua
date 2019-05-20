@@ -18,21 +18,19 @@ minetest.register_entity("mumblereward:tag", {
 	end,
 })
 local function addtag(name)
-	local tag = mutetags[name]
-	if tag then return end
+	if mutetags[name] then return end
 	local player = minetest.get_player_by_name(name)
 	if not player then return end
 	local pos = player:get_pos()
 	local ent = minetest.add_entity(pos, "mumblereward:tag")
-	tag = ent:get_luaentity()
-	tag.owner = name
-	tag.object:set_attach(player, "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
+	mutetags[name] = ent:get_luaentity()
+	mutetags[name].owner = name
+	mutetags[name].object:set_attach(player, "", {x=0,y=20,z=0}, {x=0,y=0,z=0})
 end
 local function removetag(name)
-	local tag = mutetags[name]
-	if not tag then return end
-	tag.object:remove()
-	tag = nil
+	if not mutetags[name] then return end
+	mutetags[name].object:remove()
+	mutetags[name] = nil
 end
 local function dotag()
 	for _, player in pairs (minetest.get_connected_players()) do
@@ -42,8 +40,8 @@ local function dotag()
 		end
 	end
 	for _, tag in pairs(mutetags) do
-		if tag.owner then
-			tag.object:set_attach(minetest.get_player_by_name(tag.owner), "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
+		if tag.owner and minetest.get_player_by_name(tag.owner):is_player() then
+			tag.object:set_attach(minetest.get_player_by_name(tag.owner), "", {x=0,y=20,z=0}, {x=0,y=0,z=0})
 		else
 			tag.object:remove()
 			tag = nil
