@@ -50,7 +50,6 @@ local function dotag()
 end
 
 local function checkfile()
-	dotag()
 	local input = io.open(minetest.get_worldpath().."/mumble.txt","r")
 	if input then
 	for line in input:lines() do
@@ -89,6 +88,7 @@ local function checkfile()
 	local output = io.open(minetest.get_worldpath().."/mumble.txt","w")
 	output:write("")
 	io.close(output)
+	dotag()
 	minetest.after(5, checkfile)
 end
 minetest.after(5, checkfile)
