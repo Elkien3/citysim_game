@@ -439,6 +439,9 @@ function gunslinger.register_gun(name, def)
 	if def.zoom then
 		if binoculars and binoculars.items then
 			binoculars.items[name] = def.zoom
+			if def.magazine then
+				binoculars.items[name.."_empty"] = def.zoom
+			end
 		end
 	end
 
