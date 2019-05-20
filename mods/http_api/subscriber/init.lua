@@ -51,18 +51,18 @@ if http_api then
 				end
 			end
 			if data.command == "grant" then
-				local privs = minetest.get_player_privs(data.args[1])
-				if privs[data.args[2]] then
-					privs[data.args[2]] = true
-					minetest.set_player_privs(data.args[1], privs)
+				local privs = minetest.get_player_privs(data.args[1])--]]
+				--if privs[data.args[2]] then
+					--privs[data.args[2]] = true
+				--[[	minetest.set_player_privs(data.args[1], privs)
 					publisher.pub_message("minetest", "`The {"..data.args[1].."} was given the {"..data.args[2].."}`")
 				end
 			end
 			if data.command == "revoke" then
-				local privs = minetest.get_player_privs(data.args[1])
-				if privs[data.args[2]] then
-					privs[data.args[2]] = nil
-					minetest.set_player_privs(data.args[1], privs)
+				local privs = minetest.get_player_privs(data.args[1])--]]
+				--if privs[data.args[2]] then
+					--privs[data.args[2]] = nil
+					--[[minetest.set_player_privs(data.args[1], privs)
 					publisher.pub_message("minetest", "`The {"..data.args[1].."} was taken away the {"..data.args[2].."}`")
 				end
 			end--]]
