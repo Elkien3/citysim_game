@@ -26,7 +26,7 @@ local function addtag(name)
 	local ent = minetest.add_entity(pos, "mumblereward:tag")
 	tag = ent:get_luaentity()
 	tag.owner = name
-	tag.object:set_attach(player, "", {x=0,y=12,z=0}, {x=0,y=0,z=0})
+	tag.object:set_attach(player, "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
 end
 local function removetag(name)
 	local tag = mutetags[name]
@@ -43,7 +43,7 @@ local function dotag()
 	end
 	for _, tag in pairs(mutetags) do
 		if tag.owner then
-			tag.object:set_attach(minetest.get_player_by_name(tag.owner), "", {x=0,y=12,z=0}, {x=0,y=0,z=0})
+			tag.object:set_attach(minetest.get_player_by_name(tag.owner), "", {x=0,y=18,z=0}, {x=0,y=0,z=0})
 		else
 			tag.object:remove()
 			tag = nil
