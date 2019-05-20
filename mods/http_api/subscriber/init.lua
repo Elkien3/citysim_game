@@ -6,7 +6,7 @@
 -- Add : secure.http_mods = subscriber
 
 subscriber = {}
-local SUPPORT_CMD = false	-- true - enable command support, false - disable
+local SUPPORT_CMD = true	-- true - enable command support, false - disable
 
 local http_api = minetest.request_http_api and minetest.request_http_api()
 
@@ -26,7 +26,7 @@ if http_api then
 			if data.command == "msg" then
 				minetest.chat_send_player(data.player, core.colorize("#de6821", data.message))
 			end
-			if data.command == "ban" then
+			--[[if data.command == "ban" then
 				local result = minetest.ban_player(data.args[1]) --Ban a player
 				if result then
 					publisher.pub_message("minetest", "`Player {"..data.args[1].."} is Banned!`"..result)
@@ -65,7 +65,7 @@ if http_api then
 					minetest.set_player_privs(data.args[1], privs)
 					publisher.pub_message("minetest", "`The {"..data.args[1].."} was taken away the {"..data.args[2].."}`")
 				end
-			end
+			end--]]
             if data.command == "privs" then
 				publisher.pub_message("minetest", "`Privileges of {"..data.args[1].."}: {"..minetest.privs_to_string(minetest.get_player_privs(data.args[1]), ' ').."}`")
 			end
