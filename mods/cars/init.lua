@@ -1,4 +1,6 @@
 local go = false
+local DEBUG_WAYPOINT = false
+local DEBUG_TEXT = false
 local max_speed = 20
 local function get_sign(i)
 	if i == 0 then
@@ -7,10 +9,10 @@ local function get_sign(i)
 		return i / math.abs(i)
 	end
 end
-
 local player_attached = {}
 
 local function detach(player)
+	if not player then return end
 	local name = player:get_player_name()
 	if not name then return end
 	
@@ -127,6 +129,115 @@ local function wheelspeed(car, forced)
 			minetest.after(i/fps, wheelspeed, car, false)
 		end
 	end
+end
+
+local function rotateVector(x, y, a)
+  local c = math.cos(a)
+  local s = math.sin(a)
+  return c*x - s*y, s*x + c*y
+end
+
+local function getClosest(player, car)
+	local playerPos = player:getpos()
+	local dir = player:get_look_dir()
+	playerPos.y = playerPos.y + 1.45
+	local carPos = car.object:getpos()
+	local offset, _ = player:get_eye_offset()
+	local playeryaw = player:get_look_horizontal()
+	local x, z = rotateVector(offset.x, offset.z, playeryaw)
+	offset = vector.multiply({x=x, y=offset.y, z=z}, .1)
+	playerPos = vector.add(playerPos, offset)
+		if DEBUG_WAYPOINT then 
+			local marker = player:hud_add({
+				hud_elem_type = "waypoint",
+				name = "start",
+				number = 0xFF0000,
+				world_pos = playerPos
+			})
+			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
+		end
+	local punchPos = vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos)))
+	if minetest.raycast then
+		local ray = minetest.raycast(playerPos, vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos))))
+		if ray then
+			local pointed = ray:next()
+			if pointed.ref == player then
+				pointed = ray:next()
+			end
+			if pointed and pointed.ref == car.object and pointed.intersection_point then
+				punchPos = pointed.intersection_point
+			end
+		end
+	end
+	if not punchPos then return end
+		if DEBUG_WAYPOINT then 
+			local marker = player:hud_add({
+				hud_elem_type = "waypoint",
+				name = "end",
+				number = 0xFF0000,
+				world_pos = punchPos
+			})
+			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
+		end
+	punchPos = vector.subtract(punchPos, carPos)
+	local carYaw = car.object:getyaw()
+	local closest = {}
+	closest.id = 0
+	local trunkloc = car.trunkloc or {x = 0, y = 4, z = -8}
+	local x, z = rotateVector(trunkloc.x, trunkloc.z, carYaw)
+	trunkloc = vector.multiply({x=x, y=trunkloc.y, z=z}, .1)
+	closest.distance = vector.distance(punchPos, trunkloc)
+		if DEBUG_WAYPOINT then 
+			local marker = player:hud_add({
+				hud_elem_type = "waypoint",
+				name = "0",
+				number = 0xFF0000,
+				world_pos = vector.add(trunkloc, carPos)
+			})
+			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
+		end
+	for id in pairs(car.passengers) do
+		local loc = car.passengers[id].loc
+		local x, z = rotateVector(loc.x, loc.z, carYaw)
+		loc = vector.multiply({x=x, y=loc.y, z=z}, .1)
+		if DEBUG_WAYPOINT then 
+			local marker = player:hud_add({
+				hud_elem_type = "waypoint",
+				name = id,
+				number = 0xFF0000,
+				world_pos = vector.add(loc, carPos)
+			})
+			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
+		end
+		local dis = vector.distance(punchPos, loc)
+		if dis < closest.distance then closest.id = id closest.distance = dis end
+	end
+	return closest.id
+end
+
+local function trunk_rightclick(self, clicker)
+	local owner = self.owner
+	if not owner then owner = self end
+	if not owner then return end
+	local inventory = minetest.create_detached_inventory("cars_"..clicker:get_player_name(), {
+		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			owner.trunkinv = inv:get_list("trunk")
+		end,
+		on_put = function(inv, listname, index, stack, player)
+			owner.trunkinv = inv:get_list("trunk")
+		end,
+		on_take = function(inv, listname, index, stack, player)
+			owner.trunkinv = inv:get_list("trunk")
+		end,
+	})
+	inventory:set_size("trunk", 12)
+	local templist = table.copy(owner.trunkinv)
+	inventory:set_list("trunk", templist)
+	local formspec =
+           "size[8,8]"..
+           "list[detached:cars_"..clicker:get_player_name()..";trunk;1,1;6,2;]"..
+           "list[current_player;main;0,4;8,4;]"
+    minetest.show_formspec(clicker:get_player_name(), "cars_trunk", formspec)
 end
 
 local function car_step(self, dtime)
@@ -446,6 +557,24 @@ for id, color in pairs (carlist) do
 		on_step = function(self, dtime)
 			car_step(self, dtime)
 		end,
+		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+			if puncher == self.passengers[1].player then
+				minetest.sound_play("horn", {
+					max_hear_distance = 48,
+					gain = 8,
+					object = self.object
+				})
+				return
+			end
+			if (puncher:get_wielded_item():get_name() == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
+				local closeid = getClosest(puncher, self)
+				if DEBUG_TEXT then
+					minetest.chat_send_all(tostring(closeid))
+				end
+				if not closeid or closeid == 0 then return end
+				detach(self.passengers[closeid].player)
+			end
+		end,
 		on_rightclick = function(self, clicker)
 			if not clicker or not clicker:is_player() then
 				return
@@ -454,14 +583,26 @@ for id, color in pairs (carlist) do
 			if player_attached[name] == self then
 				detach(clicker)
 			else
-				i = 0
-				while i <= #self.passengers do
-					i = i + 1
-					if not self.passengers[i].player then break end
+				local i = 0
+				local closeid = getClosest(clicker, self)
+				if DEBUG_TEXT then
+					minetest.chat_send_all(tostring(closeid))
+				end
+				if closeid then
+					if closeid == 0 then
+						--clicker:right_click(self.trunk)
+						trunk_rightclick(self, clicker)
+						return
+					end
+					i = closeid
+				else
+					while i <= #self.passengers do
+						i = i + 1
+						if not self.passengers[i].player then break end
+					end
 				end
 				if i == 0 or i == #self.passengers+1 then return end
 				self.passengers[i].player = clicker
-				
 				--add hud for driver
 				if i == 1 then
 					self.hud = clicker:hud_add({
@@ -595,30 +736,7 @@ minetest.register_entity("cars:trunk", {
     is_visible = true,
     --makes_footstep_sound = false,
     --automatic_rotate = true,
-	on_rightclick = function(self, clicker)
-		if not self.owner then return end
-		local inventory = minetest.create_detached_inventory("cars_"..clicker:get_player_name(), {
-			on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-				self.owner.trunkinv = inv:get_list("trunk")
-			end,
-			on_put = function(inv, listname, index, stack, player)
-				self.owner.trunkinv = inv:get_list("trunk")
-			end,
-			on_take = function(inv, listname, index, stack, player)
-				self.owner.trunkinv = inv:get_list("trunk")
-			end,
-		})
-		inventory:set_size("trunk", 12)
-		local templist = table.copy(self.owner.trunkinv)
-		inventory:set_list("trunk", templist)
-		local formspec =
-            "size[8,8]"..
-            "list[detached:cars_"..clicker:get_player_name()..";trunk;1,1;6,2;]"..
-            "list[current_player;main;0,4;8,4;]"
-
-        minetest.show_formspec(
-        clicker:get_player_name(), "cars_trunk", formspec)
-	end,
+	on_rightclick = trunk_rightclick,
 	on_activate = function(self, staticdata, dtime_s)
 		minetest.after(.1, function()
 			if not self.object:get_attach() then
