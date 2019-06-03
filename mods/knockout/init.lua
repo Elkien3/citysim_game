@@ -63,7 +63,16 @@ minetest.register_entity("knockout:entity", {
 					local food = hbhunger.food[name]
 					local grabbedPlayer = minetest.get_player_by_name(e.grabbed_name)
 					wield:take_item(1)
-					clicker:get_inventory():set_stack("main", clicker:get_wield_index(), wield)
+					clickerInv = clicker:get_inventory()
+					clickerInv:set_stack("main", clicker:get_wield_index(), wield)
+					if food.replace then
+						local item = {name = food.replace}
+						if room_for_item("main", item) then
+							clickerInv:add_item("main", item)
+						else
+							minetest.add_item(clicker:getpos(), item)
+						end
+					end
 					if grabbedPlayer ~= nil then
 						hbhunger.eat(food.saturation, food.replace, wield, grabbedPlayer)
 						return
