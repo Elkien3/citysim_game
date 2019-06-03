@@ -180,7 +180,7 @@ end
 -- 2 for "This area is owned by <owner>.
 -- 3 for checking protector overlaps
 
-protector.can_dig = function(r, pos, digger, onlyowner, infolevel)
+protector.can_dig = function(r, pos, digger, onlyowner, infolevel, small)
 
 	if not digger or not pos then
 		return false
@@ -206,10 +206,19 @@ protector.can_dig = function(r, pos, digger, onlyowner, infolevel)
 	end
 
 	-- find the protector nodes
+	local checkpos = pos
+	local originalr = r
+	if small then r = originalr*.75 end
 	local pos = minetest.find_nodes_in_area(
 		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
 		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
-		{"protector:protect", "protector:protect2"})
+		{"protector:protect"})
+	r = originalr
+	local pos2 = minetest.find_nodes_in_area(
+		{x = checkpos.x - r/2, y = checkpos.y - r/2, z = checkpos.z - r/2},
+		{x = checkpos.x + r/2, y = checkpos.y + r/2, z = checkpos.z + r/2},
+		{"protector:protect2"})
+	for k,v in pairs(pos2) do table.insert(pos, v) end
 
 	local meta, owner, members
 
@@ -343,7 +352,7 @@ end
 
 
 -- make sure protection block doesn't overlap another protector's area
-local check_overlap = function(itemstack, placer, pointed_thing)
+local check_overlap = function(itemstack, placer, pointed_thing, small)
 
 	if pointed_thing.type ~= "node" then
 		return itemstack
@@ -363,7 +372,7 @@ local check_overlap = function(itemstack, placer, pointed_thing)
 	end
 
 	-- make sure protector doesn't overlap any other player's area
-	if not protector.can_dig(protector_radius * 2, pos, name, true, 3) then
+	if not protector.can_dig(protector_radius * 2, pos, name, true, 3, small) then
 
 		minetest.chat_send_player(name,
 			S("Overlaps into above players protected area"))
@@ -461,10 +470,10 @@ minetest.register_craft({
 	}
 })
 
---[[
+
 -- protection logo
 minetest.register_node("protector:protect2", {
-	description = S("Protection Logo") .. " (" .. S("USE for area check") .. ")",
+	description = S("Small Protection") .. " (" .. S("USE for area check") .. ")",
 	tiles = {"protector_logo.png"},
 	wield_image = "protector_logo.png",
 	inventory_image = "protector_logo.png",
@@ -485,10 +494,13 @@ minetest.register_node("protector:protect2", {
 	},
 	selection_box = {type = "wallmounted"},
 
-	on_place = check_overlap,
+	on_place = function(itemstack, placer, pointed_thing)
+		if check_overlap(itemstack, placer, pointed_thing, true) then
+			return itemstack
+		end
+	end,
 
 	after_place_node = function(pos, placer)
-
 		local meta = minetest.get_meta(pos)
 
 		meta:set_string("owner", placer:get_player_name() or "")
@@ -525,7 +537,7 @@ minetest.register_node("protector:protect2", {
 			return
 		end
 
-		minetest.add_entity(pos, "protector:display")
+		minetest.add_entity(pos, "protector:display2")
 	end,
 
 	can_dig = function(pos, player)
@@ -540,15 +552,15 @@ minetest.register_node("protector:protect2", {
 minetest.register_craft({
 	type = "shapeless",
 	output = "protector:protect",
-	recipe = {"protector:protect2"}
+	recipe = {"protector:protect2", "protector:protect2", "protector:protect2"}
 })
 
 minetest.register_craft({
 	type = "shapeless",
-	output = "protector:protect2",
+	output = "protector:protect2 3",
 	recipe = {"protector:protect"}
 })
---]]
+
 
 -- check formspec buttons or when name entered
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -637,12 +649,61 @@ minetest.register_entity("protector:display", {
 	end,
 })
 
+minetest.register_entity("protector:display2", {
+	physical = false,
+	collisionbox = {0, 0, 0, 0, 0, 0},
+	visual = "wielditem",
+	-- wielditem seems to be scaled to 1.5 times original node size
+	visual_size = {x = 1.0 / 1.5, y = 1.0 / 1.5},
+	textures = {"protector:display_node2"},
+	timer = 0,
+
+	on_step = function(self, dtime)
+
+		self.timer = self.timer + dtime
+
+		-- remove after 5 seconds
+		if self.timer > 5 then
+			self.object:remove()
+		end
+	end,
+})
+
 
 -- Display-zone node, Do NOT place the display as a node,
 -- it is made to be used as an entity (see above)
 
 local x = protector_radius
 minetest.register_node("protector:display_node", {
+	tiles = {"protector_display.png"},
+	use_texture_alpha = true,
+	walkable = false,
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			-- sides
+			{-(x+.55), -(x+.55), -(x+.55), -(x+.45), (x+.55), (x+.55)},
+			{-(x+.55), -(x+.55), (x+.45), (x+.55), (x+.55), (x+.55)},
+			{(x+.45), -(x+.55), -(x+.55), (x+.55), (x+.55), (x+.55)},
+			{-(x+.55), -(x+.55), -(x+.55), (x+.55), (x+.55), -(x+.45)},
+			-- top
+			{-(x+.55), (x+.45), -(x+.55), (x+.55), (x+.55), (x+.55)},
+			-- bottom
+			{-(x+.55), -(x+.55), -(x+.55), (x+.55), -(x+.45), (x+.55)},
+			-- middle (surround protector)
+			{-.55,-.55,-.55, .55,.55,.55},
+		},
+	},
+	selection_box = {
+		type = "regular",
+	},
+	paramtype = "light",
+	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
+	drop = "",
+})
+local x = protector_radius/2
+minetest.register_node("protector:display_node2", {
 	tiles = {"protector_display.png"},
 	use_texture_alpha = true,
 	walkable = false,
