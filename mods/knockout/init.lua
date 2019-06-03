@@ -35,6 +35,7 @@ minetest.register_entity("knockout:entity", {
     end,
     on_punch = function(e, puncher, time_from_last_punch, tool_capabilities, dir)
 		-- The player can't punch themselves
+		local p = minetest.get_player_by_name(e.grabbed_name)
 		if puncher:get_player_name() == e.grabbed_name then return end
 		-- If punched with a water bucket revive
 		local tool = puncher:get_wielded_item():get_name()
@@ -43,19 +44,33 @@ minetest.register_entity("knockout:entity", {
 			return
 		end
 		-- Otherwise hurt the player
-		local p = minetest.get_player_by_name(e.grabbed_name)
 		if p == nil then
 			e.object:remove()
 		else
 			p:set_detach()
 			p:punch(puncher, time_from_last_punch, tool_capabilities, dir)
-			p:set_attach(e.object, "", {x = 0, y = 10, z = 0}, {x = 0, y = 0, z = 0})
+			p:set_attach(e.object, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 		end
     end,
     on_rightclick = function(e, clicker)
 		local cName = clicker:get_player_name()
 		if cName == e.grabbed_name then return end
 		local p = clicker
+		local wield = clicker:get_wielded_item()
+		if hbhunger then
+			for name in pairs(hbhunger.food) do
+				if wield:get_name() == name then
+					local food = hbhunger.food[name]
+					local grabbedPlayer = minetest.get_player_by_name(e.grabbed_name)
+					wield:take_item(1)
+					clicker:get_inventory():set_stack("main", clicker:get_wield_index(), wield)
+					if grabbedPlayer ~= nil then
+						hbhunger.eat(food.saturation, food.replace, wield, grabbedPlayer)
+						return
+					end
+				end
+			end
+		end
 		if not p:get_player_control().sneak then
 			local pName = e.grabbed_name
 			local player_inv = minetest.get_inventory({type='player', name = pName}) --InvRef
@@ -88,7 +103,7 @@ minetest.register_entity("knockout:entity", {
 			end
 			victim = minetest.get_player_by_name(e.grabbed_name)
 			if victim then
-				victim:set_attach(clicker, "", {x = 0, y = 0, z = -15}, {x = 0, y = 0, z = 0})
+				victim:set_attach(clicker, "", {x = 0, y = 0, z = -12}, {x = 0, y = 180, z = 0})
 				knockout.carrying[cName] = e.grabbed_name
 				e.object:remove()
 			end
@@ -143,7 +158,7 @@ knockout.knockout = function(pName, duration)
 	-- Freeze player using entites
 	local pos = p:get_pos()
 	local e = minetest.add_entity(pos, "knockout:entity", pName)
-	p:set_attach(e, "", {x = 0, y = 10, z = 0}, {x = 0, y = 0, z = 0})
+	p:set_attach(e, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 	-- Make player lay down
 	default.player_attached[pName] = true
 	default.player_set_animation(p, "lay")
