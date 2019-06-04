@@ -594,7 +594,9 @@ for id, color in pairs (carlist) do
 						trunk_rightclick(self, clicker)
 						return
 					end
-					i = closeid
+					if not self.passengers[closeid].player then
+						i = closeid
+					end
 				else
 					while i <= #self.passengers do
 						i = i + 1
