@@ -383,3 +383,16 @@ minetest.register_craft({
 		{"", "", ""}
 	}
 })
+
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "streets:light_horizontal_off",
+	recipe = {"streets:light_hanging_off"}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "streets:light_hanging_off",
+	recipe = {"streets:light_horizontal_off"}
+})
