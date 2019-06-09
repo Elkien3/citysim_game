@@ -161,7 +161,7 @@ local function getClosest(player, car)
 		local ray = minetest.raycast(playerPos, vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos))))
 		if ray then
 			local pointed = ray:next()
-			if pointed.ref == player then
+			if pointed and pointed.ref == player then
 				pointed = ray:next()
 			end
 			if pointed and pointed.ref == car.object and pointed.intersection_point then
