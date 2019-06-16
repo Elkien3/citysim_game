@@ -31,6 +31,10 @@ if minetest.get_modpath("dye") then
 
 	for _, data in ipairs(dye_recipes) do
 		technic.register_extractor_recipe({input = {data[1]}, output = data[2]})
+		minetest.clear_craft({
+			type = "shapeless",
+			recipe = {data[1]}
+		})
 	end
 
 	-- overwrite the existing crafting recipes

@@ -381,7 +381,6 @@ local function car_step(self, dtime)
 			if player then
 				player:set_attach(self.object, "",
 					passengers.loc, {x = 0, y = 0, z = 0})
-				minetest.chat_send_all("reattached "..player:get_player_name())
 			end
 		end
 	end
