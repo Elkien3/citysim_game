@@ -11,6 +11,14 @@ local function get_sign(i)
 end
 local player_attached = {}
 
+local attachTimer = 0
+minetest.register_globalstep(function(dtime)
+	attachTimer = attachTimer + dtime;
+	if attachTimer >= 5 then
+		minetest.after(0, function() attachTimer = 0 end)
+	end
+end)
+
 local function detach(player)
 	if not player then return end
 	local name = player:get_player_name()
@@ -341,10 +349,12 @@ local function car_step(self, dtime)
 		
 		--self.trunk:set_detach()
 		--self.trunk:setpos(self.object:getpos())
-		self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
-		self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
-		self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
-		self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
+		if attachTimer >= 5 then
+			self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
+			self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
+			self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
+			self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
+		end
 
 	else
 		if math.abs(self.wheelpos) > 0 then
@@ -361,6 +371,17 @@ local function car_step(self, dtime)
 			self.v = self.v - 2*dtime*get_sign(self.v)
 			if get_sign(self.v) ~= sign then
 				self.v = 0
+			end
+		end
+	end
+	
+	if attachTimer >= 5 then
+		for id, passengers in pairs (self.passengers) do
+			local player = passengers.player
+			if player then
+				player:set_attach(self.object, "",
+					passengers.loc, {x = 0, y = 0, z = 0})
+				minetest.chat_send_all("reattached "..player:get_player_name())
 			end
 		end
 	end
