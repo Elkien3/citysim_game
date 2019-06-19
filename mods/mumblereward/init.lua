@@ -99,7 +99,7 @@ local function mumbleform(name)
     local form = "" ..
     "size[8,8]" ..
     "image[0.7,0.5;8.2,4.8333333333333;mumbleimage.png]" ..
-    "textarea[1,5;5,3;TextArea;;Set up Mumble Positional Audio with Minetest and be able to hear other players (you don't necessarily have to talk), get a blue nametag, and get FREE minegelds!"..newline.."|"..newline.."Demo vid by Minetest Videos: https://youtu.be/6AsHD9h8IE8 |"..newline.."Tutorial: https://youtu.be/0rk-004yLyk |"..newline.."Github: https://github.com/chipgw/minetest-mumble-wrapper |       Mumble: https://www.mumble.com/mumble-download.php |"..newline.."|"..newline.."Type in /mumble to view this page again, and /mumble playername to see if a certain player is connected.]" ..
+    "textarea[1,5;5,3;TextArea;;Set up Mumble Positional Audio with Minetest and be able to hear other players (you don't necessarily have to talk), have no mute symbol, and get FREE minegelds!"..newline.."|"..newline.."Demo vid by Minetest Videos: https://youtu.be/6AsHD9h8IE8 |"..newline.."Tutorial: https://youtu.be/0rk-004yLyk |"..newline.."Github: https://github.com/chipgw/minetest-mumble-wrapper |       Mumble: https://www.mumble.com/mumble-download.php |"..newline.."|"..newline.."Type in /mumble to view this page again, and /mumble playername to see if a certain player is connected.]" ..
     "button_exit[6,7;1.5,0.5;Close;Close \\[   \\]]" ..
     "label[6.83,7;"..minetest.formspec_escape(tostring(formtimer[name])).."]" ..
     ""
@@ -118,7 +118,7 @@ local function checkplayer(name)
 	if not name then return end
 	if not mumblereward_players[name] then
 		--minetest.chat_send_player(name, "*!Mumblerewards!* Not connected to Positional Audio.")
-		formtimer[name] = 5
+		formtimer[name] = 3
 		minetest.after(1, countdown, name)
 		minetest.show_formspec(name, "mumbleformspec", mumbleform(name))
 	end
