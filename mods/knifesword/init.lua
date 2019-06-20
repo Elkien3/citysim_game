@@ -34,8 +34,8 @@ if minetest.get_modpath("moreores") ~= nil then
 		inventory_image = "moreores_tool_mithrilsword.png",
 		range = 2,
 		tool_capabilities = {
-				full_punch_interval = 1,
-				damage_groups = {fleshy = 7},
+				full_punch_interval = 0.7,
+				damage_groups = {fleshy = 8},
 				fleshy = {times = {[2] = 0.65, [3] = 0.25}, uses = 200, maxlevel= 2},
 				snappy = {times = {[2] = 0.70, [3] = 0.25}, uses = 200, maxlevel= 2},
 				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
@@ -52,5 +52,17 @@ if minetest.get_modpath("moreores") ~= nil then
 				snappy = {times = {[2] = 0.70, [3] = 0.25}, uses = 200, maxlevel= 2},
 				choppy = {times = {[3] = 0.65}, uses = 200, maxlevel= 0}
 			},
+	})
+	minetest.override_item("default:sword_diamond", {
+		description = "Diamond Knife",
+		inventory_image = "default_tool_diamondsword.png",
+		tool_capabilities = {
+			full_punch_interval = 1,
+			max_drop_level=1,
+			groupcaps={
+				snappy={times={[1]=1.90, [2]=0.90, [3]=0.30}, uses=40, maxlevel=3},
+			},
+			damage_groups = {fleshy=7},
+		},
 	})
 end
