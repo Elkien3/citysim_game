@@ -155,7 +155,7 @@ minetest.register_chatcommand("mumble", {func = function(name, param)
 		if mumblereward_players[param] then
 			return true, param.." is connected with mumble Positional Audio!"
 		else
-			return true, param.." is not connected with mumble Positional Audio!"
+			return true, param.." is not connected with mumble Positional Audio."
 		end
 	else
 		formtimer[name] = 0
