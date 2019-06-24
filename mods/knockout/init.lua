@@ -246,3 +246,7 @@ knockout.load()
 dofile(path .. "/api.lua")
 dofile(path .. "/handlers.lua")
 dofile(path .. "/tools.lua")
+
+if minetest.get_modpath("beds") then
+	dofile(path .. "/beds.lua")
+end
