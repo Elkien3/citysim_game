@@ -251,7 +251,15 @@ end
 
 local function animate_player(player, dtime)
 	local animation = get_animation(player).animation
-
+	
+	local interact = minetest.check_player_privs(player:get_player_name(), {interact=true})
+	if not interact then
+		if animation == "mine" then
+			animation = "stand"
+		elseif animation == "walk_mine" then
+			animation = "walk"
+		end
+	end
 	-- Yaw history
 	if animation == "lay" or animation == "sit" then
 		players_animation_data:clear_yaw_history(player)
