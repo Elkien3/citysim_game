@@ -141,7 +141,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local language = rule_language[name] or interact.default_language
 	if fields.accept then
 		if interact.screen4 == false then
-			if minetest.check_player_privs(name, interact.priv) then
+			if minetest.check_player_privs(name, interact.priv) and not (interacthandler and interacthandler.player[name]) then
 				minetest.chat_send_player(name, rule_table[language].interact_msg1)
 				minetest.chat_send_player(name, rule_table[language].interact_msg2)
 				local privs = minetest.get_player_privs(name)
@@ -195,7 +195,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		rule3 = 0
 		rule4 = 0
 		multi = 0
-		if minetest.check_player_privs(name, interact.priv) then
+		if minetest.check_player_privs(name, interact.priv) and not (interacthandler and interacthandler.player[name]) then
 			minetest.chat_send_player(name, rule_table[language].interact_msg1)
 			minetest.chat_send_player(name, rule_table[language].interact_msg2)
 			local privs = minetest.get_player_privs(name)
@@ -238,6 +238,7 @@ minetest.register_chatcommand("rules",{
 	description = "Shows the server rules",
 	privs = interact.priv,
 	func = function (name,params)
+	if (interacthandler and interacthandler.player[name]) then return false, "You are not allowed to use this command at this time." end
 	local player = minetest.get_player_by_name(name)
 	local language = rule_language[name] or interact.default_language
 	if params ~= "" and rule_table[params:lower()] then
@@ -265,7 +266,7 @@ minetest.register_chatcommand("rules",{
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	local language = rule_language[name] or interact.default_language
-	if not minetest.get_player_privs(name).interact and minetest.check_player_privs(name, interact.priv) then
+	if not minetest.get_player_privs(name).interact and minetest.check_player_privs(name, interact.priv) and not (interacthandler and interacthandler.player[name]) then
 		if interact.screen1 ~= false then
 			minetest.show_formspec(name, "interact_welcome", make_formspec(player, language))
 		elseif interact.screen2 ~= false then

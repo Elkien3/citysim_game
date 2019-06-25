@@ -145,6 +145,7 @@ knockout.carrier_drop = function(pName) -- pname = name of carrier
 		local carried = minetest.get_player_by_name(cName)
 		if carried then
 			carried:set_detach()
+			
 			knockout.knockout(cName)
 		end
 		knockout.carrying[pName] = nil
@@ -184,10 +185,16 @@ knockout.knockout = function(pName, duration)
 		})
 	end
 	-- No interacting for you, player
-	local privs = minetest.get_player_privs(pName)
-	privs.shout = nil
-	privs.interact = nil
-	minetest.set_player_privs(pName, privs)
+	if duration then
+		if interacthandler then
+			interacthandler.revoke(pName)
+		else
+			local privs = minetest.get_player_privs(pName)
+			privs.shout = nil
+			privs.interact = nil
+			minetest.set_player_privs(pName, privs)
+		end
+	end
 	-- Save
 	knockout.save()
 end
@@ -216,10 +223,14 @@ knockout.wake_up = function(pName)
 		end
 	end
 	-- Give the whiny player their privs back already
-	local privs = minetest.get_player_privs(pName)
-	privs.shout = true
-	privs.interact = true
-	minetest.set_player_privs(pName, privs)
+	if interacthandler then
+		interacthandler.grant(pName)
+	else
+		local privs = minetest.get_player_privs(pName)
+		privs.shout = true
+		privs.interact = true
+		minetest.set_player_privs(pName, privs)
+	end
 	-- Hide formspec
 	if p:get_hp() > 0 then
 		minetest.close_formspec(pName, "knockout:fs")

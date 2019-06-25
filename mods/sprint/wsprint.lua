@@ -36,11 +36,13 @@ minetest.register_on_joinplayer(function(player)
 end)
 minetest.register_on_leaveplayer(function(player)
 	local playerName = player:get_player_name()
-	local privs = minetest.get_player_privs(playerName)
-	if players[playerName].hasinteract then
-		privs.interact = players[playerName].hasinteract
+	if not interacthandler then
+		local privs = minetest.get_player_privs(playerName)
+		if players[playerName].hasinteract then
+			privs.interact = players[playerName].hasinteract
+		end
+		minetest.set_player_privs(playerName, privs)
 	end
-	minetest.set_player_privs(playerName, privs)
 	players[playerName] = nil
 end)
 minetest.register_globalstep(function(dtime)
@@ -133,26 +135,34 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 			
 			minetest.after(0.2, function()
 				if players[playerName]["state"] == 0 then
-			  		privs.interact = players[playerName].hasinteract
+					if interacthandler then
+						interacthandler.grant(playerName)
+					else
+						privs.interact = players[playerName].hasinteract
+						minetest.set_player_privs(playerName, privs)
+					end
 					if players[playerName].haswield then
 						player:hud_set_flags({wielditem=true})
 						players[playerName].haswield = nil
 					end
-					minetest.set_player_privs(playerName, privs)
 				end
 			end)
 		elseif state == 2 then --Primed
 			players[playerName]["timeOut"] = gameTime
 		elseif state == 3 then --Sprinting
 			player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
-			if player:hud_get_flags().wielditem then
-				players[playerName].hasinteract = privs.interact
-				privs.interact = nil
+			if player:hud_get_flags().wielditem or interacthandler then
+				if interacthandler then
+					interacthandler.revoke(playerName)
+				else
+					players[playerName].hasinteract = privs.interact
+					privs.interact = nil
+					minetest.set_player_privs(playerName, privs)
+				end
 				if player:hud_get_flags().wielditem then
 					players[playerName].haswield = true
 					player:hud_set_flags({wielditem=false})
 				end
-				minetest.set_player_privs(playerName, privs)
 			end
 		end
 		return true
