@@ -87,7 +87,7 @@ minetest.register_globalstep(function(dtime)
 			--Adjust player states
 			if players[playerName]["moving"] == false and playerInfo["state"] == 3 then --Stopped
 				setState(playerName, 0)
-			elseif players[playerName]["moving"] == true and playerInfo["state"] == 0 and playerInfo["stamina"] > SPRINT_STAMINA/4 then --Moving
+			elseif players[playerName]["moving"] == true and playerInfo["state"] == 0 and playerInfo["stamina"] > SPRINT_STAMINA/4 and minetest.check_player_privs(playerName, {interact=true}) then --Moving
 				setState(playerName, 1)
 			elseif players[playerName]["moving"] == false and playerInfo["state"] == 1 then --Primed
 				setState(playerName, 2)
