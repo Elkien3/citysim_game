@@ -8,8 +8,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 		knockout.downedplayers[name] = true
 		knockout.storage:set_string("downedplayers", minetest.serialize(knockout.downedplayers))
 		knockout.knockout(name, 60)
-		player:set_hp(10)
-		return 0
+		return 20-hp
 	end
 	return hp_change
 end, true)
