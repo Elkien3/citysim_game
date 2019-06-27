@@ -284,8 +284,8 @@ gunslinger.register_gun("gunslinger_rangedweapons:m60", {
 	range = 150,
 	base_spread = 10,
 	max_spread = 200,
-	vertical_recoil = 10,
-	horizontal_recoil = 4,
+	--vertical_recoil = 10,
+	--horizontal_recoil = 4,
 	magazine = true,
 	ammo = "gunslinger_rangedweapons:mag_m60",
 	fire_sound = "rangedweapons_machinegun"
@@ -314,8 +314,8 @@ gunslinger.register_gun("gunslinger_rangedweapons:rpk", {
 	range = 150,
 	base_spread = 15,
 	max_spread = 200,
-	vertical_recoil = 12,
-	horizontal_recoil = 5,
+	--vertical_recoil = 12,
+	---horizontal_recoil = 5,
 	magazine = true,
 	ammo = "gunslinger_rangedweapons:mag_rpk",
 	fire_sound = "rangedweapons_machinegun"
