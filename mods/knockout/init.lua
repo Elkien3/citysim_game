@@ -39,7 +39,7 @@ minetest.register_entity("knockout:entity", {
 		if puncher:get_player_name() == e.grabbed_name then return end
 		-- If punched with a water bucket revive
 		local tool = puncher:get_wielded_item():get_name()
-		if tool == "bucket:bucket_water" then
+		if tool == "bucket:bucket_water" and not knockout.downedplayers[e.grabbed_name] then
 			knockout.wake_up(e.grabbed_name)
 			return
 		end
@@ -67,13 +67,18 @@ minetest.register_entity("knockout:entity", {
 					clickerInv:set_stack("main", clicker:get_wield_index(), wield)
 					if food.replace then
 						local item = {name = food.replace}
-						if room_for_item("main", item) then
+						if clickerInv:room_for_item("main", item) then
 							clickerInv:add_item("main", item)
 						else
 							minetest.add_item(clicker:getpos(), item)
 						end
 					end
 					if grabbedPlayer ~= nil then
+						if name == "farming:carrot_gold" and knockout.downedplayers and knockout.downedplayers[e.grabbed_name] then
+							grabbedPlayer:set_hp(4)
+							knockout.downedplayers[e.grabbed_name] = nil
+							knockout.wake_up(e.grabbed_name)
+						end
 						hbhunger.eat(food.saturation, food.replace, wield, grabbedPlayer)
 						return
 					end
@@ -213,8 +218,6 @@ knockout.wake_up = function(pName)
 	end
 	-- Make player stand back up
 	default.player_attached[pName] = false
-	default.player_set_animation(p, "stand")
-	p:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
 	-- If the player was being carried, remove that
 	for name, carried in pairs(knockout.carrying) do
 		if carried == pName then
@@ -242,6 +245,12 @@ knockout.wake_up = function(pName)
 	end
 	-- Save
 	knockout.save()
+	if knockout.downedplayers[pName] then
+		minetest.after(0, function() minetest.get_player_by_name(pName):set_hp(0) knockout.downedplayers[pName] = nil end)
+	else
+		default.player_set_animation(p, "stand")
+		p:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
+	end
 end
 
 -- Decrease knockout time
@@ -257,6 +266,8 @@ knockout.load()
 dofile(path .. "/api.lua")
 dofile(path .. "/handlers.lua")
 dofile(path .. "/tools.lua")
+
+dofile(path .. "/revive.lua")
 
 if minetest.get_modpath("beds") then
 	dofile(path .. "/beds.lua")
