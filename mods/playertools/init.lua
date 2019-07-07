@@ -220,7 +220,11 @@ minetest.register_chatcommand("pulverize", {
 		minetest.chat_send_player(name, "/pulverize is disabled!! Use a trash bin or drop the item.")
 	end
 })
-
+minetest.register_chatcommand("clearinv", {
+	func = function(name, param)
+		minetest.chat_send_player(name, "/clearinv is disabled!!")
+	end
+})
 minetest.register_chatcommand("grief_check", {
 	params = "[<range>] [<hours>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
