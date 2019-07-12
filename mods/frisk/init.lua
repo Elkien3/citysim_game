@@ -97,10 +97,10 @@ local cuffedplayers = minetest.deserialize(modstorage:get_string("cuffedplayers"
 local hasshout = minetest.deserialize(modstorage:get_string("hasshout")) or {}
 minetest.register_on_joinplayer(function(player)
 	local playerName = player:get_player_name()
-	if interacthandler then
-		interacthandler.revoke(playerName)
-	end
 	if cuffedplayers[playerName] ~= nil then
+		if interacthandler then
+			interacthandler.revoke(playerName)
+		end
 		player:hud_set_flags({wielditem=false})
 	end
 end)
