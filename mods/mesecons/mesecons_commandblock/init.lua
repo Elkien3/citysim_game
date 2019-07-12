@@ -181,6 +181,7 @@ minetest.register_node("mesecons_commandblock:commandblock_off", {
 	description = "Command Block",
 	tiles = {"jeija_commandblock_off.png"},
 	inventory_image = minetest.inventorycube("jeija_commandblock_off.png"),
+	is_ground_content = false,
 	groups = {cracky=2, mesecon_effector_off=1},
 	on_construct = construct,
 	after_place_node = after_place,
@@ -189,11 +190,13 @@ minetest.register_node("mesecons_commandblock:commandblock_off", {
 	sounds = default.node_sound_stone_defaults(),
 	mesecons = {effector = {
 		action_on = commandblock_action_on
-	}}
+	}},
+	on_blast = mesecon.on_blastnode,
 })
 
 minetest.register_node("mesecons_commandblock:commandblock_on", {
 	tiles = {"jeija_commandblock_on.png"},
+	is_ground_content = false,
 	groups = {cracky=2, mesecon_effector_on=1, not_in_creative_inventory=1},
 	light_source = 10,
 	drop = "mesecons_commandblock:commandblock_off",
@@ -204,5 +207,6 @@ minetest.register_node("mesecons_commandblock:commandblock_on", {
 	sounds = default.node_sound_stone_defaults(),
 	mesecons = {effector = {
 		action_off = commandblock_action_off
-	}}
+	}},
+	on_blast = mesecon.on_blastnode,
 })

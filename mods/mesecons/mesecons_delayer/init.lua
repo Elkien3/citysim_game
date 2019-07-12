@@ -87,7 +87,7 @@ minetest.register_node("mesecons_delayer:delayer_off_"..tostring(i), {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	sunlight_propagates = true,
-	is_ground_content = true,
+	is_ground_content = false,
 	drop = 'mesecons_delayer:delayer_off_1',
 	on_punch = function (pos, node)
 		if node.name=="mesecons_delayer:delayer_off_1" then
@@ -114,7 +114,8 @@ minetest.register_node("mesecons_delayer:delayer_off_"..tostring(i), {
 			rules = delayer_get_input_rules,
 			action_on = delayer_activate
 		}
-	}
+	},
+	on_blast = mesecon.on_blastnode,
 })
 
 
@@ -142,7 +143,7 @@ minetest.register_node("mesecons_delayer:delayer_on_"..tostring(i), {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	sunlight_propagates = true,
-	is_ground_content = true,
+	is_ground_content = false,
 	drop = 'mesecons_delayer:delayer_off_1',
 	on_punch = function (pos, node)
 		if node.name=="mesecons_delayer:delayer_on_1" then
@@ -157,6 +158,7 @@ minetest.register_node("mesecons_delayer:delayer_on_"..tostring(i), {
 	end,
 	delayer_time = delaytime,
 	delayer_offstate = "mesecons_delayer:delayer_off_"..tostring(i),
+	sounds = default.node_sound_stone_defaults(),
 	mesecons = {
 		receptor =
 		{
@@ -168,7 +170,8 @@ minetest.register_node("mesecons_delayer:delayer_on_"..tostring(i), {
 			rules = delayer_get_input_rules,
 			action_off = delayer_deactivate
 		}
-	}
+	},
+	on_blast = mesecon.on_blastnode,
 })
 end
 

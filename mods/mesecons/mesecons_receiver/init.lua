@@ -42,6 +42,7 @@ mesecon.register_node("mesecons_receiver:receiver", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	walkable = false,
 	on_rotate = false,
@@ -55,6 +56,7 @@ mesecon.register_node("mesecons_receiver:receiver", {
 	},
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
 	drop = "mesecons:wire_00000000_off",
+	sounds = default.node_sound_defaults(),
 }, {
 	tiles = {
 		"receiver_top_off.png",
@@ -89,6 +91,7 @@ mesecon.register_node("mesecons_receiver:receiver_up", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	walkable = false,
 	on_rotate = false,
@@ -102,6 +105,7 @@ mesecon.register_node("mesecons_receiver:receiver_up", {
 	},
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
 	drop = "mesecons:wire_00000000_off",
+	sounds = default.node_sound_defaults(),
 }, {
 	tiles = {"mesecons_wire_off.png"},
 	mesecons = {conductor = {
@@ -132,6 +136,7 @@ mesecon.register_node("mesecons_receiver:receiver_down", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	walkable = false,
 	on_rotate = false,
@@ -145,6 +150,7 @@ mesecon.register_node("mesecons_receiver:receiver_down", {
 	},
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
 	drop = "mesecons:wire_00000000_off",
+	sounds = default.node_sound_defaults(),
 }, {
 	tiles = {"mesecons_wire_off.png"},
 	mesecons = {conductor = {
@@ -203,7 +209,6 @@ function mesecon.receiver_place(rcpt_pos)
 	local param2 = minetest.dir_to_facedir(minetest.facedir_to_dir(node.param2))
 
 	if string.find(nn.name, "mesecons:wire_") ~= nil then
-		minetest.dig_node(pos)
 		minetest.set_node(pos, {name = rcvtype, param2 = param2})
 		mesecon.on_placenode(pos, nn)
 	end
@@ -212,8 +217,7 @@ end
 function mesecon.receiver_remove(rcpt_pos, dugnode)
 	local pos = mesecon.receiver_get_pos_from_rcpt(rcpt_pos, dugnode.param2)
 	local nn = minetest.get_node(pos)
-	if string.find(nn.name, "mesecons_receiver:receiver_") ~=nil then
-		minetest.dig_node(pos)
+	if string.find(nn.name, "mesecons_receiver:receiver_") ~= nil then
 		local node = {name = "mesecons:wire_00000000_off"}
 		minetest.set_node(pos, node)
 		mesecon.on_placenode(pos, node)

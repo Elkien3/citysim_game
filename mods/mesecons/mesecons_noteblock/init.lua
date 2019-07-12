@@ -1,6 +1,7 @@
 minetest.register_node("mesecons_noteblock:noteblock", {
 	description = "Noteblock",
 	tiles = {"mesecons_noteblock.png"},
+	is_ground_content = false,
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2},
 	on_punch = function(pos, node) -- change sound when punched
 		node.param2 = (node.param2+1)%12
@@ -12,7 +13,8 @@ minetest.register_node("mesecons_noteblock:noteblock", {
 		action_on = function(pos, node)
 			mesecon.noteblock_play(pos, node.param2)
 		end
-	}}
+	}},
+	on_blast = mesecon.on_blastnode,
 })
 
 minetest.register_craft({
@@ -43,7 +45,7 @@ local soundnames = {
 local node_sounds = {
 	["default:glass"] = "mesecons_noteblock_hihat",
 	["default:stone"] = "mesecons_noteblock_kick",
-	["default:lava_source"] = "fire_large",
+	["default:lava_source"] = "fire_fire",
 	["default:chest"] = "mesecons_noteblock_snare",
 	["default:tree"] = "mesecons_noteblock_crash",
 	["default:wood"] = "mesecons_noteblock_litecrash",

@@ -77,17 +77,19 @@ end
 
 -- Vertical wire
 mesecon.register_node("mesecons_extrawires:vertical", {
-	description = "Vertical mesecon",
+	description = "Vertical Mesecon",
 	drawtype = "nodebox",
 	walkable = false,
 	paramtype = "light",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	selection_box = vertical_box,
 	node_box = vertical_box,
 	is_vertical_conductor = true,
 	drop = "mesecons_extrawires:vertical_off",
 	after_place_node = vertical_update,
-	after_dig_node = vertical_update
+	after_dig_node = vertical_update,
+	sounds = default.node_sound_defaults(),
 },{
 	tiles = {"mesecons_wire_off.png"},
 	groups = {dig_immediate=3},
@@ -112,6 +114,7 @@ mesecon.register_node("mesecons_extrawires:vertical_top", {
 	drawtype = "nodebox",
 	walkable = false,
 	paramtype = "light",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	groups = {dig_immediate=3, not_in_creative_inventory=1},
 	selection_box = top_box,
@@ -119,7 +122,8 @@ mesecon.register_node("mesecons_extrawires:vertical_top", {
 	is_vertical_conductor = true,
 	drop = "mesecons_extrawires:vertical_off",
 	after_place_node = vertical_update,
-	after_dig_node = vertical_update
+	after_dig_node = vertical_update,
+	sounds = default.node_sound_defaults(),
 },{
 	tiles = {"mesecons_wire_off.png"},
 	mesecons = {conductor = {
@@ -142,6 +146,7 @@ mesecon.register_node("mesecons_extrawires:vertical_bottom", {
 	drawtype = "nodebox",
 	walkable = false,
 	paramtype = "light",
+	is_ground_content = false,
 	sunlight_propagates = true,
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
 	selection_box = bottom_box,
@@ -149,7 +154,8 @@ mesecon.register_node("mesecons_extrawires:vertical_bottom", {
 	is_vertical_conductor = true,
 	drop = "mesecons_extrawires:vertical_off",
 	after_place_node = vertical_update,
-	after_dig_node = vertical_update
+	after_dig_node = vertical_update,
+	sounds = default.node_sound_defaults(),
 },{
 	tiles = {"mesecons_wire_off.png"},
 	mesecons = {conductor = {

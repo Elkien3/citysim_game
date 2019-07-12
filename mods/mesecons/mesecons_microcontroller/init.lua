@@ -69,6 +69,7 @@ minetest.register_node(nodename, {
 
 	sunlight_propagates = true,
 	paramtype = "light",
+	is_ground_content = false,
 	walkable = true,
 	groups = groups,
 	drop = "mesecons_microcontroller:microcontroller0000 1",
@@ -102,6 +103,12 @@ minetest.register_node(nodename, {
 		meta:set_string("eeprom", r)
 	end,
 	on_receive_fields = function(pos, formanme, fields, sender)
+		local player_name = sender:get_player_name()
+		if minetest.is_protected(pos, player_name) and
+				not minetest.check_player_privs(player_name, {protection_bypass=true}) then
+			minetest.record_protection_violation(pos, player_name)
+			return
+		end
 		local meta = minetest.get_meta(pos)
 		if fields.band then
 			fields.code = "sbi(C, A&B) :A and B are inputs, C is output"
@@ -138,20 +145,34 @@ minetest.register_node(nodename, {
 		rules = microc_rules[node.name]
 		mesecon.receptor_off(pos, rules)
 	end,
+	on_blast = mesecon.on_blastnode,
 })
 end
 end
 end
 end
 
-minetest.register_craft({
-	output = 'craft "mesecons_microcontroller:microcontroller0000" 2',
-	recipe = {
-		{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
-		{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
-		{'group:mesecon_conductor_craftable', 'group:mesecon_conductor_craftable', ''},
-	}
-})
+if minetest.get_modpath("mesecons_luacontroller") then
+	minetest.register_craft({
+		type = "shapeless",
+		output = "mesecons_microcontroller:microcontroller0000",
+		recipe = {"mesecons_luacontroller:luacontroller0000"},
+	})
+	minetest.register_craft({
+		type = "shapeless",
+		output = "mesecons_luacontroller:luacontroller0000",
+		recipe = {"mesecons_microcontroller:microcontroller0000"},
+	})
+else
+	minetest.register_craft({
+		output = 'craft "mesecons_microcontroller:microcontroller0000" 2',
+		recipe = {
+			{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
+			{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
+			{'group:mesecon_conductor_craftable', 'group:mesecon_conductor_craftable', ''},
+		}
+	})
+end
 
 yc.reset = function(pos)
 	yc.action(pos, {a=false, b=false, c=false, d=false})
@@ -257,7 +278,7 @@ yc.parsecode = function(code, pos)
 end
 
 yc.parse_get_command = function(code, starti)
-	i = starti
+	local i = starti
 	local s
 	while s ~= "" do
 		s = string.sub(code, i, i)
@@ -283,7 +304,7 @@ yc.parse_get_command = function(code, starti)
 end
 
 yc.parse_get_params = function(code, starti)
-	i = starti
+	local i = starti
 	local s
 	local params = {}
 	local is_string = false
@@ -306,7 +327,7 @@ yc.parse_get_params = function(code, starti)
 end
 
 yc.parse_get_eeprom_param = function(cond, starti)
-	i = starti
+	local i = starti
 	local s
 	local addr
 	while s ~= "" do
@@ -473,7 +494,7 @@ end
 
 --Condition parsing
 yc.command_if_getcondition = function(code, starti)
-	i = starti
+	local i = starti
 	local s
 	local brackets = 1 --1 Bracket to close
 	while s ~= "" do
@@ -550,6 +571,7 @@ yc.command_parsecondition = function(cond, L, eeprom)
 		if cond:sub(i+1, i+1) == nil then break end
 		if s == "&" then
 			if a==nil then return nil end
+			if b==nil then return nil end
 			local buf = ((a==1) and (b==1))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
@@ -559,6 +581,7 @@ yc.command_parsecondition = function(cond, L, eeprom)
 		end
 		if s == "|" then
 			if a==nil then return nil end
+			if b==nil then return nil end
 			local buf = ((a == 1) or (b == 1))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
@@ -568,6 +591,7 @@ yc.command_parsecondition = function(cond, L, eeprom)
 		end
 		if s == "~" then
 			if a==nil then return nil end
+			if b==nil then return nil end
 			local buf = (((a == 1) or (b == 1)) and not((a==1) and (b==1)))
 			if buf == true  then buf = "1" end
 			if buf == false then buf = "0" end
