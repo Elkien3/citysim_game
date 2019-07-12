@@ -1,0 +1,63 @@
+--require users to be in the right channel and not deafened
+kick non-proximity users out of proximity chat?
+make minetest read with http instead of the existing hack, maybe detect disconnect as well.
+--find a good way to indicate mumble or non-mumble users
+updated mumble tutorial
+make mumble detect closing the handler
+
+Grenades: Smoke, Gas, Flash, Fragmentation, Molotov
+--Sniper rifles need no binoculars, binoculars only can be used while in hand
+bullet drop and wind effect, wind meter and rangefinder
+Reloading for Shotguns/non magazine guns
+
+--make car trunk usable by location/view look
+--make you get into the closest car seat
+--add back ejecting from car
+--speed gun
+car damage system
+spotlight/headlights
+turn signal
+cruise control
+gas usage
+
+weather
+seasons
+
+clean glass
+
+mini-protection
+
+--knockout force feed
+--force bed
+--cuff knocked person
+
+city plot records
+criminal records
+weapons laws
+
+scuba suit, remove water ability from hazmat
+fire suit too?
+
+nerf radioactive stuff
+
+craft for boots
+
+drugs longer lasting
+
+technic power meters
+make windmills a bit less reliable
+
+--trying to eject from seat crashes server
+mute icon dissapears
+fix flower recipie
+--drugs crash server
+cars can be disconnected and the spedometer will remain
+drugs still effect you after you died
+leaving while knocked crash server
+--xban gui crashes server
+doors lockpickable
+--envelopes
+drills lasers, and chainsaws bypass betterfall
+
+more cnc things
+golden carrots nerf
