@@ -1,6 +1,10 @@
 -- Create formspec structure
 local function getFs(name)
-	return "size[5,3]label[1.4,1;You are unconscious!]label[0.8,2;Time remaining: " .. tostring(knockout.knocked_out[name]) .. " seconds]"
+	if knockout.downedplayers and knockout.downedplayers[name] then
+		return "size[5,3]label[1.4,1;You are bleeding out!]label[0.8,2;Time remaining: " .. tostring(knockout.knocked_out[name]) .. " seconds]"
+	else
+		return "size[5,3]label[1.4,1;You are unconscious!]label[0.8,2;Time remaining: " .. tostring(knockout.knocked_out[name]) .. " seconds]"
+	end
 end
 
 -- Globalstep to revive players
