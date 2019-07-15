@@ -462,6 +462,8 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 		heat = mesecon.get_heat(pos),
 		heat_max = mesecon.setting("overheat_max", 20),
 		print = safe_print,
+		serialize = safe_serlialize,
+		deserialize = safe_deserlialize,
 		interrupt = get_interrupt(pos, itbl, send_warning),
 		digiline_send = get_digiline_send(pos, itbl, send_warning),
 		string = {
