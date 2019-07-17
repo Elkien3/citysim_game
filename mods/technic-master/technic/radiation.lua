@@ -444,12 +444,44 @@ end
 if rawget(_G, "bucket") and bucket.register_liquid then
 	bucket.register_liquid(
 		"technic:corium_source",
-		"technic:corium_flowing",
-		"technic:bucket_corium",
-		"technic_bucket_corium.png",
-		"Corium Bucket"
+		"technic:corium_flowing"
+		--"technic:bucket_corium",
+		--"technic_bucket_corium.png",
+		--"Corium Bucket"
 	)
 end
+
+minetest.register_alias("technic:bucket_corium", "technic:uranium_fuel")
+
+minetest.override_item("technic:corium_source", {
+	on_construct = function(pos)
+		local timer = minetest.get_node_timer(pos)
+		timer:start(math.random(360, 480)) -- in seconds
+	end,
+	on_timer = function(pos)
+		local node = minetest.get_node(pos)
+		if node.name == "ignore" then
+			minetest.get_voxel_manip():read_from_map(pos, pos)
+			node = minetest.get_node(pos)
+		end
+		if node.name == "technic:corium_source" then
+			minetest.remove_node(pos)
+		end
+	end
+})
+minetest.register_abm({
+	label = "Corium Removal",
+	nodenames = {"technic:corium_source"},
+	interval = 60,
+	chance = 8,
+	catch_up = false,
+	action = function(pos)
+		local timer = minetest.get_node_timer(pos)
+		if not timer:is_started() then
+			minetest.remove_node(pos)
+		end
+	end,
+})
 
 minetest.register_node("technic:chernobylite_block", {
         description = S("Chernobylite Block"),
