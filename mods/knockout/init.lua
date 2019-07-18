@@ -74,11 +74,6 @@ minetest.register_entity("knockout:entity", {
 						end
 					end
 					if grabbedPlayer ~= nil then
-						if name == "farming:carrot_gold" and knockout.downedplayers and knockout.downedplayers[e.grabbed_name] then
-							grabbedPlayer:set_hp(4)
-							knockout.downedplayers[e.grabbed_name] = nil
-							knockout.wake_up(e.grabbed_name)
-						end
 						hbhunger.eat(food.saturation, food.replace, wield, grabbedPlayer)
 						return
 					end
@@ -246,7 +241,7 @@ knockout.wake_up = function(pName)
 	-- Save
 	knockout.save()
 	if knockout.downedplayers[pName] then
-		minetest.after(0, function() minetest.get_player_by_name(pName):set_hp(0) knockout.downedplayers[pName] = nil end)
+		minetest.after(0, function() minetest.get_player_by_name(pName):set_hp(0) knockout.downedplayers[pName] = nil knockout.savedownedplayers() end)
 	else
 		default.player_set_animation(p, "stand")
 		p:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
