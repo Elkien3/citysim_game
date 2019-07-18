@@ -324,14 +324,6 @@ for orename,def in pairs(oredefs) do
 end
 
 -- Copper rail (special node):
-minetest.register_craft({
-	output = "moreores:copper_rail 24",
-	recipe = {
-		{"default:copper_ingot", "", "default:copper_ingot"},
-		{"default:copper_ingot", "group:stick", "default:copper_ingot"},
-		{"default:copper_ingot", "", "default:copper_ingot"}
-	}
-})
 
 if default_tin then
 	minetest.register_alias("moreores:mineral_tin", "default:stone_with_tin")
@@ -364,6 +356,14 @@ if minetest.get_modpath("carts") then
 		wield_image = "moreores_copper_rail.png",
 		groups = carts:get_rail_groups(),
 	}, {})
+	minetest.register_craft({
+		output = "moreores:copper_rail 24",
+		recipe = {
+			{"default:copper_ingot", "", "default:copper_ingot"},
+			{"default:copper_ingot", "group:stick", "default:copper_ingot"},
+			{"default:copper_ingot", "", "default:copper_ingot"}
+		}
+	})
 end
 
 if minetest.settings:get_bool("log_mods") then
