@@ -22,7 +22,7 @@ end
 local function finishfrisk(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	if (pPlayer:getpos().x ~= oldpos.x) or (pPlayer:getpos().y ~= oldpos.y) or (pPlayer:getpos().z ~= oldpos.z) then
+	if vector.distance(pPlayer:getpos(), oldpos) > .1 then
 		minetest.chat_send_player(pName, "You moved, frisk canceled.")
 		minetest.chat_send_player(name, pName.." moved, frisk canceled.")
 		return
@@ -119,7 +119,7 @@ end)
 local function finishcuff(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	if (pPlayer:getpos().x ~= oldpos.x) or (pPlayer:getpos().y ~= oldpos.y) or (pPlayer:getpos().z ~= oldpos.z) then
+	if vector.distance(pPlayer:getpos(), oldpos) > .1 then
 		minetest.chat_send_player(pName, "You moved, cuff canceled.")
 		minetest.chat_send_player(name, pName.." moved, cuff canceled.")
 		local wearcalc
