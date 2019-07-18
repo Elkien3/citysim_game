@@ -108,14 +108,14 @@ minetest.register_globalstep(function(dtime)
 	main_timer = main_timer + dtime
 	timer = timer + dtime
 	timer2 = timer2 + dtime
-	if main_timer > hbhunger.HUD_TICK or timer > 4 or timer2 > hbhunger.HUNGER_TICK then
+	if main_timer > hbhunger.HUD_TICK or timer > 15 or timer2 > hbhunger.HUNGER_TICK then
 		if main_timer > hbhunger.HUD_TICK then main_timer = 0 end
 		for _,player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 
 		local h = tonumber(hbhunger.hunger[name])
 		local hp = player:get_hp()
-		if timer > 4 then
+		if timer > 15 then
 			-- heal player by 1 hp if not dead and satiation is > 15 (of 30)
 			if h > 15 and hp > 0 and player:get_breath() > 0 then
 				player:set_hp(hp+1)
@@ -143,7 +143,7 @@ minetest.register_globalstep(function(dtime)
 			end
 		end
 	end
-	if timer > 4 then timer = 0 end
+	if timer > 15 then timer = 0 end
 	if timer2 > hbhunger.HUNGER_TICK then timer2 = 0 end
 end)
 
