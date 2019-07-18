@@ -38,11 +38,11 @@ minetest.register_craft({
 
 -- golden carrot
 minetest.register_craftitem("farming:carrot_gold", {
-	description = S("Golden Carrot"),
+	description = S("Golden Carrot (No longer heals, eat to regain gold lumps.)"),
 	inventory_image = "farming_carrot_gold.png",
 	on_use = minetest.item_eat(6),
 })
-
+--[[
 minetest.register_craft({
 	output = "farming:carrot_gold",
 	recipe = {
@@ -51,7 +51,7 @@ minetest.register_craft({
 		{"", "default:gold_lump", ""},
 	}
 })
-
+--]]
 -- carrot definition
 local crop_def = {
 	drawtype = "plantlike",

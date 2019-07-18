@@ -76,7 +76,10 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal, sound
 			local name = user:get_player_name()
 			local h = tonumber(hbhunger.hunger[name])
 			local hp = user:get_hp()
-			minetest.sound_play({name = sound or "hbhunger_eat_generic", gain = 1}, {pos=user:getpos(), max_hear_distance = 16, object=user})
+			if h == nil or hp == nil then
+				return
+			end
+			minetest.sound_play({name = sound or "hbhunger_eat_generic", gain = 1}, {pos=user:getpos(), max_hear_distance = 16})
 
 			-- Saturation
 			if h < 30 and hunger_change then
@@ -99,8 +102,16 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal, sound
 				poisenp(1, poisen, 0, user)
 			end
 
-			--sound:eat
-			itemstack:add_item(replace_with_item)
+			if itemstack:get_count() == 0 then
+				itemstack:add_item(replace_with_item)
+			else
+				local inv = user:get_inventory()
+				if inv:room_for_item("main", replace_with_item) then
+					inv:add_item("main", replace_with_item)
+				else
+					minetest.add_item(user:getpos(), replace_with_item)
+				end
+			end
 		end
 		return itemstack
 	end
@@ -344,14 +355,14 @@ if minetest.get_modpath("farming") and farming.mod == "redo" then
    hbhunger.register_food("farming:cucumber", 4)
    hbhunger.register_food("farming:tomato", 4)
    hbhunger.register_food("farming:carrot", 3)
-   hbhunger.register_food("farming:carrot_gold", 6, "", nil, 8)
+   hbhunger.register_food("farming:carrot_gold", 6, "default:gold_lump 4")
    hbhunger.register_food("farming:corn", 3)
    hbhunger.register_food("farming:corn_cob", 5)
    hbhunger.register_food("farming:melon_slice", 2)
    hbhunger.register_food("farming:pumpkin_slice", 1)
    hbhunger.register_food("farming:pumpkin_bread", 9)
    hbhunger.register_food("farming:coffee_cup", 2, "farming:drinking_cup")
-   hbhunger.register_food("farming:coffee_cup_hot", 3, "farming:drinking_cup", nil, 2)
+   hbhunger.register_food("farming:coffee_cup_hot", 3, "farming:drinking_cup")
    hbhunger.register_food("farming:cookie", 2)
    hbhunger.register_food("farming:chocolate_dark", 3)
    hbhunger.register_food("farming:donut", 4)

@@ -1,11 +1,6 @@
-local S
-if (minetest.get_modpath("intllib")) then
-	S = intllib.Getter()
-else
-	S = function ( s ) return s end
-end
+local S = minetest.get_translator("hbhunger")
 
-if minetest.setting_getbool("enable_damage") then
+if minetest.settings:get_bool("enable_damage") then
 
 hbhunger = {}
 hbhunger.food = {}
@@ -113,26 +108,19 @@ minetest.register_globalstep(function(dtime)
 	main_timer = main_timer + dtime
 	timer = timer + dtime
 	timer2 = timer2 + dtime
-	if main_timer > hbhunger.HUD_TICK or timer > 15 or timer2 > hbhunger.HUNGER_TICK then
+	if main_timer > hbhunger.HUD_TICK or timer > 4 or timer2 > hbhunger.HUNGER_TICK then
 		if main_timer > hbhunger.HUD_TICK then main_timer = 0 end
 		for _,player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 
 		local h = tonumber(hbhunger.hunger[name])
 		local hp = player:get_hp()
-		local thirst = {}
-		
-		if minetest.get_modpath("thirsty") then
-			thirst = tonumber(thirsty.get_hydro(player))
-		else
-			thirst = 20
-		end
-		if timer > 15 then
+		if timer > 4 then
 			-- heal player by 1 hp if not dead and satiation is > 15 (of 30)
-			if h > 15 and hp > 0 and player:get_breath() > 0 and thirst > 10 then
+			if h > 15 and hp > 0 and player:get_breath() > 0 then
 				player:set_hp(hp+1)
-					-- or damage player by 1 hp if satiation is < 2 (of 30)
-			elseif h <= 1 then
+				-- or damage player by 1 hp if satiation is < 2 (of 30)
+				elseif h <= 1 then
 					if hp-1 >= 0 then player:set_hp(hp-1) end
 				end
 			end
@@ -155,7 +143,7 @@ minetest.register_globalstep(function(dtime)
 			end
 		end
 	end
-	if timer > 15 then timer = 0 end
+	if timer > 4 then timer = 0 end
 	if timer2 > hbhunger.HUNGER_TICK then timer2 = 0 end
 end)
 
