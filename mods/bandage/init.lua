@@ -124,3 +124,12 @@ minetest.register_craftitem('bandage:bandage', {
 		bandage(user, obj)
 	end
 })
+
+minetest.register_craft({
+	output = 'bandage:bandage',
+	recipe = {
+        {'', '', ''},
+		{'wool:white', 'farming:hemp_fibre', 'wool:white'},
+        {'', '', ''},
+	}
+})
