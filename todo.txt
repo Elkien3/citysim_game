@@ -60,4 +60,4 @@ doors lockpickable
 drills lasers, and chainsaws bypass betterfall
 
 more cnc things
-golden carrots nerf
+--golden carrots nerf
