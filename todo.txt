@@ -33,7 +33,8 @@ mini-protection
 
 city plot records
 criminal records
-weapons laws
+--weapons laws
+radioactive related laws
 
 scuba suit, remove water ability from hazmat
 fire suit too?

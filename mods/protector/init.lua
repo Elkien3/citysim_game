@@ -204,19 +204,17 @@ protector.can_dig = function(r, pos, digger, onlyowner, infolevel, small)
 
 		return false
 	end
-
 	-- find the protector nodes
+	local r2 = r
 	local checkpos = pos
-	local originalr = r
-	if small then r = originalr*.75 end
+	if small then r = r - (protector_radius/2) end
 	local pos = minetest.find_nodes_in_area(
 		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
 		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
 		{"protector:protect"})
-	r = originalr
 	local pos2 = minetest.find_nodes_in_area(
-		{x = checkpos.x - r/2, y = checkpos.y - r/2, z = checkpos.z - r/2},
-		{x = checkpos.x + r/2, y = checkpos.y + r/2, z = checkpos.z + r/2},
+		{x = checkpos.x - ((protector_radius/2)-r), y = checkpos.y - ((protector_radius/2)-r), z = checkpos.z - ((protector_radius/2)-r)},
+		{x = checkpos.x + ((protector_radius/2)-r), y = checkpos.y + ((protector_radius/2)-r), z = checkpos.z + ((protector_radius/2)-r)},
 		{"protector:protect2"})
 	for k,v in pairs(pos2) do table.insert(pos, v) end
 
@@ -702,7 +700,7 @@ minetest.register_node("protector:display_node", {
 	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
 	drop = "",
 })
-local x = protector_radius/2
+local x = (protector_radius/2)
 minetest.register_node("protector:display_node2", {
 	tiles = {"protector_display.png"},
 	use_texture_alpha = true,
