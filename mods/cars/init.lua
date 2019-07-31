@@ -441,7 +441,7 @@ local function car_step(self, dtime)
 	
 	--sound
 	local abs_v = math.abs(self.v)
-	if driver ~= nil then
+	if abs_v > 0 and driver ~= nil then
 		self.timer1 = self.timer1 + dtime
 		if self.timer1 > .1 then
 			--if driver:get_player_control().up then
