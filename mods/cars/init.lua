@@ -223,30 +223,45 @@ local function getClosest(player, car)
 	return closest.id
 end
 
+local trunkplayer = {}
 local function trunk_rightclick(self, clicker)
-	local owner = self.owner
-	if not owner then owner = self end
-	if not owner then return end
-	local inventory = minetest.create_detached_inventory("cars_"..clicker:get_player_name(), {
+	local name = clicker:get_player_name()
+	trunkplayer[name] = self
+	local inventory = minetest.create_detached_inventory("cars_"..name, {
 		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-			owner.trunkinv = inv:get_list("trunk")
+			self.trunkinv = inv:get_list("trunk")
 		end,
 		on_put = function(inv, listname, index, stack, player)
-			owner.trunkinv = inv:get_list("trunk")
+			self.trunkinv = inv:get_list("trunk")
 		end,
 		on_take = function(inv, listname, index, stack, player)
-			owner.trunkinv = inv:get_list("trunk")
+			self.trunkinv = inv:get_list("trunk")
 		end,
 	})
 	inventory:set_size("trunk", 12)
-	local templist = table.copy(owner.trunkinv)
+	local templist = table.copy(self.trunkinv)
 	inventory:set_list("trunk", templist)
 	local formspec =
            "size[8,8]"..
-           "list[detached:cars_"..clicker:get_player_name()..";trunk;1,1;6,2;]"..
+           "list[detached:cars_"..name..";trunk;1,1;6,2;]"..
            "list[current_player;main;0,4;8,4;]"
-    minetest.show_formspec(clicker:get_player_name(), "cars_trunk", formspec)
+    minetest.show_formspec(name, "cars_trunk", formspec)
 end
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname == "cars_trunk" then
+		if fields.quit then
+			local name = player:get_player_name()
+			if trunkplayer[name] then
+				minetest.sound_play("closetrunk", {
+					max_hear_distance = 24,
+					gain = 1,
+					object = trunkplayer[name].object
+				})
+				trunkplayer[name] = nil
+			end
+		end
+	end
+end)
 
 local function car_step(self, dtime)
 	if not self.v then self.v = 0 end
@@ -346,11 +361,8 @@ local function car_step(self, dtime)
 		self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
 		self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
 		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
-		
-		--self.trunk:set_detach()
-		--self.trunk:setpos(self.object:getpos())
+
 		if attachTimer >= 5 then
-			self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
 			self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
 			self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
 			self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
@@ -558,12 +570,6 @@ for id, color in pairs (carlist) do
 			if self.driverseat then
 				self.driverseat:set_attach(self.object, "", {x = -4, y = 3, z = 3}, {x = 0, y = 0, z = 0})
 			end--]]
-			if not self.trunk then
-				self.trunk = minetest.add_entity(pos, "cars:trunk")
-			end
-			if self.trunk then
-				self.trunk:set_attach(self.object, "", {x = 0, y = 4, z = -10}, {x = 0, y = 0, z = 0})
-			end
 			if not self.licenseplate then
 				self.licenseplate = minetest.add_entity(pos, "cars:licenseplate")
 			end
@@ -610,7 +616,11 @@ for id, color in pairs (carlist) do
 				end
 				if closeid then
 					if closeid == 0 then
-						--clicker:right_click(self.trunk)
+						minetest.sound_play("opentrunk", {
+							max_hear_distance = 24,
+							gain = 1,
+							object = self.object
+						})
 						trunk_rightclick(self, clicker)
 						return
 					end
@@ -679,6 +689,8 @@ end
 minetest.register_entity("cars:wheel", {
     hp_max = 1,
     physical = false,
+	pointable = false,
+	collide_with_objects = false,
     weight = 5,
     collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
     visual = "mesh",
@@ -701,7 +713,9 @@ minetest.register_entity("cars:licenseplate", {
     visual = "upright_sprite",
     textures = {"invisible.png"},
 	visual_size = {x=1.2, y=1.2, z=1.2},
-
+	physical = false,
+	pointable = false,
+	collide_with_objects = false,
     on_activate = function(self)
 		minetest.after(.1, function()
 			if not self.object:get_attach() then
@@ -718,6 +732,8 @@ minetest.register_entity("cars:licenseplate", {
 minetest.register_entity("cars:steeringwheel", {
     hp_max = 1,
     physical = false,
+	pointable = false,
+	collide_with_objects = false,
     weight = 5,
     collisionbox = {-0.2,-0.3,-0.2, 0.2,0.3,0.2},
     visual = "mesh",
@@ -746,29 +762,9 @@ minetest.register_entity("cars:steeringwheel", {
 })
 
 minetest.register_entity("cars:trunk", {
-    hp_max = 1,
-    physical = false,
-    weight = 5,
-	owner = {},
-    collisionbox = {-0.5,-0.3,-0.5, 0.5,0.3,0.5},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "steering.x",
-    textures = {"car_dark_grey.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_rightclick = trunk_rightclick,
 	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			else
-				self.owner = self.object:get_attach():get_luaentity()
-				self.object:set_armor_groups({immortal = 1})
-			end
-		end)
-	end,
+		self.object:remove()
+	end
 })
 minetest.register_on_leaveplayer(function(player)
 	detach(player)
