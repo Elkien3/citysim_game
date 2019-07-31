@@ -112,8 +112,7 @@ local function randomNumber(length)
 	end
 	return text
 end
-
-local function wheelspeed(car, forced)
+local function wheelspeed(car)
 	if not car then return end
 	if not car.object then return end
 	if not car.object:getvelocity() then return end
@@ -127,15 +126,12 @@ local function wheelspeed(car, forced)
 	for id, wheel in pairs(car.wheel) do
 		wheel:set_animation({x=2, y=9}, fps*direction, 0, true)
 	end
-	if not forced then
-		if v == 0 then
-			minetest.after(1, wheelspeed, car, false)
-		else
-			local i = 8
-			if i/fps > 1 then i = i/2 end
-			if i/fps > 1 then i = i/2 end
-			minetest.after(i/fps, wheelspeed, car, false)
+	if v ~= 0 then
+		local i = 16
+		while true do
+			if i/fps > 1 then i = i/2 else break end
 		end
+		minetest.after(i/fps, wheelspeed, car)
 	end
 end
 
@@ -396,19 +392,6 @@ local function car_step(self, dtime)
 			end
 		end
 	end
-	
-	if math.abs(self.v) < .05 then
-		self.object:setvelocity({x = 0, y = 0, z = 0})
-		self.v = 0
-		if self.wheelsound then
-			minetest.sound_fade(self.wheelsound, 30, 0)
-		end
-		if self.windsound then
-			minetest.sound_fade(self.windsound, 30, 0)
-		end
-		wheelspeed(self, true)
-		return
-	end
 	if self.v > max_speed then
 		self.v = max_speed
 	elseif self.v < -1*max_speed/2 then
@@ -422,6 +405,21 @@ local function car_step(self, dtime)
 	new_velo = get_velocity(self.v, self.object:getyaw(), velocity)
 	self.object:setvelocity(new_velo)
 	
+	if math.abs(self.v) < .05 and math.abs(self.v) > 0 then
+		self.object:setvelocity({x = 0, y = 0, z = 0})
+		self.v = 0
+		if self.wheelsound then
+			minetest.sound_fade(self.wheelsound, 30, 0)
+		end
+		if self.windsound then
+			minetest.sound_fade(self.windsound, 30, 0)
+		end
+		wheelspeed(self)
+		return
+	end
+	if self.lastv and vector.length(self.lastv) == 0 and self.v > 0 then
+		wheelspeed(self)
+	end
 	--[[set acceleration for replication
 	if self.lastv then
 		local accel = vector.subtract(self.lastv, new_velo)
