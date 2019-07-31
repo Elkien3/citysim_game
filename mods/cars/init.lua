@@ -12,10 +12,15 @@ end
 local player_attached = {}
 
 local attachTimer = 0
+local animateTimer = 0
 minetest.register_globalstep(function(dtime)
 	attachTimer = attachTimer + dtime;
+	animateTimer = animateTimer + dtime
 	if attachTimer >= 5 then
 		minetest.after(0, function() attachTimer = 0 end)
+	end
+	if animateTimer >= .08 then
+		minetest.after(0, function() animateTimer = 0 end)
 	end
 end)
 
@@ -353,9 +358,11 @@ local function car_step(self, dtime)
 				self.wheelpos = 0
 			end
 		end
-		self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
-		self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
-		self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+		if animateTimer >= .08 then
+			self.wheel.frontright:set_attach(self.object, "", {z=10.75,y=2.5,x=-8.875}, {x=0,y=self.wheelpos,z=0})
+			self.wheel.frontleft:set_attach(self.object, "", {z=10.75,y=2.5,x=8.875}, {x=0,y=self.wheelpos,z=0})
+			self.steeringwheel:set_attach(self.object, "", {z=5.62706,y=8.25,x=-4.0}, {x=0,y=0,z=-self.wheelpos*8})
+		end
 		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 
 		if attachTimer >= 5 then
