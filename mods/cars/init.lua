@@ -301,7 +301,7 @@ local function car_step(self, dtime)
 		end--]]
 		if crash and not self.crash then
 			self.crash = true
-			minetest.after(.1, function()
+			minetest.after(.5, function()
 				self.crash = false
 			end)
 			minetest.sound_play("crash"..math.random(1,3), {
@@ -310,6 +310,20 @@ local function car_step(self, dtime)
 				gain = 10,
 				object = self.object
 			})
+			local checkpos = vector.add(pos, vector.multiply(vector.normalize(self.lastv), .8))
+			local objects = minetest.get_objects_inside_radius(checkpos, 1)
+			for _,obj in pairs(objects) do
+				if obj:is_player() then
+					for id, passengers in pairs (self.passengers) do
+						if passengers.player == obj then goto next end
+					end
+					local puncher = self.passengers[1].player
+					if not puncher then puncher = self end
+					local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
+					obj:punch(puncher, nil, {damage_groups={fleshy=dmg}})
+					::next::
+				end
+			end
 		end
 	end
 	local driver = self.passengers[1].player
