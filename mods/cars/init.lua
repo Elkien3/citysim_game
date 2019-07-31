@@ -424,7 +424,7 @@ local function car_step(self, dtime)
 		wheelspeed(self)
 		return
 	end
-	if self.lastv and vector.length(self.lastv) == 0 and self.v > 0 then
+	if self.lastv and vector.length(self.lastv) == 0 and math.abs(self.v) > 0 then
 		wheelspeed(self)
 	end
 	--[[set acceleration for replication
