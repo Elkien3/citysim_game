@@ -320,6 +320,8 @@ local function car_step(self, dtime)
 					local puncher = self.passengers[1].player
 					if not puncher then puncher = self end
 					local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
+					local name = obj:get_player_name()
+					if default.player_attached[name] then dmg = dmg*.5 end
 					obj:punch(puncher, nil, {damage_groups={fleshy=dmg}})
 					::next::
 				end
