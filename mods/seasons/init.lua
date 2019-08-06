@@ -370,7 +370,7 @@ end
 minetest.after(1, tick, true)
 
 minetest.register_on_leaveplayer(function(player)
-	if needsChange and #minetest.get_connected_player() == 0 then
+	if needsChange and #minetest.get_connected_players() == 0 then
 		handleseasons()
 		needsChange = false
 	end
