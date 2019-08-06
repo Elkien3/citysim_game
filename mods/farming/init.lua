@@ -79,8 +79,14 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 160.0*4
-local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG / 6
+local STAGE_LENGTH_AVG = 36000
+local STAGE_LENGTH_AVG_ORIGINAL = STAGE_LENGTH_AVG
+local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
+function farming_setspeed(factor)
+	if not factor then return end
+	STAGE_LENGTH_AVG = STAGE_LENGTH_AVG_ORIGINAL*factor
+	STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
+end
 
 
 -- return plant name and stage from node provided
