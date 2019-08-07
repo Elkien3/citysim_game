@@ -107,7 +107,7 @@ local function reload(stack, player, ammo)
 		if is_mag then
 			local id
 			local magstack
-			local magwear = 65534
+			local magwear = 65535
 			for i = 1, inv:get_size("main") do
 				if inv:get_stack("main", i):get_name() == ammo then
 					if inv:get_stack("main", i):get_wear() <= magwear then
