@@ -244,12 +244,13 @@ local function set_growing(pos, stages_left)
 	if stages_left > 0 then
 
 		if not timer:is_started() then
-
-			local stage_length = statistics.normal(STAGE_LENGTH_AVG, STAGE_LENGTH_DEV)
-
-			stage_length = clamp(stage_length, 0.5 * STAGE_LENGTH_AVG, 3.0 * STAGE_LENGTH_AVG)
-
-			timer:set(stage_length, -0.5 * math.random() * STAGE_LENGTH_AVG)
+			local meta = minetest.get_meta(pos)
+			local t = meta:get_int("t")
+			if not t or t == 0 then
+				t = os.time()
+				meta:set_int("t", t)
+			end
+			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG), 0)
 		end
 
 	elseif timer:is_started() then
@@ -260,7 +261,6 @@ end
 
 -- detects a crop at given position, starting or stopping growth timer when needed
 function farming.handle_growth(pos, node)
-
 	if not pos then
 		return
 	end
@@ -283,11 +283,14 @@ end)
 
 -- Just in case a growing type or added node is missed (also catches existing
 -- nodes added to map before timers were incorporated).
-minetest.register_abm({
+--minetest.register_abm({
+minetest.register_lbm({
+	name = "farming:checktimers",
 	nodenames = { "group:growing" },
-	interval = 300,
-	chance = 1,
-	catch_up = false,
+	run_at_every_load = true,
+--	interval = 300,
+--	chance = 1,
+--	catch_up = false,
 	action = function(pos, node)
 		farming.handle_growth(pos, node)
 	end
@@ -329,7 +332,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 
 	local growth
 	local light_pos = {x = pos.x, y = pos.y, z = pos.z} --  was y + 1
-	local lambda = elapsed / STAGE_LENGTH_AVG
+	local lambda = 1-- elapsed / STAGE_LENGTH_AVG
 
 	if lambda < 0.1 then
 		return true
@@ -376,10 +379,33 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 
 	if minetest.registered_nodes[stages.stages_left[growth]] then
-
+		local timevar = os.time()
+		local meta = minetest.get_meta(pos)
+		local t = meta:get_int("t")
+		local tempgrowth = growth
+		local difference = (timevar-t) - STAGE_LENGTH_AVG
+		if t ~= 0 then
+			while true do
+				local rand = math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)
+				if difference > rand then
+					growth = growth + 1
+					difference = difference - rand
+					if growth >= max_growth then growth = max_growth break end
+				else break end
+			end
+			if difference < 0 then difference = 0 end
+		end
 		local p2 = minetest.registered_nodes[stages.stages_left[growth] ].place_param2 or 1
 
 		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
+		
+		local timer = minetest.get_node_timer(pos)
+		if growth == max_growth then
+			timer:stop()
+		else
+			meta:set_int("t", timevar)
+			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
+		end
 	else
 		return true
 	end
@@ -463,7 +489,7 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 		minetest.set_node(pt.above, {name = plantname, param2 = p2})
 
 --minetest.get_node_timer(pt.above):start(1)
---farming.handle_growth(pt.above)--, node)
+farming.handle_growth(pt.above)--, node)
 
 		minetest.sound_play("default_place_node", {pos = pt.above, gain = 1.0})
 
