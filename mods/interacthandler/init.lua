@@ -3,18 +3,16 @@ interacthandler.player = {}
 
 local storage = minetest.get_mod_storage()
 local oldplayers = minetest.deserialize(storage:get_string("player"))
---minetest.after(.1, function()
-if oldplayers then
-	for id, name in pairs(oldplayers) do
-		--minetest.chat_send_all(tostring(id.." "..name))
+
+minetest.register_on_prejoinplayer(function(name, ip)
+	if oldplayers and oldplayers[name] then
 		local privs = minetest.get_player_privs(name)
 		privs.interact = true
 		minetest.set_player_privs(name, privs)
+		oldplayers[name] = nil
+		storage:set_string("player", oldplayers)
 	end
-	oldplayers = nil
-	storage:set_string("player", "")
-end
---end)
+end)
 
 interacthandler.revoke = function(name)
 	local privs = minetest.get_player_privs(name)
