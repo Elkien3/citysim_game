@@ -120,8 +120,11 @@ slowtreegrowth()
 
 local originalflowerspread = flowers.flower_spread
 flowers.flower_spread = function(pos, node)
-	if node.name ~= "flowers:mushroom_red" and node.name ~= "flowers:mushroom_brown" and seasons_getseason == "Winter" then return end
-	originalflowerspread(pos, node)
+	if node.name ~= "flowers:mushroom_red" and node.name ~= "flowers:mushroom_brown" and seasons_getseason == "Winter" then
+		return
+	else
+		originalflowerspread(pos, node)
+	end
 end
 
 local originalgrowsapling = default.grow_sapling
