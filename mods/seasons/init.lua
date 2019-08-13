@@ -362,7 +362,6 @@ local function tick(timed)
 		end
 		seasons.current = season
 		mod_storage:set_string("seasons", minetest.serialize(seasons))
-		handleseasons()
 	else
 		minetest.after(1, tick)
 	end
