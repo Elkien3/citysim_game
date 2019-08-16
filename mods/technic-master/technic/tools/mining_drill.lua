@@ -3,7 +3,7 @@ local power_usage_per_node = {200, 500, 800}
 
 local S = technic.getter
 
-minetest.register_craft({
+--[[minetest.register_craft({
 	output = 'technic:mining_drill',
 	recipe = {
 		{'default:tin_ingot',             'technic:diamond_drill_head', 'default:tin_ingot'},
@@ -36,7 +36,7 @@ for i = 1, 4 do
 			{'',                              'technic:blue_energy_crystal',  ''},
 		}
 	})
-end
+end--]]
 
 local mining_drill_mode_text = {
 	{S("Single node.")},
@@ -330,15 +330,16 @@ local function mining_drill_mk3_handler(itemstack, user, pointed_thing)
 	return itemstack
 end
 
-technic.register_power_tool("technic:mining_drill", max_charge[1])
+--technic.register_power_tool("technic:mining_drill", max_charge[1])
 
 minetest.register_tool("technic:mining_drill", {
-	description = S("Mining Drill Mk%d"):format(1),
-	inventory_image = "technic_mining_drill.png",
+	description = S("Mining Drill Mk%d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(1),
+	inventory_image = "technic_mining_drill.png^cross.png",
+	wield_image = "technic_mining_drill.png",
 	stack_max = 1,
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
-	on_use = function(itemstack, user, pointed_thing)
+	--[[on_use = function(itemstack, user, pointed_thing)
 		if pointed_thing.type ~= "node" or not pos_is_pointable(pointed_thing.under) then
 			return itemstack
 		end
@@ -357,63 +358,169 @@ minetest.register_tool("technic:mining_drill", {
 			end
 		end
 		return itemstack
-	end,
+	end,--]]
 })
 
 minetest.register_tool("technic:mining_drill_mk2", {
-	description = S("Mining Drill Mk%d"):format(2),
-	inventory_image = "technic_mining_drill_mk2.png",
+	description = S("Mining Drill Mk%d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(2),
+	inventory_image = "technic_mining_drill_mk2.png^cross.png",
+	wield_image = "technic_mining_drill_mk2.png",
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
-	on_use = function(itemstack, user, pointed_thing)
+	--[[on_use = function(itemstack, user, pointed_thing)
 		mining_drill_mk2_handler(itemstack, user, pointed_thing)
 		return itemstack
-	end,
+	end,--]]
 })
 
-technic.register_power_tool("technic:mining_drill_mk2", max_charge[2])
+--technic.register_power_tool("technic:mining_drill_mk2", max_charge[2])
 
 for i = 1, 4 do
-	technic.register_power_tool("technic:mining_drill_mk2_"..i, max_charge[2])
+	--technic.register_power_tool("technic:mining_drill_mk2_"..i, max_charge[2])
 	minetest.register_tool("technic:mining_drill_mk2_"..i, {
-		description = S("Mining Drill Mk%d Mode %d"):format(2, i),
-		inventory_image = "technic_mining_drill_mk2.png^technic_tool_mode"..i..".png",
+		description = S("Mining Drill Mk%d Mode %d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(2, i),
+		inventory_image = "technic_mining_drill_mk2.png^cross.png^technic_tool_mode"..i..".png",
 		wield_image = "technic_mining_drill_mk2.png",
 		wear_represents = "technic_RE_charge",
 		on_refill = technic.refill_RE_charge,
 		groups = {not_in_creative_inventory=1},
-		on_use = function(itemstack, user, pointed_thing)
+		--[[on_use = function(itemstack, user, pointed_thing)
 			mining_drill_mk2_handler(itemstack, user, pointed_thing)
 			return itemstack
-		end,
+		end,--]]
+	})
+	minetest.register_craft({
+		type = "shapeless",
+		output = "technic:mining_drill",
+		recipe = {"technic:mining_drill_mk2_"..i}
 	})
 end
 
 minetest.register_tool("technic:mining_drill_mk3", {
-	description = S("Mining Drill Mk%d"):format(3),
-	inventory_image = "technic_mining_drill_mk3.png",
+	description = S("Mining Drill Mk%d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(3),
+	inventory_image = "technic_mining_drill_mk3.png^cross.png",
+	wield_image = "technic_mining_drill_mk3.png",
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
-	on_use = function(itemstack, user, pointed_thing)
+	--[[on_use = function(itemstack, user, pointed_thing)
 	mining_drill_mk3_handler(itemstack,user,pointed_thing)
 	return itemstack
-	end,
+	end,--]]
 })
 
-technic.register_power_tool("technic:mining_drill_mk3", max_charge[3])
+--technic.register_power_tool("technic:mining_drill_mk3", max_charge[3])
 
 for i=1,5,1 do
-	technic.register_power_tool("technic:mining_drill_mk3_"..i, max_charge[3])
+	--technic.register_power_tool("technic:mining_drill_mk3_"..i, max_charge[3])
 	minetest.register_tool("technic:mining_drill_mk3_"..i, {
-		description = S("Mining Drill Mk%d Mode %d"):format(3, i),
-		inventory_image = "technic_mining_drill_mk3.png^technic_tool_mode"..i..".png",
+		description = S("Mining Drill Mk%d Mode %d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(3, i),
+		inventory_image = "technic_mining_drill_mk3.png^cross.png^technic_tool_mode"..i..".png",
 		wield_image = "technic_mining_drill_mk3.png",
 		wear_represents = "technic_RE_charge",
 		on_refill = technic.refill_RE_charge,
 		groups = {not_in_creative_inventory=1},
-		on_use = function(itemstack, user, pointed_thing)
+		--[[on_use = function(itemstack, user, pointed_thing)
 		mining_drill_mk3_handler(itemstack,user,pointed_thing)
 		return itemstack
-		end,
+		end,--]]
+	})
+	minetest.register_craft({
+		type = "shapeless",
+		output = "technic:mining_drill_mk2",
+		recipe = {"technic:mining_drill_mk3_"..i}
 	})
 end
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "technic:mining_drill_mk2",
+	recipe = {"technic:mining_drill_mk3"}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "technic:mining_drill",
+	recipe = {"technic:mining_drill_mk2"}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "default:diamond 13",
+	recipe = {"technic:mining_drill"}
+})
+
+local mk3items = {}
+table.insert(mk3items, "default:diamond 21")
+table.insert(mk3items, "technic:stainless_steel_ingot 14")
+table.insert(mk3items, "moreores:mithril_ingot 2")
+table.insert(mk3items, "dye:blue 2")
+table.insert(mk3items, "default:wood 48")
+table.insert(mk3items, "technic:sulfur_dust 24")
+table.insert(mk3items, "technic:lead_ingot 24")
+table.insert(mk3items, "default:gold_ingot 2")
+table.insert(mk3items, "dye:green 2")
+table.insert(mk3items, "moreores:silver_ingot 2")
+table.insert(mk3items, "dye:red 2")
+local mk2items = {}
+table.insert(mk2items, "default:diamond 21")
+table.insert(mk2items, "technic:stainless_steel_ingot 14")
+table.insert(mk2items, "default:wood 32")
+table.insert(mk2items, "technic:sulfur_dust 16")
+table.insert(mk2items, "technic:lead_ingot 16")
+table.insert(mk2items, "default:gold_ingot 2")
+table.insert(mk2items, "dye:green 2")
+table.insert(mk2items, "moreores:silver_ingot 2")
+table.insert(mk2items, "dye:red 2")
+local mk1items = {}
+table.insert(mk1items, "default:tin_ingot 2")
+table.insert(mk1items, "technic:stainless_steel_ingot 6")
+table.insert(mk1items, "default:steel_ingot 8")
+table.insert(mk1items, "default:copper_ingot 14")
+table.insert(mk1items, "moreores:silver_ingot 2")
+table.insert(mk1items, "dye:red 2")
+table.insert(mk1items, "technic:carbon_steel_ingot 6")
+table.insert(mk1items, "default:wood 16")
+table.insert(mk1items, "technic:sulfur_dust 8")
+table.insert(mk1items, "technic:lead_ingot 8")
+
+minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv)
+	local item = itemstack:get_name()
+	if item == "technic:mining_drill_mk2" then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk3items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	elseif item == "technic:mining_drill" then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk2items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	elseif item == "default:diamond" and itemstack:get_count() == 13 then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk1items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	end
+	return itemstack
+end)
