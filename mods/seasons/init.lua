@@ -358,7 +358,11 @@ local function tick(timed)
 	if days then
 		season = seasons_getseason(days)
 		if seasons.current ~= season then
-			needsChange = true
+			if #minetest.get_connected_players() == 0 then
+				handleseasons()
+			else
+				needsChange = true
+			end
 		end
 		seasons.current = season
 		mod_storage:set_string("seasons", minetest.serialize(seasons))
