@@ -200,7 +200,7 @@ local function handleseasons()
 		end
 	elseif seasons.current == "Spring" then
 		changeflowertextures(true)
-		farming_setspeed(0.5)
+		farming_setspeed(2)
 		minetest.override_item('default:dirt_with_grass', {
 			tiles = {"default_dry_grass.png",
 			"default_dirt.png",
@@ -284,7 +284,7 @@ local function handleseasons()
 		end
 	elseif seasons.current == "Fall" then
 		changeflowertextures(true)
-		farming_setspeed(0.5)
+		farming_setspeed(2)
 		minetest.override_item('default:dirt_with_grass', {
 			tiles = {"default_dry_grass.png",
 			"default_dirt.png",
