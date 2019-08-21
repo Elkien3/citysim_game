@@ -240,12 +240,10 @@ local function set_growing(pos, stages_left)
 	end
 
 	local timer = minetest.get_node_timer(pos)
-
-	if stages_left > 0 then
-
+	local meta = minetest.get_meta(pos)
+	local t = meta:get_int("t")
+	if stages_left > 0 and seasons_getseason() ~= "Winter" then
 		if not timer:is_started() then
-			local meta = minetest.get_meta(pos)
-			local t = meta:get_int("t")
 			if not t or t == 0 then
 				t = os.time()
 				meta:set_int("t", t)
@@ -255,6 +253,9 @@ local function set_growing(pos, stages_left)
 
 	elseif timer:is_started() then
 		timer:stop()
+		if t and t ~= 0 then
+			meta:set_int("t", nil)
+		end
 	end
 end
 
@@ -400,7 +401,8 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
 		
 		local timer = minetest.get_node_timer(pos)
-		if growth == max_growth then
+		if growth == max_growth or seasons_getseason() == "Winter" then
+			meta:set_int("t", nil)
 			timer:stop()
 		else
 			meta:set_int("t", timevar)
