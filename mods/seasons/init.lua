@@ -189,6 +189,7 @@ local function handleseasons()
 			buildable_to = true,
 			on_place = function(itemstack, placer, pointed_thing) return nil end
 		})
+		add_suffocation()
 		local i = 1
 		while i <= 5 do
 			minetest.override_item("default:grass_"..tostring(i), {
