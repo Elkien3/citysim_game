@@ -254,7 +254,7 @@ local function set_growing(pos, stages_left)
 	elseif timer:is_started() then
 		timer:stop()
 		if t and t ~= 0 then
-			meta:set_int("t", nil)
+			meta:set_int("t", 0)
 		end
 	end
 end
@@ -402,7 +402,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		
 		local timer = minetest.get_node_timer(pos)
 		if growth == max_growth or seasons_getseason() == "Winter" then
-			meta:set_int("t", nil)
+			meta:set_int("t", 0)
 			timer:stop()
 		else
 			meta:set_int("t", timevar)
