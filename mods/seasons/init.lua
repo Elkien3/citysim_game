@@ -357,7 +357,7 @@ local needsChange = false
 local function tick(timed)
 	local days = minetest.get_day_count()
 	if days then
-		season = seasons_getseason(days)
+		local season = seasons_getseason(days)
 		if seasons.current ~= season then
 			if #minetest.get_connected_players() == 0 then
 				handleseasons()
