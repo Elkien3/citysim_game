@@ -1,7 +1,7 @@
 -- Initial speed of a box.
-local SPEED = 10
+local SPEED = 5
 -- Acceleration of a box.
-local ACCEL = 0.1
+local ACCEL = 0
 -- Elevator interface/database version.
 local VERSION = 8
 -- Maximum time a box can go without players nearby.
