@@ -1,9 +1,35 @@
+local storage = minetest.get_mod_storage()
+local tags = minetest.deserialize(storage:get_string("tags")) or {}
+local names = minetest.deserialize(storage:get_string("names")) or {}
+
 minetest.register_on_joinplayer(function(player)
 		player:set_nametag_attributes({
 			color = {a = 0, r = 0, g = 0, b = 0}
 		})
-		player:set_properties({infotext = player:get_player_name()})
+		local name = player:get_player_name()
+		if tags[name] then
+			player:set_properties({infotext = tags[name].." "..name})
+		else
+			player:set_properties({infotext = name})
+		end
 end)
+
+minetest.register_chatcommand("settag", {
+	params = "<tag/none>",
+	description = "Set or clear your RP tag.",
+	func = function( name , param)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false, "Not a valid player" end
+		if param and param ~= "" then
+			tags[name] = param
+			player:set_properties({infotext = param.." "..name})
+		else
+			tags[name] = nil
+			player:set_properties({infotext = name})
+		end
+		storage:set_string("tags", minetest.serialize(tags))
+	end,
+})
 
 --[[local nametags = {}
 local blueboi = {} --to only remove change the white tag to blue for mumble players once
