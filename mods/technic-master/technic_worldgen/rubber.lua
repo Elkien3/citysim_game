@@ -10,6 +10,17 @@ minetest.register_node(":moretrees:rubber_tree_sapling", {
 	wield_image = "technic_rubber_sapling.png",
 	paramtype = "light",
 	walkable = false,
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2*60*60, 3*60*60))
+	end,
+	on_timer = function(pos, elapsed)
+		if seasseasons_getseason and seasons_getseason == "Winter" then
+			minetest.get_node_timer(pos):start(math.random(2*60*60, 3*60*60))
+		else
+			minetest.remove_node(pos)
+			minetest.spawn_tree(pos, technic.rubber_tree_model)
+		end
+	end,
 	groups = {dig_immediate=3, flammable=2, sapling=1},
 	sounds = default.node_sound_defaults(),
 })
@@ -70,7 +81,7 @@ technic.rubber_tree_model={
 	trunk_type = "double",
 	thin_branches = true
 }
-
+--[[
 minetest.register_abm({
 	nodenames = {"moretrees:rubber_tree_sapling"},
 	label = "Worldgen: grow rubber tree sapling",
@@ -81,7 +92,7 @@ minetest.register_abm({
 		minetest.spawn_tree(pos, technic.rubber_tree_model)
 	end
 })
-
+--]]
 if technic.config:get_bool("enable_rubber_tree_generation") then
 	minetest.register_on_generated(function(minp, maxp, blockseed)
 		if math.random(1, 100) > 5 then
