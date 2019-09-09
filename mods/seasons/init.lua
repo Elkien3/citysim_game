@@ -118,6 +118,18 @@ local function slowtreegrowth()
 end
 slowtreegrowth()
 
+minetest.register_lbm({
+	name = "seasons:ensuresaplingtimer",
+	nodenames = {":moretrees:rubber_tree_sapling", "default:sapling", "default:junglesapling", "default:pine_sapling", "default:acacia_sapling", "default:aspen_sapling"},
+	run_at_every_load = true,
+	action = function(pos, node)
+		local timer = minetest.get_node_timer(pos)
+		if not timer:is_started() then
+			timer:start(math.random(2*60*60, 3*60*60))
+		end
+	end,
+})
+
 local originalflowerspread = flowers.flower_spread
 flowers.flower_spread = function(pos, node)
 	if node.name ~= "flowers:mushroom_red" and node.name ~= "flowers:mushroom_brown" and seasons_getseason == "Winter" then
