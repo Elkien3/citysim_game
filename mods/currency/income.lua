@@ -20,10 +20,10 @@ local function income()
 			minetest.log("info", "[Currency] basic income for "..name.."")
 		end
     end
-	minetest.after(600, income)
+	minetest.after(1200, income)
 	
 end
-minetest.after(600, income)
+minetest.after(1200, income)
 
 minetest.register_on_joinplayer(function(player)
 	playerlocs[player:get_player_name()] = player:get_pos()
