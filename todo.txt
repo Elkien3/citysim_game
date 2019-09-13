@@ -2,7 +2,7 @@
 kick non-proximity users out of proximity chat?
 make minetest read with http instead of the existing hack, maybe detect disconnect as well.
 --find a good way to indicate mumble or non-mumble users
-updated mumble tutorial
+--updated mumble tutorial
 make mumble detect closing the handler
 
 Grenades: Smoke, Gas, Flash, Fragmentation, Molotov
