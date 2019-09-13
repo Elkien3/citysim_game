@@ -58,6 +58,11 @@ end)
 -- If the player was carrying another player, drop them
 minetest.register_on_leaveplayer(function(p, _)
 	knockout.carrier_drop(p:get_player_name())
+	for name, carried in pairs(knockout.carrying) do
+		if carried == p:get_player_name() then
+			knockout.carrier_drop(name)
+		end
+	end
 end)
 
 -- Catch those pesky players that try to leave/join to get un-knocked out
