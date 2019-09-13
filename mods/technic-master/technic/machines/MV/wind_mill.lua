@@ -49,6 +49,17 @@ local function check_wind_mill(pos)
 	return true
 end
 
+local wind = tonumber(technic.storage:get_string("wind"))
+if not wind or wind == "" then wind = math.random(0, 10)/10 end
+local function dowind()
+	local rand = math.random(0, 10)/10
+	wind = (wind+rand)/2
+	wind = math.floor((wind*10)+.5)/10
+	technic.storage:set_string("wind", wind)
+	minetest.after(600, dowind)
+end
+dowind()
+
 local run = function(pos, node)
 	local meta = minetest.get_meta(pos)
 	local machine_name = S("Wind %s Generator"):format("MV")
@@ -59,6 +70,7 @@ local run = function(pos, node)
 		meta:set_string("infotext", S("%s Improperly Placed"):format(machine_name))
 	elseif check == true then
 		local power = math.min(pos.y * 100, 5000)
+		power = power * wind
 		meta:set_int("MV_EU_supply", power)
 		meta:set_string("infotext", S("@1 (@2)", machine_name,
 			technic.EU_string(power)))
