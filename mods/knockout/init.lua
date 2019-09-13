@@ -168,7 +168,7 @@ knockout.knockout = function(pName, duration)
 	-- Freeze player using entites
 	local pos = p:get_pos()
 	local e = minetest.add_entity(pos, "knockout:entity", pName)
-	p:set_attach(e, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+	minetest.after(.1, function() p:set_attach(e, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}) end)
 	-- Make player lay down
 	default.player_attached[pName] = true
 	default.player_set_animation(p, "lay")
