@@ -8,6 +8,7 @@ local allow_entire_discharging = true
 
 local S = technic.getter
 
+--[[
 minetest.register_craft({
 	output = "technic:laser_mk1",
 	recipe = {
@@ -32,6 +33,7 @@ minetest.register_craft({
 		{"",                "",                           "default:copper_ingot"},
 	}
 })
+--]]
 
 local function laser_node(pos, node, player)
 	local def = minetest.registered_nodes[node.name]
@@ -92,15 +94,16 @@ local function laser_shoot(player, range, particle_texture, sound)
 end
 
 for _, m in pairs(mining_lasers_list) do
-	technic.register_power_tool("technic:laser_mk"..m[1], m[3])
+	--technic.register_power_tool("technic:laser_mk"..m[1], m[3])
 	minetest.register_tool("technic:laser_mk"..m[1], {
-		description = S("Mining Laser Mk%d"):format(m[1]),
-		inventory_image = "technic_mining_laser_mk"..m[1]..".png",
+		description = S("Mining Laser Mk%d REMOVED, USE CRAFT TO HAVE ORES USED RETURNED (BEST TO HAVE SPACE IN YOUR INVENTORY)"):format(m[1]),
+		inventory_image = "technic_mining_laser_mk"..m[1]..".png^cross.png",
+		wield_image = "technic_mining_laser_mk"..m[1]..".png",
 		range = 0,
 		stack_max = 1,
 		wear_represents = "technic_RE_charge",
 		on_refill = technic.refill_RE_charge,
-		on_use = function(itemstack, user)
+		--[[on_use = function(itemstack, user)
 			local meta = minetest.deserialize(itemstack:get_metadata())
 			if not meta or not meta.charge or meta.charge == 0 then
 				return
@@ -122,6 +125,100 @@ for _, m in pairs(mining_lasers_list) do
 				itemstack:set_metadata(minetest.serialize(meta))
 			end
 			return itemstack
-		end,
+		end,--]]
 	})
 end
+
+local mk1items = {}
+--table.insert(mk1items, "default:diamond 10")
+table.insert(mk1items, "default:copper_ingot 9")
+table.insert(mk1items, "technic:brass_ingot 2")
+table.insert(mk1items, "default:obsidian_glass")
+table.insert(mk1items, "dye:red 2")
+table.insert(mk1items, "moreores:silver_ingot 2")
+table.insert(mk1items, "default:wood 24")
+table.insert(mk1items, "default:tin_ingot 4")
+
+local mk2items = {}
+table.insert(mk2items, "default:diamond 10")
+table.insert(mk2items, "default:copper_ingot 17")
+table.insert(mk2items, "dye:red 2")
+table.insert(mk2items, "dye:green 2")
+table.insert(mk2items, "moreores:silver_ingot 2")
+table.insert(mk2items, "technic:carbon_steel_ingot 2")
+table.insert(mk2items, "default:wood 48")
+table.insert(mk2items, "default:tin_ingot 8")
+table.insert(mk2items, "default:gold_ingot 2")
+
+local mk3items = {}
+table.insert(mk3items, "default:diamond 10")
+table.insert(mk3items, "default:copper_ingot 25")
+table.insert(mk3items, "moreores:mithril_ingot 2")
+table.insert(mk3items, "dye:red 2")
+table.insert(mk3items, "dye:green 2")
+table.insert(mk3items, "dye:blue 2")
+table.insert(mk3items, "moreores:silver_ingot 2")
+table.insert(mk3items, "technic:carbon_steel_ingot 2")
+table.insert(mk3items, "default:wood 72")
+table.insert(mk3items, "default:tin_ingot 12")
+table.insert(mk3items, "default:gold_ingot 2")
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "technic:laser_mk2",
+	recipe = {"technic:laser_mk3"}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "technic:laser_mk1",
+	recipe = {"technic:laser_mk2"}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "default:diamond 10",
+	recipe = {"technic:laser_mk1"}
+})
+
+minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv)
+	local item = itemstack:get_name()
+	if item == "technic:laser_mk2" then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk3items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	elseif item == "technic:laser_mk1" then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk2items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	elseif item == "default:diamond" and itemstack:get_count() == 10 then
+		local inv = player:get_inventory()
+		local pos = player:get_pos()
+		for id, name in pairs (mk1items) do
+			if inv:room_for_item("craft", name) then
+				inv:add_item("craft", name)
+			elseif inv:room_for_item("main", name) then
+				inv:add_item("main", name)
+			else
+				minetest.add_item(pos, name)
+			end
+		end
+	end
+	return itemstack
+end)
