@@ -54,7 +54,7 @@ fix flower recipie
 --drugs crash server
 cars can be disconnected and the spedometer will remain
 drugs still effect you after you died
-leaving while knocked crash server
+--leaving while knocked crash server
 --xban gui crashes server
 doors lockpickable
 --envelopes
