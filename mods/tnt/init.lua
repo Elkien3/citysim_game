@@ -537,13 +537,19 @@ minetest.register_node("tnt:gunpowder_burning", {
 		minetest.get_node_timer(pos):start(1)
 	end,
 })
-
-minetest.register_craft({
-	output = "tnt:gunpowder 5",
-	type = "shapeless",
-	recipe = {"default:coal_lump", "default:gravel"}
-})
-
+if minetest.get_modpath("technic") then
+	minetest.register_craft({
+		output = "tnt:gunpowder 5",
+		type = "shapeless",
+		recipe = {"technic:coal_dust", "default:gravel", "technic:sulfur_dust"}
+	})
+else
+	minetest.register_craft({
+		output = "tnt:gunpowder 5",
+		type = "shapeless",
+		recipe = {"default:coal_lump", "default:gravel"}
+	})
+end
 if enable_tnt then
 	minetest.register_craft({
 		output = "tnt:tnt",

@@ -1,3 +1,7 @@
+if minetest.get_modpath("grenades_basic") then
+	minetest.register_alias("shooter:grenade", "grenades_basic:frag")
+else
+
 minetest.register_entity("shooter:grenade_entity", {
 	physical = false,
 	timer = 0,
@@ -78,3 +82,4 @@ if SHOOTER_ENABLE_CRAFTING == true then
 	})
 end
 
+end
