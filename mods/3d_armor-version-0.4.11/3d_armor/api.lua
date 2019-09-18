@@ -60,9 +60,9 @@ armor = {
 		{"fire:permanent_flame",    3, 4},
 		{"ethereal:crystal_spike",  2, 1},
 		{"ethereal:fire_flower",    2, 1},
-		{"default:torch",           1, 1},
-		{"default:torch_ceiling",   1, 1},
-		{"default:torch_wall",      1, 1},
+		--{"default:torch",           1, 1},
+		--{"default:torch_ceiling",   1, 1},
+		--{"default:torch_wall",      1, 1},
 	},
 	registered_groups = {["fleshy"]=100},
 	registered_callbacks = {
