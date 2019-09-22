@@ -629,6 +629,8 @@ for id, color in pairs (carlist) do
 			local name = clicker:get_player_name()
 			if player_attached[name] == self then
 				detach(clicker)
+			elseif player_attached[name] then
+				return
 			else
 				local i = 0
 				local closeid = getClosest(clicker, self)
