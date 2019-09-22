@@ -146,9 +146,9 @@ minetest.register_node("digiprinter:printer", {
 minetest.register_craft({
 	output = "digiprinter:printer",
 	recipe = {
-		{ "homedecor", "default:paper", "" },
-		{ "", "default:mese_crystal", "" },
-		{ "", "digilines:wire_std_000000", "" },
+		{ "homedecor:plastic_sheeting", "", "" },
+		{ "digilines:wire_std_00000000", "default:mese_crystal", "homedecor:plastic_sheeting" },
+		{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" },
 	},
 })
 
