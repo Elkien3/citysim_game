@@ -196,7 +196,19 @@ local function reg_plant_stages(plant_name, stage, force_last)
 					end,
 
 					on_timer = function(pos, elapsed)
-						return farming.plant_growth_timer(pos, elapsed, node_name)
+						local returned = farming.plant_growth_timer(pos, elapsed, node_name)
+						if returned then
+							local timer = minetest.get_node_timer(pos)
+							local meta = minetest.get_meta(pos)
+							local timevar = os.time()
+							local t = meta:get_int("t")
+							local difference = (timevar-t) - STAGE_LENGTH_AVG
+							meta:set_int("t", timevar)
+							timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
+							return true
+						else
+							return false
+						end
 					end,
 				})
 		end
