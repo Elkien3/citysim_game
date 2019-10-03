@@ -510,6 +510,8 @@ armor.save_armor_inventory = function(self, player)
 			local player_inv = player:get_inventory()
 			if player_inv and player_inv:room_for_item("main", stack) then
 				player_inv:add_item("main", stack)
+			else
+				minetest.item_drop(stack, player, player:get_pos())
 			end
 		end
 	end
