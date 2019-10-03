@@ -687,8 +687,8 @@ local function generateKeyPair()
 	end
 end
 
-minetest.register_node("digistuff:nic", {
-	description = "Digilines NIC",
+minetest.register_node("digistuff:rsa", {
+	description = "Digilines RSA generator",
 	groups = {cracky=3},
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
