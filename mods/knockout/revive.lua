@@ -8,7 +8,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 		--minetest.chat_send_all("you down")
 		knockout.downedplayers[name] = true
 		knockout.savedownedplayers()
-		knockout.knockout(name, 60)
+		knockout.knockout(name, math.random(180, 240))
 		return 20-hp
 	end
 	return hp_change

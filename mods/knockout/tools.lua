@@ -31,7 +31,7 @@ minetest.register_craft({
 -----------
 
 -- Fist
-knockout.register_tool("", 0.6, 6, 80)
+knockout.register_tool("", 0.6, 6, 180)
 
 -- picks have no knockout chance
 -- shovels have slight knockout chance with low knockout time
@@ -45,7 +45,7 @@ knockout.register_tool("default:shovel_diamond", 0.1, 10, 20)
 knockout.register_tool("default:axe_wood", 0.3, 3, 100)
 knockout.register_tool("default:axe_stone", 0.1, 4, 110)
 -- Swords have a slight knockout chance with high knockout time, except for wooden sword = club
-knockout.register_tool("default:sword_wood", 0.7, 6, 140)
+knockout.register_tool("default:sword_wood", 0.7, 6, 240)
 knockout.register_tool("default:sword_stone", 0.3, 6, 150)
 knockout.register_tool("default:sword_steel", 0.1, 7, 150)
 knockout.register_tool("default:sword_bronze", 0.1, 7, 150)
