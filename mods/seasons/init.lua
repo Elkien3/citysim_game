@@ -149,6 +149,11 @@ default.grow_sapling = function(pos)
 end
 
 local function handleseasons()
+	local days = minetest.get_day_count()
+	if days then
+		local season = seasons_getseason(days)
+		seasons.current = season
+	end
 	if seasons.current == "Winter" then
 		changeflowertextures()
 		minetest.override_item('default:dirt_with_grass', {
