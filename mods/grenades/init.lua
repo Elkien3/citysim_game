@@ -1,11 +1,21 @@
 grenades = {}
 
+local function rotateVector(x, y, a)
+  local c = math.cos(a)
+  local s = math.sin(a)
+  return c*x - s*y, s*x + c*y
+end
+
 local function throw_grenade(name, player)
 	local dir = player:get_look_dir()
 	local pos = player:get_pos()
+	local first, third = player:get_eye_offset()
+	if first then
+		first.x, first.z = rotateVector(first.x, first.z, player:get_look_horizontal())
+		pos = vector.add(pos, vector.multiply(first, .1))
+	end
 	local obj = minetest.add_entity({x = pos.x + dir.x, y = pos.y + 1.5, z = pos.z + dir.z}, name)
 	local self = obj:get_luaentity()
-
 	local m = 33
 	obj:set_velocity({x = dir.x * m, y = dir.y * m, z = dir.z * m})
 	obj:set_acceleration({x = 0, y = -30, z = 0})

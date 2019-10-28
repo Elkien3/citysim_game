@@ -41,6 +41,12 @@ minetest.register_entity("shooter:rocket_entity", {
 	end,
 })
 
+local function rotateVector(x, y, a)
+  local c = math.cos(a)
+  local s = math.sin(a)
+  return c*x - s*y, s*x + c*y
+end
+
 minetest.register_tool("shooter:rocket_gun_loaded", {
 	description = "Rocket Gun",
 	inventory_image = "shooter_rocket_gun_loaded.png",
@@ -62,6 +68,11 @@ minetest.register_tool("shooter:rocket_gun_loaded", {
 		local yaw = user:get_look_yaw()
 		if pos and dir and yaw then
 			pos.y = pos.y + 1.5
+			local first, third = user:get_eye_offset()
+			if first then
+				first.x, first.z = rotateVector(first.x, first.z, user:get_look_horizontal())
+				pos = vector.add(pos, vector.multiply(first, .1))
+			end
 			local obj = minetest.add_entity(pos, "shooter:rocket_entity")
 			if obj then
 				minetest.sound_play("shooter_rocket_fire", {object=obj})
