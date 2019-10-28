@@ -137,6 +137,12 @@ local function reload(stack, player, ammo)
 	return stack
 end
 
+local function rotateVector(x, y, a)
+  local c = math.cos(a)
+  local s = math.sin(a)
+  return c*x - s*y, s*x + c*y
+end
+
 local function fire(stack, player, base_spread, max_spread, pellets)
 	-- Workaround to prevent function from running if stack is nil
 	if not stack then
@@ -163,8 +169,11 @@ local function fire(stack, player, base_spread, max_spread, pellets)
 
 	-- Take aim
 	local eye_offset = {x = 0, y = 1.45, z = 0} --player:get_eye_offset().offset_first
-	--local first, third = player:get_eye_offset()
-	--eye_offset = vector.add(eye_offset, first)
+	local first, third = player:get_eye_offset()
+	if first then
+		first.x, first.z = rotateVector(first.x, first.z, player:get_look_horizontal())
+		eye_offset = vector.add(eye_offset, vector.multiply(first, .1))
+	end
 	local dir = player:get_look_dir()
 	local p1 = vector.add(player:get_pos(), eye_offset)
 	--p1 = vector.add(p1, dir)
