@@ -14,7 +14,7 @@ minetest.register_on_joinplayer(function(player)
 	local rounded_pos = {x=round(pos.x),y=round(pos.y)+1,z=round(pos.z)}
 	local wielded_item = player:get_wielded_item():get_name()
 	if wielded_item ~= "default:torch" and wielded_item ~= "xdecor:candle" and wielded_item ~= "xdecor:lantern" then
-		-- Neuberechnung des Lichts erzwingen
+		-- Force recalculation of light
             if minetest.get_node(rounded_pos) == "walking_light:light" then
 		minetest.env:add_node(rounded_pos,{type="node",name="air"})
             end
@@ -31,7 +31,7 @@ minetest.register_on_leaveplayer(function(player)
 		if v == player_name then 
 			table.remove(players, i)
 			last_wielded[player_name] = nil
-			-- Neuberechnung des Lichts erzwingen
+			-- Force recalculation of light
 			local pos = player:getpos()
 			local rounded_pos = {x=round(pos.x),y=round(pos.y)+1,z=round(pos.z)}
 			local headblock = minetest.env:get_node(rounded_pos)
@@ -52,26 +52,26 @@ minetest.register_globalstep(function(dtime)
 		local player = minetest.env:get_player_by_name(player_name)
 		local wielded_item = player:get_wielded_item():get_name()
 		if wielded_item == "default:torch" or wielded_item == "xdecor:candle" or wielded_item == "xdecor:lantern" then
-			-- Fackel ist in der Hand
+			-- Torch is in your hand
 			local pos = player:getpos()
 			local rounded_pos = {x=round(pos.x),y=round(pos.y)+1,z=round(pos.z)}
 			if (last_wielded[player_name] ~= "default:torch" and last_wielded[player_name] ~= "xdecor:candle" and last_wielded[player_name] ~= "xdecor:lantern") or (player_positions[player_name]["x"] ~= rounded_pos.x or player_positions[player_name]["y"] ~= rounded_pos.y or player_positions[player_name]["z"] ~= rounded_pos.z) then
-				-- Fackel gerade in die Hand genommen oder zu neuem Node bewegt
+				-- Torch just picked up or moved to a new node
 				local is_air  = minetest.env:get_node_or_nil(rounded_pos)
 				if is_air == nil or (is_air ~= nil and (is_air.name == "air" or is_air.name == "walking_light:light")) then
-					-- wenn an aktueller Position "air" ist, Fackellicht setzen
+					-- if the current position is "air", set the torch light
 					minetest.env:add_node(rounded_pos,{type="node",name="walking_light:light"})
 				end
 				if (player_positions[player_name]["x"] ~= rounded_pos.x or player_positions[player_name]["y"] ~= rounded_pos.y or player_positions[player_name]["z"] ~= rounded_pos.z) then
-					-- wenn Position geänder, dann altes Licht löschen
+					-- if position changed, then extinguish old light
 					local old_pos = {x=player_positions[player_name]["x"], y=player_positions[player_name]["y"], z=player_positions[player_name]["z"]}
-					-- Neuberechnung des Lichts erzwingen
+					-- Force recalculation of light
 					local is_light = minetest.env:get_node_or_nil(old_pos)
 					if is_light ~= nil and is_light.name == "walking_light:light" then
 						minetest.env:add_node(old_pos,{type="node",name="air"})
 					end
 				end
-				-- gemerkte Position ist nun die gerundete neue Position
+				-- marked position is now the rounded new position
 				player_positions[player_name]["x"] = rounded_pos.x
 				player_positions[player_name]["y"] = rounded_pos.y
 				player_positions[player_name]["z"] = rounded_pos.z
@@ -79,14 +79,14 @@ minetest.register_globalstep(function(dtime)
 
 			last_wielded[player_name] = wielded_item;
 		elseif last_wielded[player_name] == "default:torch" or last_wielded[player_name] == "xdecor:candle" or last_wielded[player_name] == "xdecor:lantern" then
-			-- Fackel nicht in der Hand, aber beim letzten Durchgang war die Fackel noch in der Hand
+			-- Torch not in hand, but the torch was still in the hand on the last run
 			local pos = player:getpos()
 			local rounded_pos = {x=round(pos.x),y=round(pos.y)+1,z=round(pos.z)}
 			repeat
 				local is_light  = minetest.env:get_node_or_nil(rounded_pos)
 				if is_light ~= nil and is_light.name == "walking_light:light" then
 					-- minetest.env:remove_node(rounded_pos)
-					-- Erzwinge Neuberechnung des Lichts
+					-- Force recalculation of light
 					minetest.env:add_node(rounded_pos,{type="node",name="air"})
 				end
 			until minetest.env:get_node_or_nil(rounded_pos) ~= "walking_light:light"
@@ -95,7 +95,7 @@ minetest.register_globalstep(function(dtime)
 				is_light  = minetest.env:get_node_or_nil(old_pos)
 				if is_light ~= nil and is_light.name == "walking_light:light" then
 					-- minetest.env:remove_node(old_pos)
-					-- Erzwinge Neuberechnung des Lichts
+					-- Force recalculation of light
 					minetest.env:add_node(old_pos,{type="node",name="air"})
 				end
 			until minetest.env:get_node_or_nil(old_pos) ~= "walking_light:light"
@@ -105,7 +105,7 @@ minetest.register_globalstep(function(dtime)
 end)
 
 minetest.register_node("walking_light:light", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"walking_light.png"},
 	-- tile_images = {"walking_light_debug.png"},
 	inventory_image = minetest.inventorycube("walking_light.png"),
