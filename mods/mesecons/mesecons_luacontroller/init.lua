@@ -167,7 +167,7 @@ local function burn_controller(pos)
 	local node = minetest.get_node(pos)
 	node.name = BASENAME.."_burnt"
 	minetest.swap_node(pos, node)
-	--minetest.get_meta(pos):set_string("lc_memory", "");
+	minetest.get_meta(pos):set_string("lc_memory", "");
 	-- Wait for pending operations
 	minetest.after(0.2, mesecon.receptor_off, pos, mesecon.rules.flat)
 end
@@ -203,18 +203,6 @@ local function safe_print(param)
 	string_meta.__index = string -- Leave string sandbox temporarily
 	print(dump(param))
 	string_meta.__index = sandbox -- Restore string sandbox
-end
-
-local function safe_serlialize(param)
-	if not param then return end
-	if type(param) ~= "table" then return end
-	return minetest.serialize(param)
-end
-
-local function safe_deserlialize(param)
-	if not param then return end
-	if type(param) ~= "string" then return end
-	return minetest.deserialize(param)
 end
 
 local function safe_date()
@@ -462,8 +450,6 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 		heat = mesecon.get_heat(pos),
 		heat_max = mesecon.setting("overheat_max", 20),
 		print = safe_print,
-		serialize = safe_serlialize,
-		deserialize = safe_deserlialize,
 		interrupt = get_interrupt(pos, itbl, send_warning),
 		digiline_send = get_digiline_send(pos, itbl, send_warning),
 		string = {
