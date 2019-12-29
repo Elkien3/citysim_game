@@ -7,7 +7,7 @@
 
 farming = {
 	mod = "redo",
-	version = "20190111",
+	version = "20191202",
 	path = minetest.get_modpath("farming"),
 	select = {
 		type = "fixed",
@@ -79,14 +79,8 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 36000
-local STAGE_LENGTH_AVG_ORIGINAL = STAGE_LENGTH_AVG
-local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
-function farming_setspeed(factor)
-	if not factor then return end
-	STAGE_LENGTH_AVG = STAGE_LENGTH_AVG_ORIGINAL*factor
-	STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
-end
+local STAGE_LENGTH_AVG = 160.0
+local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG / 6
 
 
 -- return plant name and stage from node provided
@@ -196,19 +190,7 @@ local function reg_plant_stages(plant_name, stage, force_last)
 					end,
 
 					on_timer = function(pos, elapsed)
-						local returned = farming.plant_growth_timer(pos, elapsed, node_name)
-						if returned then
-							local timer = minetest.get_node_timer(pos)
-							local meta = minetest.get_meta(pos)
-							local timevar = os.time()
-							local t = meta:get_int("t")
-							local difference = (timevar-t) - STAGE_LENGTH_AVG
-							meta:set_int("t", timevar)
-							timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
-							return true
-						else
-							return false
-						end
+						return farming.plant_growth_timer(pos, elapsed, node_name)
 					end,
 				})
 		end
@@ -252,28 +234,27 @@ local function set_growing(pos, stages_left)
 	end
 
 	local timer = minetest.get_node_timer(pos)
-	local meta = minetest.get_meta(pos)
-	local t = meta:get_int("t")
-	if stages_left > 0 and seasons_getseason() ~= "Winter" then
+
+	if stages_left > 0 then
+
 		if not timer:is_started() then
-			if not t or t == 0 then
-				t = os.time()
-				meta:set_int("t", t)
-			end
-			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG), 0)
+
+			local stage_length = statistics.normal(STAGE_LENGTH_AVG, STAGE_LENGTH_DEV)
+
+			stage_length = clamp(stage_length, 0.5 * STAGE_LENGTH_AVG, 3.0 * STAGE_LENGTH_AVG)
+
+			timer:set(stage_length, -0.5 * math.random() * STAGE_LENGTH_AVG)
 		end
 
 	elseif timer:is_started() then
 		timer:stop()
-		if t and t ~= 0 then
-			meta:set_int("t", 0)
-		end
 	end
 end
 
 
 -- detects a crop at given position, starting or stopping growth timer when needed
 function farming.handle_growth(pos, node)
+
 	if not pos then
 		return
 	end
@@ -288,7 +269,7 @@ end
 
 minetest.after(0, function()
 
-	for _, node_def in ipairs(minetest.registered_nodes) do
+	for _, node_def in pairs(minetest.registered_nodes) do
 		register_plant_node(node_def)
 	end
 end)
@@ -296,14 +277,11 @@ end)
 
 -- Just in case a growing type or added node is missed (also catches existing
 -- nodes added to map before timers were incorporated).
---minetest.register_abm({
-minetest.register_lbm({
-	name = "farming:checktimers",
-	nodenames = { "group:growing" },
-	run_at_every_load = true,
---	interval = 300,
---	chance = 1,
---	catch_up = false,
+minetest.register_abm({
+	nodenames = {"group:growing"},
+	interval = 300,
+	chance = 1,
+	catch_up = false,
 	action = function(pos, node)
 		farming.handle_growth(pos, node)
 	end
@@ -344,14 +322,14 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 
 	local growth
-	local light_pos = {x = pos.x, y = pos.y, z = pos.z} --  was y + 1
-	local lambda = 1-- elapsed / STAGE_LENGTH_AVG
+	local light_pos = {x = pos.x, y = pos.y, z = pos.z}
+	local lambda = elapsed / STAGE_LENGTH_AVG
 
 	if lambda < 0.1 then
 		return true
 	end
 
-	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 13
+	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 12
 	local MAX_LIGHT = minetest.registered_nodes[node_name].maxlight or 15
 	--print ("---", MIN_LIGHT, MAX_LIGHT)
 
@@ -392,34 +370,10 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 
 	if minetest.registered_nodes[stages.stages_left[growth]] then
-		local timevar = os.time()
-		local meta = minetest.get_meta(pos)
-		local t = meta:get_int("t")
-		local tempgrowth = growth
-		local difference = (timevar-t) - STAGE_LENGTH_AVG
-		if t ~= 0 then
-			while true do
-				local rand = math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)
-				if difference > rand then
-					growth = growth + 1
-					difference = difference - rand
-					if growth >= max_growth then growth = max_growth break end
-				else break end
-			end
-			if difference < 0 then difference = 0 end
-		end
+
 		local p2 = minetest.registered_nodes[stages.stages_left[growth] ].place_param2 or 1
 
 		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
-		
-		local timer = minetest.get_node_timer(pos)
-		if growth == max_growth or seasons_getseason() == "Winter" then
-			meta:set_int("t", 0)
-			timer:stop()
-		else
-			meta:set_int("t", timevar)
-			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
-		end
 	else
 		return true
 	end
@@ -467,7 +421,7 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 	-- am I right-clicking on something that has a custom on_place set?
 	-- thanks to Krock for helping with this issue :)
 	local def = minetest.registered_nodes[under.name]
-	if placer and def and def.on_rightclick then
+	if placer and itemstack and def and def.on_rightclick then
 		return def.on_rightclick(pt.under, under, placer, itemstack)
 	end
 
@@ -503,11 +457,12 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 		minetest.set_node(pt.above, {name = plantname, param2 = p2})
 
 --minetest.get_node_timer(pt.above):start(1)
-farming.handle_growth(pt.above)--, node)
+--farming.handle_growth(pt.above)--, node)
 
 		minetest.sound_play("default_place_node", {pos = pt.above, gain = 1.0})
 
-		if placer and not farming.is_creative(placer:get_player_name()) then
+		if placer and itemstack
+		and not farming.is_creative(placer:get_player_name()) then
 
 			local name = itemstack:get_name()
 
@@ -543,7 +498,7 @@ farming.register_plant = function(name, def)
 	-- Check def
 	def.description = def.description or S("Seed")
 	def.inventory_image = def.inventory_image or "unknown_item.png"
-	def.minlight = def.minlight or 13
+	def.minlight = def.minlight or 12
 	def.maxlight = def.maxlight or 15
 
 	-- Register seed
@@ -645,31 +600,31 @@ end
 
 
 -- default settings
-farming.carrot = true
-farming.potato = true
-farming.tomato = true
-farming.cucumber = true
-farming.corn = true
-farming.coffee = true
-farming.melon = true
-farming.pumpkin = true
+farming.carrot = 0.001
+farming.potato = 0.001
+farming.tomato = 0.001
+farming.cucumber = 0.001
+farming.corn = 0.001
+farming.coffee = 0.001
+farming.melon = 0.001
+farming.pumpkin = 0.001
 farming.cocoa = true
-farming.raspberry = true
-farming.blueberry = true
-farming.rhubarb = true
-farming.beans = true
-farming.grapes = true
+farming.raspberry = 0.001
+farming.blueberry = 0.001
+farming.rhubarb = 0.001
+farming.beans = 0.001
+farming.grapes = 0.001
 farming.barley = true
-farming.chili = true
-farming.hemp = true
-farming.garlic = true
-farming.onion = true
-farming.pepper = true
-farming.pineapple = true
-farming.peas = true
-farming.beetroot = true
+farming.chili = 0.003
+farming.hemp = 0.003
+farming.garlic = 0.001
+farming.onion = 0.001
+farming.pepper = 0.002
+farming.pineapple = 0.001
+farming.peas = 0.001
+farming.beetroot = 0.001
 farming.grains = true
-farming.rarety = 0.002 -- 0.006
+farming.rarety = 0.002
 
 
 -- Load new global settings if found inside mod folder

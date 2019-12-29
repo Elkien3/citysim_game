@@ -11,7 +11,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:peppercorn", {
 	description = S("Peppercorn"),
 	inventory_image = "crops_peppercorn.png",
-	groups = {food_peppercorn = 1, flammable = 3},
+	groups = {seed = 1, food_peppercorn = 1, flammable = 3},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:pepper_1")
 	end,
@@ -98,9 +98,9 @@ crop_def.tiles = {"crops_pepper_plant_5.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	max_items = 2, items = {
-		{items = {'farming:pepper 2'}, rarity = 1},
-		{items = {'farming:pepper'}, rarity = 2},
-		{items = {'farming:pepper'}, rarity = 3},
+		{items = {"farming:pepper 2"}, rarity = 1},
+		{items = {"farming:pepper"}, rarity = 2},
+		{items = {"farming:pepper"}, rarity = 3},
 	}
 }
 minetest.register_node("farming:pepper_5", table.copy(crop_def))

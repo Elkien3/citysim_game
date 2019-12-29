@@ -22,7 +22,7 @@ local function place_grapes(itemstack, placer, pointed_thing, plantname)
 	-- am I right-clicking on something that has a custom on_place set?
 	-- thanks to Krock for helping with this issue :)
 	local def = minetest.registered_nodes[under.name]
-	if placer and def and def.on_rightclick then
+	if placer and itemstack and def and def.on_rightclick then
 		return def.on_rightclick(pt.under, under, placer, itemstack)
 	end
 
@@ -68,7 +68,7 @@ minetest.register_craftitem("farming:grapes", {
 	description = S("Grapes"),
 	inventory_image = "farming_grapes.png",
 	on_use = minetest.item_eat(2),
-	groups = {food_grapes = 1, flammable = 3},
+	groups = {seed = 2, food_grapes = 1, flammable = 3},
 
 	on_place = function(itemstack, placer, pointed_thing)
 		return place_grapes(itemstack, placer, pointed_thing, "farming:grapes_1")
@@ -79,7 +79,7 @@ minetest.register_craftitem("farming:grapes", {
 minetest.register_craft({
 	output = "dye:violet",
 	recipe = {
-		{'farming:grapes'},
+		{"farming:grapes"},
 	}
 })
 
@@ -157,9 +157,9 @@ minetest.register_node("farming:trellis", {
 minetest.register_craft({
 	output = "farming:trellis",
 	recipe = {
-		{'default:stick', 'default:stick', 'default:stick'},
-		{'default:stick', 'default:stick', 'default:stick'},
-		{'default:stick', 'default:stick', 'default:stick'},
+		{"default:stick", "default:stick", "default:stick"},
+		{"default:stick", "default:stick", "default:stick"},
+		{"default:stick", "default:stick", "default:stick"},
 	}
 })
 
@@ -180,7 +180,7 @@ local crop_def = {
 	sunlight_propagates = true,
 	drop = {
 		items = {
-			{items = {'farming:trellis'}, rarity = 1},
+			{items = {"farming:trellis"}, rarity = 1},
 		}
 	},
 	selection_box = farming.select,
@@ -223,10 +223,10 @@ crop_def.tiles = {"farming_grapes_8.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:trellis'}, rarity = 1},
-		{items = {'farming:grapes 3'}, rarity = 1},
-		{items = {'farming:grapes 1'}, rarity = 2},
-		{items = {'farming:grapes 1'}, rarity = 3},
+		{items = {"farming:trellis"}, rarity = 1},
+		{items = {"farming:grapes 3"}, rarity = 1},
+		{items = {"farming:grapes 1"}, rarity = 2},
+		{items = {"farming:grapes 1"}, rarity = 3},
 	}
 }
 minetest.register_node("farming:grapes_8", table.copy(crop_def))
@@ -251,9 +251,9 @@ minetest.register_node("farming:grapebush", {
 	sunlight_propagates = true,
 	drop = {
 		items = {
-			{items = {'farming:grapes 1'}, rarity = 1},
-			{items = {'farming:grapes 1'}, rarity = 2},
-			{items = {'farming:grapes 1'}, rarity = 3},
+			{items = {"farming:grapes 1"}, rarity = 1},
+			{items = {"farming:grapes 1"}, rarity = 2},
+			{items = {"farming:grapes 1"}, rarity = 3},
 		}
 	},
 	selection_box = farming.select,

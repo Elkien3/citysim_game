@@ -11,7 +11,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:garlic_clove", {
 	description = S("Garlic clove"),
 	inventory_image = "crops_garlic_clove.png",
-	groups = {food_garlic_clove = 1, flammable = 3},
+	groups = {seed = 2, food_garlic_clove = 1, flammable = 3},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:garlic_1")
 	end,
@@ -65,7 +65,7 @@ minetest.register_node("farming:garlic_braid", {
 
 minetest.register_craft({
 	output = "farming:garlic_braid",
-	recipe = { 
+	recipe = {
 		{"farming:garlic", "farming:garlic", "farming:garlic"},
 		{"farming:garlic", "farming:garlic", "farming:garlic"},
 		{"farming:garlic", "farming:garlic", "farming:garlic"}
@@ -118,11 +118,11 @@ crop_def.tiles = {"crops_garlic_plant_5.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	max_items = 5, items = {
-		{items = {'farming:garlic'}, rarity = 1},
-		{items = {'farming:garlic'}, rarity = 1},
-		{items = {'farming:garlic'}, rarity = 1},
-		{items = {'farming:garlic'}, rarity = 2},
-		{items = {'farming:garlic'}, rarity = 5},
+		{items = {"farming:garlic"}, rarity = 1},
+		{items = {"farming:garlic"}, rarity = 1},
+		{items = {"farming:garlic"}, rarity = 1},
+		{items = {"farming:garlic"}, rarity = 2},
+		{items = {"farming:garlic"}, rarity = 5},
 	}
 }
 minetest.register_node("farming:garlic_5", table.copy(crop_def))

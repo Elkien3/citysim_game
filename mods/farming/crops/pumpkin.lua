@@ -9,7 +9,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:pumpkin_slice", {
 	description = S("Pumpkin Slice"),
 	inventory_image = "farming_pumpkin_slice.png",
-	groups = {food_pumpkin_slice = 1, flammable = 2},
+	groups = {seed = 2, food_pumpkin_slice = 1, flammable = 2},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:pumpkin_1")
 	end,
@@ -46,6 +46,8 @@ minetest.register_node("farming:jackolantern", {
 	groups = {choppy = 1, oddly_breakable_by_hand = 1, flammable = 2},
 	sounds = default.node_sound_wood_defaults(),
 	on_punch = function(pos, node, puncher)
+		local name = puncher:get_player_name() or ""
+		if minetest.is_protected(pos, name) then return end
 		node.name = "farming:jackolantern_on"
 		minetest.swap_node(pos, node)
 	end,
@@ -69,6 +71,8 @@ minetest.register_node("farming:jackolantern_on", {
 	sounds = default.node_sound_wood_defaults(),
 	drop = "farming:jackolantern",
 	on_punch = function(pos, node, puncher)
+		local name = puncher:get_player_name() or ""
+		if minetest.is_protected(pos, name) then return end
 		node.name = "farming:jackolantern"
 		minetest.swap_node(pos, node)
 	end,
@@ -185,7 +189,7 @@ crop_def.tiles = {"farming_pumpkin_8.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:pumpkin_slice 9'}, rarity = 1},
+		{items = {"farming:pumpkin_slice 9"}, rarity = 1},
 	}
 }
 minetest.register_node("farming:pumpkin_8", table.copy(crop_def))

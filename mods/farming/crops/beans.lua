@@ -27,7 +27,7 @@ local function place_beans(itemstack, placer, pointed_thing, plantname)
 	-- am I right-clicking on something that has a custom on_place set?
 	-- thanks to Krock for helping with this issue :)
 	local def = minetest.registered_nodes[under.name]
-	if placer and def and def.on_rightclick then
+	if placer and itemstack and def and def.on_rightclick then
 		return def.on_rightclick(pt.under, under, placer, itemstack)
 	end
 
@@ -72,7 +72,7 @@ end
 minetest.register_craftitem("farming:beans", {
 	description = S("Green Beans"),
 	inventory_image = "farming_beans.png",
-	groups = {food_beans = 1, flammable = 2},
+	groups = {seed = 2, food_beans = 1, flammable = 2},
 	on_use = minetest.item_eat(1),
 
 	on_place = function(itemstack, placer, pointed_thing)
@@ -84,7 +84,7 @@ minetest.register_craftitem("farming:beans", {
 minetest.register_craft({
 	output = "dye:green",
 	recipe = {
-		{'farming:beans'},
+		{"farming:beans"},
 	}
 })
 
@@ -162,9 +162,9 @@ minetest.register_node("farming:beanpole", {
 minetest.register_craft({
 	output = "farming:beanpole",
 	recipe = {
-		{'', '', ''},
-		{'default:stick', '', 'default:stick'},
-		{'default:stick', '', 'default:stick'},
+		{"", "", ""},
+		{"default:stick", "", "default:stick"},
+		{"default:stick", "", "default:stick"},
 	}
 })
 
@@ -185,7 +185,7 @@ local crop_def = {
 	sunlight_propagates = true,
 	drop = {
 		items = {
-			{items = {'farming:beanpole'}, rarity = 1},
+			{items = {"farming:beanpole"}, rarity = 1},
 		}
 	},
 	selection_box = farming.select,
@@ -216,10 +216,10 @@ crop_def.tiles = {"farming_beanpole_5.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:beanpole'}, rarity = 1},
-		{items = {'farming:beans 3'}, rarity = 1},
-		{items = {'farming:beans 2'}, rarity = 2},
-		{items = {'farming:beans 2'}, rarity = 3},
+		{items = {"farming:beanpole"}, rarity = 1},
+		{items = {"farming:beans 3"}, rarity = 1},
+		{items = {"farming:beans 2"}, rarity = 2},
+		{items = {"farming:beans 2"}, rarity = 3},
 	}
 }
 minetest.register_node("farming:beanpole_5", table.copy(crop_def))
@@ -244,9 +244,9 @@ minetest.register_node("farming:beanbush", {
 	sunlight_propagates = true,
 	drop = {
 		items = {
-			{items = {'farming:beans 1'}, rarity = 1},
-			{items = {'farming:beans 1'}, rarity = 2},
-			{items = {'farming:beans 1'}, rarity = 3},
+			{items = {"farming:beans 1"}, rarity = 1},
+			{items = {"farming:beans 1"}, rarity = 2},
+			{items = {"farming:beans 1"}, rarity = 3},
 		}
 	},
 	selection_box = farming.select,

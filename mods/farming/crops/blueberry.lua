@@ -5,7 +5,8 @@ local S = farming.intllib
 minetest.register_craftitem("farming:blueberries", {
 	description = S("Blueberries"),
 	inventory_image = "farming_blueberries.png",
-	groups = {food_blueberries = 1, food_blueberry = 1, food_berry = 1, flammable = 2},
+	groups = {seed = 2, food_blueberries = 1, food_blueberry = 1,
+			food_berry = 1, flammable = 2},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:blueberry_1")
 	end,
@@ -78,9 +79,9 @@ crop_def.tiles = {"farming_blueberry_4.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:blueberries 2'}, rarity = 1},
-		{items = {'farming:blueberries'}, rarity = 2},
-		{items = {'farming:blueberries'}, rarity = 3},
+		{items = {"farming:blueberries 2"}, rarity = 1},
+		{items = {"farming:blueberries"}, rarity = 2},
+		{items = {"farming:blueberries"}, rarity = 3},
 	}
 }
 minetest.register_node("farming:blueberry_4", table.copy(crop_def))

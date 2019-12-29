@@ -5,7 +5,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:chili_pepper", {
 	description = S("Chili Pepper"),
 	inventory_image = "farming_chili_pepper.png",
-	groups = {food_chili_pepper = 1, flammable = 4},
+	groups = {seed = 2, food_chili_pepper = 1, flammable = 4},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:chili_1")
 	end,
@@ -32,7 +32,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "dye:red",
 	recipe = {
-		{'farming:chili_pepper'},
+		{"farming:chili_pepper"},
 	}
 })
 
@@ -85,8 +85,8 @@ crop_def.tiles = {"farming_chili_8.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:chili_pepper 3'}, rarity = 1},
-		{items = {'farming:chili_pepper 2'}, rarity = 2},
+		{items = {"farming:chili_pepper 3"}, rarity = 1},
+		{items = {"farming:chili_pepper 2"}, rarity = 2},
 	}
 }
 minetest.register_node("farming:chili_8", table.copy(crop_def))
