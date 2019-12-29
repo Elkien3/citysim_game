@@ -1,7 +1,0 @@
-default
-player_monoids?
-armor_monoid?
-fire?
-ethereal?
-bakedclay?
-intllib?
