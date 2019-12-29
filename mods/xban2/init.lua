@@ -40,6 +40,14 @@ local function parse_time(t) --> secs
 	return secs
 end
 
+local function concat_keys(t, sep)
+	local keys = {}
+	for k, _ in pairs(t) do
+		keys[#keys + 1] = k
+	end
+	return table.concat(keys, sep)
+end
+
 function xban.find_entry(player, create) --> entry, index
 	for index, e in ipairs(db) do
 		for name in pairs(e.names) do
@@ -111,7 +119,7 @@ function xban.ban_player(player, source, expires, reason) --> bool, err
 	end
 	ACTION("%s bans %s until %s for reason: %s", source, player,
 	  date, reason)
-	ACTION("Banned Names/IPs: %s", table.concat(e.names, ", "))
+	ACTION("Banned Names/IPs: %s", concat_keys(e.names, ", "))
 	return true
 end
 
@@ -131,7 +139,7 @@ function xban.unban_player(player, source) --> bool, err
 	e.expires = nil
 	e.time = nil
 	ACTION("%s unbans %s", source, player)
-	ACTION("Unbanned Names/IPs: %s", table.concat(e.names, ", "))
+	ACTION("Unbanned Names/IPs: %s", concat_keys(e.names, ", "))
 	return true
 end
 
@@ -314,6 +322,7 @@ minetest.register_chatcommand("xban_wl", {
 	end,
 })
 
+
 local function check_temp_bans()
 	minetest.after(60, check_temp_bans)
 	local to_rm = { }
@@ -373,6 +382,30 @@ local function load_db()
 		end
 	end
 end
+
+minetest.register_chatcommand("xban_cleanup", {
+	description = "Removes all non-banned entries from the xban db",
+	privs = { server=true },
+	func = function(name, params)
+		local old_count = #db
+
+		local i = 1
+		while i <= #db do
+			if not db[i].banned then
+				-- not banned, remove from db
+				table.remove(db, i)
+			else
+				-- banned, hold entry back
+				i = i + 1
+			end
+		end
+
+		-- save immediately
+		save_db()
+
+		return true, "Removed " .. (old_count - #db) .. " entries, new db entry-count: " .. #db
+	end,
+})
 
 minetest.register_on_shutdown(save_db)
 minetest.after(SAVE_INTERVAL, save_db)
