@@ -35,7 +35,7 @@ function betterfall.enqueue_falling_node(p, n, m)
 end
 
 local function convert_to_falling_node(pos, node)
-    if betterfall.ghost_nodes[node.name] == nil then
+    if node.drawtype ~= "airlike" and betterfall.ghost_nodes[node.name] == nil then
         local obj = core.add_entity(pos, "__builtin:falling_node")
         if not obj then
             return false
