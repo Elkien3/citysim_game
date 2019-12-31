@@ -4,6 +4,9 @@
 
 binoculars = {}
 
+binoculars.items = {}
+binoculars.items["binoculars:binoculars"] = 10
+
 -- Load support for MT game translation.
 local S = minetest.get_translator("binoculars")
 
@@ -23,10 +26,19 @@ function binoculars.update_player_property(player)
 		creative_mode_cache
 	local new_zoom_fov = 0
 
+	for name, value in pairs(binoculars.items) do
 	if player:get_inventory():contains_item(
+	--if player:get_inventory():contains_item(
 			"main", "binoculars:binoculars") then
+			--"main", "binoculars:binoculars") then
 		new_zoom_fov = 10
+		if player:get_wielded_item():get_name() == name then
 	elseif creative_enabled then
+			new_zoom_fov = value
+		end
+	end
+
+	if creative_enabled then
 		new_zoom_fov = 15
 	end
 
@@ -50,10 +62,10 @@ local function cyclic_update()
 	for _, player in ipairs(minetest.get_connected_players()) do
 		binoculars.update_player_property(player)
 	end
-	minetest.after(4.7, cyclic_update)
+	minetest.after(.5, cyclic_update)
 end
 
-minetest.after(4.7, cyclic_update)
+minetest.after(.5, cyclic_update)
 
 
 -- Binoculars item
