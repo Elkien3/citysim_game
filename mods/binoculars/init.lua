@@ -27,17 +27,13 @@ function binoculars.update_player_property(player)
 	local new_zoom_fov = 0
 
 	for name, value in pairs(binoculars.items) do
-	if player:get_inventory():contains_item(
 	--if player:get_inventory():contains_item(
-			"main", "binoculars:binoculars") then
 			--"main", "binoculars:binoculars") then
-		new_zoom_fov = 10
 		if player:get_wielded_item():get_name() == name then
-	elseif creative_enabled then
 			new_zoom_fov = value
 		end
 	end
-
+	
 	if creative_enabled then
 		new_zoom_fov = 15
 	end
