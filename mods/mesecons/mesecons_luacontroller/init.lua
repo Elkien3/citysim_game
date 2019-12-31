@@ -167,7 +167,7 @@ local function burn_controller(pos)
 	local node = minetest.get_node(pos)
 	node.name = BASENAME.."_burnt"
 	minetest.swap_node(pos, node)
-	minetest.get_meta(pos):set_string("lc_memory", "");
+	--minetest.get_meta(pos):set_string("lc_memory", "");
 	-- Wait for pending operations
 	minetest.after(0.2, mesecon.receptor_off, pos, mesecon.rules.flat)
 end
