@@ -10,7 +10,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:potato", {
 	description = S("Potato"),
 	inventory_image = "farming_potato.png",
-	groups = {food_potato = 1, flammable = 2},
+	groups = {seed = 2, food_potato = 1, flammable = 2},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:potato_1")
 	end,
@@ -85,8 +85,8 @@ minetest.register_node("farming:potato_2", table.copy(crop_def))
 crop_def.tiles = {"farming_potato_3.png"}
 crop_def.drop = {
 	items = {
-		{items = {'farming:potato'}, rarity = 1},
-		{items = {'farming:potato'}, rarity = 3},
+		{items = {"farming:potato"}, rarity = 1},
+		{items = {"farming:potato"}, rarity = 3},
 	}
 }
 minetest.register_node("farming:potato_3", table.copy(crop_def))
@@ -96,8 +96,8 @@ crop_def.tiles = {"farming_potato_4.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	items = {
-		{items = {'farming:potato 2'}, rarity = 1},
-		{items = {'farming:potato 3'}, rarity = 2},
+		{items = {"farming:potato 2"}, rarity = 1},
+		{items = {"farming:potato 3"}, rarity = 2},
 	}
 }
 minetest.register_node("farming:potato_4", table.copy(crop_def))

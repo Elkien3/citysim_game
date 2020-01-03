@@ -1,12 +1,18 @@
+-- binoculars/init.lua
+
 -- Mod global namespace
 
 binoculars = {}
 
 binoculars.items = {}
 binoculars.items["binoculars:binoculars"] = 10
+
+-- Load support for MT game translation.
+local S = minetest.get_translator("binoculars")
+
+
 -- Detect creative mod
 local creative_mod = minetest.get_modpath("creative")
-
 -- Cache creative mode setting as fallback if creative mod not present
 local creative_mode_cache = minetest.settings:get_bool("creative_mode")
 
@@ -19,6 +25,7 @@ function binoculars.update_player_property(player)
 		(creative_mod and creative.is_enabled_for(player:get_player_name())) or
 		creative_mode_cache
 	local new_zoom_fov = 0
+
 	for name, value in pairs(binoculars.items) do
 	--if player:get_inventory():contains_item(
 			--"main", "binoculars:binoculars") then
@@ -60,7 +67,7 @@ minetest.after(.5, cyclic_update)
 -- Binoculars item
 
 minetest.register_craftitem("binoculars:binoculars", {
-	description = "Binoculars\nUse with 'Zoom' key",
+	description = S("Binoculars") .. "\n" .. S("Use with 'Zoom' key"),
 	inventory_image = "binoculars_binoculars.png",
 	stack_max = 1,
 

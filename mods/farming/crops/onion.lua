@@ -11,7 +11,7 @@ local S = farming.intllib
 minetest.register_craftitem("farming:onion", {
 	description = S("Onion"),
 	inventory_image = "crops_onion.png",
-	groups = {food_onion = 1, flammable = 3},
+	groups = {seed = 2, food_onion = 1, flammable = 3},
 	on_place = function(itemstack, placer, pointed_thing)
 		return farming.place_seed(itemstack, placer, pointed_thing, "farming:onion_1")
 	end,
@@ -58,11 +58,11 @@ crop_def.tiles = {"crops_onion_plant_5.png"}
 crop_def.groups.growing = 0
 crop_def.drop = {
 	max_items = 5, items = {
-		{items = {'farming:onion'}, rarity = 1},
-		{items = {'farming:onion'}, rarity = 1},
-		{items = {'farming:onion'}, rarity = 2},
-		{items = {'farming:onion'}, rarity = 2},
-		{items = {'farming:onion'}, rarity = 5},
+		{items = {"farming:onion"}, rarity = 1},
+		{items = {"farming:onion"}, rarity = 1},
+		{items = {"farming:onion"}, rarity = 2},
+		{items = {"farming:onion"}, rarity = 2},
+		{items = {"farming:onion"}, rarity = 5},
 	}
 }
 minetest.register_node("farming:onion_5", table.copy(crop_def))

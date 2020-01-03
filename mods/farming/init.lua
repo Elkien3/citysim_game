@@ -7,7 +7,7 @@
 
 farming = {
 	mod = "redo",
-	version = "20190111",
+	version = "20191202",
 	path = minetest.get_modpath("farming"),
 	select = {
 		type = "fixed",
@@ -288,7 +288,7 @@ end
 
 minetest.after(0, function()
 
-	for _, node_def in ipairs(minetest.registered_nodes) do
+	for _, node_def in pairs(minetest.registered_nodes) do
 		register_plant_node(node_def)
 	end
 end)
@@ -299,7 +299,7 @@ end)
 --minetest.register_abm({
 minetest.register_lbm({
 	name = "farming:checktimers",
-	nodenames = { "group:growing" },
+	nodenames = {"group:growing"},
 	run_at_every_load = true,
 --	interval = 300,
 --	chance = 1,
@@ -344,14 +344,14 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 
 	local growth
-	local light_pos = {x = pos.x, y = pos.y, z = pos.z} --  was y + 1
+	local light_pos = {x = pos.x, y = pos.y, z = pos.z}
 	local lambda = 1-- elapsed / STAGE_LENGTH_AVG
 
 	if lambda < 0.1 then
 		return true
 	end
 
-	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 13
+	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 12
 	local MAX_LIGHT = minetest.registered_nodes[node_name].maxlight or 15
 	--print ("---", MIN_LIGHT, MAX_LIGHT)
 
@@ -467,7 +467,7 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 	-- am I right-clicking on something that has a custom on_place set?
 	-- thanks to Krock for helping with this issue :)
 	local def = minetest.registered_nodes[under.name]
-	if placer and def and def.on_rightclick then
+	if placer and itemstack and def and def.on_rightclick then
 		return def.on_rightclick(pt.under, under, placer, itemstack)
 	end
 
@@ -507,7 +507,8 @@ farming.handle_growth(pt.above)--, node)
 
 		minetest.sound_play("default_place_node", {pos = pt.above, gain = 1.0})
 
-		if placer and not farming.is_creative(placer:get_player_name()) then
+		if placer and itemstack
+		and not farming.is_creative(placer:get_player_name()) then
 
 			local name = itemstack:get_name()
 
@@ -543,7 +544,7 @@ farming.register_plant = function(name, def)
 	-- Check def
 	def.description = def.description or S("Seed")
 	def.inventory_image = def.inventory_image or "unknown_item.png"
-	def.minlight = def.minlight or 13
+	def.minlight = def.minlight or 12
 	def.maxlight = def.maxlight or 15
 
 	-- Register seed
@@ -645,31 +646,31 @@ end
 
 
 -- default settings
-farming.carrot = true
-farming.potato = true
-farming.tomato = true
-farming.cucumber = true
-farming.corn = true
-farming.coffee = true
-farming.melon = true
-farming.pumpkin = true
+farming.carrot = 0.001
+farming.potato = 0.001
+farming.tomato = 0.001
+farming.cucumber = 0.001
+farming.corn = 0.001
+farming.coffee = 0.001
+farming.melon = 0.001
+farming.pumpkin = 0.001
 farming.cocoa = true
-farming.raspberry = true
-farming.blueberry = true
-farming.rhubarb = true
-farming.beans = true
-farming.grapes = true
+farming.raspberry = 0.001
+farming.blueberry = 0.001
+farming.rhubarb = 0.001
+farming.beans = 0.001
+farming.grapes = 0.001
 farming.barley = true
-farming.chili = true
-farming.hemp = true
-farming.garlic = true
-farming.onion = true
-farming.pepper = true
-farming.pineapple = true
-farming.peas = true
-farming.beetroot = true
+farming.chili = 0.003
+farming.hemp = 0.003
+farming.garlic = 0.001
+farming.onion = 0.001
+farming.pepper = 0.002
+farming.pineapple = 0.001
+farming.peas = 0.001
+farming.beetroot = 0.001
 farming.grains = true
-farming.rarety = 0.002 -- 0.006
+farming.rarety = 0.002
 
 
 -- Load new global settings if found inside mod folder
