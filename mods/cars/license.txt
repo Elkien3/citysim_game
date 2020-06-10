@@ -1,3 +1,4 @@
 Model/Textures: Made by Melkor CC-BY-NC-SA
 Code: Elkien3: CC-BY-SA
+Sign code borrowed for license plates: by xyz, modified by PilzAdam, WTFPL 
 Sounds: Various, CC0
