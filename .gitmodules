@@ -1,0 +1,3 @@
+[submodule "mods/playeranim"]
+	path = mods/playeranim
+	url = https://github.com/minetest-mods/playeranim
