@@ -364,19 +364,19 @@ end
 
 local function on_q(itemstack, dropper, pos)
 	local name = itemstack:get_name()
-	if dropper:get_wielded_item():get_name() ~= name then return end
+	if dropper:get_wielded_item():get_name() ~= name or not minetest.get_player_by_name(dropper:get_player_name()) then return end
 	local def = gunslinger.get_def(name)
 	local inv = dropper:get_inventory()
-	if inv:room_for_item("main", {name = def.ammo}) then
-		inv:add_item("main", {name = def.ammo, wear = itemstack:get_wear()})
-	else
-		minetest.add_item(pos, {name = def.ammo, wear = itemstack:get_wear()})
-	end
 	minetest.sound_play("gunslinger_dropmag", {
 		object = dropper,
 		max_hear_distance = 30,
 		pitch = math.random(90,110)*.01
 	})
+	if inv:room_for_item("main", {name = def.ammo}) then
+		inv:add_item("main", {name = def.ammo, wear = itemstack:get_wear()})
+	else
+		minetest.add_item(pos, {name = def.ammo, wear = itemstack:get_wear()})
+	end
 	dropper:set_wielded_item({name = name.."_empty"})
 end
 
