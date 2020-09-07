@@ -228,7 +228,8 @@ local trunkplayer = {}
 local function trunk_rightclick(self, clicker)
 	local name = clicker:get_player_name()
 	trunkplayer[name] = self
-	local inventory = minetest.create_detached_inventory("cars_"..name, {
+	local selfname = string.sub(tostring(self), 8)
+	local inventory = minetest.create_detached_inventory("cars"..selfname, {
 		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
 			self.trunkinv = inv:get_list("trunk")
 		end,
@@ -244,7 +245,7 @@ local function trunk_rightclick(self, clicker)
 	inventory:set_list("trunk", templist)
 	local formspec =
            "size[8,8]"..
-           "list[detached:cars_"..name..";trunk;1,1;6,2;]"..
+           "list[detached:cars"..selfname..";trunk;1,1;6,2;]"..
            "list[current_player;main;0,4;8,4;]"
     minetest.show_formspec(name, "cars_trunk", formspec)
 end
@@ -524,7 +525,7 @@ for id, color in pairs (carlist) do
 		textures = {"car_"..color..".png^licenseplate.png"}, -- number of required textures depends on visual
 		is_visible = true,
 		makes_footstep_sound = false,
-		automatic_rotate = false,
+		automatic_rotate = 0,
 		trunkinv = {},
 		on_activate = function(self, staticdata)
 			if not self.wheelpos then self.wheelpos = 0 end
