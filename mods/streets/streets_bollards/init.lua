@@ -76,7 +76,7 @@ minetest.register_node("streets:bollard_steel_automatic_up", {
 	node_box = {
 		type = "fixed",
 		fixed = {
-			{ -0.3125, -0.5, -0.3125, 0.3125, 0.5, 0.3125 }
+			{ -0.3125, -0.5, -0.3125, 0.3125, 1, 0.3125 }
 		}
 	},
 	bollard = {
@@ -126,7 +126,7 @@ minetest.register_node("streets:bollard_steel_manual_up", {
 	node_box = {
 		type = "fixed",
 		fixed = {
-			{ -0.125, -0.5, -0.125, 0.125, 0.5, 0.125 }
+			{ -0.125, -0.5, -0.125, 0.125, 1, 0.125 }
 		}
 	},
 	bollard = {
