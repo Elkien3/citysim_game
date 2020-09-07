@@ -17,3 +17,12 @@ minetest.register_node("mesecons_stickyblocks:sticky_block_all", {
 	end,
 	sounds = default.node_sound_wood_defaults(),
 })
+
+minetest.register_craft({
+	output = "mesecons_stickyblocks:stick_block_all",
+	recipe = {
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
+		{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"},
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"}
+	}
+})
