@@ -2,7 +2,7 @@ minetest.register_node("army:light",{
 	description = "Bare Lightbulb",
 	drawtype = "nodebox",
 	sunlight_propagates = true,
-	light_source = 14,
+	light_source = 13,
 	tiles = {"army_bulbtop.png",
 	         "army_bulbbase.png",
 	         "army_bulbside.png"},

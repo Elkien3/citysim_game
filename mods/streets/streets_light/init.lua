@@ -251,7 +251,7 @@ minetest.register_node(":streets:light_vertical_on", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	groups = {cracky = 1, streets_light = 1, not_in_creative_inventory = 1},
-	light_source = 14,
+	light_source = 13,
 	sunlight_propagates = true,
 	node_box = {
 		type = "fixed",
@@ -296,7 +296,7 @@ minetest.register_node(":streets:light_horizontal_on", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	groups = {cracky = 1, streets_light = 1, not_in_creative_inventory = 1},
-	light_source = 14,
+	light_source = 13,
 	sunlight_propagates = true,
 	node_box = {
 		type = "fixed",
@@ -341,7 +341,7 @@ minetest.register_node(":streets:light_hanging_on", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	groups = {cracky = 1, streets_light = 1, not_in_creative_inventory = 1},
-	light_source = 14,
+	light_source = 13,
 	sunlight_propagates = true,
 	node_box = {
 		type = "fixed",
