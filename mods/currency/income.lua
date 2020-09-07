@@ -23,7 +23,7 @@ local function income()
 	minetest.after(1200, income)
 	
 end
-minetest.after(1200, income)
+--minetest.after(1200, income)
 
 minetest.register_on_joinplayer(function(player)
 	playerlocs[player:get_player_name()] = player:get_pos()
