@@ -279,7 +279,7 @@ generate_line = function(s, ypos)
             file = charmap[s:sub(i, i + 1)]
             i = i + 2
         else
-            print("[signs] W: unknown symbol in '"..s.."' at "..i.." (probably "..s:sub(i, i)..")")
+            --print("[signs] W: unknown symbol in '"..s.."' at "..i.." (probably "..s:sub(i, i)..")")
             i = i + 1
         end
         if file ~= nil then
