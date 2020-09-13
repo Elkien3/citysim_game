@@ -1,0 +1,4 @@
+#    Stop trains forcibly in front of signal when about to run over an LZB 0 restriction, instead of setting emergency halt for manual resolving
+#    This prevents the need to manually restart trains that overran red signals, but is unrealistic.
+#    This is a workaround to circumvent system breakages due to bugs in LZB braking curves
+at_il_force_lzb_halt (Force LZB Halt) bool true

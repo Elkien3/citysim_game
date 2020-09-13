@@ -1,0 +1,2 @@
+This modpack adds realistic, good-looking trains and a rail system based on 30-degree turns.
+It also provides means to automate train operation.

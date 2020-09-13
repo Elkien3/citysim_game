@@ -1,0 +1,47 @@
+#    Display train and wagon ID in the infotext of trains.
+#    Useful when working with LuaATC or while debugging.
+advtrains_show_ids (Show ID's in infotext) bool false
+
+#    Enable the debug ring buffer
+#    This has no effect on the user experience, except decreased performance. Debug outputs are saved in a ring buffer to be printed when an error occurs.
+#    You probably want to leave this setting set to false.
+advtrains_enable_debugging (Enable debugging) bool false
+
+#    Enable the logging of certain events related to advtrains
+#    Logs are saved in the world directory as advtrains.log
+#    This setting is useful for multiplayer servers
+advtrains_enable_logging (Enable logging) bool false
+
+#    If this is active, any player can do the following things inside (and only inside) an area that is explicitly protected by him
+#    (checked using a dummy player called "*dummy*" (which is not an allowed player name)):
+#    - build tracks and near tracks without the track_builder privilege
+#    - operate turnouts and signals without the railway_operator privilege
+advtrains_allow_build_to_owner (Allow building/operating to privilegeless area owner) bool false
+
+#    Track protection range (horizontal)
+#    Players without the 'track_builder' privilege can not build within a box around any tracks determined by these range settings
+#    This setting is to be read as "r-0.5", so a value of 1 means a diameter of 3, a value of 2 a diameter of 5 a.s.o.
+#    The spanned area is a square. Fractional values are not supported.
+advtrains_prot_range_side (Track protection range [horizontal]) int 1 0 10
+
+#    Track protection range (up)
+#    Players without the 'track_builder' privilege can not build within a box around any tracks determined by these range settings
+#    This setting determines the upper y bound of the box, a value of 3 means that the rail and 3 nodes above it are protected
+advtrains_prot_range_up (Track protection range [up]) int 3 0 10
+
+#    Track protection range (down)
+#    Players without the 'track_builder' privilege can not build within a box around any tracks determined by these range settings
+#    This setting determines the lower y bound of the box, a value of 1 means that the rail and 1 node below it are protected
+advtrains_prot_range_down (Track protection range [down]) int 1 0 10
+
+#    Determine what effect "being overrun by a train" has.
+#    none: No damage is dealt at all.
+#    drop: Player is killed, all items are dropped as items on the tracks.
+#    normal: Player is killed, game-defined behavior is applied as if the player died by other means.
+advtrains_overrun_mode (Overrun mode) enum drop none,drop,normal
+
+#    Wagon entity loading/unloading range, in nodes
+#    When a wagon is within this range to a player, it is loaded
+#    When a wagon leaves this range + 32 nodes, it is unloaded
+#    If unset, defaults to active_block_range*16
+advtrains_wagon_load_range (Wagon Entity Load/Unload Range) int 96 32 512

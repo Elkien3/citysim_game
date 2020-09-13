@@ -1,0 +1,6 @@
+# This controls how the Railway Time relates to real-world time:
+# *independent - RWT counts independent of real time synchronized to ingame steps. Recommended for singleplayer and ad-hoc servers.
+# *follow_real - RWT is independent of real time, but counts up in real-world time speed
+# *adapt_real - RWT adapts its minute and second to real-world time. When the server is stopped and restarted, this results in a "time jump".
+# Time will jump for 1 cycle (59;59) at maximum.
+advtrains_lines_rwt_realtime (RWT real time adaption) enum independent independent,follow_real,adapt_real

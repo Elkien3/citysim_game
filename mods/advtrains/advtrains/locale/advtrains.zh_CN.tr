@@ -1,0 +1,107 @@
+# textdomain: advtrains
+
+# Advtrains Core (unorganized)
+This wagon is owned by @1, you can't destroy it.=这是@1的车厢, 你不能摧毁它.
+Warning: If you destroy this wagon, you only get some steel back! If you are sure, hold Sneak and left-click the wagon.=警告: 如果你摧毁此车厢, 你只能拿到一些钢方块. 如果你确定要摧毁这个车厢,请按潜行键并左键单击此车厢.
+ATC controller, unconfigured.=ATC控制器 (未配置)
+ATC controller=ATC控制器
+ATC controller, mode @1@nChannel: @2=ATC控制器@n模式: @1@n频道: @2
+ATC controller, mode @1@nCommand: @2=ATC控制器@n模式: @1@n命令: @2
+Command=命令
+Command (on)=命令（激活时）
+Digiline channel=Digiline 频道
+ATC Reverse command warning: didn't reverse train, train moving!=ATC警告:未执行“R”命令, 火车在移动
+ATC command syntax error: I statement not closed: @1=ATC语法错误: "I"命令不完整: @1
+ATC command parse error: Unknown command: @1=ATC语法错误: 未知命令: @1
+This position is protected!=这里已被保护.
+You need to own at least one neighboring wagon to destroy this couple.=你必须至少拥有其中一个车厢才能解耦这两个车厢.
+This node can't be rotated using the trackworker!=你不能使用铁路调整工具旋转这个方块.
+This node can't be changed using the trackworker!=你不能使用铁路调整工具调整这个方块.
+Can't place: not pointing at node=无法放置: 你没有选择任何方块.
+Can't place: space occupied!=无法放置: 此区域已被占用.
+Can't place: protected position!=无法放置: 此区域已被保护.
+Can't place: Not enough slope items left (@1 required)=无法放置: 你没有足够的铁路斜坡放置工具 (你需要@1个)
+Can't place: There's no slope of length @1=无法放置: advtrains不支持长度为@1m的斜坡.
+Can't place: no supporting node at upper end.=无法放置: 较高端没有支撑方块.
+Deprecated Track=请不要使用
+Can't get on: wagon full or doors closed!=无法上车: 车门已关闭或车厢已满
+Use Sneak+rightclick to bypass closed doors!=请使用潜行+右键上车
+Lock couples=锁定连接处
+Doors are closed! Use Sneak+rightclick to ignore the closed doors and get off!=车门已关闭, 请使用潜行+右键单击下车
+Access to @1=可前往@1
+The clipboard couldn't access the metadata. Paste failed.=无法粘贴: 剪贴板无法访问元数据
+The clipboard couldn't access the metadata. Copy failed.=无法复制: 剪贴板无法访问元数据
+
+# Train HUD/Formspecs
+Speed:=速度:
+Target:=目标速度:
+Show Inventory=显示物品栏
+Select seat:=请选择座位
+Wagon properties=车厢属性
+Save wagon properties=保存车厢属性
+Text displayed outside on train=车厢外部显示
+Text displayed inside train=车厢内部显示
+Line=火车线路
+Routingcode=路由码
+Get off=下车
+Get off (forced)=强制下车
+(Doors closed)=(车门已关闭)
+
+# General
+Save=保存
+# "off" and "on" can be translated differently depending on the context and are therefore not translated.
+off=off
+on=on
+
+# Line automation
+Station Code=车站代码
+Station Name=车站名称
+Door Delay=车门关闭时间
+Departure Speed=出发速度
+Stop Time=停站时间
+
+# Items
+Track Worker Tool@n@nLeft-click: change rail type (straight/curve/switch)@nRight-click: rotate rail/bumper/signal/etc.=铁路调整工具@n@n左键单击: 切换轨道类型@n右键单击: 旋转方块
+Passive Component Naming Tool@n@nRight-click to name a passive component.=被动元件命名工具@n@n右键单击命名所选元件.
+Train copy/paste tool@n@nLeft-click: copy train@nRight-click: paste train=火车复制工具@n@n左键单击: 复制@n右键单击: 粘帖
+Track=铁轨
+Perpendicular Diamond Crossing Track=垂直交叉铁轨
+45/90 Degree Diamond Crossing Track=45度交叉铁轨
+Unloading Track=卸货铁轨
+Loading Track=装货铁轨
+Bumper=保险杠
+Detector Rail=探测铁轨
+@1 Slope=@1斜坡
+@1 Platform (low)=50cm高的@1站台
+@1 Platform (high)=1m高的@1站台
+@1 Platform (45 degree)=1m高的@1站台 (45度)
+Lampless Signal (@1)=臂板信号机 (@1)
+Signal (@1)=信号灯 (@1)
+Wallmounted Signal (l)=壁挂式信号灯 (左侧)
+Wallmounted Signal (r)=壁挂式信号灯 (右侧)
+Wallmounted Signal (t)=悬挂式信号灯
+Andrew's Cross=铁路道口信号灯
+Boiler=锅炉
+driver's cab=驾驶室
+Wheel=车轮
+Chimney=烟囱
+
+# Seats
+Default Seat=默认座位
+Default Seat (driver stand)=默认座位 (司机座位)
+Driver Stand=司机座位
+Driver Stand (left)=左侧司机座位
+Driver Stand (right)=右侧司机座位
+
+# Wagon/engine types
+Industrial Train Engine=工业用火车头
+Big Industrial Train Engine=大型工业用火车头
+Industrial tank wagon=液体运输车厢
+Industrial wood wagon=木材运输车厢
+Japanese Train Engine=高速列车车头
+Japanese Train Wagon=高速列车车厢
+Steam Engine=蒸汽机车
+Detailed Steam Engine=精细的蒸汽机车
+Passenger Wagon=客车
+Box Wagon=货运车厢
+Subway Passenger Wagon=地铁车厢
