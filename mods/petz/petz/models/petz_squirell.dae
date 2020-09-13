@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?><COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+<asset>
+<contributor>
+<author>VoxelShop User</author>
+<authoring_tool>VoxelShop V1.8.26
+</authoring_tool>
+</contributor>
+<created>2020-05-10T01:33:22</created>
+<modified>2020-05-10T01:33:22</modified>
+<unit meter="1" name="meter"/>
+<up_axis>Z_UP</up_axis>
+</asset>
+<library_images>
+<image id="petz_squirell_texture0-image" name="petz_squirell_texture0-image">
+<init_from>file://petz_squirell_texture0.png</init_from>
+</image>
+</library_images>
+<library_effects>
+<effect id="lambert0-fx">
+<profile_COMMON>
+<newparam sid="petz_squirell_texture0-surface">
+<surface type="2D">
+<init_from>petz_squirell_texture0-image</init_from>
+</surface>
+</newparam>
+<newparam sid="petz_squirell_texture0-sampler">
+<sampler2D>
+<source>petz_squirell_texture0-surface</source>
+<wrap_s>WRAP</wrap_s>
+<wrap_t>WRAP</wrap_t>
+<minfilter>NEAREST</minfilter>
+<magfilter>NEAREST</magfilter>
+</sampler2D>
+</newparam>
+<technique sid="common">
+<lambert>
+<emission>
+<color>0 0 0 1</color>
+</emission>
+<ambient>
+<color>0 0 0 1</color>
+</ambient>
+<diffuse>
+<texture texcoord="TEX0" texture="petz_squirell_texture0-sampler"/>
+</diffuse>
+</lambert>
+</technique>
+</profile_COMMON>
+</effect>
+</library_effects>
+<library_materials>
+<material id="lambert0-material" name="lambert0">
+<instance_effect url="#lambert0-fx"/>
+</material>
+</library_materials>
+<library_geometries>
+<geometry id="Plane-tex-mesh-0" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-0-positions">
+<float_array count="24" id="Plane-tex-mesh-0-positions-array">-2 -4 -6 -2 -2 -8 -2 -4 -8 -2 -2 -6 0 -4 -6 0 -2 -8 0 -4 -8 0 -2 -6</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-0-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-0-uvs">
+<float_array count="6" id="Plane-tex-mesh-0-uvs-array">0.26472667 0.91660774 0.29407606 0.91660774 0.26472667 0.83345115</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-0-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-0-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-0-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-0-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-0-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-0-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-1" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-1-positions">
+<float_array count="24" id="Plane-tex-mesh-1-positions-array">-4 4 -4 -4 8 -10 -4 4 -10 -4 8 -4 2 4 -4 2 8 -10 2 4 -10 2 8 -4</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-1-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-1-uvs">
+<float_array count="42" id="Plane-tex-mesh-1-uvs-array">0.5147412 0.50006664 0.5588059 0.66653335 0.5588059 0.50006664 0.51472354 0.50013334 0.51472354 0.6666 0.55878824 0.6666 0.6470136 0.33328 0.5588461 0.16677336 0.5588461 0.33328 0.5441 0.50013334 0.5441 0.6666 0.5000353 0.6666 0.5882561 0.16660774 0.61760545 0.16660774 0.5882561 0.08345118 0.64701724 0.4167256 0.5588443 0.6665488 0.5588443 0.4167256 0.67642665 0.08338869 0.63237494 0.08338869 0.63237494 0.16655594</float_array>
+<technique_common>
+<accessor count="21" source="#Plane-tex-mesh-1-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-1-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-1-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-1-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-1-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-1-uvs"/>
+<p>0 0 1 1 2 2 0 3 3 4 1 5 5 1 4 0 6 2 7 4 4 3 5 5 1 7 6 6 2 8 5 10 6 9 1 11 4 12 3 13 0 14 4 12 7 13 3 14 6 15 0 16 2 17 6 18 4 19 0 20 3 13 5 12 1 14 7 13 5 12 3 14</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-2" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-2-positions">
+<float_array count="24" id="Plane-tex-mesh-2-positions-array">0 8 -10 0 10 -12 0 8 -12 0 10 -10 2 8 -10 2 10 -12 2 8 -12 2 10 -10</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-2-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-2-uvs">
+<float_array count="6" id="Plane-tex-mesh-2-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-2-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-2-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-2-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-2-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-2-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-2-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-3" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-3-positions">
+<float_array count="24" id="Plane-tex-mesh-3-positions-array">-4 8 -10 -4 10 -12 -4 8 -12 -4 10 -10 -2 8 -10 -2 10 -12 -2 8 -12 -2 10 -10</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-3-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-3-uvs">
+<float_array count="6" id="Plane-tex-mesh-3-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-3-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-3-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-3-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-3-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-3-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-3-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-4" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-4-positions">
+<float_array count="24" id="Plane-tex-mesh-4-positions-array">0 -2 0 0 0 -4 0 -2 -4 0 0 0 2 -2 0 2 0 -4 2 -2 -4 2 0 0</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-4-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-4-uvs">
+<float_array count="6" id="Plane-tex-mesh-4-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-4-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-4-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-4-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-4-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-4-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-4-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-5" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-5-positions">
+<float_array count="24" id="Plane-tex-mesh-5-positions-array">-4 -2 0 -4 0 -4 -4 -2 -4 -4 0 0 -2 -2 0 -2 0 -4 -2 -2 -4 -2 0 0</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-5-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-5-uvs">
+<float_array count="6" id="Plane-tex-mesh-5-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-5-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-5-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-5-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-5-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-5-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-5-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-6" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-6-positions">
+<float_array count="24" id="Plane-tex-mesh-6-positions-array">0 8 0 0 10 -4 0 8 -4 0 10 0 2 8 0 2 10 -4 2 8 -4 2 10 0</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-6-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-6-uvs">
+<float_array count="6" id="Plane-tex-mesh-6-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-6-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-6-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-6-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-6-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-6-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-6-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-7" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-7-positions">
+<float_array count="24" id="Plane-tex-mesh-7-positions-array">-4 8 0 -4 10 -4 -4 8 -4 -4 10 0 -2 8 0 -2 10 -4 -2 8 -4 -2 10 0</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-7-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-7-uvs">
+<float_array count="6" id="Plane-tex-mesh-7-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118</float_array>
+<technique_common>
+<accessor count="3" source="#Plane-tex-mesh-7-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-7-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-7-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-7-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-7-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-7-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 5 1 4 0 6 2 7 1 4 0 5 2 1 1 6 0 2 2 5 1 6 0 1 2 4 0 3 1 0 2 4 0 7 1 3 2 6 0 0 1 2 2 6 0 4 1 0 2 3 1 5 0 1 2 7 1 5 0 3 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-8" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-8-positions">
+<float_array count="24" id="Plane-tex-mesh-8-positions-array">-4 -14 -4 -4 -4 -10 -4 -14 -10 -4 -4 -4 2 -14 -4 2 -4 -10 2 -14 -10 2 -4 -4</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-8-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-8-uvs">
+<float_array count="36" id="Plane-tex-mesh-8-uvs-array">0.70590246 0.16654508 0.7426068 0.083394125 0.70590246 0.083394125 0.7059226 0.16660587 0.74262697 0.16660587 0.74262697 0.08345492 0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118 0.72061086 0.33322662 0.72061086 0.22922002 0.7646607 0.22922002 0.7206322 0.08338869 0.7646839 0.16655594 0.7646839 0.08338869 0.7206102 0.08344406 0.7206102 0.1666113 0.7646619 0.1666113</float_array>
+<technique_common>
+<accessor count="18" source="#Plane-tex-mesh-8-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-8-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-8-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-8-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-8-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-8-uvs"/>
+<p>0 0 1 1 2 2 0 3 3 4 1 5 5 7 4 6 6 8 7 7 4 6 5 8 1 1 6 0 2 2 5 10 6 9 1 11 4 0 3 1 0 2 4 9 7 10 3 11 6 6 0 7 2 8 6 6 4 7 0 8 3 13 5 12 1 14 7 16 5 15 3 17</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-9" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-9-positions">
+<float_array count="48" id="Plane-tex-mesh-9-positions-array">-2 2 -6 -2 4 -8 -2 2 -8 -2 4 -6 -6 -2 -4 -6 4 -12 -6 -2 -12 -6 4 -4 4 -2 -4 4 4 -12 4 -2 -12 4 4 -4 -4 2 -6 -4 4 -8 -4 2 -8 -4 4 -6</float_array>
+<technique_common>
+<accessor count="16" source="#Plane-tex-mesh-9-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-9-uvs">
+<float_array count="84" id="Plane-tex-mesh-9-uvs-array">0.7353149 0.41660774 0.7646643 0.41660774 0.7353149 0.33345118 0.6618099 0.50005335 0.7205656 0.5832266 0.7205656 0.50005335 0.6617873 0.5001067 0.6617873 0.58327997 0.720543 0.58327997 0.7646668 0.29160437 0.72550976 0.16679123 0.72550976 0.29160437 0.72056675 0.375114 0.72056675 0.49994302 0.6618076 0.49994302 0.352962 0.91660774 0.38231134 0.91660774 0.352962 0.83345115 0.73534745 0.33336857 0.8823263 0.41659617 0.8823263 0.33336857 0.73532075 0.33340383 0.73532075 0.41663143 0.88229966 0.41663143 0.7353454 0.45837405 0.88232726 0.6249186 0.88232726 0.45837405 0.8823197 0.3332921 0.7941218 0.16674916 0.73532325 0.3332921 0.76467645 0.16658333 0.76467645 0.125 0.7059412 0.08341666 0.66178966 0.45828918 0.7205633 0.45828918 0.6911765 0.33342168 0.6911765 0.58325 0.6617912 0.50004166 0.72056174 0.50004166 0.76463974 0.08341666 0.7352941 0.08341666 0.70594853 0.1665</float_array>
+<technique_common>
+<accessor count="42" source="#Plane-tex-mesh-9-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-9-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-9-positions"/>
+</vertices>
+<triangles count="28" material="Plane-tex-mesh-9-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-9-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-9-uvs"/>
+<p>0 0 1 1 2 2 0 0 3 1 1 2 4 3 5 4 6 5 4 6 7 7 5 8 9 10 8 9 10 11 11 13 8 12 9 14 13 16 12 15 14 17 15 16 12 15 13 17 5 19 10 18 6 20 9 22 10 21 5 23 15 1 0 0 12 2 3 1 0 0 15 2 2 15 13 16 14 17 2 15 1 16 13 17 8 0 7 1 4 2 8 0 11 1 7 2 10 24 4 25 6 26 10 0 8 1 4 2 12 1 2 0 14 2 0 1 2 0 12 2 1 28 9 27 5 29 13 31 1 30 5 32 11 34 9 33 1 35 7 37 13 36 5 38 3 1 11 0 1 2 15 40 13 39 7 41 11 1 3 0 7 2 3 1 15 0 7 2</p>
+</triangles>
+</mesh>
+</geometry>
+<geometry id="Plane-tex-mesh-10" name="Plane-tex">
+<mesh>
+<source id="Plane-tex-mesh-10-positions">
+<float_array count="24" id="Plane-tex-mesh-10-positions-array">-4 8 -4 -4 14 -10 -4 8 -10 -4 14 -4 2 8 -4 2 14 -10 2 8 -10 2 14 -4</float_array>
+<technique_common>
+<accessor count="8" source="#Plane-tex-mesh-10-positions-array" stride="3">
+<param name="X" type="float"/>
+<param name="Y" type="float"/>
+<param name="Z" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<source id="Plane-tex-mesh-10-uvs">
+<float_array count="72" id="Plane-tex-mesh-10-uvs-array">0.3528913 0.2916225 0.2647308 0.166755 0.2647308 0.2916225 0.07351382 0.33347467 0.07351382 0.5832627 0.029442942 0.5832627 0.44115567 0.41678452 0.35298276 0.66660774 0.44115567 0.66660774 0.102956764 0.083474666 0.102956764 0.33326265 0.14702764 0.33326265 0.24998441 0.416808 0.20591353 0.666596 0.24998441 0.666596 0.20585118 0.333404 0.1617803 0.333404 0.1617803 0.583192 0.044138443 0.74988216 0.0881937 0.62505895 0.044138443 0.62505895 0.88239455 0.3332744 0.97056746 0.3332744 0.97056746 0.08345118 0.26472667 0.41678452 0.35289958 0.66660774 0.26472667 0.66660774 0.41178966 0.166755 0.41178966 0.2916225 0.4999501 0.2916225 0.14704323 0.33347467 0.10297235 0.5832627 0.14704323 0.5832627 0.20585118 0.6667373 0.1617803 0.6667373 0.1617803 0.9165253</float_array>
+<technique_common>
+<accessor count="36" source="#Plane-tex-mesh-10-uvs-array" stride="2">
+<param name="S" type="float"/>
+<param name="T" type="float"/>
+</accessor>
+</technique_common>
+</source>
+<vertices id="Plane-tex-mesh-10-vertices">
+<input semantic="POSITION" source="#Plane-tex-mesh-10-positions"/>
+</vertices>
+<triangles count="12" material="Plane-tex-mesh-10-lambert0-material">
+<input offset="0" semantic="VERTEX" source="#Plane-tex-mesh-10-vertices"/>
+<input offset="1" semantic="TEXCOORD" set="0" source="#Plane-tex-mesh-10-uvs"/>
+<p>0 0 1 1 2 2 0 3 3 4 1 5 5 7 4 6 6 8 7 10 4 9 5 11 1 13 6 12 2 14 5 16 6 15 1 17 4 18 3 19 0 20 4 21 7 22 3 23 6 24 0 25 2 26 6 27 4 28 0 29 3 31 5 30 1 32 7 34 5 33 3 35</p>
+</triangles>
+</mesh>
+</geometry>
+</library_geometries>
+<library_visual_scenes>
+<visual_scene id="Scene" name="Scene">
+<node id="petz_squirell.layer" name="petz_squirell.Layer" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="Layer" sid="petz_squirell.layer" url="#Plane-tex-mesh-0">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.layer.001" name="petz_squirell.Layer" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="Layer" sid="petz_squirell.layer.001" url="#Plane-tex-mesh-1">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.layer.002" name="petz_squirell.Layer" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="Layer" sid="petz_squirell.layer.002" url="#Plane-tex-mesh-2">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.layer.003" name="petz_squirell.Layer" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="Layer" sid="petz_squirell.layer.003" url="#Plane-tex-mesh-3">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.back_left_leg" name="petz_squirell.back_left_leg" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="back_left_leg" sid="petz_squirell.back_left_leg" url="#Plane-tex-mesh-4">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.back_right_left" name="petz_squirell.back_right_left" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="back_right_left" sid="petz_squirell.back_right_left" url="#Plane-tex-mesh-5">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.front_left_leg" name="petz_squirell.front_left_leg" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="front_left_leg" sid="petz_squirell.front_left_leg" url="#Plane-tex-mesh-6">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.front_rigth_leg" name="petz_squirell.front_rigth_leg" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="front_rigth_leg" sid="petz_squirell.front_rigth_leg" url="#Plane-tex-mesh-7">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.tail" name="petz_squirell.tail" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="tail" sid="petz_squirell.tail" url="#Plane-tex-mesh-8">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.body" name="petz_squirell.body" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="body" sid="petz_squirell.body" url="#Plane-tex-mesh-9">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+<node id="petz_squirell.head" name="petz_squirell.Head" type="NODE">
+<translate sid="location">-0.0 -0.0 -0.0</translate>
+<rotate sid="rotationZ">0 0 1 0</rotate>
+<rotate sid="rotationY">0 1 0 0</rotate>
+<rotate sid="rotationX">1 0 0 0</rotate>
+<scale sid="scale">0.03125 0.03125 0.03125</scale>
+<instance_geometry name="Head" sid="petz_squirell.head" url="#Plane-tex-mesh-10">
+<bind_material>
+<technique_common>
+<instance_material symbol="lambert0-material" target="#lambert0-material">
+<bind_vertex_input input_semantic="TEXCOORD" input_set="0" semantic="TEX0"/>
+</instance_material>
+</technique_common>
+</bind_material>
+</instance_geometry>
+</node>
+</visual_scene>
+</library_visual_scenes>
+<scene>
+<instance_visual_scene url="#Scene"/>
+</scene>
+</COLLADA>

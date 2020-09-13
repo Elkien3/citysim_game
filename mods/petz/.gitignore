@@ -1,0 +1,4 @@
+## Generic ignorable patterns and files
+*.obj
+*.blend1
+user.conf
