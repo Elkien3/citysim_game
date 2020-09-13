@@ -1,0 +1,1 @@
+Adds a letter cutting tool with letter "signlike" nodes.
