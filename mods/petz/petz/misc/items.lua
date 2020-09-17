@@ -554,12 +554,12 @@ minetest.register_craft({
 minetest.register_alias("petz:horseshoe", "mobs:horseshoe_steel")
 end
 --Spider Eye
-
+if settings.tarantula then
 minetest.register_craftitem("petz:spider_eye", {
 	description = S("Spider Eye"),
 	inventory_image = "petz_spider_eye.png",
 })
-
+end
 --Leopard Drop
 minetest.register_craftitem("petz:leopard_skin", {
 	description = S("Leopard Skin"),
