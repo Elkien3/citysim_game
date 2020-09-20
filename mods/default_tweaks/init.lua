@@ -7,8 +7,9 @@ if minetest.settings:get_bool("enable_lavacooling") ~= false then
 			break
 		end
 	end
-	minetest.override_item("default:water_flowing", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}})
-	minetest.override_item("default:river_water_source", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}})
+	minetest.override_item("default:water_flowing", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}}) --don't allow people to make a mess with water and lava as easily
+	minetest.override_item("default:river_water_flowing", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}})
+	minetest.override_item("default:lava_flowing", {groups = {lava = 3, liquid = 2,not_in_creative_inventory = 1}) --disable lava flowing from burning things
 end
 
 --FIRE
