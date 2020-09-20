@@ -1,3 +1,16 @@
+--LAVA COOLING
+
+if minetest.settings:get_bool("enable_lavacooling") ~= false then
+	for index, abm in pairs (minetest.registered_abms) do
+		if abm.label = "Lava cooling" then
+			abm.neighbors = {"group:cools_lava"}
+			break
+		end
+	end
+	minetest.override_item("default:water_flowing", {groups.cools_lava = nil})
+	minetest.override_item("default:river_water_source", {groups.cools_lava = nil})
+end
+
 --FIRE
 
 local fire_enabled = minetest.settings:get_bool("enable_fire")
@@ -116,3 +129,12 @@ local function cyclic_update()
 end
 
 minetest.after(.5, cyclic_update)
+
+--MUSHROOMS
+for index, abm in pairs (minetest.registered_abms) do
+	if abm.label == "Mushroom spread" then
+		abm.interval = 60
+		abm.chance = 150
+		break
+	end
+end
