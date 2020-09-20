@@ -74,6 +74,9 @@ end
 
 --BINOCULARS
 
+binoculars.items = {}
+binoculars.items["binoculars:binoculars"] = 10
+
 binoculars.update_player_property = function(player)
 	local creative_enabled =
 		(creative_mod and creative.is_enabled_for(player:get_player_name())) or
