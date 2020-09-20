@@ -7,8 +7,8 @@ if minetest.settings:get_bool("enable_lavacooling") ~= false then
 			break
 		end
 	end
-	minetest.override_item("default:water_flowing", {groups["cools_lava"] = nil})
-	minetest.override_item("default:river_water_source", {groups["cools_lava"] = nil})
+	minetest.override_item("default:water_flowing", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}})
+	minetest.override_item("default:river_water_source", {groups = {water = 3, liquid = 3, not_in_creative_inventory = 1}})
 end
 
 --FIRE
