@@ -2,7 +2,7 @@
 
 if minetest.settings:get_bool("enable_lavacooling") ~= false then
 	for index, abm in pairs (minetest.registered_abms) do
-		if abm.label = "Lava cooling" then
+		if abm.label == "Lava cooling" then
 			abm.neighbors = {"group:cools_lava"}
 			break
 		end
