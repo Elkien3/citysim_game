@@ -68,3 +68,4 @@ if fire_enabled then
 				--{pos = p0, max_hear_distance = 16, gain = 0.25})
 		end,
 	})
+end
