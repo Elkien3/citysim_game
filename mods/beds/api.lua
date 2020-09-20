@@ -17,6 +17,8 @@ local function destruct_bed(pos, n)
 		reverse = not reverse
 		minetest.remove_node(other)
 		minetest.check_for_falling(other)
+		beds.remove_spawns_at(pos)
+		beds.remove_spawns_at(other)
 	else
 		reverse = not reverse
 	end
@@ -109,7 +111,7 @@ function beds.register_bed(name, def)
 			return itemstack
 		end,
 
-		on_rotate = function(pos, node, user, mode, new_param2)
+		on_rotate = function(pos, node, user, _, new_param2)
 			local dir = minetest.facedir_to_dir(node.param2)
 			local p = vector.add(pos, dir)
 			local node2 = minetest.get_node_or_nil(p)
@@ -121,7 +123,7 @@ function beds.register_bed(name, def)
 				minetest.record_protection_violation(p, user:get_player_name())
 				return false
 			end
-			if mode ~= screwdriver.ROTATE_FACE then
+			if new_param2 % 32 > 3 then
 				return false
 			end
 			local newp = vector.add(pos, minetest.facedir_to_dir(new_param2))
@@ -141,6 +143,9 @@ function beds.register_bed(name, def)
 			minetest.set_node(newp, {name = name .. "_top", param2 = new_param2})
 			return true
 		end,
+		can_dig = function(pos, player)
+			return beds.can_dig(pos)
+		end,
 	})
 
 	minetest.register_node(name .. "_top", {
@@ -159,6 +164,12 @@ function beds.register_bed(name, def)
 		},
 		on_destruct = function(pos)
 			destruct_bed(pos, 2)
+		end,
+		can_dig = function(pos, player)
+			local node = minetest.get_node(pos)
+			local dir = minetest.facedir_to_dir(node.param2)
+			local p = vector.add(pos, dir)
+			return beds.can_dig(p)
 		end,
 	})
 

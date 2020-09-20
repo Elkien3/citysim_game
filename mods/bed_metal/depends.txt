@@ -1,0 +1,3 @@
+default
+beds
+wool
