@@ -1,3 +1,5 @@
+--FIRE
+
 local fire_enabled = minetest.settings:get_bool("enable_fire")
 if fire_enabled == nil then
 	-- enable_fire setting not specified, check for disable_fire
@@ -69,3 +71,45 @@ if fire_enabled then
 		end,
 	})
 end
+
+--BINOCULARS
+
+binoculars.update_player_property = function(player)
+	local creative_enabled =
+		(creative_mod and creative.is_enabled_for(player:get_player_name())) or
+		creative_mode_cache
+	local new_zoom_fov = 0
+	for name, value in pairs(binoculars.items) do
+		if player:get_wielded_item():get_name() == name then
+			new_zoom_fov = value
+		end
+	end
+	
+	if creative_enabled then
+		new_zoom_fov = 15
+	end
+
+	-- Only set property if necessary to avoid player mesh reload
+	if player:get_properties().zoom_fov ~= new_zoom_fov then
+		player:set_properties({zoom_fov = new_zoom_fov})
+	end
+end
+
+
+-- Set player property 'on joinplayer'
+
+minetest.register_on_joinplayer(function(player)
+	binoculars.update_player_property(player)
+end)
+
+
+-- Cyclic update of player property
+
+local function cyclic_update()
+	for _, player in ipairs(minetest.get_connected_players()) do
+		binoculars.update_player_property(player)
+	end
+	minetest.after(.5, cyclic_update)
+end
+
+minetest.after(.5, cyclic_update)
