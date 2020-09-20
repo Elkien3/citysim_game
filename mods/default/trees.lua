@@ -1,3 +1,8 @@
+-- default/trees.lua
+
+-- support for MT game translation.
+local S = default.get_translator
+
 local random = math.random
 
 --
@@ -11,9 +16,7 @@ function default.can_grow(pos)
 	if not node_under then
 		return false
 	end
-	local name_under = node_under.name
-	local is_soil = minetest.get_item_group(name_under, "soil")
-	if is_soil == 0 then
+	if minetest.get_item_group(node_under.name, "soil") == 0 then
 		return false
 	end
 	local light_level = minetest.get_node_light(pos)
@@ -560,9 +563,12 @@ function default.sapling_on_place(itemstack, placer, pointed_thing,
 			interval) then
 		minetest.record_protection_violation(pos, player_name)
 		-- Print extra information to explain
+--		minetest.chat_send_player(player_name,
+--			itemstack:get_definition().description .. " will intersect protection " ..
+--			"on growth")
 		minetest.chat_send_player(player_name,
-			itemstack:get_definition().description .. " will intersect protection " ..
-			"on growth")
+		    S("@1 will intersect protection on growth.",
+			itemstack:get_definition().description))
 		return itemstack
 	end
 
