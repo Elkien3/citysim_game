@@ -46,7 +46,7 @@ if fire_enabled then
 						end
 					end,
 				}
-			elseif label == "Remove flammable nodes" then
+			elseif abm.label == "Remove flammable nodes" then
 				abm = {
 					label = "Remove flammable nodes",
 					nodenames = {"fire:basic_flame"},
