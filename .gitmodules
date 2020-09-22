@@ -1,0 +1,3 @@
+[submodule "mods/character_anim"]
+	path = mods/character_anim
+	url = https://github.com/appgurueu/character_anim
