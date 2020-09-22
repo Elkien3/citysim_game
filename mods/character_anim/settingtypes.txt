@@ -1,0 +1,13 @@
+
+character_anim.default.body.turn_speed (Character anim default body turn_speed) float 0.2 0.000000 1000.000000
+character_anim.default.arm_right.yaw.1 (Character anim default arm_right yaw 1) float -30 -180.000000 180.000000
+character_anim.default.arm_right.yaw.2 (Character anim default arm_right yaw 2) float 160 -180.000000 180.000000
+character_anim.default.arm_right.radius (Character anim default arm_right radius) float 10 -180.000000 180.000000
+character_anim.default.arm_right.speed (Character anim default arm_right speed) float 1000 0.000000 10000.000000
+character_anim.default.head.yaw.1 (Character anim default head yaw 1) float -90 -180.000000 180.000000
+character_anim.default.head.yaw.2 (Character anim default head yaw 2) float 90 -180.000000 180.000000
+character_anim.default.head.yaw_restriction (Character anim default head yaw_restriction) float 60 -180.000000 180.000000
+character_anim.default.head.pitch.1 (Character anim default head pitch 1) float -60 -180.000000 180.000000
+character_anim.default.head.pitch.2 (Character anim default head pitch 2) float 80 -180.000000 180.000000
+character_anim.default.head.yaw_restricted.1 (Character anim default head yaw_restricted 1) float 0 -180.000000 180.000000
+character_anim.default.head.yaw_restricted.2 (Character anim default head yaw_restricted 2) float 45 -180.000000 180.000000

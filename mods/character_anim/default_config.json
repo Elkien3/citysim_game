@@ -1,0 +1,13 @@
+{
+	"default": {
+		"body": { "turn_speed": 0.2 },
+		"head": {
+			"pitch": [ -60, 80 ],
+			"yaw": [ -90, 90 ],
+			"yaw_restricted": [ 0, 45 ],
+			"yaw_restriction": 60
+		},
+		"arm_right": { "radius": 10, "speed": 1e3, "yaw": [ -30, 160 ] }
+	},
+	"models": {}
+}
