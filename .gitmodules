@@ -1,3 +1,9 @@
 [submodule "mods/character_anim"]
 	path = mods/character_anim
 	url = https://github.com/appgurueu/character_anim
+[submodule "mods/modlib"]
+	path = mods/modlib
+	url = https://github.com/appgurueu/modlib
+[submodule "mods/cmdlib"]
+	path = mods/cmdlib
+	url = https://github.com/appgurueu/cmdlib
