@@ -526,7 +526,7 @@ function cars_register_car(def)
 			if not self.platenumber then
 				self.platenumber = {}
 			end
-			self.passengers = def.passengers
+			self.passengers = table.copy(def.passengers)
 			if staticdata then
 				local deserialized = minetest.deserialize(staticdata)
 				if deserialized then
