@@ -82,7 +82,6 @@ end
 
 minetest.register_craft({
 	output = "streets:sidewalk 8",
-	type = "",
 	recipe = {
 		{ "streets:asphalt", "streets:asphalt", "streets:asphalt" },
 		{ "streets:asphalt", "dye:white", "streets:asphalt" },
