@@ -81,7 +81,11 @@ if minetest.get_modpath("moreblocks") or minetest.get_modpath("stairsplus") then
 end
 
 minetest.register_craft({
-	output = "streets:sidewalk 1",
-	type = "shapeless",
-	recipe = { "streets:asphalt", "dye:white" }
+	output = "streets:sidewalk 8",
+	type = "",
+	recipe = {
+		{ "streets:asphalt", "streets:asphalt", "streets:asphalt" },
+		{ "streets:asphalt", "dye:white", "streets:asphalt" },
+		{ "streets:asphalt", "streets:asphalt", "streets:asphalt" }
+	}
 })
