@@ -150,3 +150,11 @@ crop_def.drop = {
 	}
 }
 minetest.register_node("drug_wars:coca_8", table.copy(crop_def))
+
+farming.registered_plants["drug_wars:coca"] = {
+	crop = "drug_wars:coca",
+	seed = "drug_wars:seed_coca",
+	steps = 8,
+	minlight = 13,
+	maxlight = 15
+}

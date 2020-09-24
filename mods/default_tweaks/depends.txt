@@ -1,3 +1,5 @@
 default
 fire
 binoculars
+farming
+drug_wars?

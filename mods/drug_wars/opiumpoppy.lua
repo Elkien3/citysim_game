@@ -143,3 +143,11 @@ crop_def.tiles = {"drugwars_opiumpoppy_8.png"}
 crop_def.visual_scale = 0.7 + 8 / 10.0
 minetest.register_node("drug_wars:opiumpoppy_8", table.copy(crop_def))
 
+farming.registered_plants["drug_wars:opiumpoppy"] = {
+	crop = "drug_wars:opiumpoppy",
+	seed = "drug_wars:seed_opiumpoppy",
+	steps = 8,
+	minlight = 13,
+	maxlight = 15
+}
+

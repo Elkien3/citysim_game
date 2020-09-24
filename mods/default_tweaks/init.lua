@@ -1,3 +1,5 @@
+local modpath = minetest.get_modpath("default_tweaks")
+
 --LAVA COOLING
 
 if minetest.settings:get_bool("enable_lavacooling") ~= false then
@@ -139,3 +141,5 @@ for index, abm in pairs (minetest.registered_abms) do
 		break
 	end
 end
+
+dofile(modpath.."/plantrot.lua")
