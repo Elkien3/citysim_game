@@ -7,6 +7,6 @@
 [submodule "mods/cmdlib"]
 	path = mods/cmdlib
 	url = https://github.com/appgurueu/cmdlib
-[submodule "citysimdev_game/mods"]
-	path = citysimdev_game/mods
+[submodule "mods/gunslinger"]
+	path = mods/gunslinger
 	url = https://github.com/Elkien3/gunslinger
