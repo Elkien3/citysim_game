@@ -7,3 +7,6 @@
 [submodule "mods/cmdlib"]
 	path = mods/cmdlib
 	url = https://github.com/appgurueu/cmdlib
+[submodule "mods/gunslinger"]
+	path = mods/gunslinger
+	url = https://github.com/Elkien3/gunslinger
