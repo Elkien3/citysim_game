@@ -1,0 +1,19 @@
+# copy this to your worldpath if you want to override these values
+
+# store the positions of that many markers for each player (until server restart)
+# default: 50
+markers_MAX_MARKERS = 50
+
+# the protection against digging of the marker by other players expires after this time
+# default: 60*60*24 (1 day)
+markers_EXPIRE_AFTER = 86400
+
+
+# self-protected areas can not get higher than this
+# default: 100
+markers_MAX_HEIGHT = 100
+
+
+# only areas up to this size (in square meters) can be protected
+# default: 4096
+markers_MAX_SIZE = 4096
