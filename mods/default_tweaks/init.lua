@@ -143,3 +143,4 @@ for index, abm in pairs (minetest.registered_abms) do
 end
 
 dofile(modpath.."/plantrot.lua")
+dofile(modpath.."/protection.lua")
