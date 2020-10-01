@@ -34,7 +34,7 @@ if fire_enabled then
 	for index, abm in pairs (minetest.registered_abms) do
 		if abm.mod_origin == "fire" then
 			if abm.label == "Ignite flame" then
-				abm = {
+				minetest.registered_abms[index] = {
 					label = "Ignite flame",
 					nodenames = {"group:flammable"},
 					neighbors = {"group:igniter"},
@@ -49,7 +49,7 @@ if fire_enabled then
 					end,
 				}
 			elseif abm.label == "Remove flammable nodes" then
-				abm = {
+				minetest.registered_abms[index] = {
 					label = "Remove flammable nodes",
 					nodenames = {"fire:basic_flame"},
 					neighbors = "group:flammable",
@@ -86,6 +86,20 @@ if fire_enabled then
 				--{pos = p0, max_hear_distance = 16, gain = 0.25})
 		end,
 	})
+	minetest.register_abm({
+		label = "Remove flames near water",
+		nodenames = {"fire:basic_flame"},
+		neighbors = "group:water",
+		interval = 4,
+		chance = 3,
+		catch_up = false,
+		action = function(p0, node, _, _)
+			minetest.remove_node(p0)
+			minetest.sound_play("fire_extinguish_flame",
+				{pos = p0, max_hear_distance = 16, gain = 0.25})
+		end,
+	})
+
 end
 
 --BINOCULARS
