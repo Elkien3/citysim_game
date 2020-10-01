@@ -22,7 +22,7 @@ minetest.register_on_joinplayer(function(player)
 	minetest.after(0, function() 
 		local props = player:get_properties()
 		props.physical = true
-		props.collisionbox = {-.25, 0, -.25, 0.25, 1.7, .25}--{-.3, 0, -.3, 0.3, 1.7, .3}
+		props.collisionbox = {-.26, 0, -.26, 0.26, 1.7, .26}--{-.3, 0, -.3, 0.3, 1.7, .3}
 		player:set_properties(props)
 	end)
 end)
