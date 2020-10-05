@@ -188,15 +188,19 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 			-- Check if we can exchange
 			local can_exchange = true
 			local owners_fault = false
+			local meta_mismatch = false
 			for i, item in pairs(wants) do
 				if not pinv:contains_item("customer_gives",item) then
 					can_exchange = false
 				end
 			end
 			for i, item in pairs(gives) do
-				if not minv:contains_item("stock",item) then
+				if not minv:contains_item("stock",item, true) then
 					can_exchange = false
 					owners_fault = true
+					if minv:contains_item("stock",item) then
+						meta_mismatch = true
+					end
 				end
 			end
 			if can_exchange then
@@ -215,7 +219,11 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 				meta:set_string("counter", counter)
 			else
 				if owners_fault then
-					minetest.chat_send_player(name,"Exchange can not be done, contact the shop owner.")
+					if meta_mismatch then
+						minetest.chat_send_player(name,"Exchange can not be done, contact the shop owner. (meta mismatch)")
+					else
+						minetest.chat_send_player(name,"Exchange can not be done, contact the shop owner.")
+					end
 				else
 					minetest.chat_send_player(name,"Exchange can not be done, check if you put all items !")
 				end
