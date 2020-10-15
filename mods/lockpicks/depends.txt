@@ -6,3 +6,4 @@ doors?
 ctf_protect?
 moreores?
 signs?
+font_api?

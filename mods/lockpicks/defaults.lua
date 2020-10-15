@@ -80,7 +80,7 @@ end
 if minetest.get_modpath("3d_armor_stand") ~= nil then
 	make_pickable("3d_armor_stand:locked_armor_stand", nil, 1, "Lockpicked Armor Stand")
 end
-if minetest.get_modpath("signs") ~= nil then
+if minetest.get_modpath("signs") ~= nil and not minetest.get_modpath("font_api") then
 	make_pickable("default:sign_wall_steel", nil, 1, "Lockpicked Sign")
 	make_pickable("signs:sign_yard_steel", "default:sign_wall_steel", 1, "Lockpicked Sign")
 end
