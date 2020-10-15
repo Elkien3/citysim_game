@@ -8,20 +8,18 @@ local sedandef = {
 		trunksize = {x=6,y=2},
 		trunkloc = {x = 0, y = 4, z = -8},
 		passengers = {
-			{loc = {x = -4.5, y = 4, z = 4.8}, offset = {x = -4, y = -3, z = 2} },
-			{loc = {x = 4.5, y = 4, z = 4.8}, offset = {x = 4, y = -3, z = 2} },
-			{loc = {x = -4.5, y = 4, z = -4.8}, offset = {x = -4, y = -3, z = -2} },
-			{loc = {x = 4.5, y = 4, z = -4.8}, offset = {x = 4, y = -3, z = -2} },
+			{loc = {x = -4.5, y = 4, z = 5.25}, offset = {x = -4.5, y = -2, z = 5.75} },
+			{loc = {x = 4.5, y = 4, z = 5.25}, offset = {x = 4.5, y = -2, z = 5.75} },
+			{loc = {x = -4.5, y = 4, z = -4.5}, offset = {x = -4.5, y = -2, z = -4} },
+			{loc = {x = 4.5, y = 4, z = -4.5}, offset = {x = 4.5, y = -2, z = -4} },
 		},
 		wheel = {
-			frontright = {z=15.75,y=2.6,x=-9},
-			frontleft = {z=15.75,y=2.6,x=9},
-			backright = {z=-11.75,y=2.6,x=-9},
-			backleft = {z=-11.75,y=2.6,x=9},
+			frontright = {x=-8.88126,y=3.19412,z=17.25},
+			frontleft = {x=8.88126,y=3.19412,z=17.25},
 		},
-		wheelsize = 1.3,
-		steeringwheel = {x=-4.5,y=8.25,z=9.5},
-		licenseplate = {x = -.38, y = -0.85, z = -15.51},
+		wheelname = "cars:sedanwheel",
+		steeringwheel = {x=-4.5,y=8.63817,z=10.827},
+		--licenseplate = {x = 0, y = 4.5, z = -23.3},
 		horn = "horn",
 		enginesound = "longerenginefaded",
 		craft = {
@@ -37,8 +35,8 @@ local sedandef = {
 			collisionbox = {-1, -0.05, -1, 1, 1.1, 1},
 			visual = "mesh",
 			visual_size = {x=1, y=1},
-			mesh = "sedan.b3d",
-			textures = {"sedanuv.png"}, -- number of required textures depends on visual
+			mesh = "sedan2.b3d",
+			textures = { "sedan2.png^(sedan2.png^[mask:sedanmask2.png^[multiply:#ffb900)" }, -- number of required textures depends on visual
 			is_visible = true,
 			makes_footstep_sound = false,
 			automatic_rotate = 0,
@@ -46,3 +44,26 @@ local sedandef = {
 		}
 	}
 	cars_register_car(sedandef)
+	
+minetest.register_entity("cars:sedanwheel", {
+    hp_max = 1,
+    physical = false,
+	pointable = false,
+	collide_with_objects = false,
+    weight = 5,
+    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
+    visual = "mesh",
+    visual_size = {x=1, y=1},
+    mesh = "sedanwheel.b3d",
+    textures = {"sedan2.png"}, -- number of required textures depends on visual
+    is_visible = true,
+    --makes_footstep_sound = false,
+    --automatic_rotate = true,
+	on_activate = function(self, staticdata, dtime_s)
+		minetest.after(.1, function()
+			if not self.object:get_attach() then
+				self.object:remove()
+			end
+		end)
+	end,
+})

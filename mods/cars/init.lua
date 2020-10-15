@@ -130,6 +130,7 @@ local function wheelspeed(car)
 	for id, wheel in pairs(car.wheel) do
 		wheel:set_animation({x=2, y=9}, fps*direction, 0, true)
 	end
+	car.object:set_animation({x=2, y=9}, fps*direction, 0, true)
 	if v ~= 0 then
 		local i = 16
 		while true do
@@ -279,6 +280,7 @@ local function car_step(self, dtime)
 	local def = cars_registered_cars[self.object:get_entity_name()]
 	if not self.v then self.v = 0 end
 	self.v = get_v(self.object:getvelocity()) * get_sign(self.v)
+	--local accel = 0--def.coasting*get_sign(self.v)
 	local pos = self.object:getpos()
 	if self.lastv then
 		local newv = self.object:getvelocity()
@@ -347,6 +349,7 @@ local function car_step(self, dtime)
 		local yaw = self.object:getyaw()
 		local sign
 		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
+		--VELOCITY MOVEMENT
 		if ctrl.up then
 			if sign >= 0 then
 				self.v = self.v + def.acceleration*dtime
@@ -366,6 +369,25 @@ local function car_step(self, dtime)
 			self.v = 0
 		end
 		
+		--ACCELERATION MOVEMENT
+		--[[
+		if ctrl.up then
+			if sign >= 0 then
+				accel = def.acceleration
+			else
+				accel = -def.braking
+			end
+		elseif ctrl.down then
+			if sign <= 0 then
+				accel = -def.acceleration
+			else
+				accel = def.braking
+			end
+		end
+		if get_sign(self.v) ~= sign and sign ~= 0 or self.v < .1 then
+			--accel = 0
+		end
+--]]
 		local abs_v = math.abs(self.v)
 		local maxwheelpos = 45*(8/(abs_v+8))
 		if ctrl.left and self.wheelpos <= 0 then
@@ -389,15 +411,14 @@ local function car_step(self, dtime)
 		if animateTimer >= .08 then
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
-			self.steeringwheel:set_attach(self.object, "", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
-			self.object:set_bone_position("steering", {x=-1.3,y=12.5,z=4.78}, {x=0,y=-self.wheelpos*8,z=0})-- x=-z y=y z=-x rot y-90 z90
+			
+			self.object:set_bone_position("steering", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
 		end
 		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 
 		if attachTimer >= 5 then
-			self.licenseplate:set_attach(self.object, "", {x = -.38, y = -0.85, z = -15.51}, {x = 0, y = 0, z = 0})
-			self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0})
-			self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0})
+			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
+			if self.wheel.backleft then self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0}) end
 		end
 
 	else
@@ -406,20 +427,32 @@ local function car_step(self, dtime)
 			self.wheelpos = 0
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
-			self.steeringwheel:set_attach(self.object, "", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
+			if self.steeringwheel then self.steeringwheel:set_attach(self.object, "", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8}) end
 			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 		end
 		local sign
 		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
 		if sign ~= 0 then
-			self.v = self.v - 2*dtime*get_sign(self.v)
+			self.v = self.v - def.coasting*dtime*sign
 			if get_sign(self.v) ~= sign then
 				self.v = 0
 			end
 		end
 	end
+	for id, passengers in pairs (self.passengers) do
+		local player = passengers.player
+		if player then
+			local playeryaw = player:get_look_horizontal()
+			local entityyaw = self.object:get_yaw()
+			local offset = table.copy(passengers.offset)
+			local x, z = rotateVector(offset.x, offset.z, entityyaw-playeryaw)
+			offset.x = x
+			offset.z = z
+			player:set_eye_offset(offset, {x=0,y=0,z=0})
+		end
+	end
 	
-	if attachTimer >= 5 then
+	if attachTimer >= 5 and false then --CHANGE BACK, REMOVE 'AND FALSE'
 		for id, passengers in pairs (self.passengers) do
 			local player = passengers.player
 			if player then
@@ -440,7 +473,10 @@ local function car_step(self, dtime)
 	local velocity = self.object:getvelocity()
 	new_velo = get_velocity(self.v, self.object:getyaw(), velocity)
 	self.object:setvelocity(new_velo)
-	
+	--ACCELERATION TEST
+	--[[if accel ~= 0 then
+		self.object:setacceleration(get_velocity(accel, self.object:getyaw(), {y=-10}))
+	end--]]
 	if math.abs(self.v) < .05 and math.abs(self.v) > 0 then
 		self.object:setvelocity({x = 0, y = 0, z = 0})
 		self.v = 0
@@ -537,7 +573,12 @@ function cars_register_car(def)
 				end
 			end
 			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
-			
+			if font_api then
+				local textTex = font_api.get_font("04b03"):render(self.platenumber.text, 6*7, 8, {maxlines = 1, halign = 'center', valign = 'center'}) --42x8
+				local prop = self.object:get_properties()
+				prop.textures[1] = prop.textures[1].."^"..textTex
+				self.object:set_properties(prop)
+			end
 			self.object:setacceleration({x=0, y=-10, z=0})
 			self.object:set_armor_groups({immortal = 1})
 			self.wheel = {}
@@ -545,34 +586,11 @@ function cars_register_car(def)
 			local pos = self.object:getpos()
 			for index, wheel in pairs(def.wheel) do
 				if not self.wheel[index] then
-					self.wheel[index] = minetest.add_entity(pos, "cars:wheel")
+					self.wheel[index] = minetest.add_entity(pos, def.wheelname or "cars:wheel")
 				end
 				if self.wheel[index] then
 					self.wheel[index]:set_attach(self.object, "", wheel, {x=0,y=0,z=0})
-					if def.wheelsize then
-						local prop = self.wheel[index]:get_properties()
-						prop.visual_size = {x=def.wheelsize, y=def.wheelsize}
-						self.wheel[index]:set_properties(prop)
-					end
 				end
-			end
-			if not self.steeringwheel then
-				self.steeringwheel = minetest.add_entity(pos, "cars:steeringwheel")
-			end
-			if self.steeringwheel then
-				self.steeringwheel:set_attach(self.object, "", def.steeringwheel, {x=0,y=0,z=0})
-			end
-			--[[if not self.driverseat then
-				self.driverseat = minetest.add_entity(pos, "cars:seat")
-			end
-			if self.driverseat then
-				self.driverseat:set_attach(self.object, "", {x = -4, y = 3, z = 3}, {x = 0, y = 0, z = 0})
-			end--]]
-			if not self.licenseplate and minetest.get_modpath("signs") ~= nil then
-				self.licenseplate = minetest.add_entity(pos, "cars:licenseplate")
-			end
-			if self.licenseplate then
-				self.licenseplate:set_attach(self.object, "", def.licenseplate, {x = 0, y = 0, z = 0})
 			end
 		end,
 		get_staticdata = function(self)
@@ -654,6 +672,10 @@ function cars_register_car(def)
 				end
 				
 				player_attached[name] = self
+				--[[local obj = minetest.add_entity(self.object:getpos(), "cars:seat")
+				obj:set_attach(self.object, "", self.passengers[i].loc, {x = 0, y = 0, z = 0})
+				clicker:set_attach(obj, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+				clicker:set_eye_offset({x=0,y=-6,z=0}, {x=0,y=0,z=0})--]]
 				clicker:set_attach(self.object, "",
 					self.passengers[i].loc, {x = 0, y = 0, z = 0})
 				clicker:set_eye_offset(self.passengers[i].offset, {x=0,y=0,z=0})
@@ -708,58 +730,6 @@ minetest.register_entity("cars:wheel", {
 		minetest.after(.1, function()
 			if not self.object:get_attach() then
 				self.object:remove()
-			end
-		end)
-	end,
-})
-minetest.register_entity("cars:licenseplate", {
-    collisionbox = { 0, 0, 0, 0, 0, 0 },
-    visual = "upright_sprite",
-    textures = {"invisible.png"},
-	visual_size = {x=1.2, y=1.2, z=1.2},
-	physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    on_activate = function(self)
-		minetest.after(.1, function()
-			if not self.object:get_attach() or minetest.get_modpath("signs") == nil then
-				self.object:remove()
-			else
-				self.object:set_armor_groups({immortal = 1})
-				local text = self.object:get_attach():get_luaentity().platenumber.text
-				if not text then return end
-				self.object:set_properties({textures={generate_texture(create_lines(text))}})
-			end
-		end)
-    end
-})
-minetest.register_entity("cars:steeringwheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.3,-0.2, 0.2,0.3,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "steering.x",
-    textures = {"car_dark_grey.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		minetest.sound_play("horn", {
-			max_hear_distance = 48,
-			gain = 8,
-			object = self.object
-		})
-	end,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			else
-				self.object:set_armor_groups({immortal = 1})
 			end
 		end)
 	end,
