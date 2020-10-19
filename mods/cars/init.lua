@@ -1,3 +1,4 @@
+cars = {}
 local go = false
 local DEBUG_WAYPOINT = false
 local DEBUG_TEXT = false
@@ -23,6 +24,46 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
+function cars.setlighttexture(obj, table, prefix)
+	if not obj or not table then return end
+	local texture = "invisible.png"
+	for index, val in pairs(table) do
+		if val then
+			texture = texture.."^"..prefix..index..".png"
+		end
+	end
+	local prop = obj:get_properties()
+	prop.textures[1] = texture
+	obj:set_properties(prop)
+	return texture
+end
+
+function cars.setlight(obj, light, val)
+	if not obj then return end
+	if obj[light] == val then return end
+	if val == "toggle" then val = not obj[light] end
+	if string.find(light, "blinker") then
+		obj.leftblinker = false
+		obj.rightblinker = false
+	end
+	if light == "headlights" or string.find(light, "blinker") then
+		minetest.sound_play("lighton", {
+			max_hear_distance = 6,
+			gain = 1,
+			object = light.object
+		})
+	end
+	if beamlight and light == "headlights" then
+		if val then
+				beamlight.beams[string.sub(tostring(self), 8)] = {object = obj.object:get_attach(), x = 3}
+		else
+				beamlight.beams[string.sub(tostring(self), 8)] = nil
+		end
+	end
+	obj[light] = val
+	obj.update = true
+end
+
 local function detach(player)
 	if not player then return end
 	local name = player:get_player_name()
@@ -47,13 +88,18 @@ local function detach(player)
 end
 
 local function get_yaw(yaw)
-	local sign = get_sign(yaw)
-	local newyaw = math.abs(yaw)
-	while newyaw > math.pi do
-		newyaw = newyaw - math.pi
-	end
-	return newyaw*sign
+	return math.atan2(math.sin(yaw), math.cos(yaw))
 end
+
+local function get_deg(yaw)
+	yaw =  yaw % 360
+	yaw = (yaw + 360) % 360
+	if (yaw > 180) then
+		yaw = yaw - 360
+	end
+	return yaw
+end
+
 local function get_velocity(v, yaw, velocity)
 	local x = -math.sin(yaw) * v
 	local z =  math.cos(yaw) * v
@@ -146,6 +192,26 @@ local function rotateVector(x, y, a)
   return c*x - s*y, s*x + c*y
 end
 
+function car_formspec(clickername, owner, keyinvname, def)
+    local form = "" ..
+    "size[9,7]" ..
+    "list[current_player;main;0.5,2.75;8,4.25;0]" ..
+    "button[0.25,0.25;1,1;ignition;Ignition]" ..
+    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,0.25;1,1;0]" ..
+    "button[0.25,1.5;1.5,1;headlights;Headlights]" ..
+    "button[2,1.5;1.5,1;flashers;Flashers]"
+    if def.siren then
+		form = form.."button_exit[3.75,1.5;1.5,1;siren;Siren]"
+	end
+    if clickername == owner then
+		form = form.."field[3,0.68;3,1;owner;Owner;"..minetest.formspec_escape(owner).."]" .."button_exit[5.5,0.35;2,1;changeowner;Change Owner]"
+	else
+		form = form.."label[3,0.5;Owner: "..owner.."]"
+	end
+
+    return form
+end
+
 local function getClosest(player, car)
 	local def = cars_registered_cars[car.object:get_entity_name()]
 	local playerPos = player:getpos()
@@ -190,7 +256,7 @@ local function getClosest(player, car)
 			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
 		end
 	punchPos = vector.subtract(punchPos, carPos)
-	local carYaw = car.object:getyaw()
+	local carYaw = get_yaw(car.object:get_yaw())
 	local closest = {}
 	closest.id = 0
 	local trunkloc = def.trunkloc
@@ -260,6 +326,30 @@ local function trunk_rightclick(self, clicker)
            "list[current_player;main;0,"..1+y..";8,4;]"
     minetest.show_formspec(name, "cars_trunk", formspec)
 end
+
+local function driver_rightclick(self, clicker)
+	local def = cars_registered_cars[self.object:get_entity_name()]
+	local name = clicker:get_player_name()
+	local selfname = string.sub(tostring(self), 8)
+	local inventory = minetest.create_detached_inventory("cars"..selfname, {
+		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			self.keyinv = inv:get_list("key")
+		end,
+		on_put = function(inv, listname, index, stack, player)
+			self.keyinv = inv:get_list("key")
+		end,
+		on_take = function(inv, listname, index, stack, player)
+			self.keyinv = inv:get_list("key")
+		end,
+		--todo: make it so only the right key can be put into the slot
+	})
+	inventory:set_size("key", 1)
+	local templist = table.copy(self.keyinv)
+	inventory:set_list("key", templist)
+	local formspec = car_formspec(name, self.owner or "", "cars"..selfname, def)
+    minetest.show_formspec(name, "cars_driver", formspec)
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "cars_trunk" then
 		if fields.quit then
@@ -271,6 +361,29 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					object = trunkplayer[name].object
 				})
 				trunkplayer[name] = nil
+			end
+		end
+	elseif formname == "cars_driver" then
+		local name = player:get_player_name()
+		local car = player_attached[name]
+		local def
+		if car then
+			def = cars_registered_cars[car.object:get_entity_name()]
+		end
+		if def and car.passengers[1].player == player then
+			local obj
+			if car.lights then obj = car.lights:get_luaentity() end
+			if fields.ignition then --todo
+				--minetest.chat_send_all("ignition")
+			elseif fields.headlights then
+				cars.setlight(obj, "headlights", "toggle")
+			elseif fields.flashers then
+				--cars.setlight(obj, "flashers", "toggle")
+			elseif fields.siren and def.siren then
+				car.siren = not car.siren
+			elseif fields.changeowner and car.owner == name or car.owner == "" then
+				car.owner = fields.owner
+				minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
 			end
 		end
 	end
@@ -346,27 +459,49 @@ local function car_step(self, dtime)
 	if driver then
 		driver:hud_change(self.hud, "text", tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH")
 		local ctrl = driver:get_player_control()
-		local yaw = self.object:getyaw()
+		local yaw = get_yaw(self.object:getyaw())
 		local sign
+		local lights
+		if self.lights then lights = self.lights:get_luaentity() end
 		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
+		if self.lastctrl then
+			if ctrl.sneak and not self.lastctrl.sneak then
+				local lookdir = yaw-driver:get_look_horizontal()
+				lookdir = math.deg(lookdir)
+				lookdir = get_deg(lookdir)
+				if lookdir > 15 then
+					cars.setlight(lights, "rightblinker", "toggle")
+				elseif lookdir < -15 then
+					cars.setlight(lights, "leftblinker", "toggle")
+				else
+					--minetest.chat_send_all("cruise")
+				end
+			end
+		end
 		--VELOCITY MOVEMENT
 		if ctrl.up then
 			if sign >= 0 then
 				self.v = self.v + def.acceleration*dtime
+				cars.setlight(lights, "brakelights", false)
 			else
 				self.v = self.v + def.braking*dtime
+				cars.setlight(lights, "brakelights", true)
 			end
 		elseif ctrl.down then
 			if sign <= 0 then
 				self.v = self.v - def.acceleration*dtime
+				cars.setlight(lights, "brakelights", false)
 			else
 				self.v = self.v - def.braking*dtime
+				cars.setlight(lights, "brakelights", true)
 			end
 		elseif sign ~= 0 then
 			self.v = self.v - def.coasting*dtime*get_sign(self.v)
+			cars.setlight(lights, "brakelights", false)
 		end
 		if get_sign(self.v) ~= sign and sign ~= 0 then
 			self.v = 0
+			cars.setlight(lights, "brakelights", false)
 		end
 		
 		--ACCELERATION MOVEMENT
@@ -390,6 +525,7 @@ local function car_step(self, dtime)
 --]]
 		local abs_v = math.abs(self.v)
 		local maxwheelpos = 45*(8/(abs_v+8))
+		local lastwheelpos = self.wheelpos
 		if ctrl.left and self.wheelpos <= 0 then
 			self.wheelpos = self.wheelpos-50*dtime*(4/(abs_v+4))
 			if self.wheelpos < -1*maxwheelpos then
@@ -408,6 +544,18 @@ local function car_step(self, dtime)
 				self.wheelpos = 0
 			end
 		end
+		if lights.leftblinker or lights.rightblinker then
+			if not self.maxwheelpos then self.maxwheelpos = self.wheelpos end
+			if math.abs(self.wheelpos) > math.abs(self.maxwheelpos) then
+				self.maxwheelpos = wheelpos
+			end
+			if (self.wheelpos == 0 and math.abs(self.maxwheelpos) > 15) then
+				cars.setlight(lights, "leftblinker", false)
+				cars.setlight(lights, "rightblinker", false)
+			end
+		else
+			self.maxwheelpos = nil
+		end
 		if animateTimer >= .08 then
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
@@ -419,11 +567,13 @@ local function car_step(self, dtime)
 		if attachTimer >= 5 then
 			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
 			if self.wheel.backleft then self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0}) end
+			if self.lights then self.lights:set_attach(self.object, "", {x=0,y=0,x=0}, {x=0,y=0,z=0}) end
 		end
-
+		self.lastctrl = ctrl
 	else
+		self.lastctrl = nil
 		if math.abs(self.wheelpos) > 0 then
-			local yaw = self.object:getyaw()
+			local yaw = get_yaw(self.object:get_yaw())
 			self.wheelpos = 0
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
@@ -443,7 +593,7 @@ local function car_step(self, dtime)
 		local player = passengers.player
 		if player then
 			local playeryaw = player:get_look_horizontal()
-			local entityyaw = self.object:get_yaw()
+			local entityyaw = get_yaw(self.object:get_yaw())
 			local offset = table.copy(passengers.offset)
 			local x, z = rotateVector(offset.x, offset.z, entityyaw-playeryaw)
 			offset.x = x
@@ -480,6 +630,7 @@ local function car_step(self, dtime)
 	if math.abs(self.v) < .05 and math.abs(self.v) > 0 then
 		self.object:setvelocity({x = 0, y = 0, z = 0})
 		self.v = 0
+		cars.setlight(lights, "brakelights", false)
 		if self.wheelsound then
 			minetest.sound_fade(self.wheelsound, 30, 0)
 		end
@@ -555,6 +706,8 @@ function cars_register_car(def)
 	minetest.register_entity(def.name, {
 		initial_properties = def.initial_properties,
 		trunkinv = {},
+		keyinv = {},
+		owner = "",
 		on_activate = function(self, staticdata)
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
@@ -566,10 +719,14 @@ function cars_register_car(def)
 			if staticdata then
 				local deserialized = minetest.deserialize(staticdata)
 				if deserialized then
+					self.owner = deserialized.owner or ""
 					self.trunkinv = deserializeContents(deserialized.trunk)
+					self.keyinv = deserializeContents(deserialized.key)
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
+				elseif minetest.get_player_by_name(staticdata) then
+					self.owner = staticdata
 				end
 			end
 			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
@@ -592,9 +749,15 @@ function cars_register_car(def)
 					self.wheel[index]:set_attach(self.object, "", wheel, {x=0,y=0,z=0})
 				end
 			end
+			if not self.lights and def.lights then
+				self.lights = minetest.add_entity(pos, def.lights)
+			end
+			if self.lights then
+				self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+			end
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({trunk = serializeContents(self.trunkinv), plate = self.platenumber})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), key = serializeContents(self.keyinv), plate = self.platenumber})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -641,7 +804,11 @@ function cars_register_car(def)
 						return
 					end
 					if self.passengers[closeid].player == clicker then
-						detach(clicker)
+						if closeid == 1 and clicker:get_player_control().sneak then
+							driver_rightclick(self, clicker)
+						else
+							detach(clicker)
+						end
 						return
 					end
 					if not self.passengers[closeid].player then
@@ -683,7 +850,7 @@ function cars_register_car(def)
 				minetest.after(.1, function()
 					default.player_set_animation(clicker, "sit" , 30)
 				end)
-				clicker:set_look_horizontal(self.object:getyaw())
+				clicker:set_look_horizontal(get_yaw(self.object:getyaw()))
 			end
 		end
 	})
@@ -697,7 +864,7 @@ function cars_register_car(def)
 			local ent
 			if minetest.get_item_group(minetest.get_node(pointed_thing.under).name, "liquid") == 0 then
 				pointed_thing.above.y = pointed_thing.above.y - 0.5
-				ent = minetest.add_entity(pointed_thing.above, def.name)				
+				ent = minetest.add_entity(pointed_thing.above, def.name, placer:get_player_name())
 			end
 			ent:setyaw(placer:get_look_yaw() - math.pi/2)
 			itemstack:take_item()
