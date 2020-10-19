@@ -55,9 +55,9 @@ function cars.setlight(obj, light, val)
 	end
 	if beamlight and light == "headlights" then
 		if val then
-				beamlight.beams[string.sub(tostring(self), 8)] = {object = obj.object:get_attach(), x = 3}
+				beamlight.beams[string.sub(tostring(obj), 8)] = {object = obj.object:get_attach(), x = 3}
 		else
-				beamlight.beams[string.sub(tostring(self), 8)] = nil
+				beamlight.beams[string.sub(tostring(obj), 8)] = nil
 		end
 	end
 	obj[light] = val
