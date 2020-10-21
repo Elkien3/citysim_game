@@ -24,6 +24,18 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
+local keydef = minetest.registered_items["default:skeleton_key"]
+local orig_func = keydef.on_use
+local new_func = function(itemstack, user, pointed_thing)
+	if pointed_thing.type == "object" then
+		local obj = pointed_thing.ref
+		obj:punch(user, nil, {damage_groups={fleshy=0}})
+		return itemstack
+	end
+	return orig_func(itemstack, user, pointed_thing)
+end
+minetest.override_item("default:skeleton_key", {on_use = new_func})
+
 function cars.setlighttexture(obj, table, prefix)
 	if not obj or not table then return end
 	local texture = "invisible.png"
