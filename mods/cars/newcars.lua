@@ -1,6 +1,6 @@
 local sedandef = {
 		name = "cars:sedan",
-		description = "sedan car",
+		description = "Sedan",
 		acceleration = 4,
 		braking = 10,
 		coasting = 2,
@@ -79,7 +79,7 @@ minetest.register_entity("cars:sedanlights",{
     visual = "mesh",
     visual_size = {x=1, y=1},
     is_visible = true,
-	glow = -1,
+	glow = 7,
     mesh = "sedanlights.b3d",
     textures = {"invisible.png"},
 	on_activate = function(self, staticdata, dtime_s)

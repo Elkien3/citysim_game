@@ -51,7 +51,7 @@ function cars.setlight(obj, light, val)
 			max_hear_distance = 6,
 			gain = 1,
 			object = light.object
-		})
+		}, true)
 	end
 	if beamlight and light == "headlights" then
 		if val then
@@ -318,8 +318,7 @@ local function trunk_rightclick(self, clicker)
 	local formx = x
 	inventory:set_size("trunk", x * y)
 	if x < 8 then formx = 8 end
-	local templist = table.copy(self.trunkinv)
-	inventory:set_list("trunk", templist)
+	inventory:set_list("trunk", table.copy(self.trunkinv))
 	local formspec =
            "size["..formx..","..5+y.."]"..
            "list[detached:cars"..selfname..";trunk;0,.5;"..x..","..y..";]"..
@@ -332,20 +331,30 @@ local function driver_rightclick(self, clicker)
 	local name = clicker:get_player_name()
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
-		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-			self.keyinv = inv:get_list("key")
-		end,
 		on_put = function(inv, listname, index, stack, player)
-			self.keyinv = inv:get_list("key")
+			self.key = inv:contains_item("key", "default:key")
 		end,
 		on_take = function(inv, listname, index, stack, player)
-			self.keyinv = inv:get_list("key")
+			self.key = inv:contains_item("key", "default:key")
+			if not self.key then self.ignition = nil end
+		end,
+        allow_put = function(inv, listname, index, stack, player)
+			if stack:get_meta():get_string("secret") == self.secret then
+				return 1
+			else
+				return 0
+			end
 		end,
 		--todo: make it so only the right key can be put into the slot
 	})
 	inventory:set_size("key", 1)
-	local templist = table.copy(self.keyinv)
-	inventory:set_list("key", templist)
+	if self.key then
+		local new_stack = ItemStack("default:key")
+		local meta = new_stack:get_meta()
+		meta:set_string("secret", self.secret)
+		meta:set_string("description", string.format("Key to %s's %s", name, def.description))
+		inventory:set_stack("key", 1, new_stack)
+	end
 	local formspec = car_formspec(name, self.owner or "", "cars"..selfname, def)
     minetest.show_formspec(name, "cars_driver", formspec)
 end
@@ -359,7 +368,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					max_hear_distance = 24,
 					gain = 1,
 					object = trunkplayer[name].object
-				})
+				}, true)
 				trunkplayer[name] = nil
 			end
 		end
@@ -373,8 +382,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if def and car.passengers[1].player == player then
 			local obj
 			if car.lights then obj = car.lights:get_luaentity() end
-			if fields.ignition then --todo
-				--minetest.chat_send_all("ignition")
+			if fields.ignition and car.key then
+				if car.ignition then
+					car.ignition = nil
+				else
+					minetest.sound_play("ignition", {
+						max_hear_distance = 24,
+						gain = 1,
+						object = car.object
+					}, true)
+					minetest.after(.8, function(car) car.ignition = not car.ignition end, car)
+				end
 			elseif fields.headlights then
 				cars.setlight(obj, "headlights", "toggle")
 			elseif fields.flashers then
@@ -390,13 +408,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 local function car_step(self, dtime)
+	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.object:get_entity_name()]
+	local velocity = self.object:getvelocity()
+	local slowing = false
 	if not self.v then self.v = 0 end
-	self.v = get_v(self.object:getvelocity()) * get_sign(self.v)
+	self.v = get_v(velocity) * get_sign(self.v)
 	--local accel = 0--def.coasting*get_sign(self.v)
 	local pos = self.object:getpos()
 	if self.lastv then
-		local newv = self.object:getvelocity()
+		local newv = velocity
 		if not self.crash then self.crash = false end
 		local crash = false
 		if math.abs(self.lastv.x) > 5 and newv.x == 0 then crash = true end
@@ -436,7 +457,7 @@ local function car_step(self, dtime)
 				pitch = .7,
 				gain = 10,
 				object = self.object
-			})
+			}, true)
 			local checkpos = vector.add(pos, vector.multiply(vector.normalize(self.lastv), .8))
 			local objects = minetest.get_objects_inside_radius(checkpos, 1)
 			for _,obj in pairs(objects) do
@@ -448,15 +469,32 @@ local function car_step(self, dtime)
 					if not puncher then puncher = self.object end
 					local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
 					local name = obj:get_player_name()
-					if default.player_attached[name] then dmg = dmg*.5 end
+					if default.player_attached[name] then
+						dmg = dmg*.5
+					elseif obj:is_player() then
+						obj:add_player_velocity(self.lastv)
+					end
 					obj:punch(puncher, nil, {damage_groups={fleshy=dmg}})
 					::next::
 				end
 			end
 		end
 	end
+	local nodepos = pos
+	local node = minetest.get_node(nodepos).name
+	if node == "air" then
+		nodepos.y = nodepos.y - 1
+		node = minetest.get_node(nodepos).name
+		if node == "air" then
+			nodepos.y = nodepos.y - 1
+			node = minetest.get_node(nodepos).name
+			if node == "air" and math.abs(velocity.y) == 0 then
+				node = "unknown"
+			end
+		end
+	end
 	local driver = self.passengers[1].player
-	if driver then
+	if driver and self.ignition then
 		driver:hud_change(self.hud, "text", tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH")
 		local ctrl = driver:get_player_control()
 		local yaw = get_yaw(self.object:getyaw())
@@ -479,25 +517,33 @@ local function car_step(self, dtime)
 			end
 		end
 		--VELOCITY MOVEMENT
+		local newv = self.v
 		if ctrl.up then
 			if sign >= 0 then
-				self.v = self.v + def.acceleration*dtime
+				newv = newv + def.acceleration*dtime
 				cars.setlight(lights, "brakelights", false)
 			else
-				self.v = self.v + def.braking*dtime
+				newv = newv + def.braking*dtime
 				cars.setlight(lights, "brakelights", true)
+				slowing = true
 			end
 		elseif ctrl.down then
 			if sign <= 0 then
-				self.v = self.v - def.acceleration*dtime
+				newv = newv - def.acceleration*dtime
 				cars.setlight(lights, "brakelights", false)
 			else
-				self.v = self.v - def.braking*dtime
+				newv = newv - def.braking*dtime
 				cars.setlight(lights, "brakelights", true)
+				slowing = true
 			end
-		elseif sign ~= 0 then
+		end
+		if node ~= "air" then
+			self.v = newv
+		end
+		if not ctrl.up and not ctrl.down and sign ~= 0 then
 			self.v = self.v - def.coasting*dtime*get_sign(self.v)
 			cars.setlight(lights, "brakelights", false)
+				slowing = true
 		end
 		if get_sign(self.v) ~= sign and sign ~= 0 then
 			self.v = 0
@@ -562,7 +608,9 @@ local function car_step(self, dtime)
 			
 			self.object:set_bone_position("steering", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
 		end
-		self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
+		if node ~= "air" then
+			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
+		end
 
 		if attachTimer >= 5 then
 			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
@@ -578,7 +626,7 @@ local function car_step(self, dtime)
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
 			if self.steeringwheel then self.steeringwheel:set_attach(self.object, "", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8}) end
-			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
+			--self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
 		end
 		local sign
 		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
@@ -616,11 +664,10 @@ local function car_step(self, dtime)
 	elseif self.v < -1*def.max_speed/2 then
 		self.v = -1*def.max_speed/2
 	end
-	if math.abs(self.v) > 1 and minetest.get_item_group(minetest.get_node(pos).name, "water") > 0 then
+	if node ~= "air" and math.abs(self.v) > 1 and minetest.get_item_group(node, "water") > 0 then
 		self.v = 1*get_sign(self.v)
 	end
 	local new_velo
-	local velocity = self.object:getvelocity()
 	new_velo = get_velocity(self.v, self.object:getyaw(), velocity)
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
@@ -632,10 +679,10 @@ local function car_step(self, dtime)
 		self.v = 0
 		cars.setlight(lights, "brakelights", false)
 		if self.wheelsound then
-			minetest.sound_fade(self.wheelsound, 30, 0)
+			minetest.sound_stop(self.wheelsound)
 		end
 		if self.windsound then
-			minetest.sound_fade(self.windsound, 30, 0)
+			minetest.sound_fade(self.windsound, .1, 0)
 		end
 		wheelspeed(self)
 		return
@@ -657,9 +704,9 @@ local function car_step(self, dtime)
 	
 	--sound
 	local abs_v = math.abs(self.v)
-	if abs_v > 0 and driver ~= nil then
+	--if abs_v > 0 and driver ~= nil then
+	if self.ignition then
 		self.timer1 = self.timer1 + dtime
-		if self.timer1 > .1 then
 				local rpm = 1
 				if abs_v > 16 then
 					rpm = abs_v/16+.5
@@ -668,33 +715,55 @@ local function car_step(self, dtime)
 				else
 					rpm = abs_v/5+.3
 				end
+		pitch = rpm+.2
+		if self.timer1 > .2/pitch-.05 then
+				local gain = pitch
+				if slowing or abs_v == 0 then
+					gain = .2
+				end
+				if abs_v == 0 then
+					gain = .15
+				end
 				minetest.sound_play(def.enginesound, {
-					max_hear_distance = 48,
-					pitch = rpm+.1,
-					object = self.object
-				})
+					max_hear_distance = 48*gain,
+					pitch = pitch,
+					object = self.object,
+					gain = gain,
+				}, true)
 		self.timer1 = 0
 		end
 	end
 	self.timer2 = self.timer2 + dtime
-	if self.timer2 > 1.5-self.v/def.max_speed*1.1 then
+	local pitch = 1 + (abs_v/def.max_speed)*.6
+	if self.timer2 > 2/pitch-1.2 then
 		if abs_v > .2 then
-			if math.abs(velocity.y) < .1 then 
-				self.wheelsound = minetest.sound_play("tyresound", {
-					max_hear_distance = 48,
-					object = self.object,
-					pitch = 1 + (abs_v/def.max_speed)*.6,
-					gain = .5 + (abs_v/def.max_speed)*2
-				})
-			elseif self.windsound then
-				minetest.sound_fade(self.windsound, 30, 0)
+			if node ~= "air" then
+				if string.find(node, "asphalt") then
+					self.wheelsound = minetest.sound_play("tyresound-asphaltfade", {
+						max_hear_distance = 48,
+						object = self.object,
+						pitch = pitch,
+						gain = (abs_v/def.max_speed)*.2
+					})
+				else
+					self.wheelsound = minetest.sound_play("tyresound-gravelfade", {
+						max_hear_distance = 48,
+						object = self.object,
+						pitch = pitch,
+						gain = .5 + (abs_v/def.max_speed)*2
+					})
+
+				
+				end
+			elseif self.wheelsound then
+				minetest.sound_stop(self.wheelsound)
 			end
-			self.windsound = minetest.sound_play("wind", {
+			--[[self.windsound = minetest.sound_play("wind", {
 				max_hear_distance = 10,
 				object = self.object,
 				pitch = 1 + (abs_v/def.max_speed)*.6,
 				gain = 0 + (abs_v/def.max_speed)*4
-			})
+			})--]]
 		end
 		self.timer2 = 0
 	end
@@ -706,7 +775,7 @@ function cars_register_car(def)
 	minetest.register_entity(def.name, {
 		initial_properties = def.initial_properties,
 		trunkinv = {},
-		keyinv = {},
+		key = true,
 		owner = "",
 		on_activate = function(self, staticdata)
 			if not self.wheelpos then self.wheelpos = 0 end
@@ -720,8 +789,10 @@ function cars_register_car(def)
 				local deserialized = minetest.deserialize(staticdata)
 				if deserialized then
 					self.owner = deserialized.owner or ""
+					self.secret = deserialized.secret
+					self.locked = deserialized.locked
 					self.trunkinv = deserializeContents(deserialized.trunk)
-					self.keyinv = deserializeContents(deserialized.key)
+					self.key = deserialized.key
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -757,30 +828,71 @@ function cars_register_car(def)
 			end
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), key = serializeContents(self.keyinv), plate = self.platenumber})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
 		end,
 		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+			local name = puncher:get_player_name()
 			if puncher == self.passengers[1].player then
 				minetest.sound_play(def.horn, {
 					max_hear_distance = 48,
 					gain = 8,
 					object = self.object
-				})
+				}, true)
 				return
 			end
-			if (puncher:get_wielded_item():get_name() == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
+			local punchitem = puncher:get_wielded_item():get_name()
+			if (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
 				local closeid = getClosest(puncher, self)
 				if DEBUG_TEXT then
 					minetest.chat_send_all(tostring(closeid))
 				end
 				if not closeid or closeid == 0 then return end
 				detach(self.passengers[closeid].player)
+			elseif punchitem == "default:key" then
+				local secret = puncher:get_wielded_item():get_meta():get_string("secret")
+				if self.secret == secret then
+					self.locked = not self.locked
+					minetest.sound_play("lock", {
+						max_hear_distance = 6,
+						gain = 1,
+						object = self.object
+					}, true)
+				end
+			elseif punchitem == "default:skeleton_key" and self.owner == name then
+				--code borrowed and edited from minetest_game
+				if not self.secret then
+					local random = math.random
+					self.secret = string.format(
+						"%04x%04x%04x%04x",
+						random(2^16) - 1, random(2^16) - 1,
+						random(2^16) - 1, random(2^16) - 1)
+				end
+				local inv = minetest.get_inventory({type="player", name=name})
+				-- update original itemstack
+				local wieldstack = puncher:get_wielded_item()
+				wieldstack:take_item()
+				minetest.chat_send_all("hi")
+				-- finish and return the new key
+				local new_stack = ItemStack("default:key")
+				local meta = new_stack:get_meta()
+				meta:set_string("secret", self.secret)
+				meta:set_string("description", string.format("Key to %s's %s", name, def.description))
+
+				if wieldstack:get_count() == 0 then
+					wieldstack = new_stack
+				else
+					if inv:add_item("main", new_stack):get_count() > 0 then
+						minetest.add_item(user:get_pos(), new_stack)
+					end -- else: added to inventory successfully
+				end
+				minetest.after(0, function() puncher:set_wielded_item(wieldstack) end)
 			end
 		end,
 		on_rightclick = function(self, clicker)
+			if self.locked then return end
 			if not clicker or not clicker:is_player() then
 				return
 			end
@@ -799,7 +911,7 @@ function cars_register_car(def)
 							max_hear_distance = 24,
 							gain = 1,
 							object = self.object
-						})
+						}, true)
 						trunk_rightclick(self, clicker)
 						return
 					end
