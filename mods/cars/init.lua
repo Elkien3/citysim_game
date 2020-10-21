@@ -781,6 +781,13 @@ function cars_register_car(def)
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
 			if not self.timer2 then self.timer2 = 0 end
+			if not self.secret then
+				local random = math.random
+				self.secret = string.format(
+					"%04x%04x%04x%04x",
+					random(2^16) - 1, random(2^16) - 1,
+					random(2^16) - 1, random(2^16) - 1)
+			end
 			if not self.platenumber then
 				self.platenumber = {}
 			end
@@ -862,19 +869,10 @@ function cars_register_car(def)
 					}, true)
 				end
 			elseif punchitem == "default:skeleton_key" and self.owner == name then
-				--code borrowed and edited from minetest_game
-				if not self.secret then
-					local random = math.random
-					self.secret = string.format(
-						"%04x%04x%04x%04x",
-						random(2^16) - 1, random(2^16) - 1,
-						random(2^16) - 1, random(2^16) - 1)
-				end
 				local inv = minetest.get_inventory({type="player", name=name})
 				-- update original itemstack
 				local wieldstack = puncher:get_wielded_item()
 				wieldstack:take_item()
-				minetest.chat_send_all("hi")
 				-- finish and return the new key
 				local new_stack = ItemStack("default:key")
 				local meta = new_stack:get_meta()
