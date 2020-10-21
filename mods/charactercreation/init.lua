@@ -19,11 +19,6 @@ function charactercreation_getskin(name)
 	return sd
 end
 
-local eye_num = number_of_textures("eye")
-local hair_num = number_of_textures("hair")
-local face_num = number_of_textures("face")
-local skin_num = number_of_textures("skin")
-
 --[[
 Adds the following Functions:
 rgbToHsl(r, g, b, a) 	(EmmanuelOga)
@@ -59,6 +54,8 @@ minetest.register_on_joinplayer(function(player)
 	minetest.after(0, doskinny, player)
 end)
 
+local formspecplayer = {}
+
 local function make_HSL_formspec(name, item, itemcolor, itemtype)
 	local rgbval = hexToRgb(itemcolor)
 	local hslval = rgbToHsl(rgbval)
@@ -79,7 +76,9 @@ local function make_HSL_formspec(name, item, itemcolor, itemtype)
 		.."button[11,3;1,1;next;>]"
 		.."button[0,3;1,1;prev;<]"
 		.."button[5,6;.5,1;prevtype;<]"
+		.."button[1,6;2,1;default;Default Color]"
 		.."button[10,6;1,1;apply;Apply]"
+		.."button[9,6;1,1;revert;Revert]"
 		.."button_exit[11,6;1,1;exit;Exit]"
 		.."button[5.5,6;1,1;type;"..item..itemtype.."]"
 		.."button[6.5,6;.5,1;nexttype;>]"
@@ -89,6 +88,12 @@ local function make_HSL_formspec(name, item, itemcolor, itemtype)
 		.."scrollbar[1,8.5;10,.5;horizontal;satbar;"..(tonumber(s)*1000).."]"
 		.."label[5.5,9;Value]"
 		.."scrollbar[1,9.5;10,.5;horizontal;valbar;"..(tonumber(l)*1000).."]"
+		if formspecplayer[name] then
+			formspecplayer[name] = nil
+			formspec = formspec.." "
+		else
+			formspecplayer[name] = true
+		end
 	return formspec
 end
 
@@ -101,10 +106,13 @@ local function do_HSL_formspec(player, name, fields)
 			return previewcolor[name]
 		end
 	end
-	if fields.quit then
+	if fields.quit or fields.revert or fields.default then
 		if hudpreview[name] then
 			player:hud_remove(hudpreview[name])
 			hudpreview[name] = nil
+			previewcolor[name] = nil
+			if fields.quit then formspecplayer[name] = nil end
+			return
 		end
 	end
 	local hue = 0
@@ -145,169 +153,80 @@ local function do_HSL_formspec(player, name, fields)
 	end
 	return ""
 end
-local function formspec_hair(name) local skindata = minetest.deserialize(mod_storage:get_string(name)) minetest.show_formspec(name,"charcreate:hair",make_HSL_formspec("Hair", "hair", skindata.haircolor, skindata.hairtype)) end
-local function formspec_face(name) local skindata = minetest.deserialize(mod_storage:get_string(name)) minetest.show_formspec(name,"charcreate:face",make_HSL_formspec("Face", "face", skindata.facecolor, skindata.facetype)) end
-local function formspec_skin(name) local skindata = minetest.deserialize(mod_storage:get_string(name)) minetest.show_formspec(name,"charcreate:skin",make_HSL_formspec("Skin", "skin", skindata.skincolor, skindata.skintype)) end
-local function formspec_eye(name) local skindata = minetest.deserialize(mod_storage:get_string(name)) minetest.show_formspec(name,"charcreate:eye",make_HSL_formspec("Eyes", "eye", skindata.eyecolor, skindata.eyetype)) end
+
+local pagelist = {}
+local pagepointer = {}
+pagelist["hair"] = {"Hair", 1} pagepointer[1] = "hair"
+pagelist["face"] = {"Face", 2} pagepointer[2] = "face"
+pagelist["skin"] = {"Skin", 3} pagepointer[3] = "skin"
+pagelist["eye"] = {"Eyes", 4} pagepointer[4] = "eye"
+local pagenum = 4
+
+local charformspec = {}
+local num = {}
+for index, page in pairs(pagelist) do
+	charformspec[index] = function(name) local skindata = minetest.deserialize(mod_storage:get_string(name)) minetest.show_formspec(name,"charcreate:"..index,make_HSL_formspec(page[1], index, skindata[index.."color"], skindata[index.."type"])) end
+	num[index] = number_of_textures(index)
+end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local skindata = minetest.deserialize(mod_storage:get_string(name))
-    if formname == "charcreate:hair" then
-		local input = do_HSL_formspec(player, name, fields)
-		if fields.prev then
-			formspec_eye(name)
-			return
+	local input = do_HSL_formspec(player, name, fields)
+	local pagename = string.gsub(formname, "charcreate:", "")
+	local page = pagelist[pagename]
+	if not page then
+		return
+	end
+	if fields.prev then
+		local i = page[2]-1
+		if i <= 0 then i = pagenum end
+		charformspec[pagepointer[i]](name)
+		return
+	end
+	if fields.next then
+		local i = page[2]+1
+		if i > pagenum then i = 1 end
+		charformspec[pagepointer[i]](name)
+		return
+	end
+	if fields.prevtype then
+		if skindata[pagename.."type"] == 0 then
+			skindata[pagename.."type"] = num[pagename]
+		else
+			skindata[pagename.."type"] = tonumber(skindata[pagename.."type"])-1
 		end
-		if fields.next then
-			formspec_face(name)
-			return
+		doskinny(player, skindata)
+		charformspec[pagename](name)
+		return
+	end
+	if fields.nexttype then
+		if skindata[pagename.."type"] == num[pagename] then
+			skindata[pagename.."type"] = 0
+		else
+			skindata[pagename.."type"] = tonumber(skindata[pagename.."type"])+1
 		end
-		if fields.prevtype then
-			if skindata.hairtype == 0 then
-				skindata.hairtype = hair_num
-			else
-				skindata.hairtype = tonumber(skindata.hairtype)-1
-			end
+		doskinny(player, skindata)
+		charformspec[pagename](name)
+		return
+	end
+	if fields.revert then
+		charformspec[pagename](name)
+		return
+	end
+	if fields.apply then
+		if input and input ~= "" then
+			skindata[pagename.."color"] = input
+			previewcolor[name] = nil
 			doskinny(player, skindata)
-			formspec_hair(name)
-			return
+			charformspec[pagename](name)
 		end
-		if fields.nexttype then
-			if skindata.hairtype == hair_num then
-				skindata.hairtype = 0
-			else
-				skindata.hairtype = tonumber(skindata.hairtype)+1
-			end
-			doskinny(player, skindata)
-			formspec_hair(name)
-			return
-		end
-		if fields.apply then
-			if input and input ~= "" then
-				skindata.haircolor = input
-				previewcolor[name] = nil
-				doskinny(player, skindata)
-				formspec_hair(name)
-			end
-		end
-    end
-	if formname == "charcreate:face" then
-		local input = do_HSL_formspec(player, name, fields)
-		if fields.prev then
-			formspec_hair(name)
-			return
-		end
-		if fields.next then
-			formspec_skin(name)
-			return
-		end
-		if fields.prevtype then
-			if skindata.facetype == 0 then
-				skindata.facetype = face_num
-			else
-				skindata.facetype = tonumber(skindata.facetype)-1
-			end
-			doskinny(player, skindata)
-			formspec_face(name)
-			return
-		end
-		if fields.nexttype then
-			if skindata.facetype == face_num then
-				skindata.facetype = 0
-			else
-				skindata.facetype = tonumber(skindata.facetype)+1
-			end
-			doskinny(player, skindata)
-			formspec_face(name)
-			return
-		end
-		if fields.apply then
-			if input and input ~= "" then
-				skindata.facecolor = input
-				previewcolor[name] = nil
-				doskinny(player, skindata)
-				formspec_face(name)
-			end
-		end
-    end
-	if formname == "charcreate:skin" then
-		local input = do_HSL_formspec(player, name, fields)
-		if fields.prev then
-			formspec_face(name)
-			return
-		end
-		if fields.next then
-			formspec_eye(name)
-			return
-		end
-		if fields.prevtype then
-			if skindata.skintype == 0 then
-				skindata.skintype = skin_num
-			else
-				skindata.skintype = tonumber(skindata.skintype)-1
-			end
-			doskinny(player, skindata)
-			formspec_skin(name)
-			return
-		end
-		if fields.nexttype then
-			if skindata.skintype == skin_num then
-				skindata.skintype = 0
-			else
-				skindata.skintype = tonumber(skindata.skintype)+1
-			end
-			doskinny(player, skindata)
-			formspec_skin(name)
-			return
-		end
-		if fields.apply then
-			if input and input ~= "" then
-				skindata.skincolor = input
-				previewcolor[name] = nil
-				doskinny(player, skindata)
-				formspec_skin(name)
-			end
-		end
-    end
-	if formname == "charcreate:eye" then
-		local input = do_HSL_formspec(player, name, fields)
-		if fields.prev then
-			formspec_skin(name)
-			return
-		end
-		if fields.next then
-			formspec_hair(name)
-			return
-		end
-		if fields.prevtype then
-			if skindata.eyetype == 0 then
-				skindata.eyetype = eye_num
-			else
-				skindata.eyetype = tonumber(skindata.eyetype)-1
-			end
-			doskinny(player, skindata)
-			formspec_eye(name)
-			return
-		end
-		if fields.nexttype then
-			if skindata.eyetype == eye_num then
-				skindata.eyetype = 0
-			else
-				skindata.eyetype = tonumber(skindata.eyetype)+1
-			end
-			doskinny(player, skindata)
-			formspec_eye(name)
-			return
-		end
-		if fields.apply then
-			if input and input ~= "" then
-				skindata.eyecolor = input
-				previewcolor[name] = nil
-				doskinny(player, skindata)
-				formspec_eye(name)
-			end
-		end
+	end
+	if fields.default then
+		skindata[pagename.."color"] = defaultskin[pagename.."color"]
+		previewcolor[name] = nil
+		doskinny(player, skindata)
+		charformspec[pagename](name)
     end
 end)
 
@@ -318,6 +237,6 @@ minetest.register_chatcommand("skinny",{
 	func = function (name,params)
 		local player = minetest.get_player_by_name(name)
 		local skindata = minetest.deserialize(mod_storage:get_string(name))
-		minetest.show_formspec(name,"charcreate:hair",make_HSL_formspec("Hair", "hair", skindata.haircolor, skindata.hairtype))	
+		charformspec["hair"](name)
 	end,
 })
