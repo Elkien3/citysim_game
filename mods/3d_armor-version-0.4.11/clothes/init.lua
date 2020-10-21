@@ -197,5 +197,16 @@ armor:register_armor("clothes:pants_prisoner", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+
+for itemstring, def in pairs(minetest.registered_items) do
+	if def.groups.clothing then
+		minetest.register_craft({
+			output = 'farming:cotton 3',
+			type = "shapeless",
+			recipe = {itemstring},
+		})
+	end
+end
+
 local modpath = minetest.get_modpath("clothes")
 dofile(modpath.."/loom.lua")
