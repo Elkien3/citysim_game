@@ -6,14 +6,18 @@ timer = 0
 local playerlist = minetest.get_connected_players()
 for index, player in pairs (playerlist) do
 	local pos1 = player:get_pos()
-	for index, player2 in pairs (playerlist) do
-		if player:get_player_name() == player2:get_player_name() then goto skip end
-		local pos2 = player2:get_pos()
-		local dist = vector.distance(pos1, pos2)
-		if dist < .6 then
-			player:add_player_velocity(vector.multiply(vector.direction(pos2, pos1), 1))
+	local name1 = player:get_player_name()
+	if not default.player_attached[name1] then
+		for index, player2 in pairs (playerlist) do
+			local name2	= player2:get_player_name()
+			if name1 == name2 or default.player_attached[name2] then goto skip end
+			local pos2 = player2:get_pos()
+			local dist = vector.distance(pos1, pos2)
+			if dist < .6 then
+				player:add_player_velocity(vector.multiply(vector.direction(pos2, pos1), 1))
+			end
+			::skip::
 		end
-		::skip::
 	end
 end
 
