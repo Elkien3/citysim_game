@@ -91,7 +91,8 @@ minetest.register_node("clothes:loom", {
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.env:get_meta(pos)
 		local inv = meta:get_inventory()
-		if inv:is_empty("input") then
+		local node = inv:get_stack("input", 1):get_name()
+		if minetest.get_item_group(node, "wool") < 1 then
 			return
 		end
 		local output = nil
