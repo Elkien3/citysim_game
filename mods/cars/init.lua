@@ -781,6 +781,8 @@ local function car_step(self, dtime)
 	end
 end
 
+local forceplayer = {}
+
 cars_registered_cars = {}
 function cars_register_car(def)
 	cars_registered_cars[def.name] = def
@@ -912,6 +914,19 @@ function cars_register_car(def)
 			else
 				local i = 0
 				local closeid = getClosest(clicker, self)
+				--knockout support
+				if knockout then
+					local Cname = knockout.carrying[name]
+					if forceplayer[name] then
+						closeid = forceplayer[name]
+						forceplayer[name] = nil
+					elseif Cname and minetest.get_player_by_name(Cname) and (knockout.downedplayers and not knockout.downedplayers[Cname]) then
+						knockout.wake_up(Cname)
+						forceplayer[Cname] = closeid
+						minetest.after(.1, function() self.object:right_click(minetest.get_player_by_name(Cname)) end)
+						return
+					end
+				end
 				if DEBUG_TEXT then
 					minetest.chat_send_all(tostring(closeid))
 				end
@@ -947,6 +962,7 @@ function cars_register_car(def)
 					detach(clicker)
 				end
 				self.passengers[i].player = clicker
+				
 				--add hud for driver
 				if i == 1 then
 					self.hud = clicker:hud_add({
