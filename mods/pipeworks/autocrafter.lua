@@ -35,6 +35,8 @@ end
 local function autocraft(inventory, craft)
 	if not craft then return false end
 	local output_item = craft.output.item
+	
+	local group = minetest.get_item_group(output_item:get_name(), "gunslinger_magazine")
 
 	-- check if we have enough room in dst
 	if not inventory:room_for_item("dst", output_item) then	return false end
@@ -43,6 +45,7 @@ local function autocraft(inventory, craft)
 	-- check if we have enough material available
 	for itemname, number in pairs(consumption) do
 		if (not inv_index[itemname]) or inv_index[itemname] < number then return false end
+		if group > 0 and minetest.get_item_group(itemname, "gunslinger_ammo") > 0 then return false end
 	end
 	-- consume material
 	for itemname, number in pairs(consumption) do
