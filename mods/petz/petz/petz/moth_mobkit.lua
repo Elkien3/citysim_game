@@ -72,7 +72,7 @@ minetest.register_entity("petz:"..pet_name,{
 	on_activate = function(self, staticdata, dtime_s) --on_activate, required
 		mobkit.actfunc(self, staticdata, dtime_s)
 		petz.set_initial_properties(self, staticdata, dtime_s)
-		petz.init_lay_eggs(self)
+		--petz.init_lay_eggs(self)
 	end,
 
 	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
