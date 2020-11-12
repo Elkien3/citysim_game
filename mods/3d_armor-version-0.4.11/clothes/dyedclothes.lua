@@ -12,7 +12,7 @@ local clothes_dyes = {
 	{"orange",     "c74410",     "Orange"},
 	{"red",        "ba1414",        "Red"},
 	{"magenta",    "c30469",    "Magenta"},
-	{"pink",       "ff7e7e",       "Pink"},
+	{"pink",       "f57b7b",       "Pink"},
 }
 
 local function col_img(image, color, mask)
