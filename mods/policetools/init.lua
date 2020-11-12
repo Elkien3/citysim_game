@@ -22,17 +22,18 @@ local function getspeed(player)
 end
 
 local function dospeed(player, name)
-	if not player or not player:is_player() then speedgun[name] = nil return end
-	if not name then speedgun[name] = nil return end
+	if not player or not player:is_player() then speedgun[name] = nil end
+	if not name then speedgun[name] = nil end
+	if not speedgun[name] then return end
 	local speed = getspeed(player)
 	if speed > speedgun[name] then
 		speedgun[name] = speed
 	end
-	minetest.sound_play("blip", {
+	minetest.sound_play("speedgun", {
 		object = player,
-		max_hear_distance = 10,
+		max_hear_distance = 8,
 		pitch = speed/60+.5,
-		gain = .5
+		gain = .1
 	})
 	if player:get_player_control().LMB then
 		minetest.after(.2, dospeed, player, name)
