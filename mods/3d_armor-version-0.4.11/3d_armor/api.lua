@@ -233,18 +233,25 @@ armor.set_player_armor = function(self, player)
 			local item = stack:get_name()
 			local tex = def.texture or item:gsub("%:", "_")
 			tex = tex:gsub(".png$", "")
+			local texpng = ""
+			if not string.find(tex, ".png") then
+				texpng = ".png"
+			end
 			local prev = def.preview or tex.."_preview"
 			prev = prev:gsub(".png$", "")
 			if def.groups["clothing"] then
 				if def.groups["armor_head"] then
-					hat = hat.."^"..tex..".png"
+					hat = hat.."^"..tex..texpng
 				else
-					clothes = clothes.."^"..tex..".png"
+					clothes = clothes.."^"..tex..texpng
 				end
 			else
-				texture = texture.."^"..tex..".png"
+				texture = texture.."^"..tex..texpng
 			end
-			preview = preview.."^"..prev..".png"
+			preview = preview.."^"..prev
+			if not string.find(prev, ".png") then
+				preview = preview..".png"
+			end
 			state = state + stack:get_wear()
 			count = count + 1
 			for _, phys in pairs(self.physics) do

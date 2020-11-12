@@ -4,7 +4,7 @@ local function make_buttons()
 	local h = 0
 	local v = .5
 	for itemstring, def in pairs(minetest.registered_items) do
-		if def.groups.clothing then
+		if def.groups.clothing and not def.groups.not_in_creative_inventory then
 			if h > 6 then
 				h = 0
 				v = v + 1
