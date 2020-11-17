@@ -37,15 +37,18 @@ end)
 local old_is_protected = minetest.is_protected
 function minetest.is_protected(pos, name)
 	local nodename = minetest.get_node(pos).name
-	local stack = minetest.get_player_by_name(name):get_wielded_item()
-	--minetest.chat_send_all(nodename.." "..tostring(list[nodename]))
-	if string.match(stack:get_name(), "bucket:") and (nodename == "air" or list[nodename]) then return false end
-	if nodename == "air" then
-		local def = stack:get_definition()
-		if def.type == "node" then
-			nodename = stack:get_name()
-		else
-			return old_is_protected(pos, name)
+	local player = minetest.get_player_by_name(name)
+	if player and player:is_player() then
+		local stack = player:get_wielded_item()
+		--minetest.chat_send_all(nodename.." "..tostring(list[nodename]))
+		if string.match(stack:get_name(), "bucket:") and (nodename == "air" or list[nodename]) then return false end
+		if nodename == "air" then
+			local def = stack:get_definition()
+			if def.type == "node" then
+				nodename = stack:get_name()
+			else
+				return old_is_protected(pos, name)
+			end
 		end
 	end
 	--minetest.chat_send_all(nodename.." "..tostring(list[nodename]))
