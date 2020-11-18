@@ -315,6 +315,27 @@ local function trunk_rightclick(self, clicker)
 	trunkplayer[name] = self
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
+		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			if self.object:get_luaentity() then
+				return count
+			else
+				return 0
+			end
+		end,
+		allow_put = function(inv, listname, index, stack, player)
+			if self.object:get_luaentity() then
+				return stack:get_count()
+			else
+				return 0
+			end
+		end,
+		allow_take = function(inv, listname, index, stack, player)
+			if self.object:get_luaentity() then
+				return stack:get_count()
+			else
+				return 0
+			end
+		end,
 		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
 			self.trunkinv = inv:get_list("trunk")
 		end,
