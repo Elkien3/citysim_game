@@ -84,17 +84,48 @@ minetest.register_entity("knockout:entity", {
 			local pName = e.grabbed_name
 			local player_inv = minetest.get_inventory({type='player', name = pName}) --InvRef
 			local detached_inv = minetest.create_detached_inventory(pName, {
+			allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+				local newinv = minetest.get_inventory({type='player', name = pName})
+				if not newinv then return 0 end
+				local newstack = newinv:get_stack(from_list, from_index):to_string()
+				local oldstack = inv:get_stack(from_list, from_index):to_string()
+				if newstack == oldstack then
+					return count
+				else
+					return 0
+				end
+			end,
+			allow_put = function(inv, listname, index, stack, player)
+				local newinv = minetest.get_inventory({type='player', name = pName})
+				if not newinv then return 0 end
+				local newstack = newinv:get_stack(listname, index):to_string()
+				local oldstack = inv:get_stack(listname, index):to_string()
+				if newstack == oldstack then
+					return stack:get_count()
+				else
+					return 0
+				end
+			end,
+			allow_take = function(inv, listname, index, stack, player)
+				local newinv = minetest.get_inventory({type='player', name = pName})
+				if not newinv then return 0 end
+				local newstack = newinv:get_stack(listname, index):to_string()
+				local oldstack = inv:get_stack(listname, index):to_string()
+				if newstack == oldstack then
+					return stack:get_count()
+				else
+					return 0
+				end
+			end,
 			on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
+				player_inv:set_stack(to_list, to_index, inv:get_stack(to_list, to_index))
+				player_inv:set_stack(from_list, from_index, inv:get_stack(from_list, from_index))
 			end,
 			on_put = function(inv, listname, index, stack, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
+				player_inv:set_stack(listname, index, inv:get_stack(listname, index))
 			end,
 			on_take = function(inv, listname, index, stack, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
+				player_inv:set_stack(listname, index, inv:get_stack(listname, index))
 			end,
 			}) --InvRef
 			detached_inv:set_list('main', player_inv:get_list('main'))
