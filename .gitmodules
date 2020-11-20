@@ -10,6 +10,3 @@
 [submodule "mods/gunslinger"]
 	path = mods/gunslinger
 	url = https://github.com/Elkien3/gunslinger
-[submodule "mods/gunslinger_rangedweapons"]
-	path = mods/gunslinger_rangedweapons
-	url = https://github.com/Elkien3/gunslinger_rangedweapons
