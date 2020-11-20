@@ -1,0 +1,2 @@
+cc-by-sa 3.0
+textures and sounds davidthecreator https://github.com/daviddoesminetest
