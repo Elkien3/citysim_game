@@ -3,7 +3,7 @@ local shortrange = true
 local lowstack = false
 local maxstack = 20
 local smallinv = true
-local invsize = 16
+local invsize = minetest.settings:get("invsize") or 32
 
 local function add_toolsonly()
 	for itemstring, def in pairs(minetest.registered_nodes) do
