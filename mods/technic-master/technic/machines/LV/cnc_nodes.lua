@@ -21,12 +21,31 @@ technic.cnc.register_all("default:stone",
                 {cracky=3, not_in_creative_inventory=1},
                 {"default_stone.png"},
                 S("Stone"))
+-- STONE BRICK - added
+---------------
+technic.cnc.register_all("default:stonebrick",
+                {cracky=3, not_in_creative_inventory=1},
+                {"default_stone.png"},
+                S("Stone Brick"))
 -- COBBLE
 ---------
 technic.cnc.register_all("default:cobble",
                 {cracky=3, not_in_creative_inventory=1},
                 {"default_cobble.png"},
                 S("Cobble"))
+-- DESERT STONE - added
+--------
+technic.cnc.register_all("default:desert_stone",
+                {cracky=3, not_in_creative_inventory=1},
+                {"default_desert_stone.png"},
+                S("Desert Stone"))
+-- DESERT STONE BRICK- added
+--------
+technic.cnc.register_all("default:desert_stonebrick",
+                {cracky=3, not_in_creative_inventory=1},
+                {"default_desert_stone_brick.png"},
+                S("Desert Stone Brick"))
+
 -- BRICK
 --------
 technic.cnc.register_all("default:brick",
@@ -41,6 +60,26 @@ technic.cnc.register_all("default:sandstone",
                 {"default_sandstone.png"},
                 S("Sandstone"))
 
+-- SANDSTONE BRICK - added
+------------
+technic.cnc.register_all("default:sandstonebrick",
+                {cracky=3, not_in_creative_inventory=1},
+                {"default_sandstone_brick.png"},
+                S("Sandstone Brick"))
+
+-- SILVER SANDSTONE - added
+------------
+technic.cnc.register_all("default:silver_sandstone",
+                {crumbly=2, cracky=3, not_in_creative_inventory=1},
+                {"default_silver_sandstone.png"},
+                S("Silver Sandstone"))
+
+-- SILVER SANDSTONE BRICK- added
+------------
+technic.cnc.register_all("default:silver_sandstone_brick",
+                {cracky=3, not_in_creative_inventory=1},
+                {"default_silver_sandstone_brick.png"},
+                S("Silver Sandstone Brick"))
 -- LEAVES
 ---------
 technic.cnc.register_all("default:leaves",
