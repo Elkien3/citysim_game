@@ -714,7 +714,7 @@ local function car_step(self, dtime)
 	end
 	local new_velo
 	local yaw = self.object:getyaw()
-	yaw = yaw - self.wheelpos/def.axisval or 50
+	yaw = yaw - self.wheelpos/(def.axisval or 50)
 	new_velo = get_velocity(self.v, yaw, velocity)
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
