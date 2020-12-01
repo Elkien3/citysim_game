@@ -18,10 +18,10 @@ local cars_dyes = {
 local sedandef = {
 		name = "cars:sedan",
 		description = "Sedan",
-		acceleration = 4,
+		acceleration = 3,
 		braking = 10,
 		coasting = 2,
-		max_speed = 20,
+		max_speed = 24.5872,
 		trunksize = {x=6,y=2},
 		trunkloc = {x = 0, y = 4, z = -8},
 		passengers = {

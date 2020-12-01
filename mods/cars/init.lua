@@ -9,6 +9,10 @@ local function get_sign(i)
 		return i / math.abs(i)
 	end
 end
+local function rnd(number, decimal)
+	if not decimal then decimal = 1 end
+	return math.floor(number*decimal+.5)/decimal
+end
 local player_attached = {}
 
 local attachTimer = 0
@@ -537,13 +541,13 @@ local function car_step(self, dtime)
 	end
 	local driver = self.passengers[1].player
 	if driver and self.ignition then
-		driver:hud_change(self.hud, "text", tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH")
+		driver:hud_change(self.hud, "text", tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH"))
 		local ctrl = driver:get_player_control()
 		local yaw = get_yaw(self.object:getyaw())
 		local sign
 		local lights
 		if self.lights then lights = self.lights:get_luaentity() end
-		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
+		if self.v == 0 then sign = 0 if self.cruise then self.cruise = nil end else sign = get_sign(self.v) end
 		if self.lastctrl then
 			if ctrl.sneak and not self.lastctrl.sneak then
 				local lookdir = yaw-driver:get_look_horizontal()
@@ -556,7 +560,16 @@ local function car_step(self, dtime)
 					elseif lookdir < -15 then
 						cars.setlight(lights, "leftblinker", "toggle")
 					else
-						--minetest.chat_send_all("cruise")
+						if self.v <= 0 or (self.cruise and math.abs(self.cruise - self.v) < .1) then
+							self.cruise = nil
+						else
+							self.cruise = rnd(self.v*2.23694)/2.23694
+							minetest.sound_play("lighton", {
+								max_hear_distance = 6,
+								gain = 1,
+								object = self.object
+							}, true)
+						end
 					end
 				end
 			end
@@ -568,11 +581,13 @@ local function car_step(self, dtime)
 				newv = newv + def.acceleration*dtime
 				cars.setlight(lights, "brakelights", false)
 			else
+				if self.cruise then self.cruise = nil end
 				newv = newv + def.braking*dtime
 				cars.setlight(lights, "brakelights", true)
 				slowing = true
 			end
 		elseif ctrl.down then
+			if self.cruise then self.cruise = nil end
 			if sign <= 0 then
 				newv = newv - def.acceleration*dtime
 				cars.setlight(lights, "brakelights", false)
@@ -586,9 +601,14 @@ local function car_step(self, dtime)
 			self.v = newv
 		end
 		if not ctrl.up and not ctrl.down and sign ~= 0 then
-			self.v = self.v - def.coasting*dtime*get_sign(self.v)
-			cars.setlight(lights, "brakelights", false)
+			if self.cruise and self.v < self.cruise and node ~= "air" then
+				self.v = self.v + def.acceleration*dtime
+				if self.v > self.cruise then self.v = self.cruise end
+			else
+				self.v = self.v - def.coasting*dtime*get_sign(self.v)
+				cars.setlight(lights, "brakelights", false)
 				slowing = true
+			end
 		end
 		if get_sign(self.v) ~= sign and sign ~= 0 then
 			self.v = 0
@@ -630,7 +650,7 @@ local function car_step(self, dtime)
 		else
 			local sign = get_sign(self.wheelpos)
 			
-				self.wheelpos = self.wheelpos - 100*get_sign(self.wheelpos)*dtime
+				self.wheelpos = self.wheelpos - 50*get_sign(self.wheelpos)*dtime
 			if math.abs(self.wheelpos) < 5 or sign ~= get_sign(self.wheelpos) then
 				self.wheelpos = 0
 			end
