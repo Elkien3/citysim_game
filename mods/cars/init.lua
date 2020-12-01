@@ -802,7 +802,7 @@ local function car_step(self, dtime)
 	end
 	self.timer2 = self.timer2 + dtime
 	local pitch = 1 + (abs_v/def.max_speed)*.6
-	if self.timer2 > 2/pitch-1.2 then
+	if self.timer2 > 2/pitch-.5 then
 		if abs_v > .2 then
 			if node ~= "air" then
 				if string.find(node, "asphalt") then
