@@ -22,7 +22,11 @@ end
 local function finishfrisk(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	if vector.distance(pPlayer:getpos(), oldpos) > .1 then
+	local pos = pPlayer:getpos()
+	if pPlayer:get_attach() then
+		pos = pPlayer:get_attach():getpos()
+	end
+	if vector.distance(pos, oldpos) > .1 then
 		minetest.chat_send_player(pName, "You moved, frisk canceled.")
 		minetest.chat_send_player(name, pName.." moved, frisk canceled.")
 		return
@@ -77,6 +81,9 @@ local function startfrisk(stack, player, pointedThing)
 			minetest.chat_send_player(pName, name.." is frisking you, move to cancel.")
 			minetest.chat_send_player(name, "You are frisking "..pName..".")
 			local oldpos = obj:getpos()
+			if obj:get_attach() then
+				oldpos = obj:get_attach():getpos()
+			end
 			minetest.after(8, finishfrisk, player, pName, oldpos)
 		end
 	end
@@ -119,7 +126,11 @@ end)
 local function finishcuff(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	if vector.distance(pPlayer:getpos(), oldpos) > .1 then
+	local pos = pPlayer:getpos()
+	if pPlayer:get_attach() then
+		pos = pPlayer:get_attach():getpos()
+	end
+	if vector.distance(pos, oldpos) > .1 then
 		minetest.chat_send_player(pName, "You moved, cuff canceled.")
 		minetest.chat_send_player(name, pName.." moved, cuff canceled.")
 		local wearcalc
@@ -178,6 +189,9 @@ local function startcuff(stack, player, pointedThing)
 					minetest.chat_send_player(pName, name.." is cuffing you, move to cancel.")
 					minetest.chat_send_player(name, "You are cuffing "..pName..".")
 					local oldpos = obj:getpos()
+					if obj:get_attach() then
+						oldpos = obj:get_attach():getpos()
+					end
 					minetest.after(6, finishcuff, player, pName, oldpos)
 					minetest.sound_play("cuff", {
 						pos = obj:getpos(),
