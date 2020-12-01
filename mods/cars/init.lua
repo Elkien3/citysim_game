@@ -308,6 +308,13 @@ local function getClosest(player, car)
 	return closest.id
 end
 
+local function turncaroff(car, lights)
+	if not lights and car.lights then lights = car.lights:get_luaentity() end
+	cars.setlight(lights, "leftblinker", false)
+	cars.setlight(lights, "rightblinker", false)
+	car.ignition = nil
+end
+
 local trunkplayer = {}
 local function trunk_rightclick(self, clicker)
 	local def = cars_registered_cars[self.object:get_entity_name()]
@@ -369,7 +376,7 @@ local function driver_rightclick(self, clicker)
 		end,
 		on_take = function(inv, listname, index, stack, player)
 			self.key = inv:contains_item("key", "default:key")
-			if not self.key then self.ignition = nil end
+			if not self.key then turncaroff(self) end
 		end,
         allow_put = function(inv, listname, index, stack, player)
 			if stack:get_meta():get_string("secret") == self.secret then
@@ -417,14 +424,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if car.lights then obj = car.lights:get_luaentity() end
 			if fields.ignition and car.key then
 				if car.ignition then
-					car.ignition = nil
+					turncaroff(car, obj)
 				else
 					minetest.sound_play("ignition", {
 						max_hear_distance = 24,
 						gain = 1,
 						object = car.object
 					}, true)
-					minetest.after(.8, function(car) car.ignition = not car.ignition end, car)
+					minetest.after(.8, function(car) car.ignition = true end, car)
 				end
 			elseif fields.headlights then
 				cars.setlight(obj, "headlights", "toggle")
@@ -451,7 +458,7 @@ local function car_step(self, dtime)
 	local pos = self.object:getpos()
 	if self.lastv then
 		local newv = velocity
-		if not self.crash then self.crash = false end
+		if self.crash == nil then self.crash = false end
 		local crash = false
 		if math.abs(self.lastv.x) > 5 and newv.x == 0 then crash = true end
 		if math.abs(self.lastv.y) > 10 and newv.y == 0 then crash = true end
@@ -493,6 +500,9 @@ local function car_step(self, dtime)
 			}, true)
 			local checkpos = vector.add(pos, vector.multiply(vector.normalize(self.lastv), .8))
 			local objects = minetest.get_objects_inside_radius(checkpos, 1)
+			local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
+			--self.object:set_hp(self.object:get_hp()-dmg/2, "crash")
+			--self.object:punch(self.object, 0, {})
 			for _,obj in pairs(objects) do
 				if obj:is_player() then
 					for id, passengers in pairs (self.passengers) do
@@ -500,7 +510,6 @@ local function car_step(self, dtime)
 					end
 					local puncher = self.passengers[1].player
 					if not puncher then puncher = self.object end
-					local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
 					local name = obj:get_player_name()
 					if default.player_attached[name] then
 						dmg = dmg*.5
@@ -540,12 +549,15 @@ local function car_step(self, dtime)
 				local lookdir = yaw-driver:get_look_horizontal()
 				lookdir = math.deg(lookdir)
 				lookdir = get_deg(lookdir)
-				if lookdir > 15 then
-					cars.setlight(lights, "rightblinker", "toggle")
-				elseif lookdir < -15 then
-					cars.setlight(lights, "leftblinker", "toggle")
-				else
-					--minetest.chat_send_all("cruise")
+				local vertlook =  math.deg(driver:get_look_vertical())
+				if math.abs(vertlook) < 20 then
+					if lookdir > 15 then
+						cars.setlight(lights, "rightblinker", "toggle")
+					elseif lookdir < -15 then
+						cars.setlight(lights, "leftblinker", "toggle")
+					else
+						--minetest.chat_send_all("cruise")
+					end
 				end
 			end
 		end
@@ -701,7 +713,9 @@ local function car_step(self, dtime)
 		self.v = 1*get_sign(self.v)
 	end
 	local new_velo
-	new_velo = get_velocity(self.v, self.object:getyaw(), velocity)
+	local yaw = self.object:getyaw()
+	yaw = yaw - self.wheelpos/def.axisval or 50
+	new_velo = get_velocity(self.v, yaw, velocity)
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
 	--[[if accel ~= 0 then
@@ -816,13 +830,6 @@ function cars_register_car(def)
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
 			if not self.timer2 then self.timer2 = 0 end
-			if not self.secret then
-				local random = math.random
-				self.secret = string.format(
-					"%04x%04x%04x%04x",
-					random(2^16) - 1, random(2^16) - 1,
-					random(2^16) - 1, random(2^16) - 1)
-			end
 			if not self.platenumber then
 				self.platenumber = {}
 			end
@@ -841,6 +848,13 @@ function cars_register_car(def)
 				elseif minetest.get_player_by_name(staticdata) then
 					self.owner = staticdata
 				end
+			end
+			if not self.secret then
+				local random = math.random
+				self.secret = string.format(
+					"%04x%04x%04x%04x",
+					random(2^16) - 1, random(2^16) - 1,
+					random(2^16) - 1, random(2^16) - 1)
 			end
 			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
 			if font_api then
@@ -922,6 +936,8 @@ function cars_register_car(def)
 					end -- else: added to inventory successfully
 				end
 				minetest.after(0, function() puncher:set_wielded_item(wieldstack) end)
+			elseif player_attached[name] ~= self then
+				--minetest.chat_send_all("ow")
 			end
 		end,
 		on_rightclick = function(self, clicker)
