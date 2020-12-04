@@ -455,11 +455,15 @@ local function car_step(self, dtime)
 	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.object:get_entity_name()]
 	local velocity = self.object:getvelocity()
+	local yaw = self.object:getyaw()
+	if not yaw then return end
+	local yaw = get_yaw(yaw)
 	local slowing = false
 	if not self.v then self.v = 0 end
 	self.v = get_v(velocity) * get_sign(self.v)
 	--local accel = 0--def.coasting*get_sign(self.v)
 	local pos = self.object:getpos()
+	if not velocity then return end
 	if self.lastv then
 		local newv = velocity
 		if self.crash == nil then self.crash = false end
@@ -506,7 +510,7 @@ local function car_step(self, dtime)
 			local objects = minetest.get_objects_inside_radius(checkpos, 1)
 			local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
 			--self.object:set_hp(self.object:get_hp()-dmg/2, "crash")
-			--self.object:punch(self.object, 0, {})
+			self.object:punch(self.object, nil, {damage_groups={fleshy=dmg/2}})
 			for _,obj in pairs(objects) do
 				if obj:is_player() then
 					for id, passengers in pairs (self.passengers) do
@@ -543,7 +547,6 @@ local function car_step(self, dtime)
 	if driver and self.ignition then
 		driver:hud_change(self.hud, "text", tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH"))
 		local ctrl = driver:get_player_control()
-		local yaw = get_yaw(self.object:getyaw())
 		local sign
 		local lights
 		if self.lights then lights = self.lights:get_luaentity() end
@@ -686,7 +689,6 @@ local function car_step(self, dtime)
 	else
 		self.lastctrl = nil
 		if math.abs(self.wheelpos) > 0 then
-			local yaw = get_yaw(self.object:get_yaw())
 			self.wheelpos = 0
 			self.wheel.frontright:set_attach(self.object, "", def.wheel.frontright, {x=0,y=self.wheelpos,z=0})
 			self.wheel.frontleft:set_attach(self.object, "", def.wheel.frontleft, {x=0,y=self.wheelpos,z=0})
@@ -706,9 +708,8 @@ local function car_step(self, dtime)
 		local player = passengers.player
 		if player then
 			local playeryaw = player:get_look_horizontal()
-			local entityyaw = get_yaw(self.object:get_yaw())
 			local offset = table.copy(passengers.offset)
-			local x, z = rotateVector(offset.x, offset.z, entityyaw-playeryaw)
+			local x, z = rotateVector(offset.x, offset.z, yaw-playeryaw)
 			offset.x = x
 			offset.z = z
 			player:set_eye_offset(offset, {x=0,y=0,z=0})
@@ -733,7 +734,7 @@ local function car_step(self, dtime)
 		self.v = 1*get_sign(self.v)
 	end
 	local new_velo
-	local yaw = self.object:getyaw()
+	--local yaw = self.object:getyaw()
 	yaw = yaw - self.wheelpos/(def.axisval or 50)
 	new_velo = get_velocity(self.v, yaw, velocity)
 	self.object:setvelocity(new_velo)
@@ -797,7 +798,7 @@ local function car_step(self, dtime)
 					object = self.object,
 					gain = gain,
 				}, true)
-		self.timer1 = 0
+			self.timer1 = 0
 		end
 	end
 	self.timer2 = self.timer2 + dtime
@@ -836,7 +837,89 @@ local function car_step(self, dtime)
 	end
 end
 
-local forceplayer = {}
+local function car_rightclick(self, clicker, closeid)
+	if self.locked then return end
+	if not clicker or not clicker:is_player() then
+		return
+	end
+	local name = clicker:get_player_name()
+	if player_attached[name] and player_attached[name] ~= self then
+		return
+	else
+		local i = 0
+		if not closeid then closeid = getClosest(clicker, self) end
+		--knockout support
+		if knockout then
+			local Cname = knockout.carrying[name]
+			if Cname and minetest.get_player_by_name(Cname) and (knockout.downedplayers and not knockout.downedplayers[Cname]) then
+				knockout.wake_up(Cname)
+				minetest.after(.1, function() car_rightclick(self, minetest.get_player_by_name(Cname), closeid) end)
+				return
+			end
+		end
+		if DEBUG_TEXT then
+			minetest.chat_send_all(tostring(closeid))
+		end
+		if closeid then
+			if closeid == 0 then
+				minetest.sound_play("opentrunk", {
+					max_hear_distance = 24,
+					gain = 1,
+					object = self.object
+				}, true)
+				trunk_rightclick(self, clicker)
+				return
+			end
+			if self.passengers[closeid].player == clicker then
+				if closeid == 1 and clicker:get_player_control().sneak then
+					driver_rightclick(self, clicker)
+				else
+					detach(clicker)
+				end
+				return
+			end
+			if not self.passengers[closeid].player then
+				i = closeid
+			end
+		else
+			while i <= #self.passengers do
+				i = i + 1
+				if not self.passengers[i].player then break end
+			end
+		end
+	if i == 0 or i == #self.passengers+1 then return end
+	if player_attached[name] == self then
+		detach(clicker)
+	end
+	self.passengers[i].player = clicker
+		--add hud for driver
+		if i == 1 then
+			self.hud = clicker:hud_add({
+				 hud_elem_type = "text",
+				 position      = {x = 0.5, y = 0.8},
+				 offset        = {x = 0,   y = 0},
+				 text          = tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH",
+				 alignment     = {x = 0, y = 0},  -- center aligned
+				 scale         = {x = 100, y = 100}, -- covered later
+				 number    = 0xFFFFFF,
+			})
+		end
+		
+		player_attached[name] = self
+		--[[local obj = minetest.add_entity(self.object:getpos(), "cars:seat")
+		obj:set_attach(self.object, "", self.passengers[i].loc, {x = 0, y = 0, z = 0})
+		clicker:set_attach(obj, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+		clicker:set_eye_offset({x=0,y=-6,z=0}, {x=0,y=0,z=0})--]]
+		clicker:set_attach(self.object, "",
+			self.passengers[i].loc, {x = 0, y = 0, z = 0})
+		clicker:set_eye_offset(self.passengers[i].offset, {x=0,y=0,z=0})
+		default.player_attached[name] = true
+		minetest.after(.1, function()
+			default.player_set_animation(clicker, "sit" , 30)
+		end)
+		clicker:set_look_horizontal(get_yaw(self.object:getyaw()))
+	end
+end
 
 cars_registered_cars = {}
 function cars_register_car(def)
@@ -862,6 +945,7 @@ function cars_register_car(def)
 					self.locked = deserialized.locked
 					self.trunkinv = deserializeContents(deserialized.trunk)
 					self.key = deserialized.key
+					self.hp = deserialized.hp or 20
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -884,7 +968,7 @@ function cars_register_car(def)
 				self.object:set_properties(prop)
 			end
 			self.object:setacceleration({x=0, y=-10, z=0})
-			self.object:set_armor_groups({immortal = 1})
+			--self.object:set_armor_groups({immortal = 1})
 			self.wheel = {}
 			wheelspeed(self)
 			local pos = self.object:getpos()
@@ -902,151 +986,96 @@ function cars_register_car(def)
 			if self.lights then
 				self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
 			end
+			self.object:set_hp(self.hp)
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
 		end,
 		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-			local name = puncher:get_player_name()
-			if puncher == self.passengers[1].player then
-				minetest.sound_play(def.horn, {
-					max_hear_distance = 48,
-					gain = 8,
-					object = self.object
-				}, true)
-				return
-			end
-			local punchitem = puncher:get_wielded_item():get_name()
-			if (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
-				local closeid = getClosest(puncher, self)
-				if DEBUG_TEXT then
-					minetest.chat_send_all(tostring(closeid))
-				end
-				if not closeid or closeid == 0 then return end
-				detach(self.passengers[closeid].player)
-			elseif punchitem == "default:key" then
-				local secret = puncher:get_wielded_item():get_meta():get_string("secret")
-				if self.secret == secret then
-					self.locked = not self.locked
-					minetest.sound_play("lock", {
-						max_hear_distance = 6,
-						gain = 1,
+			if puncher ~= self.object then
+				local name = puncher:get_player_name()
+				if puncher == self.passengers[1].player then
+					minetest.sound_play(def.horn, {
+						max_hear_distance = 48,
+						gain = 8,
 						object = self.object
 					}, true)
+					return true
 				end
-			elseif punchitem == "default:skeleton_key" and self.owner == name then
-				local inv = minetest.get_inventory({type="player", name=name})
-				-- update original itemstack
-				local wieldstack = puncher:get_wielded_item()
-				wieldstack:take_item()
-				-- finish and return the new key
-				local new_stack = ItemStack("default:key")
-				local meta = new_stack:get_meta()
-				meta:set_string("secret", self.secret)
-				meta:set_string("description", string.format("Key to %s's %s", name, def.description))
-
-				if wieldstack:get_count() == 0 then
-					wieldstack = new_stack
-				else
-					if inv:add_item("main", new_stack):get_count() > 0 then
-						minetest.add_item(user:get_pos(), new_stack)
-					end -- else: added to inventory successfully
-				end
-				minetest.after(0, function() puncher:set_wielded_item(wieldstack) end)
-			elseif player_attached[name] ~= self then
-				--minetest.chat_send_all("ow")
-			end
-		end,
-		on_rightclick = function(self, clicker)
-			if self.locked then return end
-			if not clicker or not clicker:is_player() then
-				return
-			end
-			local name = clicker:get_player_name()
-			if player_attached[name] and player_attached[name] ~= self then
-				return
-			else
-				local i = 0
-				local closeid = getClosest(clicker, self)
-				--knockout support
-				if knockout then
-					local Cname = knockout.carrying[name]
-					if forceplayer[name] then
-						closeid = forceplayer[name]
-						forceplayer[name] = nil
-					elseif Cname and minetest.get_player_by_name(Cname) and (knockout.downedplayers and not knockout.downedplayers[Cname]) then
-						knockout.wake_up(Cname)
-						forceplayer[Cname] = closeid
-						minetest.after(.1, function() self.object:right_click(minetest.get_player_by_name(Cname)) end)
-						return
+				local punchitem = puncher:get_wielded_item():get_name()
+				if (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
+					local closeid = getClosest(puncher, self)
+					if DEBUG_TEXT then
+						minetest.chat_send_all(tostring(closeid))
 					end
-				end
-				if DEBUG_TEXT then
-					minetest.chat_send_all(tostring(closeid))
-				end
-				if closeid then
-					if closeid == 0 then
-						minetest.sound_play("opentrunk", {
-							max_hear_distance = 24,
+					if not closeid or closeid == 0 then return true end
+					if self.passengers[closeid].player then
+						detach(self.passengers[closeid].player)
+					elseif cuffedplayers then
+						local pos = self.object:get_pos()
+						for name, val in pairs (cuffedplayers) do
+							local player = minetest.get_player_by_name(name)
+							if player and vector.distance(player:get_pos(), pos) < 2 then
+								car_rightclick(self, player, closeid)
+								break
+							end
+						end
+					end
+				elseif punchitem == "default:key" then
+					local secret = puncher:get_wielded_item():get_meta():get_string("secret")
+					if self.secret == secret then
+						self.locked = not self.locked
+						minetest.sound_play("lock", {
+							max_hear_distance = 6,
 							gain = 1,
 							object = self.object
 						}, true)
-						trunk_rightclick(self, clicker)
-						return
 					end
-					if self.passengers[closeid].player == clicker then
-						if closeid == 1 and clicker:get_player_control().sneak then
-							driver_rightclick(self, clicker)
-						else
-							detach(clicker)
-						end
-						return
+				elseif punchitem == "default:skeleton_key" and self.owner == name then
+					local inv = minetest.get_inventory({type="player", name=name})
+					-- update original itemstack
+					local wieldstack = puncher:get_wielded_item()
+					wieldstack:take_item()
+					-- finish and return the new key
+					local new_stack = ItemStack("default:key")
+					local meta = new_stack:get_meta()
+					meta:set_string("secret", self.secret)
+					meta:set_string("description", string.format("Key to %s's %s", name, def.description))
+
+					if wieldstack:get_count() == 0 then
+						wieldstack = new_stack
+					else
+						if inv:add_item("main", new_stack):get_count() > 0 then
+							minetest.add_item(user:get_pos(), new_stack)
+						end -- else: added to inventory successfully
 					end
-					if not self.passengers[closeid].player then
-						i = closeid
-					end
+					minetest.after(0, function() puncher:set_wielded_item(wieldstack) end)
+				elseif player_attached[name] ~= self then
+					--minetest.chat_send_all("ow")
+					return true
 				else
-					while i <= #self.passengers do
-						i = i + 1
-						if not self.passengers[i].player then break end
+					return true
+				end
+			end
+			local hp = self.object:get_hp() - tool_capabilities.damage_groups.fleshy
+			self.hp = hp
+			if hp <= 0 then
+				for id, wheel in pairs(self.wheel) do
+					wheel:remove()
+				end
+				for id, passengers in pairs (self.passengers) do
+					local player = passengers.player
+					if player then
+						detach(player)
 					end
 				end
-				if i == 0 or i == #self.passengers+1 then return end
-				if player_attached[name] == self then
-					detach(clicker)
-				end
-				self.passengers[i].player = clicker
-				
-				--add hud for driver
-				if i == 1 then
-					self.hud = clicker:hud_add({
-						 hud_elem_type = "text",
-						 position      = {x = 0.5, y = 0.8},
-						 offset        = {x = 0,   y = 0},
-						 text          = tostring(math.abs(math.floor(self.v*2.23694*10)/10)).." MPH",
-						 alignment     = {x = 0, y = 0},  -- center aligned
-						 scale         = {x = 100, y = 100}, -- covered later
-						 number    = 0xFFFFFF,
-					})
-				end
-				
-				player_attached[name] = self
-				--[[local obj = minetest.add_entity(self.object:getpos(), "cars:seat")
-				obj:set_attach(self.object, "", self.passengers[i].loc, {x = 0, y = 0, z = 0})
-				clicker:set_attach(obj, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-				clicker:set_eye_offset({x=0,y=-6,z=0}, {x=0,y=0,z=0})--]]
-				clicker:set_attach(self.object, "",
-					self.passengers[i].loc, {x = 0, y = 0, z = 0})
-				clicker:set_eye_offset(self.passengers[i].offset, {x=0,y=0,z=0})
-				default.player_attached[name] = true
-				minetest.after(.1, function()
-					default.player_set_animation(clicker, "sit" , 30)
-				end)
-				clicker:set_look_horizontal(get_yaw(self.object:getyaw()))
 			end
+		end,
+		on_rightclick = function(self, clicker)
+			car_rightclick(self, clicker)
 		end
 	})
 	minetest.register_craftitem(def.name, {

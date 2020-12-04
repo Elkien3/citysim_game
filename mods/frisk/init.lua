@@ -100,7 +100,7 @@ minetest.register_tool('frisk:screen', {
 
 --HANDCUFFS
 
-local cuffedplayers = minetest.deserialize(modstorage:get_string("cuffedplayers")) or {}
+cuffedplayers = minetest.deserialize(modstorage:get_string("cuffedplayers")) or {}
 local hasshout = minetest.deserialize(modstorage:get_string("hasshout")) or {}
 minetest.register_on_joinplayer(function(player)
 	local playerName = player:get_player_name()
