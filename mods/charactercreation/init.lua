@@ -38,6 +38,9 @@ local function doskinny(player, skindata)
 	local eyes = "(eye"..sd.eyetype..".png)^(eye"..sd.eyetype.."color.png^[multiply:#"..sd.eyecolor..")"
 	local face = "(face"..sd.facetype..".png^[multiply:#"..sd.facecolor..")"
 	local hair = "(hair"..sd.hairtype..".png^[multiply:#"..sd.haircolor..")"
+	local h = sd.height or 100
+	local w = sd.width or 100
+	player:set_properties({visual_size = {x = w/100, y = h/100}})
 	mod_storage:set_string(name, minetest.serialize(sd))
 	if minetest.get_modpath("3d_armor") then
 		local skinclothes = armor:get_player_skin(name)
@@ -169,6 +172,31 @@ for index, page in pairs(pagelist) do
 	num[index] = number_of_textures(index)
 end
 
+pagelist["body"] = {"Body", 5} pagepointer[5] = "body"
+pagenum = 5
+charformspec["body"] = function(name)
+	local skindata = minetest.deserialize(mod_storage:get_string(name))
+	local h = skindata["height"] or 100
+	local w = skindata["width"] or 100
+	local fac = 10
+	local form = "size[12,10]"
+		.."label[5.5,0;Body]"
+		.."image["..tostring(4.5-((w-100)/fac)/2)..","..tostring(1-((h-100)/fac)/2)..";"..tostring(3+(w-100)/fac)..","..tostring(6+(h-100)/fac)..";character_preview.png]"
+		.."button[11,3;1,1;next;>]"
+		.."button[0,3;1,1;prev;<]"
+		.."button[10,6;1,1;setheight;Apply]"
+		.."button[1,6;2,1;defaultsize;Default Size]"
+		.."scrollbaroptions[min=90;max=105;smallstep=1]"
+		.."label[5.5,6.5;Height]"
+		.."scrollbar[1,7.5;10,.5;horizontal;heightbar;"..(h).."]"
+		.."label[5.5,8.5;Width]"
+		.."scrollbar[1,9;10,.5;horizontal;widthbar;"..(w).."]"
+		.."button_exit[11,6;1,1;exit;Exit]"
+	minetest.show_formspec(name,"charcreate:body", form)
+	
+	
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local skindata = minetest.deserialize(mod_storage:get_string(name))
@@ -228,6 +256,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		doskinny(player, skindata)
 		charformspec[pagename](name)
     end
+	if fields.setheight or fields.defaultsize then
+		local h = 100
+		local w = 100
+		if not fields.defaultsize then
+			h = minetest.explode_scrollbar_event(fields.heightbar).value
+			w = minetest.explode_scrollbar_event(fields.widthbar).value
+		end
+		if h == 100 and w == 100 then
+			h = nil
+			w = nil
+		end
+		skindata["height"] = h
+		skindata["width"] = w
+		doskinny(player, skindata)
+		charformspec[pagename](name)
+	end
 end)
 
 
