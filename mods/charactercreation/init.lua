@@ -179,9 +179,9 @@ end
 
 local function rn(number, back) --change number from 0-1000 range to 90 to 105 range or vice virsa
 	if back then
-		return clamp((number-95)*66.666, 0, 1000)
+		return clamp((number-90)*66.666, 0, 1000)
 	else
-		return clamp(number*.015+95, 90, 105)
+		return clamp(number*.015+90, 90, 105)
 	end
 end
 
