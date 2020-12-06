@@ -12,6 +12,11 @@ local number = 0
 		end
 	end
 end
+local function clamp(val, lower, upper)
+    assert(val and lower and upper, "not very useful error message here")
+    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
+    return math.max(lower, math.min(upper, val))
+end
 function charactercreation_getskin(name)
 	if not name then return defaultskin end
 	local sd = minetest.deserialize(mod_storage:get_string(name))
@@ -172,6 +177,14 @@ for index, page in pairs(pagelist) do
 	num[index] = number_of_textures(index)
 end
 
+local function rn(number, back) --change number from 0-1000 range to 90 to 105 range or vice virsa
+	if back then
+		return clamp((number-95)*66.666, 0, 1000)
+	else
+		return clamp(number*.015+95, 90, 105)
+	end
+end
+
 pagelist["body"] = {"Body", 5} pagepointer[5] = "body"
 pagenum = 5
 charformspec["body"] = function(name)
@@ -186,11 +199,11 @@ charformspec["body"] = function(name)
 		.."button[0,3;1,1;prev;<]"
 		.."button[10,6;1,1;setheight;Apply]"
 		.."button[1,6;2,1;defaultsize;Default Size]"
-		.."scrollbaroptions[min=90;max=105;smallstep=1]"
+		--.."scrollbaroptions[min=90;max=105;smallstep=1]"
 		.."label[5.5,6.5;Height]"
-		.."scrollbar[1,7.5;10,.5;horizontal;heightbar;"..(h).."]"
+		.."scrollbar[1,7.5;10,.5;horizontal;heightbar;"..(rn(h, true)).."]"
 		.."label[5.5,8.5;Width]"
-		.."scrollbar[1,9;10,.5;horizontal;widthbar;"..(w).."]"
+		.."scrollbar[1,9;10,.5;horizontal;widthbar;"..(rn(w, true)).."]"
 		.."button_exit[11,6;1,1;exit;Exit]"
 	minetest.show_formspec(name,"charcreate:body", form)
 	
@@ -260,8 +273,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local h = 100
 		local w = 100
 		if not fields.defaultsize then
-			h = minetest.explode_scrollbar_event(fields.heightbar).value
-			w = minetest.explode_scrollbar_event(fields.widthbar).value
+			h = rn(minetest.explode_scrollbar_event(fields.heightbar).value)
+			w = rn(minetest.explode_scrollbar_event(fields.widthbar).value)
 		end
 		if h == 100 and w == 100 then
 			h = nil
