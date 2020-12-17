@@ -297,3 +297,9 @@ minetest.register_chatcommand("skinny",{
 		charformspec["hair"](name)
 	end,
 })
+
+local orig_func = player_api.set_model
+player_api.set_model = function(player, model_name)
+	orig_func(player, model_name)
+	doskinny(player)
+end
