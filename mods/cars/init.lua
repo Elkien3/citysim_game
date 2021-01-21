@@ -228,7 +228,7 @@ function car_formspec(clickername, owner, keyinvname, def)
     return form
 end
 
-local function getClosest(player, car)
+function getClosest(player, car, distance)
 	local def = cars_registered_cars[car.object:get_entity_name()]
 	local playerPos = player:getpos()
 	local dir = player:get_look_dir()
@@ -238,7 +238,7 @@ local function getClosest(player, car)
 	local playeryaw = player:get_look_horizontal()
 	local x, z = rotateVector(offset.x, offset.z, playeryaw)
 	offset = vector.multiply({x=x, y=offset.y, z=z}, .1)
-	playerPos = vector.add(playerPos, offset)
+	if not player:get_attach() then playerPos = vector.add(playerPos, offset) end
 		if DEBUG_WAYPOINT then 
 			local marker = player:hud_add({
 				hud_elem_type = "waypoint",
@@ -248,7 +248,7 @@ local function getClosest(player, car)
 			})
 			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
 		end
-	local punchPos = vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos)))
+	local punchPos = vector.add(playerPos, vector.multiply(dir, distance or vector.distance(playerPos, carPos)))
 	if minetest.raycast then
 		local ray = minetest.raycast(playerPos, vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos))))
 		if ray then
@@ -256,7 +256,9 @@ local function getClosest(player, car)
 			if pointed and pointed.ref == player then
 				pointed = ray:next()
 			end
-			if pointed and pointed.ref == car.object and pointed.intersection_point then
+			--minetest.chat_send_all(dump(pointed))
+			--minetest.chat_send_all(tostring(pointed.ref))
+			if pointed and (pointed.ref == car.object or (car.extension and pointed.ref == car.extension)) and pointed.intersection_point then
 				punchPos = pointed.intersection_point
 			end
 		end
@@ -430,7 +432,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				if car.ignition then
 					turncaroff(car, obj)
 				else
-					minetest.sound_play("ignition", {
+					minetest.sound_play(def.ignitionsound, {
 						max_hear_distance = 24,
 						gain = 1,
 						object = car.object
@@ -658,7 +660,7 @@ local function car_step(self, dtime)
 				self.wheelpos = 0
 			end
 		end
-		if lights.leftblinker or lights.rightblinker then
+		if lights and (lights.leftblinker or lights.rightblinker) then
 			if not self.maxwheelpos then self.maxwheelpos = self.wheelpos end
 			if math.abs(self.wheelpos) > math.abs(self.maxwheelpos) then
 				self.maxwheelpos = wheelpos
@@ -677,7 +679,8 @@ local function car_step(self, dtime)
 			self.object:set_bone_position("steering", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
 		end
 		if node ~= "air" then
-			self.object:setyaw(yaw - ((self.wheelpos/8)*(self.v/8)*dtime))
+			local axval = def.axisval or 10
+			self.object:setyaw(yaw - ((self.wheelpos/axval)*(self.v/axval)*dtime))
 		end
 
 		if attachTimer >= 5 then
@@ -712,7 +715,7 @@ local function car_step(self, dtime)
 			local x, z = rotateVector(offset.x, offset.z, yaw-playeryaw)
 			offset.x = x
 			offset.z = z
-			player:set_eye_offset(offset, {x=0,y=0,z=0})
+			player:set_eye_offset(offset, {x=0,y=10,z=-5})
 		end
 	end
 	
@@ -735,7 +738,7 @@ local function car_step(self, dtime)
 	end
 	local new_velo
 	--local yaw = self.object:getyaw()
-	yaw = yaw - self.wheelpos/(def.axisval or 50)
+	yaw = yaw - self.wheelpos/57.32
 	new_velo = get_velocity(self.v, yaw, velocity)
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
@@ -775,14 +778,13 @@ local function car_step(self, dtime)
 	--if abs_v > 0 and driver ~= nil then
 	if self.ignition then
 		self.timer1 = self.timer1 + dtime
-				local rpm = 1
-				if abs_v > 16 then
-					rpm = abs_v/16+.5
-				elseif abs_v > 10 then
-					rpm = abs_v/10+.4
-				else
-					rpm = abs_v/5+.3
+		local rpm = 1
+		for i, tab in pairs(def.rpmvalues) do
+				if abs_v >= tab[1] then
+					rpm = abs_v/tab[2]+tab[3]
+					break
 				end
+		end
 		pitch = rpm+.2
 		if self.timer1 > .2/pitch-.05 then
 				local gain = pitch
@@ -837,7 +839,7 @@ local function car_step(self, dtime)
 	end
 end
 
-local function car_rightclick(self, clicker, closeid)
+function car_rightclick(self, clicker, closeid)
 	if self.locked then return end
 	if not clicker or not clicker:is_player() then
 		return
@@ -890,6 +892,9 @@ local function car_rightclick(self, clicker, closeid)
 	if i == 0 or i == #self.passengers+1 then return end
 	if player_attached[name] == self then
 		detach(clicker)
+		if not clicker:get_player_control().sneak then
+			return
+		end
 	end
 	self.passengers[i].player = clicker
 		--add hud for driver
@@ -911,7 +916,7 @@ local function car_rightclick(self, clicker, closeid)
 		clicker:set_attach(obj, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 		clicker:set_eye_offset({x=0,y=-6,z=0}, {x=0,y=0,z=0})--]]
 		clicker:set_attach(self.object, "",
-			self.passengers[i].loc, {x = 0, y = 0, z = 0})
+			self.passengers[i].loc, self.passengers[i].rot or {x = 0, y = 0, z = 0})
 		clicker:set_eye_offset(self.passengers[i].offset, {x=0,y=0,z=0})
 		default.player_attached[name] = true
 		minetest.after(.1, function()
@@ -933,6 +938,7 @@ function cars_register_car(def)
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
 			if not self.timer2 then self.timer2 = 0 end
+			if not self.hp then self.hp = 20 end
 			if not self.platenumber then
 				self.platenumber = {}
 			end
@@ -985,6 +991,12 @@ function cars_register_car(def)
 			end
 			if self.lights then
 				self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+			end
+			if def.extension and def.extensionname and not self.extension then
+				self.extension = minetest.add_entity(pos, def.extensionname)
+			end
+			if self.extension then
+				self.extension:set_attach(self.object, "", def.extension, {x=0,y=0,z=0})
 			end
 			self.object:set_hp(self.hp)
 		end,
@@ -1066,6 +1078,7 @@ function cars_register_car(def)
 				for id, wheel in pairs(self.wheel) do
 					wheel:remove()
 				end
+				--todo remove all children
 				for id, passengers in pairs (self.passengers) do
 					local player = passengers.player
 					if player then
