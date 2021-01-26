@@ -405,6 +405,62 @@ local function driver_rightclick(self, clicker)
     minetest.show_formspec(name, "cars_driver", formspec)
 end
 
+local function register_lightentity(carname)
+	minetest.register_entity("cars:"..carname.."lights",{
+		hp_max = 1,
+		physical = false,
+		pointable = false,
+		collide_with_objects = false,
+		weight = 5,
+		collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
+		visual = "mesh",
+		visual_size = {x=1, y=1},
+		is_visible = true,
+		glow = 7,
+		mesh = carname.."lights.b3d",
+		textures = {"invisible.png"},
+		on_activate = function(self, staticdata, dtime_s)
+			minetest.after(.1, function()
+				if not self.object:get_attach() then
+					self.object:remove()
+				end
+			end)
+		end,
+		on_step = function(self, dtime)
+			if not self.timer then self.timer = 0 end
+			if not self.blink then self.blink = false end
+			self.timer = self.timer + dtime
+			local automatic = self.leftblinker or self.rightblinker or self.flashers
+			if (self.timer > .5 and automatic) or self.update then
+				if self.update then
+					self.update = false
+				else
+					self.blink = not self.blink
+					self.timer = 0
+					if self.leftblinker or self.rightblinker or self.flashers then
+						if self.blink then
+							minetest.sound_play("indicator2", {
+								max_hear_distance = 6,
+								gain = 1,
+								object = self.object
+							})
+						else
+							minetest.sound_play("indicator1", {
+								max_hear_distance = 6,
+								gain = 1,
+								object = self.object
+							})
+						end
+					end
+				end
+				local lighttable = {headlights = self.headlights, brakelights = self.brakelights, leftblinker = self.leftblinker and self.blink, rightblinker = self.rightblinker and self.blink, rightflasher = self.flashers and self.blink, leftflasher = self.flashers and self.blink}
+				
+				cars.setlighttexture(self.object, lighttable, carname)
+			end
+		end,
+	})
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "cars_trunk" then
 		if fields.quit then
@@ -987,7 +1043,7 @@ function cars_register_car(def)
 				end
 			end
 			if not self.lights and def.lights then
-				self.lights = minetest.add_entity(pos, def.lights)
+				self.lights = minetest.add_entity(pos, "cars:"..def.lights.."lights")
 			end
 			if self.lights then
 				self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
@@ -1113,6 +1169,9 @@ function cars_register_car(def)
 			output = def.name,
 			recipe = def.recipe
 		})
+	end
+	if def.lights then
+		register_lightentity(def.lights)
 	end
 end
 	
