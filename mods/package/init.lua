@@ -72,15 +72,16 @@ minetest.register_node("package:package", {
 		if not name then return end
 		local nodemeta = minetest.get_meta(pos)
 		if fields.exit and fields.exit == "Seal" and nodemeta:get_string("addressee") == "" then
-			if not fields.addressee or fields.addressee == "" then
-				minetest.chat_send_player(name, "You must have an addressee to seal the box.")
+			if not fields.addressee or fields.addressee == "" or not minetest.player_exists(fields.addressee) then
+				minetest.chat_send_player(name, "You must have an valid addressee to seal the box.")
 				return
 			end
 			nodemeta:set_string("formspec", "")
 			nodemeta:set_string("addressee", fields.addressee)
+			nodemeta:set_string("sender", name)
 			nodemeta:set_string("attn", fields.attn)
-			nodemeta:set_string("description", "Cardboard box addressed to '"..fields.addressee.."' attn: "..fields.attn)
-			nodemeta:set_string("infotext", "Cardboard box addressed to '"..fields.addressee.."' attn: "..fields.attn)
+			nodemeta:set_string("description", "Cardboard box addressed to '"..fields.addressee.."' from '"..name.."' attn: "..fields.attn)
+			nodemeta:set_string("infotext", "Cardboard box addressed to '"..fields.addressee.."' from '"..name.."' attn: "..fields.attn)
 		elseif fields.attn and nodemeta:get_string("addressee") == "" then
 			if fields.attn == "" then
 				nodemeta:set_string("description", "Cardboard box")
@@ -127,10 +128,12 @@ minetest.register_node("package:package", {
 		local nodemeta = minetest.get_meta(pos)
 		local addressee = nodemeta:get_string("addressee")
 		local name = clicker:get_player_name()
+		if not name then return end
 		if addressee ~= "" then
-			if (name and name == addressee) then
+			if name == addressee or name == nodemeta:get_string("sender") then--todo allow post office supervisors or ceo to open packages
 				nodemeta:set_string("formspec", package_formspec(pos))
 				nodemeta:set_string("addressee", "")
+				nodemeta:set_string("sender", "")
 				nodemeta:set_string("attn", "")
 				nodemeta:set_string("description", "")
 				--todo: play opening sound
