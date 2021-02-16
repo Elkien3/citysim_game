@@ -254,7 +254,7 @@ local function set_growing(pos, stages_left)
 	local timer = minetest.get_node_timer(pos)
 	local meta = minetest.get_meta(pos)
 	local t = meta:get_int("t")
-	if stages_left > 0 and seasons_getseason() ~= "Winter" then
+	if stages_left > 0 then
 		if not timer:is_started() then
 			if not t or t == 0 then
 				t = os.time()
@@ -270,7 +270,6 @@ local function set_growing(pos, stages_left)
 		end
 	end
 end
-
 
 -- detects a crop at given position, starting or stopping growth timer when needed
 function farming.handle_growth(pos, node)
@@ -323,6 +322,17 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 
 	if max_growth <= 0 then
 		return false
+	end
+	
+	if seasons_getseason() == "Winter" and math.floor(minetest.get_node(pos).param1 / 16) ~= 13 then--if its winter and the plant isnt being lit by a max light dont grow.
+		minetest.chat_send_all(minetest.get_modpath("default_tweaks"))
+		if minetest.get_modpath("default_tweaks") then--if plantrot is enabled rot the plant as opposed to simply stopping it from growing further
+			local p2 = minetest.registered_nodes[stages.stages_left[max_growth] ].place_param2 or 1
+			minetest.swap_node(pos, {name = stages.stages_left[max_growth], param2 = p2})
+			return false
+		else
+			return true
+		end
 	end
 
 	-- custom growth check
@@ -395,7 +405,6 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		local timevar = os.time()
 		local meta = minetest.get_meta(pos)
 		local t = meta:get_int("t")
-		local tempgrowth = growth
 		local difference = (timevar-t) - STAGE_LENGTH_AVG
 		if t ~= 0 then
 			while true do
@@ -413,7 +422,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
 		
 		local timer = minetest.get_node_timer(pos)
-		if growth == max_growth or seasons_getseason() == "Winter" then
+		if growth == max_growth then
 			meta:set_int("t", 0)
 			timer:stop()
 		else
