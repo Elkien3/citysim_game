@@ -52,7 +52,6 @@ minetest.handle_node_drops = function(pos, drops, digger)
 			if nodemeta and nodemeta:get_int("ed") ~= 0 then
 				newexpiration = nodemeta:get_int("ed")
 			end
-			minetest.chat_send_all(drops[index]:get_count())
 			drops[index] = ItemStack(name)
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
@@ -95,6 +94,63 @@ function foodspoil_register(itemstring, expiration)
 		minetest.override_item(itemstring, {expiration = expiration})
 	end
 end
+
+minetest.register_on_mods_loaded(function()
+	local org_eat = core.do_item_eat
+	core.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		local expire = itemstack:get_meta():get_int("ed")
+		if expire ~= 0 then
+			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
+			local expirefactor = expire - minetest.get_day_count()/usedexpiredef
+			if expirefactor < -1 then
+				expirefactor = -1
+			elseif expirefactor > 1 then
+				expirefactor = 1
+			end
+			hp_change = hp_change*expirefactor
+		end
+		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	end
+	
+	if hbhunger then
+		local food = hbhunger.food
+		hbhunger.eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
+			local item = itemstack:get_name()
+			local def = food[item]			
+			if not def then
+				def = {}
+				if type(hp_change) ~= "number" then
+					hp_change = 1
+					core.log("error", "Wrong on_use() definition for item '" .. item .. "'")
+				end
+				def.saturation = hp_change * 1.3
+				def.replace = replace_with_item
+			end
+			
+			local saturation = def.saturation
+			local poisen = def.poisen or 0
+			local expire = itemstack:get_meta():get_int("ed")
+			if expire ~= 0 then
+				local usedexpiredef = minetest.registered_items[item].expiration
+				local expirefactor = expire - minetest.get_day_count()/usedexpiredef
+				if expirefactor < -1 then
+					expirefactor = -1
+				elseif expirefactor > 1 then
+					expirefactor = 1
+				end
+				if expirefactor > 0 then
+					saturation = saturation*expirefactor
+				else
+					poisen = poisen + saturation*expirefactor*2
+					saturation = 0
+				end
+			end
+			if poisen == 0 then poisen = nil end
+			local func = hbhunger.item_eat(saturation, def.replace, poisen, def.healing, def.sound)
+			return func(itemstack, user, pointed_thing)
+		end
+	end
+end)
 
 local foodtable = {
 --"default:apple",
@@ -187,65 +243,5 @@ minetest.register_on_mods_loaded(function()
 	foodspoil_register("mobs:meat", 6)
 	for i, name in pairs(foodtable) do
 		foodspoil_register(name, 6)
-	end
-end)
-
-local function get_sign(n)
-	return n == 0 and 0 or math.abs(n)/n
-end
-
-minetest.register_on_mods_loaded(function()
-	local org_eat = core.do_item_eat
-	core.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
-		local expire = itemstack:get_meta():get_int("ed")
-		if expire ~= 0 then
-			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = (expire - os.time() - usedexpiredef)/-usedexpiredef
-			if expirefactor > 1 then
-				expirefactor = expirefactor - 1
-				expirefactor = expirefactor/.5
-				local sign = get_sign(hp_change)
-				hp_change = hp_change - (hp_change*expirefactor)
-				if get_sign(hp_change) ~= sign then hp_change = 0 end
-			end
-		end
-		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
-	end
-	
-	if hbhunger then
-		local food = hbhunger.food
-		hbhunger.eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
-			local item = itemstack:get_name()
-			local def = food[item]			
-			if not def then
-				def = {}
-				if type(hp_change) ~= "number" then
-					hp_change = 1
-					core.log("error", "Wrong on_use() definition for item '" .. item .. "'")
-				end
-				def.saturation = hp_change * 1.3
-				def.replace = replace_with_item
-			end
-			
-			local saturation = def.saturation
-			local poisen = def.poisen or 0
-			local expire = itemstack:get_meta():get_int("ed")
-			if expire ~= 0 then
-				local usedexpiredef = minetest.registered_items[item].expiration
-				expirefactor = (expire - os.time() - usedexpiredef)/-usedexpiredef
-				if expirefactor > 1 then
-					expirefactor = expirefactor - 1
-					expirefactor = expirefactor/.5
-					local sign = get_sign(saturation)
-					saturation = saturation - (saturation*expirefactor)
-					if expirefactor > 1 then expirefactor = 1 end
-					poisen = poisen + (def.saturation*expirefactor)
-					if get_sign(saturation) ~= sign then saturation = 0 end
-				end
-			end
-			if poisen == 0 then poisen = nil end
-			local func = hbhunger.item_eat(saturation, def.replace, poisen, def.healing, def.sound)
-			return func(itemstack, user, pointed_thing)
-		end
 	end
 end)
