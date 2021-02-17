@@ -1,5 +1,3 @@
-local TIME_SPEED = minetest.settings:get("time_speed") or 72
-
 function cooking_aftercraft(itemstack, old_craft_grid)
 	local name = itemstack:get_name()
 	--if the output has no expiration, don't do anything.
@@ -48,9 +46,11 @@ minetest.handle_node_drops = function(pos, drops, digger)
 		if def and def.expiration then
 			local nodemeta = minetest.get_meta(pos)
 			local expiredef = def.expiration
-			local newexpiration = minetest.get_day_count() + expiredef
+			local newexpiration
 			if nodemeta and nodemeta:get_int("ed") ~= 0 then
 				newexpiration = nodemeta:get_int("ed")
+			else
+				newexpiration = minetest.get_day_count() + expiredef
 			end
 			drops[index] = ItemStack(name)
 			local meta = drops[index]:get_meta()
@@ -245,3 +245,5 @@ minetest.register_on_mods_loaded(function()
 		foodspoil_register(name, 6)
 	end
 end)
+
+dofile(minetest.get_modpath("foodspoil").."/icebox.lua")
