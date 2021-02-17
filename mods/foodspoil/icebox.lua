@@ -220,6 +220,16 @@ local function handle_icebox(pos, node)
 	meta:set_string("infotext", "Icebox \n("..tostring(icecount).." ice)")
 end
 
+minetest.register_craft{
+        output = 'foodspoil:icebox',
+        recipe = {
+            {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
+            {'default:steel_ingot', 'group:wool', 'default:steel_ingot'},
+            {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},  -- Also groups; e.g. 'group:crumbly'
+        },
+    }
+
+
 minetest.register_abm({
 	label = "Icebox ABM",
 	nodenames = {"foodspoil:icebox", "foodspoil:icebox_open"},
