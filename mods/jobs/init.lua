@@ -28,6 +28,19 @@ jobs.save = function()
 	jobs.storage:set_string("list", minetest.serialize(jobs.list))
 end
 
+jobs.permissionstring = function(name, str)
+	if not str then return end
+	local tbl = jobs.split(str, ":")
+	if not tbl or #tbl ~= 2 then return end
+	local jobname = tbl[1]
+	local jobrank = tbl[2]
+	local rank = jobs.getrank(name, jobname)
+	local coc = jobs.chainofcommand
+	if not jobs.list[jobname] or not coc[jobrank] then return end
+	if rank and coc[rank] >= coc[jobrank] then return true end
+	return false
+end
+
 minetest.register_chatcommand("jobs", {
     privs = {
         interact = true,

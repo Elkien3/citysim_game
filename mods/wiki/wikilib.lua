@@ -73,9 +73,8 @@ local function get_page_path(name, player) --> path, is_file, allow_save
 	else
 		path = "pages/"..name_to_filename(name)
 	end
-	if wikilib.owners and wikilib.owners[name] and wikilib.owners[name] ~= player and wikilib.owners[name] ~= ":public:"
-	and (not wikilib.editors[name] or (not wikilib.editors[name][player] and not wikilib.editors[name][":public:"]))
-	and not minetest.check_player_privs(player, {wiki_admin=true}) then
+	
+	if wikilib.permission and not wikilib.permission(name, player) then
 		allow_save = false
 	end
 
@@ -179,7 +178,7 @@ function wikilib.get_wiki_page_formspec(player, name)
 				end
 			end
 		end
-		if (wikilib.owners[name] and wikilib.owners[name] == player) or minetest.check_player_privs(player, {wiki_admin=true}) then
+		if wikilib.permission(name, player, true) then
 			owner = "field[3,9.5;2,1;owner;Owner;"..minetest.formspec_escape((wikilib.owners[name]) or "").."]field_close_on_enter[owner;false]"
 			editors = "field[5,9.5;3,1;editors;Editors;"..minetest.formspec_escape((editorstring or "")).."]field_close_on_enter[editors;false]"
 		else
@@ -258,9 +257,9 @@ function wikilib.handle_formspec(player, formname, fields)
 	elseif fields.go then
 		wikilib.show_wiki_page(plname, fields.page)
 		return true
-	elseif fields.key_enter_field and (not wikilib.owners[fields.page] or wikilib.owners[fields.page] == plname or minetest.check_player_privs(plname, {wiki_admin=true})) then
+	elseif fields.key_enter_field and wikilib.permission(fields.page, plname, true) then
 		if fields.key_enter_field == "owner" then
-			if (minetest.player_exists(fields.owner) or fields.owner == ":public:") then
+			if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (not jobs or jobs.permissionstring(plname, fields.owner) ~= nil) then
 				wikilib.owners[fields.page] = fields.owner
 				wikilib.owners_save()
 				wikilib.show_wiki_page(plname, fields.page)
