@@ -32,10 +32,10 @@ local form =
 	"scrollbar[7,2;0.3,6;vertical;yourjobs;0]" ..
 	"scroll_container[5,3;4,6;yourjobs;vertical;.01]"
 	i = 0
-	for jobname, rank in pairs(jobs.players["spark"]) do
+	--[[for jobname, rank in pairs(jobs.players["spark"]) do
 		form = form.."button[0,"..i..";3,0;"..jobname..";"..jobname.."]"
 		i = i + .65
-	end
+	end--]]
 	form = form.."scroll_container_end[]"..
 	"label[5,0.5;Your Jobs]" ..
 	"label[1.5,0.5;All Jobs]" ..
