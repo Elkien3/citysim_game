@@ -1,0 +1,13 @@
+#   The balance given to new players when they join.
+money3.initial_amount (Initial money3 balance) int 0 0
+
+#   The name of the money3 currency.
+money3.currency_name (money3 currency name) string cr
+
+#   A lua table with a list of money3 items, see money3/config.lua for more
+#   information.
+money3.convert_items (A lua table with a list of money3 items) string
+
+#   Automatically give active players 10cr every 12 minutes. If the currency
+#   mod is installed and this is enabled, its income will be disabled.
+money3.enable_income (Enable money3 income) bool true
