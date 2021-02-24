@@ -103,7 +103,7 @@ jobs.commands["ownedjobs"] = function(name, param)
 	if number == 0 then
 		return true, string
 	end
-	return true, "'"..param[2].."' owns "..number..string
+	return true, "'"..(param[2] or name).."' owns "..number..string
 end
 jobs.nosavecommands["ownedjobs"] = true
 
