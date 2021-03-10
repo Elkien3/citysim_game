@@ -31,6 +31,10 @@ local function is_night_skip_enabled()
 	if enable_night_skip == nil then
 		enable_night_skip = true
 	end
+	local tod = minetest.get_timeofday()
+	if tod > 0.2 and tod < 0.805 then
+		enable_night_skip = false
+	end
 	return enable_night_skip
 end
 
@@ -157,13 +161,13 @@ function beds.on_rightclick(pos, player)
 	local ppos = player:get_pos()
 	local tod = minetest.get_timeofday()
 
-	if tod > 0.2 and tod < 0.805 then
+	--[[if tod > 0.2 and tod < 0.805 then
 		if beds.player[name] then
 			lay_down(player, nil, nil, false)
 		end
 		minetest.chat_send_player(name, S("You can only sleep at night."))
 		return
-	end
+	end--]]
 
 	-- move to bed
 	if not beds.player[name] then
