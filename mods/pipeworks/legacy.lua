@@ -1,5 +1,6 @@
+local S = minetest.get_translator("pipeworks")
 
-if not minetest.get_modpath("auto_tree_tap") and 
+if not minetest.get_modpath("auto_tree_tap") and
   minetest.get_modpath("technic") then
 
 	minetest.register_abm({
@@ -20,7 +21,7 @@ if not minetest.get_modpath("auto_tree_tap") and
 	})
 
 	minetest.register_node(":auto_tree_tap:off", {
-		description = "Auto-Tap",
+		description = S("Auto-Tap"),
 		tiles = {"pipeworks_nodebreaker_top_off.png","pipeworks_nodebreaker_bottom_off.png","pipeworks_nodebreaker_side2_off.png","pipeworks_nodebreaker_side1_off.png",
 			"pipeworks_nodebreaker_back.png","pipeworks_nodebreaker_front_off.png"},
 		is_ground_content = true,
@@ -37,10 +38,10 @@ if not minetest.get_modpath("auto_tree_tap") and
 		after_place_node = function (pos, placer)
 			pipeworks.scan_for_tube_objects(pos, placer)
 			local placer_pos = placer:get_pos()
-		
+
 			--correct for the player's height
 			if placer:is_player() then placer_pos.y = placer_pos.y + 1.5 end
-		
+
 			--correct for 6d facedir
 			if placer_pos then
 				local dir = {

@@ -3,15 +3,12 @@
 -- This mod supplies various steel pipes and plastic pneumatic tubes
 -- and devices that they can connect to.
 --
--- License: WTFPL
---
 
 pipeworks = {}
 
-local DEBUG = false
-
 pipeworks.worldpath = minetest.get_worldpath()
 pipeworks.modpath = minetest.get_modpath("pipeworks")
+local S = minetest.get_translator("pipeworks")
 
 dofile(pipeworks.modpath.."/default_settings.lua")
 -- Read the external config file if it exists.
@@ -47,7 +44,7 @@ pipeworks.liquid_texture = "default_water.png"
 pipeworks.button_off   = {text="", texture="pipeworks_button_off.png", addopts="false;false;pipeworks_button_interm.png"}
 pipeworks.button_on    = {text="", texture="pipeworks_button_on.png",  addopts="false;false;pipeworks_button_interm.png"}
 pipeworks.button_base  = "image_button[0,4.3;1,0.6"
-pipeworks.button_label = "label[0.9,4.31;Allow splitting incoming stacks from tubes]"
+pipeworks.button_label = "label[0.9,4.31;"..S("Allow splitting incoming stacks from tubes").."]"
 
 -- Helper functions
 
@@ -72,8 +69,8 @@ function pipeworks.may_configure(pos, player)
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
 
-	if owner ~= "" then -- wielders and filters
-		return owner == name
+	if owner ~= "" and owner == name then -- wielders and filters
+		return true
 	end
 	return not minetest.is_protected(pos, name)
 end
@@ -102,6 +99,10 @@ end
 -- early auto-detection for finite water mode if not explicitly disabled
 if pipeworks.toggles.finite_water == nil then
 	dofile(pipeworks.modpath.."/autodetect-finite-water.lua")
+end
+
+if minetest.get_modpath("signs_lib") then
+	dofile(pipeworks.modpath.."/signs_compat.lua")
 end
 
 dofile(pipeworks.modpath.."/common.lua")
@@ -135,15 +136,16 @@ dofile(pipeworks.modpath..logicdir.."flowable_node_registry_install.lua")
 if pipeworks.enable_pipes then dofile(pipeworks.modpath.."/pipes.lua") end
 if pipeworks.enable_teleport_tube then dofile(pipeworks.modpath.."/teleport_tube.lua") end
 if pipeworks.enable_pipe_devices then dofile(pipeworks.modpath.."/devices.lua") end
-
 if pipeworks.enable_redefines then
 	dofile(pipeworks.modpath.."/compat-chests.lua")
 	dofile(pipeworks.modpath.."/compat-furnaces.lua")
 end
 if pipeworks.enable_autocrafter then dofile(pipeworks.modpath.."/autocrafter.lua") end
-if pipeworks.enable_lua_tube then dofile(pipeworks.modpath.."/lua_tube.lua") end
+if pipeworks.enable_lua_tube and
+		(minetest.get_modpath("mesecons") or minetest.get_modpath("digilines")) then
+	dofile(pipeworks.modpath.."/lua_tube.lua")
+end
 
 minetest.register_alias("pipeworks:pipe", "pipeworks:pipe_110000_empty")
 
-print("Pipeworks loaded!")
-
+minetest.log("info", "Pipeworks loaded!")

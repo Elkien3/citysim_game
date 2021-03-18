@@ -1,19 +1,19 @@
-
+local S = minetest.get_translator("pipeworks")
 -- the default tube and default textures
-pipeworks.register_tube("pipeworks:tube", "Pneumatic tube segment")
+pipeworks.register_tube("pipeworks:tube", S("Pneumatic tube segment"))
 minetest.register_craft( {
 	output = "pipeworks:tube_1 6",
 	recipe = {
-	        { "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" },
+	        { "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
 	        { "", "", "" },
-	        { "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" }
+	        { "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" }
 	},
 })
 
 local nodecolor = 0xffff3030
 
 pipeworks.register_tube("pipeworks:broken_tube", {
-	description = "Broken Tube (you hacker you)",
+	description = S("Broken Tube"),
 	plain = { { name = "pipeworks_broken_tube_plain.png", backface_culling = false, color = nodecolor } },
 	noctr = { { name = "pipeworks_broken_tube_plain.png", backface_culling = false, color = nodecolor } },
 	ends  = { { name = "pipeworks_broken_tube_end.png",   color = nodecolor } },
@@ -35,7 +35,7 @@ pipeworks.register_tube("pipeworks:broken_tube", {
 			local itemstack = puncher:get_wielded_item()
 			local wieldname = itemstack:get_name()
 			local playername = puncher:get_player_name()
-			print("[Pipeworks] "..playername.." struck a broken tube at "..minetest.pos_to_string(pos))
+			local log_msg = playername.." struck a broken tube at "..minetest.pos_to_string(pos).."\n"
 			if   wieldname == "anvil:hammer"
 			  or wieldname == "cottages:hammer"
 			  or wieldname == "glooptest:hammer_steel"
@@ -47,17 +47,17 @@ pipeworks.register_tube("pipeworks:broken_tube", {
 				local meta = minetest.get_meta(pos)
 				local was_node = minetest.deserialize(meta:get_string("the_tube_was"))
 				if was_node and was_node ~= "" then
-					print("            with "..wieldname.." to repair it.")
+					pipeworks.logger(log_msg.."            with "..wieldname.." to repair it.")
 					minetest.swap_node(pos, { name = was_node.name, param2 = was_node.param2 })
 					pipeworks.scan_for_tube_objects(pos)
 					itemstack:add_wear(1000)
 					puncher:set_wielded_item(itemstack)
 					return itemstack
 				else
-					print("            but it can't be repaired.")
+					pipeworks.logger(log_msg.."            but it can't be repaired.")
 				end
 			else
-				print("            with "..wieldname.." but that tool is too weak.")
+				pipeworks.logger(log_msg.."            with "..wieldname.." but that tool is too weak.")
 			end
 		end
 	}
@@ -69,7 +69,7 @@ pipeworks.register_tube("pipeworks:broken_tube", {
 if pipeworks.enable_priority_tube then
 	local color = "#ff3030:128"
 	pipeworks.register_tube("pipeworks:priority_tube", {
-			description = "High Priority Tube Segment",
+			description = S("High Priority Tube Segment"),
 			inventory_image = "pipeworks_tube_inv.png^[colorize:" .. color,
 			plain = { { name = "pipeworks_tube_plain.png", color = nodecolor } },
 			noctr = { { name = "pipeworks_tube_noctr.png", color = nodecolor } },
@@ -82,16 +82,16 @@ if pipeworks.enable_priority_tube then
 	minetest.register_craft( {
 		output = "pipeworks:priority_tube_1 6",
 		recipe = {
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" },
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
 			{ "default:gold_ingot", "", "default:gold_ingot" },
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" }
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" }
 		},
 	})
 end
 
 if pipeworks.enable_accelerator_tube then
 	pipeworks.register_tube("pipeworks:accelerator_tube", {
-			description = "Accelerating Pneumatic Tube Segment",
+			description = S("Accelerating Pneumatic Tube Segment"),
 			inventory_image = "pipeworks_accelerator_tube_inv.png",
 			plain = { "pipeworks_accelerator_tube_plain.png" },
 			noctr = { "pipeworks_accelerator_tube_noctr.png" },
@@ -107,16 +107,16 @@ if pipeworks.enable_accelerator_tube then
 	minetest.register_craft( {
 		output = "pipeworks:accelerator_tube_1 2",
 		recipe = {
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" },
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
 			{ "default:mese_crystal_fragment", "default:steel_ingot", "default:mese_crystal_fragment" },
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" }
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" }
 		},
 	})
 end
 
 if pipeworks.enable_crossing_tube then
 	pipeworks.register_tube("pipeworks:crossing_tube", {
-			description = "Crossing Pneumatic Tube Segment",
+			description = S("Crossing Pneumatic Tube Segment"),
 			inventory_image = "pipeworks_crossing_tube_inv.png",
 			plain = { "pipeworks_crossing_tube_plain.png" },
 			noctr = { "pipeworks_crossing_tube_noctr.png" },
@@ -138,7 +138,7 @@ end
 
 if pipeworks.enable_one_way_tube then
 	minetest.register_node("pipeworks:one_way_tube", {
-		description = "One way tube",
+		description = S("One way tube"),
 		tiles = {"pipeworks_one_way_tube_top.png", "pipeworks_one_way_tube_top.png", "pipeworks_one_way_tube_output.png",
 			"pipeworks_one_way_tube_input.png", "pipeworks_one_way_tube_side.png", "pipeworks_one_way_tube_top.png"},
 		paramtype2 = "facedir",
@@ -161,13 +161,16 @@ if pipeworks.enable_one_way_tube then
 		},
 		after_place_node = pipeworks.after_place,
 		after_dig_node = pipeworks.after_dig,
+		on_rotate = pipeworks.on_rotate,
+		check_for_pole = pipeworks.check_for_vert_tube,
+		check_for_horiz_pole = pipeworks.check_for_horiz_tube
 	})
 	minetest.register_craft({
 		output = "pipeworks:one_way_tube 2",
 		recipe = {
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" },
-			{ "group:stick", "default:mese_crystal", "homedecor:plastic_sheeting" },
-			{ "homedecor:plastic_sheeting", "homedecor:plastic_sheeting", "homedecor:plastic_sheeting" }
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
+			{ "group:stick", "default:mese_crystal", "basic_materials:plastic_sheet" },
+			{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" }
 		},
 	})
 end

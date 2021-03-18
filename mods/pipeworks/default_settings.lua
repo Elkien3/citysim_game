@@ -4,12 +4,12 @@ local prefix = "pipeworks_"
 
 local settings = {
 	enable_pipes = true,
-	enable_lowpoly = true,
+	enable_lowpoly = false,
 	enable_autocrafter = true,
 	enable_deployer = true,
 	enable_dispenser = true,
 	enable_node_breaker = true,
-	enable_teleport_tube = false,
+	enable_teleport_tube = true,
 	enable_pipe_devices = true,
 	enable_redefines = true,
 	enable_mese_tube = true,
