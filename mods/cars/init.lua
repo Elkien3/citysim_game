@@ -512,6 +512,12 @@ end)
 local function car_step(self, dtime)
 	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.object:get_entity_name()]
+	if self.ignition and oil and def.gas_usage then
+		if self.gas <= 0 then
+			self.ignition = false
+			self.gas = 0
+		end
+	end
 	local velocity = self.object:getvelocity()
 	local yaw = self.object:getyaw()
 	if not yaw then return end
@@ -602,8 +608,12 @@ local function car_step(self, dtime)
 		end
 	end
 	local driver = self.passengers[1].player
-	if driver and self.ignition then
-		driver:hud_change(self.hud, "text", tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH"))
+	if driver then
+		local text = tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH")
+		if oil and def.gas_usage then
+			text = text.." "..tostring(math.floor(self.gas*10)/10).."L Gas"
+		end
+		driver:hud_change(self.hud, "text", text)
 		local ctrl = driver:get_player_control()
 		local sign
 		local lights
@@ -636,6 +646,7 @@ local function car_step(self, dtime)
 			end
 		end
 		--VELOCITY MOVEMENT
+		if self.ignition then
 		local newv = self.v
 		if ctrl.up then
 			if sign >= 0 then
@@ -676,6 +687,16 @@ local function car_step(self, dtime)
 			cars.setlight(lights, "brakelights", false)
 		end
 		
+		else
+			local sign
+			if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
+			if sign ~= 0 then
+				self.v = self.v - def.coasting*dtime*sign
+				if get_sign(self.v) ~= sign then
+					self.v = 0
+				end
+			end
+		end
 		--ACCELERATION MOVEMENT
 		--[[
 		if ctrl.up then
@@ -742,7 +763,7 @@ local function car_step(self, dtime)
 		if attachTimer >= 5 then
 			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
 			if self.wheel.backleft then self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0}) end
-			if self.lights then self.lights:set_attach(self.object, "", {x=0,y=0,x=0}, {x=0,y=0,z=0}) end
+			if self.lights then self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0}) end
 		end
 		self.lastctrl = ctrl
 	else
@@ -833,6 +854,13 @@ local function car_step(self, dtime)
 	local abs_v = math.abs(self.v)
 	--if abs_v > 0 and driver ~= nil then
 	if self.ignition then
+		if oil and def.gas_usage and not slowing then
+			if self.v == 0 or self.cruise then--idle gas usage
+				self.gas = self.gas - (def.gas_usage*dtime*.25)/60
+			else--you are accelerating
+				self.gas = self.gas - (def.gas_usage*dtime)/60
+			end
+		end
 		self.timer1 = self.timer1 + dtime
 		local rpm = 1
 		for i, tab in pairs(def.rpmvalues) do
@@ -995,6 +1023,7 @@ function cars_register_car(def)
 			if not self.timer1 then self.timer1 = 0 end
 			if not self.timer2 then self.timer2 = 0 end
 			if not self.hp then self.hp = 20 end
+			if not self.gas then self.gas = 0 end
 			if not self.platenumber then
 				self.platenumber = {}
 			end
@@ -1008,6 +1037,7 @@ function cars_register_car(def)
 					self.trunkinv = deserializeContents(deserialized.trunk)
 					self.key = deserialized.key
 					self.hp = deserialized.hp or 20
+					self.gas = deserialized.gas or 0
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -1057,7 +1087,7 @@ function cars_register_car(def)
 			self.object:set_hp(self.hp)
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -1074,7 +1104,21 @@ function cars_register_car(def)
 					return true
 				end
 				local punchitem = puncher:get_wielded_item():get_name()
-				if (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
+				if oil and name and oil.fueling[name] then
+					local data = oil.fueling[name]
+					local obj = oil.fueling[name].obj
+					local pos = oil.fueling[name].pos
+					minetest.get_node_timer(pos):start(1)
+					local meta = minetest.get_meta(pos)
+					meta:set_string("name", name)
+					if obj then
+						local ent = obj:get_luaentity()
+						ent.finishobj = self.object
+						if def.gas_offset then
+							ent.finishoffset = def.gas_offset
+						end
+					end
+				elseif (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
 					local closeid = getClosest(puncher, self)
 					if DEBUG_TEXT then
 						minetest.chat_send_all(tostring(closeid))

@@ -1,0 +1,12 @@
+# textdomain: dynamic_liquid
+
+
+### init.lua ###
+
+A natural spring that generates an endless stream of water source blocks=Un manantial natural que genera un flujo sin fín de bloques fuente de agua
+
+Damp Clay=Arcilla húmeda
+
+Generates one source block of water directly on top of itself once per second, provided the space is clear. If this natural spring is dug out the flow stops and it is turned into ordinary cobble.=Genera un bloque fuente de agua directamente encima de sí mismo una vez por segundo, en tanto el espacio esté libre. Si éste manantial natural es excavado el flujo se detiene y se convierte en adoquines comúnes.
+
+Spring=Manantial

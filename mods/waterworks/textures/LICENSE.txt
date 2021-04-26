@@ -1,0 +1,17 @@
+The following textures are licensed under the MIT and CC0 licenses by FaceDeer:
+
+waterworks_connected_back
+waterworks_grate
+waterworks_inlet
+waterworks_metal
+waterworks_outlet
+waterworks_pipe
+waterworks_pipe_rivets
+waterworks_pipe_rivets_offset
+waterworks_pipe_rivets_offset_2
+waterworks_turbine
+waterworks_turbine_base
+waterworks_turbine_side
+waterworks_valve_off
+waterworks_valve_on
+waterworks_valve_seam

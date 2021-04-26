@@ -21,6 +21,8 @@ local sedandef = {
 		acceleration = 3,
 		braking = 10,
 		coasting = 2,
+		gas_usage = 1,
+		gas_offset = {x=-1,y=.8,z=-1.1},
 		max_speed = 24.5872,
 		trunksize = {x=6,y=2},
 		trunkloc = {x = 0, y = 4, z = -8},
