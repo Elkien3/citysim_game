@@ -89,3 +89,7 @@ minetest.register_globalstep(thirsty.main_loop)
 
 dofile(minetest.get_modpath('thirsty')..'/components.lua')
 
+if dynamic_liquid and waterworks then
+	dofile(minetest.get_modpath('thirsty')..'/cleanwater.lua')
+end
+

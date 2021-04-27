@@ -172,6 +172,7 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 	while inlet_index <= inlet_count and outlet_index > 0  and count < net_capacity do
 		local source = inlets[inlet_index]
 		local sink = outlets[outlet_index]
+		--sink.target sink.pos sink.pressure
 		
 		--minetest.debug("source: " .. dump(source))
 		--minetest.debug("sink: " .. dump(sink))
@@ -183,16 +184,30 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 			local sink_pos
 			if source_pos ~= nil then
 				sink_pos = flood_search_outlet(sink.target, math.max(source.pressure, source_pos.y))
-				if sink_pos ~= nil then
+				--if sink_pos ~= nil then
 					local source_node = minetest.get_node(source_pos).name
 					local source_def = waterworks.registered_liquids[source_node]
 					if source_def and source_def.replace then
 						source_node = source_def.replace
 					end
-					minetest.swap_node(sink_pos, {name=source_node})
-					minetest.swap_node(source_pos, {name="air"})
+					if minetest.get_node(sink.pos).name == "thirsty:fountain" then
+						if source_node == "thirsty:water_clean_source" then
+							local meta = minetest.get_meta(sink.pos)
+							local water = meta:get_float("water")
+							if water <= 100 then
+								meta:set_float("water", water + 100)
+								meta:set_string("infotext", "Drinking Fountain "..(water + 100).."L")
+								minetest.swap_node(source_pos, {name="air"})
+							end
+						else
+							source_pos = nil
+						end
+					elseif sink_pos ~= nil then
+						minetest.swap_node(sink_pos, {name=source_node})
+						minetest.swap_node(source_pos, {name="air"})
+					end
 					count = count + 1
-				end
+				--end
 			end
 			
 			if source_pos == nil then
