@@ -202,7 +202,10 @@ function thirsty.main_loop(dtime)
 
             if drink_per_second > 0 and pl_standing then
                 -- Drinking from the ground won't give you more than max
-                thirsty.drink(player, drink_per_second * thirsty.config.tick_time, 20)
+                local val = thirsty.drink(player, drink_per_second * thirsty.config.tick_time, 20)
+				if val and math.random(math.floor(drink_per_block/drink_per_second)) == 1 then
+					minetest.remove_node(pos)
+				end
                 --print("Raising hydration by "..(drink_per_second*thirsty.config.tick_time).." to "..PPA.get_value(player, 'thirsty_hydro'))
             else
                 if not pl_afk then
@@ -258,16 +261,39 @@ Most tools, nodes and craftitems use the same code, so here it is:
 
 ]]
 
-function thirsty.drink_handler(player, itemstack, node)
+function thirsty.drink_handler(player, itemstack, under)
+	local node = nil
+	if under then node = minetest.get_node(under) end
     local pl = thirsty.players[player:get_player_name()]
     local hydro = PPA.get_value(player, 'thirsty_hydro')
     local old_hydro = hydro
+	local consumed = 0
 
     -- selectors, always true, to make the following code easier
     local item_name = itemstack and itemstack:get_name() or ':'
     local node_name = node      and node.name            or ':'
-
-    if thirsty.config.node_drinkable[node_name] then
+	if thirsty.config.node_source[node_name] and thirsty.config.container_capacity[item_name] then
+		local meta = minetest.get_meta(under)
+		local water = meta:get_float("water")
+		minetest.chat_send_all(dump(water))
+		local wear = itemstack:get_wear()
+		local capacity = thirsty.config.container_capacity[item_name]
+		consumed = (wear/65535) * capacity
+		if water > consumed then
+			water = water - consumed
+		else
+			consumed = water
+			water = 0
+		end
+		if consumed > 0 then
+			wear = wear - math.ceil((consumed/capacity)* 65535)
+			if wear < 1 then wear = 1 end
+			meta:set_float("water", water)
+			meta:set_string("infotext", "Drinking Fountain "..math.floor(water).."L")
+			itemstack:set_wear(wear)
+		end
+    end
+	if thirsty.config.node_drinkable[node_name] then
         -- we found something to drink!
         local cont_level = thirsty.config.drink_from_container[item_name] or 0
         local node_level = thirsty.config.drink_from_node[node_name] or 0
@@ -275,21 +301,30 @@ function thirsty.drink_handler(player, itemstack, node)
         local level = math.max(cont_level, node_level)
         --print("Drinking to level " .. level)
         thirsty.drink(player, level, level)
+		consumed = consumed + (20-hydro)
 
         -- fill container, if applicable
         if thirsty.config.container_capacity[item_name] then
+			local wear = itemstack:get_wear()
+			local capacity = thirsty.config.container_capacity[item_name]
+			consumed = consumed + ((wear/65535) * capacity)
             --print("Filling a " .. item_name .. " to " .. thirsty.config.container_capacity[item_name])
             itemstack:set_wear(1) -- "looks full"
         end
+		
+		if math.random(math.floor(drink_per_block/consumed+.5)) == 1 then
+			minetest.remove_node(under)
+		end
 
     elseif thirsty.config.container_capacity[item_name] then
-        -- drinking from a container
-        if itemstack:get_wear() ~= 0 then
+		local wear = itemstack:get_wear()
+		if thirsty.config.node_dirty and thirsty.config.node_dirty[node_name] and wear == 0 or wear >= 65535 then
+			itemstack:replace(item_name.."_dirty 1 1")
+        elseif wear ~= 0 then-- drinking from a container
             local capacity = thirsty.config.container_capacity[item_name]
             local hydro_missing = 20 - hydro;
             if hydro_missing > 0 then
                 local wear_missing = hydro_missing / capacity * 65535.0;
-                local wear         = itemstack:get_wear()
                 local new_wear     = math.ceil(math.max(wear + wear_missing, 1))
                 if (new_wear > 65534) then
                     wear_missing = 65534 - wear
@@ -319,12 +354,8 @@ These close over the next handler to call in a chain, if desired.
 
 function thirsty.on_use( old_on_use )
     return function(itemstack, player, pointed_thing)
-        local node = nil
-        if pointed_thing and pointed_thing.type == 'node' then
-            node = minetest.get_node(pointed_thing.under)
-        end
 
-        thirsty.drink_handler(player, itemstack, node)
+        thirsty.drink_handler(player, itemstack, pointed_thing.under)
 
         -- call original on_use, if provided
         if old_on_use ~= nil then
