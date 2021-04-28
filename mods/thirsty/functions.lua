@@ -318,8 +318,9 @@ function thirsty.drink_handler(player, itemstack, under)
 
     elseif thirsty.config.container_capacity[item_name] then
 		local wear = itemstack:get_wear()
-		if thirsty.config.node_dirty and thirsty.config.node_dirty[node_name] and wear == 0 or wear >= 65535 then
+		if thirsty.config.node_dirty and thirsty.config.node_dirty[node_name] and (wear == 0 or wear >= 65534) then
 			itemstack:replace(item_name.."_dirty 1 1")
+			minetest.sound_play({name = "drink", gain = 1}, {pos=player:getpos(), max_hear_distance = 16, object=player})
         elseif wear ~= 0 then-- drinking from a container
             local capacity = thirsty.config.container_capacity[item_name]
             local hydro_missing = 20 - hydro;

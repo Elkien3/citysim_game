@@ -115,7 +115,8 @@ for name, capacity in pairs(thirsty.config.container_capacity) do
 	def.groups.not_in_creative_inventory = 1
 	def.on_use = function(itemstack, user, pointed_thing)
 		--todo reclick prevention
-		itemstack:replace(name)
+		itemstack:replace(name.." 1 65534")
+		minetest.sound_play({name = "drink", gain = 1}, {pos=user:getpos(), max_hear_distance = 16, object=user})
 		return itemstack
 	end
 	minetest.register_tool(name.."_dirty", def)
