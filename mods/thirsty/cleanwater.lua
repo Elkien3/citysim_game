@@ -16,6 +16,9 @@ thirsty.config.node_source["thirsty:fountain"] = true
 local def = table.copy(minetest.registered_nodes["default:river_water_source"])
 def.liquid_alternative_source = "thirsty:water_clean_source"
 def.liquid_alternative_flowing = "thirsty:water_clean_flowing"
+def.gas="gas_lib:steam",
+def.groups.vaporizable = 1
+def.gas_byproduct = nil
 def.liquid_renewable = false
 def.description = "Clean Water Source"
 minetest.register_node("thirsty:water_clean_source", def)
