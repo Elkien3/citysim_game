@@ -206,7 +206,7 @@ end
 --
 
 minetest.register_node("gas_lib:furnace", {
-	description = S("Furnace"),
+	description = S("Vaporizer Furnace"),
 	tiles = {
 		"default_furnace_top.png", "default_furnace_bottom.png",
 		"default_furnace_side.png", "default_furnace_side.png",
