@@ -61,6 +61,23 @@ if minetest.get_modpath("default") and thirsty.config.register_canteens then
         stack_max = 1,
         on_use = thirsty.on_use(nil),
     })
+	
+	minetest.register_tool('thirsty:stone_canteen', {
+        description = 'Stone canteen',
+        inventory_image = "thirsty_stone_canteen_16.png",
+        liquids_pointable = true,
+        stack_max = 1,
+        on_use = thirsty.on_use(nil),
+    })
+
+    minetest.register_craft({
+        output = "thirsty:stone_canteen",
+        recipe = {
+            { "group:wood", ""},
+            { "group:stone", "group:stone"},
+            { "group:stone", "group:stone"}
+        }
+    })
 
     minetest.register_craft({
         output = "thirsty:steel_canteen",
@@ -78,5 +95,6 @@ if minetest.get_modpath("default") and thirsty.config.register_canteens then
             { "default:bronze_ingot", "default:bronze_ingot"}
         }
     })
+	
 
 end
