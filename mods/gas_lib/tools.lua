@@ -297,7 +297,11 @@ local exchangertick = 10
 
 minetest.register_node("gas_lib:heat_exchanger", {
 	description = "Heat Exchanger",
-	tiles = {"default_stone.png"},
+	tiles = {
+		"gas_lib_exchanger_top.png", "gas_lib_exchanger_bottom.png",
+		"gas_lib_exchanger_side.png", "gas_lib_exchanger_side.png",
+		"gas_lib_exchanger_side.png", "gas_lib_exchanger_front.png"
+	},
 	groups = {cracky = 1},
 	on_construct = function(pos)
 		minetest.get_node_timer(pos):start(exchangertick)
