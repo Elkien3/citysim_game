@@ -69,3 +69,9 @@ minetest.override_item("default:water_source", { gas="gas_lib:steam", groups = w
 add_group("default:furnace_active", "smokey", 1)
 add_group("fire:basic_flame", "smokey", 2)
 add_group("default:lava_source", "smokey", 4)
+if minetest.get_modpath("technic") then
+	add_group("technic:coal_alloy_furnace_active", "smokey", 1)
+	add_group("technic:hv_generator_active", "smokey", 1)
+	add_group("technic:mv_generator_active", "smokey", 1)
+	add_group("technic:lv_generator_active", "smokey", 1)
+end
