@@ -14,9 +14,10 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 			local meta = stack:get_meta()
 			local expire = meta:get_int("ed")
 			local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
-			if expire and usedexpiredef then
-				local expirefactor = (expire - day_count - usedexpiredef)/-usedexpiredef
-				if expirefactor <= 0 then expirefactor = 0 end
+			if expire ~= 0 and usedexpiredef then
+				local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
+				if expirefactor < -1 then expirefactor = -1 end
+				if expirefactor > 1 then expirefactor = 1 end
 				table.insert(expirations, expirefactor)
 			end
 		end
@@ -64,6 +65,9 @@ end
 local func = minetest.add_item
 
 minetest.add_item = function(pos, item)
+	if type(item) == "string" then
+		item = ItemStack(item)
+	end
 	local name = item:get_name()
 	local def = minetest.registered_items[name]
 	local meta = item:get_meta()
@@ -101,12 +105,9 @@ minetest.register_on_mods_loaded(function()
 		local expire = itemstack:get_meta():get_int("ed")
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = expire - minetest.get_day_count()/usedexpiredef
-			if expirefactor < -1 then
-				expirefactor = -1
-			elseif expirefactor > 1 then
-				expirefactor = 1
-			end
+			local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
+			if expirefactor < -1 then expirefactor = -1 end
+			if expirefactor > 1 then expirefactor = 1 end
 			hp_change = hp_change*expirefactor
 		end
 		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
@@ -132,12 +133,9 @@ minetest.register_on_mods_loaded(function()
 			local expire = itemstack:get_meta():get_int("ed")
 			if expire ~= 0 then
 				local usedexpiredef = minetest.registered_items[item].expiration
-				local expirefactor = expire - minetest.get_day_count()/usedexpiredef
-				if expirefactor < -1 then
-					expirefactor = -1
-				elseif expirefactor > 1 then
-					expirefactor = 1
-				end
+				local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
+				if expirefactor < -1 then expirefactor = -1 end
+				if expirefactor > 1 then expirefactor = 1 end
 				if expirefactor > 0 then
 					saturation = saturation*expirefactor
 				else
