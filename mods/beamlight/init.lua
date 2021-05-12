@@ -18,9 +18,15 @@ local function placelight(pos, name)
 	end
 end
 
-local function make_beam(pos, dir)
+local function make_beam(pos, dir, length)
 	--placelight(pos, "beamlight:light_3")
-	for i=1, 4 do
+	if not length then length = 1 end
+	if length > 4 then length = 4 end
+	for i=1, length do
+		if length == 1 then
+			placelight(pos, "beamlight:light_"..i)
+			return
+		end
 		local p1
 		local p2
 		if i == 1 then 
@@ -67,21 +73,21 @@ minetest.register_globalstep(function(dtime)
 	else
 		return
 	end
-	for i,player in ipairs(minetest.get_connected_players()) do
+	--[[for i,player in ipairs(minetest.get_connected_players()) do
 		local wielded_item = player:get_wielded_item():get_name()
 		if wielded_item == "default:torch" or wielded_item == "xdecor:candle" or wielded_item == "xdecor:lantern" then
 			beamlight.beams[player:get_player_name()] = {player = player}
 		else
 			beamlight.beams[player:get_player_name()] = nil
 		end
-	end
+	end--]]
 	for name, data in pairs (beamlight.beams) do
 		if data.player then
 			if data.player:is_player() then
 				local dir = data.player:get_look_dir()
 				local eye_offset = {x = 0, y = 1.45, z = 0}
 				local eyepos = vector.add(data.player:get_pos(), eye_offset)
-				make_beam(eyepos, dir)
+				make_beam(eyepos, dir, data.length)
 			else
 				beamlight.beams[name] = nil
 			end
@@ -89,7 +95,7 @@ minetest.register_globalstep(function(dtime)
 			local dir = data.object:get_yaw()
 			if dir then
 				dir = minetest.yaw_to_dir(dir)
-				local pos = vector.add(data.object:get_pos(), {x=0,y=data.y or 1,z=0})
+				local pos = vector.add(data.object:get_pos(), {x=0,y=data.y or .5,z=0})
 				if data.x then
 					pos = vector.add(pos, vector.multiply(dir, data.x))
 				end
@@ -120,7 +126,7 @@ minetest.register_node("beamlight:light_1", {
 	light_propagates = true,
 	sunlight_propagates = true,
 	buildable_to = true,
-	light_source = 8,
+	light_source = 13,
 	on_construct = function(pos)
 		local timer = minetest.get_node_timer(pos)
 		if not timer:is_started() then
