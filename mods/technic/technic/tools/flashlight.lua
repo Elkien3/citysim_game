@@ -26,7 +26,7 @@ minetest.register_craft({
 	}
 })
 
-
+--[[
 local player_positions = {}
 local was_wielding = {}
 
@@ -121,3 +121,4 @@ minetest.register_node("technic:light", {
 	light_source = minetest.LIGHT_MAX,
 	pointable = false,
 })
+--]]
