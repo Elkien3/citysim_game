@@ -377,7 +377,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local input = inv:get_stack("input", 1)
 		local moneys = {minegeld = 1, minegeld_5 = 5, minegeld_10 = 10}
 		local amount = (moneys[string.gsub(input:get_name(), "currency:", "")] or 0) * input:get_count()
-		if price > 0 and (amount >= price or meta:get_int("gasbought") > 0) then
+		if amount > 0 and price > 0 and (amount >= price or meta:get_int("gasbought") > 0) then
 			local gasbought = math.floor(amount/price)
 			local gas = meta:get_int("gas")
 			if gasbought > gas then gasbought = gas end
