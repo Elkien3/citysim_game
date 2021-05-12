@@ -65,7 +65,7 @@ minetest.register_on_mods_loaded(function()
 		if string.find(name, "furnace") then goto skip end
 		if string.find(name, "fire:") then goto skip end
 		if string.find(name, "technic:") then goto skip end
-		if string.find(name, "lava") or string.find(name, "fireflies") or string.find(name, "mesecon_torch") or string.find(name, "mesecons_powerplant") or string.find(name, "candle") then
+		if string.find(name, "lava") or string.find(name, "fireflies") or string.find(name, "mesecon_torch") or string.find(name, "mesecons_powerplant") or string.find(name, "candle") or string.find(name, "streets:roadwork") then
 			minetest.override_item(name, {light_source = max_light})
 			goto skip
 		end
@@ -76,5 +76,3 @@ minetest.register_on_mods_loaded(function()
 	end
 	--minetest.after(4,minetest.chat_send_all, str)
 end)
-
---torches candles lantern need something done about them
