@@ -187,12 +187,12 @@ end
 minetest.register_node("nolight:lantern", {
 	description = S("Lantern"),
 	drawtype = "plantlike",
-	inventory_image = "xdecor_lantern_inv.png",
-	wield_image = "xdecor_lantern_inv.png",
+	inventory_image = "xdecor_lantern_inactive.png",
+	wield_image = "xdecor_lantern_inactive.png",
 	paramtype2 = "wallmounted",
 	walkable = true,
 	groups = {cracky=2, attached_node=1},
-	tiles = {{name = "xdecor_lantern.png", animation = {type="vertical_frames", length=0}}},
+	tiles = {"xdecor_lantern_inactive.png"},
 	selection_box = xdecor.pixelbox(16, {{4, 0, 4, 8, 16, 8}}),
 	legacy_facedir_simple = true,
 	is_ground_content = false,
@@ -283,68 +283,6 @@ minetest.register_node("nolight:lantern_active", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 })
-
-local wieldtimer = 0
-minetest.register_globalstep(function(dtime)
-	wieldtimer = wieldtimer + dtime
-	if wieldtimer > 1 then
-		wieldtimer = 0
-		for i,player in ipairs(minetest.get_connected_players()) do
-			local wielded_item = player:get_wielded_item()
-			if wielded_item:get_name() == "nolight:lantern_active" then
-				beamlight.beams[player:get_player_name()] = {player = player}
-				local meta = wielded_item:get_meta()
-				local fuel_time = meta:get_float("fuel_time")
-				local fuel_totaltime = meta:get_float("fuel_totaltime")
-				if fuel_totaltime ~= 0 then
-					fuel_time = fuel_time + 1
-					--minetest.chat_send_all(fuel_time)
-					if fuel_time > fuel_totaltime then
-						local nofuel = true
-						if meta:get_string("stack") ~= "" then
-							local fuelitem = ItemStack(meta:get_string("stack"))
-							local afterfuel
-							fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = {fuelitem}})
-							fuel.time = fuel.time*10
-							if fuel.time == 0 then
-								-- No valid fuel in fuel list
-								fuel_totaltime = 0
-								fuel_time = 0
-							else
-								-- Take fuel from fuel list
-								fuelitem:take_item(1)
-								-- Put replacements in dst list or drop them on the furnace.
-								local replacements = fuel.replacements
-								if replacements[1] then
-									local pos = player:get_pos()
-									local above = vector.new(pos.x, pos.y + 1, pos.z)
-									local drop_pos = minetest.find_node_near(above, 1, {"air"}) or above
-									minetest.item_drop(replacements[1], nil, drop_pos)
-								end
-								nofuel = false
-								meta:set_string("stack", fuelitem:to_string())
-								meta:set_float("fuel_time", 0)
-								meta:set_float("fuel_totaltime", fuel.time)
-							end
-						end
-						if nofuel then
-							meta:set_float("fuel_time", 0)
-							meta:set_float("fuel_totaltime", 0)
-							local newstack = ItemStack("nolight:lantern")
-							--newstack:get_meta():set_string("stack", meta:get_string("stack"))
-							wielded_item:replace(newstack)
-						end
-					else
-						meta:set_float("fuel_time", fuel_time)
-					end
-					player:set_wielded_item(wielded_item)
-				end
-			else
-				beamlight.beams[player:get_player_name()] = nil
-			end
-		end
-	end
-end)
 
 local func = minetest.handle_node_drops
 minetest.handle_node_drops = function(pos, drops, digger)
