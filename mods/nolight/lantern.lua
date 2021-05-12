@@ -287,7 +287,7 @@ minetest.register_node("nolight:lantern_active", {
 local func = minetest.handle_node_drops
 minetest.handle_node_drops = function(pos, drops, digger)
 	for index, name in pairs(drops) do
-		if name == "nolight:lantern_active" or name == "nolight:lantern" then
+		if name == "nolight:lantern_active" then
 			drops[index] = ItemStack(name)
 			local meta = drops[index]:get_meta()
 			local nodemeta = minetest.get_meta(pos)
