@@ -1,5 +1,5 @@
-local flashlight_max_charge = 30000
-local flashlight_charge_per_second = 2
+local flashlight_max_charge = 1800
+local flashlight_charge_per_second = 1
 
 local function check_for_flashlight(player)
 	if player == nil then
@@ -10,9 +10,9 @@ local function check_for_flashlight(player)
 	for i = 1, 8 do
 		if hotbar[i]:get_name() == "technic:flashlight" then
 			local meta = minetest.deserialize(hotbar[i]:get_metadata())
-			if meta and meta.charge and meta.charge >= flashlight_use_per_second then
+			if meta and meta.charge and meta.charge >= flashlight_charge_per_second then
 				if not technic.creative_mode then
-					meta.charge = meta.charge - flashlight_use_per_second;
+					meta.charge = meta.charge - flashlight_charge_per_second;
 					technic.set_RE_wear(hotbar[i], meta.charge, flashlight_max_charge)
 					hotbar[i]:set_metadata(minetest.serialize(meta))
 					inv:set_stack("main", i, hotbar[i])
