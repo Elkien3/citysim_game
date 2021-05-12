@@ -1,5 +1,5 @@
-local flashlight_max_charge = 1800
-local flashlight_charge_per_second = 1
+local flashlight_max_charge = 30000
+local flashlight_charge_per_second = 16
 
 local function check_for_flashlight(player)
 	if player == nil then
