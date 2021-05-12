@@ -42,7 +42,11 @@ end)
 
 local old_func = minetest.handle_node_drops
 minetest.handle_node_drops = function(pos, drops, digger)
-	for index, name in pairs(drops) do
+	for index, stack in pairs(drops) do
+		local name = stack
+		if type(name) == "userdata" then
+			name = stack:get_name()
+		end
 		local def = minetest.registered_items[string.gsub(name," .*", "")]
 		if def and def.expiration then
 			local nodemeta = minetest.get_meta(pos)
@@ -53,7 +57,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 			else
 				newexpiration = minetest.get_day_count() + expiredef
 			end
-			drops[index] = ItemStack(name)
+			drops[index] = ItemStack(stack)
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
 			meta:set_string("description", def.description.." ed: "..newexpiration)
