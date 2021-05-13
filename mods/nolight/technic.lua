@@ -34,10 +34,10 @@ local function update_light(pos)
 		on = false
 		meta:set_string("infotext", "no distributor")
 	else
-		local dist_pos = minetest.deserialize(meta:get_string("distributor"))
+		--[[local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 		if dist_pos then
 			minetest.get_meta(dist_pos):set_int("update", 1)
-		end
+		end--]]
 		meta:set_string("infotext", "")
 	end
 	if check_mesecon_groups(def.groups) and meta:get_int("mesecon") == 0 then on = false end
@@ -53,7 +53,6 @@ local function update_light(pos)
 end
 
 local function set_distributor(pos, val)
-	--minetest.chat_send_all("set_distributor")
 	if pos == nil then return 0 end
 	local radius = distributor_square_radius
 	local serialpos = minetest.serialize({x=pos.x,y=pos.y,z=pos.z})
@@ -76,7 +75,7 @@ local function set_distributor(pos, val)
 		end
 		::next::
 	end
-	if val then demand_update[minetest.hash_node_position(pos)] = lightnum*demand_per_light end
+	if val then distmeta:set_int("update", 1) demand_update[minetest.hash_node_position(pos)] = lightnum*demand_per_light end
 	return lightnum
 end
 
@@ -103,14 +102,23 @@ function register_electrical_light(name, node_on)
 		switch_mesecon = {
 			effector={
 			action_on = function(pos, node)
-				minetest.get_meta(pos):set_int("mesecon", 1)
+				local meta = minetest.get_meta(pos)
+				meta:set_int("mesecon", 1)
 				update_light(pos)
+				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
+				if dist_pos then
+					minetest.get_meta(dist_pos):set_int("update", 1)
+				end
 			end,
 			action_off = function(pos, node)
-				minetest.get_meta(pos):set_int("mesecon", 0)
+				local meta = minetest.get_meta(pos)
+				meta:set_int("mesecon", 0)
 				update_light(pos)
-			end,
-		}}
+				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
+				if dist_pos then
+					minetest.get_meta(dist_pos):set_int("update", 1)
+				end
+			end,}}
 		newdef.mesecons = switch_mesecon
 	end
 	
@@ -259,12 +267,20 @@ local function light_switch(pos, node, val)
 	local pos1 = vector.add(pos, radius)
 	local pos2 = vector.subtract(pos, radius)
 	local lights = minetest.find_nodes_in_area(pos1, pos2, {"group:electric_light"})
+	local distlist = {}
 	for i, p in pairs (lights) do
 		local lightmeta = minetest.get_meta(p)
 		if lightmeta:get_int("switch_id") == id then
 			lightmeta:set_int("switch", val or 0)
 			update_light(p)
+			local dist_pos = minetest.deserialize(lightmeta:get_string("distributor"))
+			if dist_pos then
+				distlist[minetest.hash_node_position(dist_pos)] = true
+			end
 		end
+	end
+	for hash, val in pairs(distlist) do
+		set_distributor(minetest.get_position_from_hash(hash), true)
 	end
 end
 
