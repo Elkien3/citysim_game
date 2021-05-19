@@ -23,6 +23,9 @@ dofile(mp.."/handheld.lua")
 local electric_light_list = {}
 electric_light_list["mesecons_lightstone:lightstone_white_off"] = "mesecons_lightstone:lightstone_white_on"
 electric_light_list["mesecons_lamp:lamp_off"] = "mesecons_lamp:lamp_on"
+electric_light_list["streets:light_vertical_off"] = "streets:light_vertical_on"
+electric_light_list["streets:light_horizontal_off"] = "streets:light_horizontal_on"
+electric_light_list["streets:light_hanging_off"] = "streets:light_hanging_on"
 
 minetest.register_on_mods_loaded(function()
 	local str

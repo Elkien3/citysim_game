@@ -12,7 +12,9 @@ minetest.register_craft({
 	}
 })
 
-local function check_mesecon_groups(groups)
+local function is_mesecon_operable(def)
+	if def.mesecons then return true end
+	local groups = def.groups
 	if not groups then return false end
 	for id, group in pairs(groups) do
 		if string.find(id, "mesecon") then
@@ -40,7 +42,7 @@ local function update_light(pos)
 		end--]]
 		meta:set_string("infotext", "")
 	end
-	if check_mesecon_groups(def.groups) and meta:get_int("mesecon") == 0 then on = false end
+	if is_mesecon_operable(def) and meta:get_int("mesecon") == 0 then on = false end
 	if meta:get_int("switch_id") ~= 0 and meta:get_int("switch") == 0 then on = false end
 	if on ~= node_on then
 		if node_on then
@@ -98,7 +100,7 @@ function register_electrical_light(name, node_on)
 	newdef.groups.electric_light = 1
 	
 	local switch_mesecon
-	if minetest.get_modpath("mesecons") and check_mesecon_groups(def.groups) then
+	if minetest.get_modpath("mesecons") and is_mesecon_operable(def) then
 		switch_mesecon = {
 			effector={
 			action_on = function(pos, node)
