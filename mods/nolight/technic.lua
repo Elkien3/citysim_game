@@ -373,4 +373,16 @@ for _, onoff in ipairs ({"on", "off"}) do
 	})
 end
 
+minetest.register_lbm({
+	label = "Ensure lights have the channel formspec",
+	name = "nolight:setup_formspec",
+	nodenames = {"group:electric_light"},
+	run_at_every_load = false,
+	action = function(pos, node)
+		local meta = minetest.get_meta(pos)
+		if meta:get_string("formspec") == "" then
+			meta:set_string("formspec", light_channel_form())
+		end
+	end,
+})
 technic.register_machine("LV", 'nolight:distributor', technic.receiver)
