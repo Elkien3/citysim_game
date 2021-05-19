@@ -139,7 +139,7 @@ end
 
 local on_construct = function(pos)
 	local meta = minetest.get_meta(pos)
-	meta:set_string("mode", "time")
+	meta:set_string("mode", "mesecons")
 	meta:set_string("channel", "streetlight")
 	meta:set_int("time_on", "18500")
 	meta:set_string("time_off","5500")
@@ -191,7 +191,7 @@ local def_mesecons =
 
 
 
-
+--[[
 minetest.register_abm({
 	nodenames = {"group:streets_light"},
 	interval = 10,
@@ -217,7 +217,7 @@ minetest.register_abm({
 		end
 	end,
 })
-
+--]]
 
 
 
