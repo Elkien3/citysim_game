@@ -1,6 +1,14 @@
 local S = minetest.get_translator("areas")
 
 function areas:player_exists(name)
+	if jobs then
+		local tbl = jobs.split(name, ":")
+		if tbl and #tbl == 2 then
+			local jobname = tbl[1]
+			local jobrank = tbl[2]
+			if jobs.list[jobname] and jobs.chainofcommand[jobrank] then return true end
+		end
+	end
 	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
 
@@ -302,10 +310,12 @@ function areas:isAreaOwner(id, name)
 		return true
 	end
 	while cur do
-		if cur.owner == name then
-			return true
-		elseif cur.parent then
+		if cur.parent then
 			cur = self.areas[cur.parent]
+		elseif cur.owner == name then
+			return true
+		elseif jobs and jobs.permissionstring(name, cur.owner) then
+			return true
 		else
 			return false
 		end

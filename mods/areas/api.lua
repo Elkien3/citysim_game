@@ -91,6 +91,8 @@ function areas:canInteract(pos, name)
 	for _, area in pairs(self:getAreasAtPos(pos)) do
 		if area.owner == name or area.open then
 			return true
+		elseif jobs and jobs.permissionstring(name, area.owner) then
+			return true
 		elseif areas.factions_available and area.faction_open then
 			if (factions.version or 0) < 2 then
 				local faction_name = factions.get_player_faction(name)
