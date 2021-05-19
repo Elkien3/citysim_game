@@ -126,6 +126,8 @@ function register_electrical_light(name, node_on)
 	
 	local old_construct = def.on_construct
 	newdef.on_construct = function(pos)
+		local val
+		if old_construct then val = old_construct(pos) end
 		local radius = distributor_square_radius
 		local pos1 = vector.add(pos, radius)
 		local pos2 = vector.subtract(pos, radius)
@@ -140,10 +142,12 @@ function register_electrical_light(name, node_on)
 		end
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", light_channel_form())
-		if old_construct then return old_construct(pos) end
+		if old_construct then return val end
 	end
 	local old_destruct = def.on_destruct
 	newdef.on_destruct = function(pos)
+		local val
+		if old_destruct then val = old_destruct(pos) end
 		local meta = minetest.get_meta(pos)
 		if meta:get_string("distributor") ~= "" then
 			local dist_pos = minetest.deserialize(meta:get_string("distributor"))
@@ -151,7 +155,7 @@ function register_electrical_light(name, node_on)
 				minetest.get_meta(dist_pos):set_int("update", 1)
 			end
 		end
-		if old_destruct then return old_destruct(pos) end
+		if old_destruct then return val end
 	end
 	newdef.on_receive_fields = function(pos, formname, fields, sender)
 		if not fields.channel or not tonumber(fields.channel) then return end
