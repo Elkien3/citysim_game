@@ -109,7 +109,7 @@ function register_electrical_light(name, node_on)
 				update_light(pos)
 				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 				if dist_pos then
-					minetest.get_meta(dist_pos):set_int("update", 1)
+					set_distributor(dist_pos, true)
 				end
 			end,
 			action_off = function(pos, node)
@@ -118,7 +118,7 @@ function register_electrical_light(name, node_on)
 				update_light(pos)
 				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 				if dist_pos then
-					minetest.get_meta(dist_pos):set_int("update", 1)
+					set_distributor(dist_pos, true)
 				end
 			end,}}
 		newdef.mesecons = switch_mesecon
@@ -152,7 +152,7 @@ function register_electrical_light(name, node_on)
 		if meta:get_string("distributor") ~= "" then
 			local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 			if dist_pos then
-				minetest.get_meta(dist_pos):set_int("update", 1)
+				minetest.after(0, set_distributor, dist_pos, true)
 			end
 		end
 		if old_destruct then return val end
