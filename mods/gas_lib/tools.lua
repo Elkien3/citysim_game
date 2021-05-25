@@ -208,9 +208,9 @@ end
 minetest.register_node("gas_lib:furnace", {
 	description = S("Vaporizer Furnace"),
 	tiles = {
-		"default_furnace_top.png", "default_furnace_bottom.png",
-		"default_furnace_side.png", "default_furnace_side.png",
-		"default_furnace_side.png", "default_furnace_front.png"
+		"gas_lib_vaporizer_top.png", "gas_lib_vaporizer_bottom.png",
+		"gas_lib_vaporizer_side.png", "gas_lib_vaporizer_side.png",
+		"gas_lib_vaporizer_side.png", "gas_lib_vaporizer_front.png"
 	},
 	paramtype2 = "facedir",
 	groups = {cracky=2},
@@ -254,19 +254,9 @@ minetest.register_node("gas_lib:furnace", {
 minetest.register_node("gas_lib:furnace_active", {
 	description = S("Furnace"),
 	tiles = {
-		"default_furnace_top.png", "default_furnace_bottom.png",
-		"default_furnace_side.png", "default_furnace_side.png",
-		"default_furnace_side.png",
-		{
-			image = "default_furnace_front_active.png",
-			backface_culling = false,
-			animation = {
-				type = "vertical_frames",
-				aspect_w = 16,
-				aspect_h = 16,
-				length = 1.5
-			},
-		}
+		"gas_lib_vaporizer_top.png", "gas_lib_vaporizer_bottom.png",
+		"gas_lib_vaporizer_side.png", "gas_lib_vaporizer_side.png",
+		"gas_lib_vaporizer_side.png", "gas_lib_vaporizer_front_active.png"
 	},
 	paramtype2 = "facedir",
 	light_source = 8,
