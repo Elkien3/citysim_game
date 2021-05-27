@@ -24,6 +24,17 @@ end
 dofile(path .. "/gui.lua")
 dofile(path .. "/attendanceclock.lua")
 
+local orig_func = money3.user_exists
+money3.user_exists = function(name)
+	if string.sub(name, 1, 1) == ":" then
+		local jobname = string.sub(name, 2, -1)
+		if jobs.list[jobname] then
+			return true
+		end
+	end
+	return orig_func(name)
+end
+
 jobs.save = function()
 	jobs.storage:set_string("list", minetest.serialize(jobs.list))
 end
@@ -134,6 +145,7 @@ function jobs.remove(name, jobname)
 			jobs.players[employee][jobname] = nil
 		end
 	end
+	money3.transfer(":"..jobname, name, money3.get(":"..jobname))
 	jobs.list[jobname] = nil
 	return true, "Job '"..jobname.."' succesfully removed."
 end
@@ -361,7 +373,7 @@ function jobs.setpay(name, jobname, rank, val)
 		end
 		return true, string
 	end
-	if rank == "ceo" or not jobs.chainofcommand[rank] then return false, "'"..rank.."' is not a valid rank. valid ranks: supervisor, employee, intern." end
+	if not jobs.chainofcommand[rank] then return false, "'"..rank.."' is not a valid rank. valid ranks: ceo, supervisor, employee, intern." end
 	if jobs.list[jobname].ceo ~= name then return false, "You are not the CEO of '"..jobname..".'" end
 	if not val then val = 0 end
 	if not jobs.list[jobname].pay then jobs.list[jobname].pay = {} end
@@ -409,4 +421,33 @@ function jobs.checkpaylog(name, jobname, newname)
 end
 jobs.commands["paylog"] = function(name, param)
 	return jobs.checkpaylog(name, param[2], param[3])
+end
+
+function jobs.money(name, jobname, action, amount)
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	if jobs.list[jobname].ceo ~= name then return false, "You are not the CEO of '"..jobname.."'." end
+	if not action then action = "" end
+	if action == "add" then
+		if not amount or not tonumber(amount) then return false, "Invalid Amount" end
+		local val = money3.transfer(name, ":"..jobname, tonumber(amount))
+		if not val then
+			return true, "Balance for '"..jobname.."' is "..money3.get(":"..jobname)
+		else
+			return false, val
+		end
+	elseif action == "take" then
+		if not amount or not tonumber(amount) then return false, "Invalid Amount" end
+		local val = money3.transfer(":"..jobname, name, tonumber(amount))
+		if not val then
+			return true, "Balance for '"..jobname.."' is "..money3.get(":"..jobname)
+		else
+			return false, val
+		end
+	else
+		return true, "Balance for '"..jobname.."' is "..money3.get(":"..jobname)
+	end
+end
+jobs.commands["money"] = function(name, param)
+	return jobs.money(name, param[2], param[3], param[4])
 end

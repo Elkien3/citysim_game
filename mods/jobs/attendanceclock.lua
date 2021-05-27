@@ -55,7 +55,7 @@ function jobs.punch(name, pos)
 	if not jobs.list[jobname].pay then return end
 	if punches[name] and punches[name].jobname == jobname then
 		local amount = jobs.round(punches[name].amount, 2)
-		local result = money3.transfer(jobs.list[jobname].ceo, name, amount)
+		local result = money3.transfer(":"..jobname, name, amount)
 		if not result then --transferred without an error
 			local message = name.." ("..jobs.players[name][jobname]..") was payed "..amount
 			if not jobs.punchlogs[jobname] then jobs.punchlogs[jobname] = {} end
@@ -72,9 +72,9 @@ function jobs.punch(name, pos)
 		end
 		minetest.chat_send_player(name, result or "You got payed "..amount)
 		punches[name] = nil
-	elseif jobs.list[jobname].ceo == name then
-		minetest.chat_send_player(name, "You cannot punch into a job you own.")
-		punches[name] = nil
+	--elseif jobs.list[jobname].ceo == name then
+	--	minetest.chat_send_player(name, "You cannot punch into a job you own.")
+	--	punches[name] = nil
 	else
 		punches[name] = {}
 		punches[name].jobname = jobname
