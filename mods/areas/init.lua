@@ -18,7 +18,10 @@ dofile(areas.modpath.."/pos.lua")
 dofile(areas.modpath.."/interact.lua")
 dofile(areas.modpath.."/legacy.lua")
 dofile(areas.modpath.."/hud.lua")
-dofile(areas.modpath.."/shop.lua")
+
+if money3 then
+	dofile(areas.modpath.."/shop.lua")
+end
 
 areas:load()
 
