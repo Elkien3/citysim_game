@@ -82,7 +82,13 @@ end)
 minetest.register_node("areas:shop",
 {
 	description = "Area Shop",
-	tiles = {"default_dirt.png"},
+	paramtype2 = "facedir",
+	tiles = {"areas_shop_top.png",
+	        "areas_shop_top.png",
+			"areas_shop_side.png",
+			"areas_shop_side.png",
+			"areas_shop_back.png",
+			"areas_shop_front.png"},
 	groups = {oddly_breakable_by_hand = 3},
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
