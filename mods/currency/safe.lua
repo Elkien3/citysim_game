@@ -3,7 +3,9 @@ function default.get_safe_formspec(pos)
 	local formspec =
 		"size[8,9]"..
 		"list[nodemeta:".. spos .. ";main;1,1;6,2;]"..
-		"list[current_player;main;0,5;8,4;]"
+		"list[current_player;main;0,5;8,4;]"..
+		"listring[current_player;main]"..
+		"listring[context;main]" )
 	return formspec
 end
 
