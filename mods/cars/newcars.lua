@@ -1,20 +1,3 @@
-local cars_dyes = {
-	{"grey",       "8c8c8c",       "Grey"},
-	{"dark_grey",  "313131",  "Dark Grey"},
-	{"black",      "292929",      "Black"},
-	{"violet",     "440578",     "Violet"},
-	{"blue",       "003c82",       "Blue"},
-	{"cyan",       "008a92",       "Cyan"},
-	{"dark_green", "195600", "Dark Green"},
-	{"green",      "4fbe1c",      "Green"},
-	{"yellow",     "fde40f",     "Yellow"},
-	{"brown",      "482300",      "Brown"},
-	{"orange",     "c74410",     "Orange"},
-	{"red",        "ba1414",        "Red"},
-	{"magenta",    "c30469",    "Magenta"},
-	{"pink",       "f57b7b",       "Pink"},
-}
-
 local sedandef = {
 		name = "cars:sedan",
 		description = "Sedan",
@@ -44,10 +27,11 @@ local sedandef = {
 		rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
 		enginesound = "longerenginefaded",
 		ignitionsound = "ignition",
-		craft = {
+		--[[craft = {
 			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
 			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
-		},
+		},--]]
+		craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
 		inventory_image = "inv_car_grey.png",
 		initial_properties = {
 			hp_max = 20,
@@ -58,8 +42,7 @@ local sedandef = {
 			visual = "mesh",
 			visual_size = {x=1, y=1},
 			mesh = "sedanl.b3d",
-			textures = { "sedan3.png^(sedan3.png^[mask:sedanmask2.png^[multiply:#"..cars_dyes[math.random(14)][2]..")" },
-			--textures = {'invisible.png'},
+			textures = {'sedan3unpainted.png', "sedan3.png", "sedan3colored.png"},
 			is_visible = true,
 			makes_footstep_sound = false,
 			automatic_rotate = 0,

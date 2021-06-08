@@ -228,6 +228,24 @@ function car_formspec(clickername, owner, keyinvname, def)
     return form
 end
 
+local cars_dyes = {
+	white = {"white",	 "ffffff",		 "White"},
+	grey = {"grey",       "8c8c8c",       "Grey"},
+	dark_grey = {"dark_grey",  "313131",  "Dark Grey"},
+	black = {"black",      "292929",      "Black"},
+	violet = {"violet",     "440578",     "Violet"},
+	blue = {"blue",       "003c82",       "Blue"},
+	cyan = {"cyan",       "008a92",       "Cyan"},
+	dark_green = {"dark_green", "195600", "Dark Green"},
+	green = {"green",      "4fbe1c",      "Green"},
+	yellow = {"yellow",     "fde40f",     "Yellow"},
+	brown = {"brown",      "482300",      "Brown"},
+	orange = {"orange",     "c74410",     "Orange"},
+	red = {"red",        "ba1414",        "Red"},
+	magenta = {"magenta",    "c30469",    "Magenta"},
+	pink = {"pink",       "f57b7b",       "Pink"},
+}
+
 function getClosest(player, car, distance)
 	local def = cars_registered_cars[car.object:get_entity_name()]
 	local playerPos = player:getpos()
@@ -1038,6 +1056,7 @@ function cars_register_car(def)
 					self.key = deserialized.key
 					self.hp = deserialized.hp or 20
 					self.gas = deserialized.gas or 0
+					self.color = deserialized.color
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -1053,12 +1072,15 @@ function cars_register_car(def)
 					random(2^16) - 1, random(2^16) - 1)
 			end
 			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
+			local prop = self.object:get_properties()
+			if self.color then
+				prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
+			end
 			if font_api then
 				local textTex = font_api.get_font("04b03"):render(self.platenumber.text, 6*7, 8, {maxlines = 1, halign = 'center', valign = 'center'}) --42x8
-				local prop = self.object:get_properties()
 				prop.textures[1] = prop.textures[1].."^"..textTex
-				self.object:set_properties(prop)
 			end
+			self.object:set_properties(prop)
 			self.object:setacceleration({x=0, y=-10, z=0})
 			--self.object:set_armor_groups({immortal = 1})
 			self.wheel = {}
@@ -1087,7 +1109,7 @@ function cars_register_car(def)
 			self.object:set_hp(self.hp)
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas, color = self.color})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -1103,7 +1125,8 @@ function cars_register_car(def)
 					}, true)
 					return true
 				end
-				local punchitem = puncher:get_wielded_item():get_name()
+				local punchstack = puncher:get_wielded_item()
+				local punchitem = punchstack:get_name()
 				if oil and name and oil.fueling[name] then
 					local data = oil.fueling[name]
 					local obj = oil.fueling[name].obj
@@ -1149,22 +1172,35 @@ function cars_register_car(def)
 				elseif punchitem == "default:skeleton_key" and self.owner == name then
 					local inv = minetest.get_inventory({type="player", name=name})
 					-- update original itemstack
-					local wieldstack = puncher:get_wielded_item()
-					wieldstack:take_item()
+					punchstack:take_item()
 					-- finish and return the new key
 					local new_stack = ItemStack("default:key")
 					local meta = new_stack:get_meta()
 					meta:set_string("secret", self.secret)
 					meta:set_string("description", string.format("Key to %s's %s", name, def.description))
 
-					if wieldstack:get_count() == 0 then
-						wieldstack = new_stack
+					if punchstack:get_count() == 0 then
+						punchstack = new_stack
 					else
 						if inv:add_item("main", new_stack):get_count() > 0 then
 							minetest.add_item(user:get_pos(), new_stack)
 						end -- else: added to inventory successfully
 					end
-					minetest.after(0, function() puncher:set_wielded_item(wieldstack) end)
+					minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
+				elseif not self.color then
+					local color = string.sub(punchitem, 5)
+					if color and cars_dyes[color] and punchstack:get_count() >= (def.dyecost or 5) then
+						self.color = color
+						local prop = self.object:get_properties()
+						prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
+						if font_api then
+							local textTex = font_api.get_font("04b03"):render(self.platenumber.text, 6*7, 8, {maxlines = 1, halign = 'center', valign = 'center'}) --42x8
+							prop.textures[1] = prop.textures[1].."^"..textTex
+						end
+						punchstack:take_item(def.dyecost or 5)
+						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
+						self.object:set_properties(prop)
+					end
 				elseif player_attached[name] ~= self then
 					--minetest.chat_send_all("ow")
 					return true
@@ -1251,3 +1287,4 @@ end)
 
 dofile(minetest.get_modpath("cars").."/car01.lua")
 dofile(minetest.get_modpath("cars").."/newcars.lua")
+dofile(minetest.get_modpath("cars").."/nodecraft.lua")
