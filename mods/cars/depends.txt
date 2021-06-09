@@ -1,3 +1,4 @@
 default
+worldedit
 signs?
 font_api?
