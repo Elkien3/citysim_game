@@ -70,7 +70,7 @@ shared_nodes["currency:shop"] = true
 
 local locksmith_forms = {}
 
-minetest.register_craftitem("locksmith:tool", {
+minetest.register_tool("locksmith:tool", {
 	description = "Locksmith Kit",
 	inventory_image = "locksmith_tool.png",
 	on_use = function(itemstack, user, pointed_thing)
