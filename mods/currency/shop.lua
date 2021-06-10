@@ -6,10 +6,10 @@ default.shop.formspec = {
 		local list_name = "nodemeta:"..pos.x..','..pos.y..','..pos.z
 		local formspec = "size[8,9.5]"..
 		"label[0,0;Customer gives (pay here !)]"..
-		"list[current_player;customer_gives;0,0.5;3,2;]"..
+		"list["..list_name..";customer_gives;0,0.5;3,2;]"..
 		"label[3,0;Transactions counter]"..
 		"label[0,2.5;Customer gets]"..
-		"list[current_player;customer_gets;0,3;3,2;]"..
+		"list["..list_name..";customer_gets;0,3;3,2;]"..
 		"label[5,0;Owner wants]"..
 		"list["..list_name..";owner_wants;5,0.5;3,2;]"..
 		"label[5,2.5;Owner gives]"..
@@ -111,6 +111,8 @@ minetest.register_node("currency:shop", {
 		inv:set_size("stock", 3*2)
 		inv:set_size("owner_wants", 3*2)
 		inv:set_size("owner_gives", 3*2)
+		inv:set_size("customer_gives", 3*2)
+		inv:set_size("customer_gets", 3*2)
 		if minetest.get_modpath("pipeworks") then pipeworks.after_place(pos) end
 	end,
 	after_dig_node = (pipeworks and pipeworks.after_dig),
@@ -129,8 +131,16 @@ minetest.register_node("currency:shop", {
 		connect_sides = {left = 1, right = 1, back = 1, front = 1, bottom = 1, top = 1}
 	},
 	on_rightclick = function(pos, node, clicker, itemstack)
-		clicker:get_inventory():set_size("customer_gives", 3*2)
-		clicker:get_inventory():set_size("customer_gets", 3*2)
+		local inv = clicker:get_inventory()
+		local nodeinv = minetest.get_inventory({type="node", pos=pos})
+		if not inv:is_empty("customer_gives") and nodeinv:is_empty("customer_gives") then
+			nodeinv:set_list("customer_gives", inv:get_list("customer_gives"))
+			inv:set_list("customer_gives", {})
+		end
+		if not inv:is_empty("customer_gets") and nodeinv:is_empty("customer_gets") then
+			nodeinv:set_list("customer_gets", inv:get_list("customer_gets"))
+			inv:set_list("customer_gets", {})
+		end
 		default.shop.current_shop[clicker:get_player_name()] = pos
 		if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
 			minetest.show_formspec(clicker:get_player_name(),"currency:shop_formspec",default.shop.formspec.owner(pos))
@@ -139,23 +149,21 @@ minetest.register_node("currency:shop", {
 		end
 	end,
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-		local meta = minetest.get_meta(pos)
-		local owner = meta:get_string("owner")
-		if player:get_player_name() ~= owner or owner == "" then return 0 end
+		if not default.can_interact_with_node(player, pos) then return 0 end
 		return count
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-		if not default.can_interact_with_node(player, pos) then return 0 end
+		if (listname ~= "customer_gets" and listname ~= "customer_gives") and not default.can_interact_with_node(player, pos) then return 0 end
 		return stack:get_count()
 	end,
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-		if not default.can_interact_with_node(player, pos) then return 0 end
+		if (listname ~= "customer_gets" and listname ~= "customer_gives") and not default.can_interact_with_node(player, pos) then return 0 end
 		return stack:get_count()
 	end,
 	can_dig = function(pos, player)
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
-		return inv:is_empty("stock") and inv:is_empty("customers_gave") and inv:is_empty("owner_wants") and inv:is_empty("owner_gives")
+		return inv:is_empty("stock") and inv:is_empty("customers_gave") and inv:is_empty("owner_wants") and inv:is_empty("owner_gives") and inv:is_empty("customer_gives") and inv:is_empty("customer_gets")
 	end
 })
 
@@ -168,7 +176,6 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 			minetest.chat_send_player(name,"This is your own shop, you can't exchange to yourself !")
 		else
 			local minv = meta:get_inventory()
-			local pinv = sender:get_inventory()
 			local invlist_tostring = function(invlist)
 				local out = {}
 				for i, item in pairs(invlist) do
@@ -184,7 +191,7 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 			local owners_fault = false
 			local meta_mismatch = false
 			for i, item in pairs(wants) do
-				if not pinv:contains_item("customer_gives",item) then
+				if not minv:contains_item("customer_gives",item) then
 					can_exchange = false
 				end
 			end
@@ -199,12 +206,12 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 			end
 			if can_exchange then
 				for i, item in pairs(wants) do
-					pinv:remove_item("customer_gives",item)
+					minv:remove_item("customer_gives",item)
 					minv:add_item("customers_gave",item)
 				end
 				for i, item in pairs(gives) do
 					minv:remove_item("stock",item)
-					pinv:add_item("customer_gets",item)
+					minv:add_item("customer_gets",item)
 				end
 				minetest.chat_send_player(name,"Exchanged!")
 				local counter = meta:get_string("counter")
