@@ -9,8 +9,9 @@ function default.get_safe_formspec(pos)
 	return formspec
 end
 
-local function has_safe_privilege(meta, player)
-	local name = ""
+local function has_safe_privilege(meta, player, pos)
+	return default.can_interact_with_node(player, pos)
+	--[[local name = ""
 	if player then
 		if minetest.check_player_privs(player, "protection_bypass") then
 			return true
@@ -23,7 +24,7 @@ local function has_safe_privilege(meta, player)
 	if name ~= meta:get_string("owner") then
 		return false
 	end
-	return true
+	return true--]]
 end
 
 minetest.register_node("currency:safe", {
@@ -55,11 +56,11 @@ minetest.register_node("currency:safe", {
 	can_dig = function(pos,player)
 		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
-		return inv:is_empty("main") and has_safe_privilege(meta, player)
+		return inv:is_empty("main") and has_safe_privilege(meta, player, pos)
 	end,
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 		local meta = minetest.get_meta(pos)
-		if not has_safe_privilege(meta, player) then
+		if not has_safe_privilege(meta, player, pos) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a safe belonging to "..
 					meta:get_string("owner").." at "..
@@ -70,7 +71,7 @@ minetest.register_node("currency:safe", {
 	end,
     allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
-		if not has_safe_privilege(meta, player) then
+		if not has_safe_privilege(meta, player, pos) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a safe belonging to "..
 					meta:get_string("owner").." at "..
@@ -81,7 +82,7 @@ minetest.register_node("currency:safe", {
 	end,
     allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
-		if not has_safe_privilege(meta, player) then
+		if not has_safe_privilege(meta, player, pos) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a safe belonging to "..
 					meta:get_string("owner").." at "..
@@ -104,7 +105,7 @@ minetest.register_node("currency:safe", {
 	end,
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
-		if has_safe_privilege(meta, clicker) then
+		if has_safe_privilege(meta, clicker, pos) then
 			minetest.show_formspec(
 				clicker:get_player_name(),
 				"currency:safe",
