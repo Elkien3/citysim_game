@@ -182,7 +182,7 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 		local name = sender:get_player_name()
 		local pos = default.shop.current_shop[name]
 		local meta = minetest.get_meta(pos)
-		if default.can_interact_with_node(sender, pos) then
+		if false and default.can_interact_with_node(sender, pos) then--disabled for now
 			minetest.chat_send_player(name,"This is your own shop, you can't exchange to yourself !")
 		else
 			local minv = meta:get_inventory()
