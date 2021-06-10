@@ -133,13 +133,21 @@ minetest.register_node("currency:shop", {
 	on_rightclick = function(pos, node, clicker, itemstack)
 		local inv = clicker:get_inventory()
 		local nodeinv = minetest.get_inventory({type="node", pos=pos})
+		
+		--convert old shops with player inv gives and gets to node inv gives and gets
+		if nodeinv:get_size("customer_gives") == 0 then
+			inv:set_size("customer_gives", 3*2)
+			inv:set_size("customer_gets", 3*2)
+		end
 		if not inv:is_empty("customer_gives") and nodeinv:is_empty("customer_gives") then
 			nodeinv:set_list("customer_gives", inv:get_list("customer_gives"))
 			inv:set_list("customer_gives", {})
+			inv:set_size("customer_gives", 0)
 		end
 		if not inv:is_empty("customer_gets") and nodeinv:is_empty("customer_gets") then
 			nodeinv:set_list("customer_gets", inv:get_list("customer_gets"))
 			inv:set_list("customer_gets", {})
+			inv:set_size("customer_gets", 0)
 		end
 		default.shop.current_shop[clicker:get_player_name()] = pos
 		if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
