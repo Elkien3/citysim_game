@@ -136,8 +136,10 @@ minetest.register_node("currency:shop", {
 		
 		--convert old shops with player inv gives and gets to node inv gives and gets
 		if nodeinv:get_size("customer_gives") == 0 then
-			inv:set_size("customer_gives", 3*2)
-			inv:set_size("customer_gets", 3*2)
+			nodeinv:set_size("customer_gives", 3*2)
+		end
+		if nodeinv:get_size("customer_gets") == 0 then
+			nodeinv:set_size("customer_gets", 3*2)
 		end
 		if not inv:is_empty("customer_gives") and nodeinv:is_empty("customer_gives") then
 			nodeinv:set_list("customer_gives", inv:get_list("customer_gives"))
