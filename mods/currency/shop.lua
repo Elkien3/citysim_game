@@ -132,9 +132,7 @@ minetest.register_node("currency:shop", {
 		clicker:get_inventory():set_size("customer_gives", 3*2)
 		clicker:get_inventory():set_size("customer_gets", 3*2)
 		default.shop.current_shop[clicker:get_player_name()] = pos
-		local meta = minetest.get_meta(pos)
-		local owner = meta:get_string("owner")
-		if (clicker:get_player_name() == owner or owner == "") and not clicker:get_player_control().aux1 then
+		if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
 			minetest.show_formspec(clicker:get_player_name(),"currency:shop_formspec",default.shop.formspec.owner(pos))
 		else
 			minetest.show_formspec(clicker:get_player_name(),"currency:shop_formspec",default.shop.formspec.customer(pos))
@@ -147,15 +145,11 @@ minetest.register_node("currency:shop", {
 		return count
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-		local meta = minetest.get_meta(pos)
-		local owner = meta:get_string("owner")
-		if player:get_player_name() ~= owner and owner ~= "" then return 0 end
+		if not default.can_interact_with_node(player, pos) then return 0 end
 		return stack:get_count()
 	end,
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-		local meta = minetest.get_meta(pos)
-		local owner = meta:get_string("owner")
-		if player:get_player_name() ~= owner and owner ~= "" then return 0 end
+		if not default.can_interact_with_node(player, pos) then return 0 end
 		return stack:get_count()
 	end,
 	can_dig = function(pos, player)
@@ -170,7 +164,7 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 		local name = sender:get_player_name()
 		local pos = default.shop.current_shop[name]
 		local meta = minetest.get_meta(pos)
-		if meta:get_string("owner") == name then
+		if default.can_interact_with_node(sender, pos) then
 			minetest.chat_send_player(name,"This is your own shop, you can't exchange to yourself !")
 		else
 			local minv = meta:get_inventory()
@@ -234,7 +228,7 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 		local name = sender:get_player_name()
 		local pos = default.shop.current_shop[name]
 		local meta = minetest.get_meta(pos)
-		if meta:get_string("owner") == name or meta:get_string("owner") == nil then
+		if default.can_interact_with_node(sender, pos) then
 			meta:set_string("counter", 0)
 			minetest.show_formspec(name,"currency:shop_formspec",default.shop.formspec.owner(pos))
 		end

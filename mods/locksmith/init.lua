@@ -64,7 +64,9 @@ shared_nodes["doors:rusty_prison_door_c"] = true
 shared_nodes["doors:rusty_prison_door_d"] = true
 shared_nodes["currency:safe"] = true
 shared_nodes["3d_armor_stand:locked_armor_stand"] = true
-shared_nodes["xdecor:mailbox"] = true
+shared_nodes["inbox:empty"] = true
+shared_nodes["inbox:full"] = true
+shared_nodes["currency:shop"] = true
 
 local locksmith_forms = {}
 

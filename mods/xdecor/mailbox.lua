@@ -80,7 +80,7 @@ function mailbox.rightclick(pos, _, clicker)
 	local player = clicker:get_player_name()
 	local owner = meta:get_string("owner")
 
-	if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().sneak then
+	if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
 		minetest.show_formspec(player, "xdecor:mailbox", mailbox:formspec(pos, owner, 1))
 	else
 		minetest.show_formspec(player, "xdecor:mailbox", mailbox:formspec(pos, owner, 0))
