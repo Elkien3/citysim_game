@@ -62,8 +62,9 @@ shared_nodes["doors:rusty_prison_door_a"] = true
 shared_nodes["doors:rusty_prison_door_b"] = true
 shared_nodes["doors:rusty_prison_door_c"] = true
 shared_nodes["doors:rusty_prison_door_d"] = true
-
---todo safes, mailboxes, armor stands
+shared_nodes["currency:safe"] = true
+shared_nodes["3d_armor_stand:locked_armor_stand"] = true
+shared_nodes["xdecor:mailbox"] = true
 
 local locksmith_forms = {}
 
@@ -103,5 +104,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		meta:set_int("protected", 1)
 	elseif fields.protected == "false" then
 		meta:set_int("protected", 0)
+	end
+	if fields.quit then
+		locksmith_forms[name] = nil
 	end
 end)

@@ -102,8 +102,9 @@ local function update_entity(pos)
 	end
 end
 
-local function has_locked_armor_stand_privilege(meta, player)
-	local name = ""
+local function has_locked_armor_stand_privilege(meta, player, pos)
+	return default.can_interact_with_node(player, pos)
+	--[[local name = ""
 	if player then
 		if minetest.check_player_privs(player, "protection_bypass") then
 			return true
@@ -113,7 +114,7 @@ local function has_locked_armor_stand_privilege(meta, player)
 	if name ~= meta:get_string("owner") then
 		return false
 	end
-	return true
+	return true--]]
 end
 
 local function add_hidden_node(pos, player)
@@ -262,7 +263,7 @@ minetest.register_node("3d_armor_stand:locked_armor_stand", {
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
-		if not has_locked_armor_stand_privilege(meta, player) then
+		if not has_locked_armor_stand_privilege(meta, player, pos) then
 			return 0
 		end
 		local def = stack:get_definition() or {}
@@ -274,7 +275,7 @@ minetest.register_node("3d_armor_stand:locked_armor_stand", {
 	end,
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
-		if not has_locked_armor_stand_privilege(meta, player) then
+		if not has_locked_armor_stand_privilege(meta, player, pos) then
 			return 0
 		end
 		return stack:get_count()
