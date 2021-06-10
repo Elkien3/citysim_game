@@ -53,7 +53,7 @@ minetest.register_node("inbox:empty", {
   end,
   on_rightclick = function(pos, node, clicker, itemstack)
     local player = clicker:get_player_name()
-    if default.can_interact_with_node(clicker, pos) then
+    if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
       minetest.show_formspec(
         player,
         "default:chest_locked",
