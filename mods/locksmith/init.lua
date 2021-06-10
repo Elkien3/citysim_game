@@ -67,6 +67,8 @@ shared_nodes["3d_armor_stand:locked_armor_stand"] = true
 shared_nodes["inbox:empty"] = true
 shared_nodes["inbox:full"] = true
 shared_nodes["currency:shop"] = true
+shared_nodes["locksmith:mesecon_switch_on"] = true
+shared_nodes["locksmith:mesecon_switch_off"] = true
 
 local locksmith_forms = {}
 
@@ -111,3 +113,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		locksmith_forms[name] = nil
 	end
 end)
+
+if minetest.get_modpath("mesecons_switch") then
+	dofile(minetest.get_modpath("locksmith").."/switch.lua")
+end
