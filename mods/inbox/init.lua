@@ -52,10 +52,8 @@ minetest.register_node("inbox:empty", {
     inv:set_size("drop", 1)
   end,
   on_rightclick = function(pos, node, clicker, itemstack)
-    local meta = minetest.get_meta(pos)
     local player = clicker:get_player_name()
-    local owner  = meta:get_string("owner")
-    if owner == player or owner == "" then
+    if default.can_interact_with_node(clicker, pos) then
       minetest.show_formspec(
         player,
         "default:chest_locked",
@@ -68,10 +66,8 @@ minetest.register_node("inbox:empty", {
     end
   end,
   can_dig = function(pos,player)
-    local meta = minetest.get_meta(pos);
-    local owner = meta:get_string("owner")
     local inv = meta:get_inventory()
-    return (player:get_player_name() == owner or owner == "") and inv:is_empty("main")
+    return default.can_interact_with_node(player, pos) and inv:is_empty("main")
   end,
   on_metadata_inventory_put = function(pos, listname, index, stack, player)
     local meta = minetest.get_meta(pos)
@@ -100,9 +96,7 @@ minetest.register_node("inbox:empty", {
     end
   end,
   allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-    local meta = minetest.get_meta(pos)
-    local owner = meta:get_string("owner")
-    if player:get_player_name() ~= owner and owner ~= "" then
+    if not default.can_interact_with_node(player, pos) then
       return 0
     end
     return stack:get_count()
@@ -141,10 +135,8 @@ minetest.register_node("inbox:full", {
     inv:set_size("drop", 1)
   end,
   on_rightclick = function(pos, node, clicker, itemstack)
-    local meta = minetest.get_meta(pos)
     local player = clicker:get_player_name()
-    local owner  = meta:get_string("owner")
-    if owner == player or owner == "" then
+    if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
       minetest.show_formspec(
         player,
         "default:chest_locked",
@@ -157,10 +149,8 @@ minetest.register_node("inbox:full", {
     end
   end,
   can_dig = function(pos,player)
-    local meta = minetest.get_meta(pos);
-    local owner = meta:get_string("owner")
     local inv = meta:get_inventory()
-    return (player:get_player_name() == owner or owner == "") and inv:is_empty("main")
+    return default.can_interact_with_node(player, pos) and inv:is_empty("main")
   end,
   on_metadata_inventory_put = function(pos, listname, index, stack, player)
     local meta = minetest.get_meta(pos)
@@ -195,9 +185,7 @@ minetest.register_node("inbox:full", {
     end
   end,
     allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-    local meta = minetest.get_meta(pos)
-    local owner = meta:get_string("owner")
-    if player:get_player_name() ~= owner and owner ~= "" then
+    if not default.can_interact_with_node(player, pos)  then
       return 0
     end
     return stack:get_count()
