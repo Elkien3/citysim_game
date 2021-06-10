@@ -39,6 +39,15 @@ jobs.save = function()
 	jobs.storage:set_string("list", minetest.serialize(jobs.list))
 end
 
+jobs.is_job_string = function(str)
+	local tbl = jobs.split(str, ":")
+	if tbl and #tbl == 2 then
+		local jobname = tbl[1]
+		local jobrank = tbl[2]
+		if jobs.list[jobname] and jobs.chainofcommand[jobrank] then return true end
+	end
+end
+
 jobs.permissionstring = function(name, str)
 	if not str then return end
 	local tbl = jobs.split(str, ":")
