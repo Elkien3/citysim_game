@@ -159,8 +159,9 @@ minetest.register_node("currency:shop", {
 		end
 	end,
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-		if not default.can_interact_with_node(player, pos) then return 0 end
-		return count
+		if default.can_interact_with_node(player, pos) then return count end
+		if (from_list == "customer_gives" or from_list == "customer_gets") and (to_list == "customer_gives" or to_list == "customer_gets") then return count end
+		return 0
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		if (listname ~= "customer_gets" and listname ~= "customer_gives") and not default.can_interact_with_node(player, pos) then return 0 end
