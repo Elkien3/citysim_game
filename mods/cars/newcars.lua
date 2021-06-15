@@ -1,7 +1,7 @@
 local sedandef = {
 		name = "cars:sedan",
 		description = "Sedan",
-		acceleration = 3,
+		acceleration = 5,
 		braking = 10,
 		coasting = 2,
 		gas_usage = 1,
@@ -77,7 +77,7 @@ minetest.register_entity("cars:sedanwheel", {
 local uraldef = {
 		name = "cars:ural",
 		description = "Ural",
-		acceleration = 3,
+		acceleration = 4,
 		braking = 10,
 		coasting = 2,
 		max_speed = 24.5872,

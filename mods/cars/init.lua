@@ -698,12 +698,13 @@ local function car_step(self, dtime)
 				end
 			end
 		end
+		local carpitch = 0
 		--VELOCITY MOVEMENT
 		if self.ignition then
 			local newv = self.v
 			if ctrl.up then
 				if sign >= 0 then
-					newv = newv + def.acceleration*dtime
+					newv = newv + def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
 					cars.setlight(lights, "brakelights", false)
 				else
 					if self.cruise then self.cruise = nil end
@@ -714,7 +715,7 @@ local function car_step(self, dtime)
 			elseif ctrl.down then
 				if self.cruise then self.cruise = nil end
 				if sign <= 0 then
-					newv = newv - def.acceleration*dtime
+					newv = newv - def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
 					cars.setlight(lights, "brakelights", false)
 				else
 					newv = newv - def.braking*dtime
@@ -723,11 +724,12 @@ local function car_step(self, dtime)
 				end
 			end
 			if node ~= "air" then
+				carpitch = (newv - self.v)*.07
 				self.v = newv
 			end
 			if not ctrl.up and not ctrl.down and sign ~= 0 then
 				if self.cruise and self.v < self.cruise and node ~= "air" then
-					self.v = self.v + def.acceleration*dtime
+					self.v = self.v + def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
 					if self.v > self.cruise then self.v = self.cruise end
 				else
 					self.v = self.v - def.coasting*dtime*get_sign(self.v)
@@ -808,10 +810,18 @@ local function car_step(self, dtime)
 			
 			self.object:set_bone_position("steering", def.steeringwheel, {x=0,y=0,z=-self.wheelpos*8})
 		end
+		local carroll = 0
 		if node ~= "air" then
 			local axval = def.axisval or 10
-			self.object:setyaw(yaw - ((self.wheelpos/axval)*(self.v/axval)*dtime))
+			--self.object:setyaw(yaw - ((self.wheelpos/axval)*(self.v/axval)*dtime))
+			carroll = yaw
+			yaw = yaw - ((self.wheelpos/axval)*(self.v/axval)*dtime)
+			carroll = (yaw - carroll)*.08*self.v
 		end
+		local rot = self.object:get_rotation()
+		rot = vector.add(rot, {x=carpitch, y=0, z=carroll})
+		rot = vector.multiply(rot, .5)
+		self.object:set_rotation({x=rot.x, y=yaw, z=rot.z})
 
 		if attachTimer >= 5 then
 			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
