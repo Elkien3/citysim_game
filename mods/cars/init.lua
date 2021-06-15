@@ -880,6 +880,13 @@ local function car_step(self, dtime)
 	--local yaw = self.object:getyaw()
 	yaw = yaw - self.wheelpos/57.32
 	new_velo = get_velocity(self.v, yaw, velocity)
+	local force = vector.distance(velocity, new_velo)/dtime
+	minetest.chat_send_all(force)
+	if force > 10 then
+		force = force - 10
+		factor = math.min(force/10, .95)
+		new_velo = vector.add(vector.multiply(new_velo, 1-factor), vector.multiply(velocity, factor))
+	end
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
 	--[[if accel ~= 0 then
