@@ -99,12 +99,12 @@ minetest.register_globalstep(function(dtime)
 				if data.x then
 					pos = vector.add(pos, vector.multiply(dir, data.x))
 				end
-				make_beam(pos, dir)
+				make_beam(pos, dir, data.length)
 			else
 				beamlight[name] = nil
 			end
 		elseif data.pos and data.dir then
-			make_beam(data.pos, vector.normalize(data.dir))
+			make_beam(data.pos, vector.normalize(data.dir), data.length)
 		else
 			beamlight.beams[name] = nil
 		end

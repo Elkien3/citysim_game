@@ -71,7 +71,7 @@ function cars.setlight(obj, light, val)
 	end
 	if beamlight and light == "headlights" then
 		if val then
-				beamlight.beams[string.sub(tostring(obj), 8)] = {object = obj.object:get_attach(), x = 3}
+				beamlight.beams[string.sub(tostring(obj), 8)] = {object = obj.object:get_attach(), x = 3, length = 3}
 		else
 				beamlight.beams[string.sub(tostring(obj), 8)] = nil
 		end
@@ -212,19 +212,28 @@ function car_formspec(clickername, owner, keyinvname, def)
     local form = "" ..
     "size[9,7]" ..
     "list[current_player;main;0.5,2.75;8,4.25;0]" ..
-    "button[0.25,0.25;1,1;ignition;Ignition]" ..
-    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,0.25;1,1;0]" ..
-    "button[0.25,1.5;1.5,1;headlights;Headlights]" ..
-    "button[2,1.5;1.5,1;flashers;Flashers]"
+    "button[0.25,1.5;1,1;ignition;Ignition]" ..
+    "button_exit[3.625,1.5;1.75,1;exit;Exit Seat]" ..
+    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]" ..
+    "button[0.25,0.25;1.5,1;headlights;Headlights]" ..
+    "button[2,0.25;1.5,1;flashers;Flashers]"
     if def.siren then
-		form = form.."button_exit[3.75,1.5;1.5,1;siren;Siren]"
+		form = form.."button_exit[3.75,0.25;1.5,1;siren;Siren]"
 	end
-    if clickername == owner then
-		form = form.."field[3,0.68;3,1;owner;Owner;"..minetest.formspec_escape(owner).."]" .."button_exit[5.5,0.35;2,1;changeowner;Change Owner]"
+    if clickername == owner or (jobs and jobs.permissionstring(clickername, owner)) then
+		form = form.."field[5.6,1.78;1.75,1;owner;Owner;"..minetest.formspec_escape(owner).."]" .."button_exit[6.85,1.5;2,1;changeowner;Change Owner]"
 	else
-		form = form.."label[3,0.5;Owner: "..owner.."]"
+		form = form.."label[6,1.75;Owner: "..owner.."]"
 	end
 
+    return form
+end
+
+function seat_formspec(swap)
+    local form = "size[3,3]button_exit[0.5,0.5;2.25,1;exit;Exit Seat]"
+	if swap then
+		form = form.."button_exit[0.5,1.5;2.25,1;swap;Swap to Seat]"
+	end
     return form
 end
 
@@ -339,11 +348,11 @@ local function turncaroff(car, lights)
 	car.ignition = nil
 end
 
-local trunkplayer = {}
+local car_forms = {}
 local function trunk_rightclick(self, clicker)
 	local def = cars_registered_cars[self.object:get_entity_name()]
 	local name = clicker:get_player_name()
-	trunkplayer[name] = self
+	car_forms[name] = self
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
 		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
@@ -420,7 +429,7 @@ local function driver_rightclick(self, clicker)
 		inventory:set_stack("key", 1, new_stack)
 	end
 	local formspec = car_formspec(name, self.owner or "", "cars"..selfname, def)
-    minetest.show_formspec(name, "cars_driver", formspec)
+    minetest.show_formspec(name, "cars_form", formspec)
 end
 
 local function register_lightentity(carname)
@@ -483,23 +492,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "cars_trunk" then
 		if fields.quit then
 			local name = player:get_player_name()
-			if trunkplayer[name] then
+			if car_forms[name] then
 				minetest.sound_play("closetrunk", {
 					max_hear_distance = 24,
 					gain = 1,
-					object = trunkplayer[name].object
+					object = car_forms[name].object
 				}, true)
-				trunkplayer[name] = nil
+				car_forms[name] = nil
 			end
 		end
-	elseif formname == "cars_driver" then
+	elseif formname == "cars_form" then
 		local name = player:get_player_name()
 		local car = player_attached[name]
 		local def
 		if car then
 			def = cars_registered_cars[car.object:get_entity_name()]
+			if not def then return end
+		else
+			return
 		end
-		if def and car.passengers[1].player == player then
+		if car.passengers[1].player == player then
 			local obj
 			if car.lights then obj = car.lights:get_luaentity() end
 			if fields.ignition and car.key then
@@ -513,16 +525,31 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					}, true)
 					minetest.after(.8, function(car) car.ignition = true end, car)
 				end
-			elseif fields.headlights then
+			elseif fields.headlights and car.battery > 0 then
 				cars.setlight(obj, "headlights", "toggle")
 			elseif fields.flashers then
 				--cars.setlight(obj, "flashers", "toggle")
 			elseif fields.siren and def.siren then
 				car.siren = not car.siren
-			elseif fields.changeowner and car.owner == name or car.owner == "" then
-				car.owner = fields.owner
-				minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
+			elseif fields.changeowner and fields.owner and (car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner))) then
+				if minetest.player_exists(fields.owner) or (jobs and jobs.is_job_string(fields.owner)) then
+					car.owner = fields.owner--todo make sure player exists and also add job support
+					minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
+				else
+					minetest.chat_send_player(name, "Invalid owner name")
+				end
 			end
+		end
+		if fields.exit then
+			detach(player)
+		elseif fields.swap then
+			if car_forms[name] then
+				detach(player)
+				car_rightclick(car, player, car_forms[name])
+			end
+		end
+		if fields.quit then
+			car_forms[name] = nil
 		end
 	end
 end)
@@ -541,6 +568,16 @@ local function car_step(self, dtime)
 	if not yaw then return end
 	local yaw = get_yaw(yaw)
 	local slowing = false
+	local lights
+	if self.lights then lights = self.lights:get_luaentity()
+		if lights.headlights then
+			self.battery = self.battery - dtime
+			if self.battery <= 0 then
+				self.battery = 0
+				cars.setlight(lights, "headlights", false)
+			end
+		end
+	end
 	if not self.v then self.v = 0 end
 	self.v = get_v(velocity) * get_sign(self.v)
 	--local accel = 0--def.coasting*get_sign(self.v)
@@ -634,8 +671,6 @@ local function car_step(self, dtime)
 		driver:hud_change(self.hud, "text", text)
 		local ctrl = driver:get_player_control()
 		local sign
-		local lights
-		if self.lights then lights = self.lights:get_luaentity() end
 		if self.v == 0 then sign = 0 if self.cruise then self.cruise = nil end else sign = get_sign(self.v) end
 		if self.lastctrl then
 			if ctrl.sneak and not self.lastctrl.sneak then
@@ -665,46 +700,46 @@ local function car_step(self, dtime)
 		end
 		--VELOCITY MOVEMENT
 		if self.ignition then
-		local newv = self.v
-		if ctrl.up then
-			if sign >= 0 then
-				newv = newv + def.acceleration*dtime
-				cars.setlight(lights, "brakelights", false)
-			else
+			local newv = self.v
+			if ctrl.up then
+				if sign >= 0 then
+					newv = newv + def.acceleration*dtime
+					cars.setlight(lights, "brakelights", false)
+				else
+					if self.cruise then self.cruise = nil end
+					newv = newv + def.braking*dtime
+					cars.setlight(lights, "brakelights", true)
+					slowing = true
+				end
+			elseif ctrl.down then
 				if self.cruise then self.cruise = nil end
-				newv = newv + def.braking*dtime
-				cars.setlight(lights, "brakelights", true)
-				slowing = true
+				if sign <= 0 then
+					newv = newv - def.acceleration*dtime
+					cars.setlight(lights, "brakelights", false)
+				else
+					newv = newv - def.braking*dtime
+					cars.setlight(lights, "brakelights", true)
+					slowing = true
+				end
 			end
-		elseif ctrl.down then
-			if self.cruise then self.cruise = nil end
-			if sign <= 0 then
-				newv = newv - def.acceleration*dtime
+			if node ~= "air" then
+				self.v = newv
+			end
+			if not ctrl.up and not ctrl.down and sign ~= 0 then
+				if self.cruise and self.v < self.cruise and node ~= "air" then
+					self.v = self.v + def.acceleration*dtime
+					if self.v > self.cruise then self.v = self.cruise end
+				else
+					self.v = self.v - def.coasting*dtime*get_sign(self.v)
+					cars.setlight(lights, "brakelights", false)
+					slowing = true
+				end
+			end
+			if get_sign(self.v) ~= sign and sign ~= 0 then
+				self.v = 0
 				cars.setlight(lights, "brakelights", false)
-			else
-				newv = newv - def.braking*dtime
-				cars.setlight(lights, "brakelights", true)
-				slowing = true
 			end
-		end
-		if node ~= "air" then
-			self.v = newv
-		end
-		if not ctrl.up and not ctrl.down and sign ~= 0 then
-			if self.cruise and self.v < self.cruise and node ~= "air" then
-				self.v = self.v + def.acceleration*dtime
-				if self.v > self.cruise then self.v = self.cruise end
-			else
-				self.v = self.v - def.coasting*dtime*get_sign(self.v)
-				cars.setlight(lights, "brakelights", false)
-				slowing = true
-			end
-		end
-		if get_sign(self.v) ~= sign and sign ~= 0 then
-			self.v = 0
-			cars.setlight(lights, "brakelights", false)
-		end
-		
+			
 		else
 			local sign
 			if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
@@ -872,6 +907,7 @@ local function car_step(self, dtime)
 	local abs_v = math.abs(self.v)
 	--if abs_v > 0 and driver ~= nil then
 	if self.ignition then
+		self.battery = math.min(self.battery + dtime*2, 600)
 		if oil and def.gas_usage and not slowing then
 			if self.v == 0 or self.cruise then--idle gas usage
 				self.gas = self.gas - (def.gas_usage*dtime*.25)/60
@@ -942,16 +978,17 @@ local function car_step(self, dtime)
 end
 
 function car_rightclick(self, clicker, closeid)
-	if self.locked then return end
 	if not clicker or not clicker:is_player() then
 		return
 	end
 	local name = clicker:get_player_name()
 	if player_attached[name] and player_attached[name] ~= self then
 		return
-	else
+	end
+	if not closeid then closeid = getClosest(clicker, self) end
+	if not player_attached[name] then
+		if self.locked then return end
 		local i = 0
-		if not closeid then closeid = getClosest(clicker, self) end
 		--knockout support
 		if knockout then
 			local Cname = knockout.carrying[name]
@@ -974,14 +1011,6 @@ function car_rightclick(self, clicker, closeid)
 				trunk_rightclick(self, clicker)
 				return
 			end
-			if self.passengers[closeid].player == clicker then
-				if closeid == 1 and clicker:get_player_control().sneak then
-					driver_rightclick(self, clicker)
-				else
-					detach(clicker)
-				end
-				return
-			end
 			if not self.passengers[closeid].player then
 				i = closeid
 			end
@@ -991,14 +1020,8 @@ function car_rightclick(self, clicker, closeid)
 				if not self.passengers[i].player then break end
 			end
 		end
-	if i == 0 or i == #self.passengers+1 then return end
-	if player_attached[name] == self then
-		detach(clicker)
-		if not clicker:get_player_control().sneak then
-			return
-		end
-	end
-	self.passengers[i].player = clicker
+		if i == 0 or i == #self.passengers+1 then return end
+		self.passengers[i].player = clicker
 		--add hud for driver
 		if i == 1 then
 			self.hud = clicker:hud_add({
@@ -1025,6 +1048,17 @@ function car_rightclick(self, clicker, closeid)
 			default.player_set_animation(clicker, "sit" , 30)
 		end)
 		clicker:set_look_horizontal(get_yaw(self.object:getyaw()))
+	elseif closeid ~= 0 then
+		if closeid == 1 and self.passengers[1].player == clicker then
+			driver_rightclick(self, clicker)
+		else
+			if not self.passengers[closeid].player then
+				car_forms[name] = closeid
+				minetest.show_formspec(name, "cars_form", seat_formspec(true))
+			else
+				minetest.show_formspec(name, "cars_form", seat_formspec())
+			end
+		end
 	end
 end
 
@@ -1042,6 +1076,7 @@ function cars_register_car(def)
 			if not self.timer2 then self.timer2 = 0 end
 			if not self.hp then self.hp = 20 end
 			if not self.gas then self.gas = 0 end
+			if not self.battery then self.battery = 600 end
 			if not self.platenumber then
 				self.platenumber = {}
 			end
@@ -1056,6 +1091,7 @@ function cars_register_car(def)
 					self.key = deserialized.key
 					self.hp = deserialized.hp or 20
 					self.gas = deserialized.gas or 0
+					self.battery = deserialized.battery or 600
 					self.color = deserialized.color
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
@@ -1109,7 +1145,7 @@ function cars_register_car(def)
 			self.object:set_hp(self.hp)
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas, color = self.color})
+			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas, battery = self.battery, color = self.color})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -1169,7 +1205,7 @@ function cars_register_car(def)
 							object = self.object
 						}, true)
 					end
-				elseif punchitem == "default:skeleton_key" and self.owner == name then
+				elseif punchitem == "default:skeleton_key" and (self.owner == name or (jobs and jobs.permissionstring(name, self.owner))) then
 					local inv = minetest.get_inventory({type="player", name=name})
 					-- update original itemstack
 					punchstack:take_item()
@@ -1177,7 +1213,7 @@ function cars_register_car(def)
 					local new_stack = ItemStack("default:key")
 					local meta = new_stack:get_meta()
 					meta:set_string("secret", self.secret)
-					meta:set_string("description", string.format("Key to %s's %s", name, def.description))
+					meta:set_string("description", string.format("Key to %s's %s", self.owner, def.description))
 
 					if punchstack:get_count() == 0 then
 						punchstack = new_stack
