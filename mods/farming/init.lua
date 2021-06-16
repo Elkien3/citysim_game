@@ -187,27 +187,8 @@ local function reg_plant_stages(plant_name, stage, force_last)
 					end,
 
 					on_destruct = function(pos)
-
-						minetest.get_node_timer(pos):stop()
-
 						if old_destr then
 							old_destr(pos)
-						end
-					end,
-
-					on_timer = function(pos, elapsed)
-						local returned = farming.plant_growth_timer(pos, elapsed, node_name)
-						if returned then
-							local timer = minetest.get_node_timer(pos)
-							local meta = minetest.get_meta(pos)
-							local timevar = os.time()
-							local t = meta:get_int("t")
-							local difference = (timevar-t) - STAGE_LENGTH_AVG
-							meta:set_int("t", timevar)
-							timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
-							return true
-						else
-							return false
 						end
 					end,
 				})
@@ -251,23 +232,16 @@ local function set_growing(pos, stages_left)
 		return
 	end
 
-	local timer = minetest.get_node_timer(pos)
 	local meta = minetest.get_meta(pos)
 	local t = meta:get_int("t")
 	if stages_left > 0 then
-		if not timer:is_started() then
-			if not t or t == 0 then
-				t = os.time()
-				meta:set_int("t", t)
-			end
-			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG), 0)
+		if t == 0 then
+			meta:set_int("t", os.time())
+		else
+			farming.plant_growth_timer(pos, elapsed, minetest.get_node(pos).name)
 		end
-
-	elseif timer:is_started() then
-		timer:stop()
-		if t and t ~= 0 then
-			meta:set_int("t", 0)
-		end
+	elseif t ~= 0 then
+		meta:set_int("t", 0)
 	end
 end
 
@@ -295,18 +269,26 @@ end)
 
 -- Just in case a growing type or added node is missed (also catches existing
 -- nodes added to map before timers were incorporated).
---minetest.register_abm({
 minetest.register_lbm({
-	name = "farming:checktimers",
+	name = "farming:lbm",
 	nodenames = { "group:growing" },
 	run_at_every_load = true,
---	interval = 300,
---	chance = 1,
---	catch_up = false,
 	action = function(pos, node)
 		farming.handle_growth(pos, node)
 	end
 })
+
+minetest.register_abm{
+	name = "farming:abm",
+	nodenames = { "group:growing" },
+	run_at_every_load = true,
+	interval = 300,
+	chance = 4,
+	catch_up = false,
+	action = function(pos, node)
+		farming.handle_growth(pos, node)
+	end
+}
 
 
 -- Plant timer function that grows plants under the right conditions.
@@ -325,7 +307,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 	
 	if seasons_getseason() == "Winter" and math.floor(minetest.get_node(pos).param1 / 16) ~= 13 then--if its winter and the plant isnt being lit by a max light dont grow.
-		minetest.chat_send_all(minetest.get_modpath("default_tweaks"))
+		--minetest.chat_send_all(minetest.get_modpath("default_tweaks"))
 		if minetest.get_modpath("default_tweaks") then--if plantrot is enabled rot the plant as opposed to simply stopping it from growing further
 			local p2 = minetest.registered_nodes[stages.stages_left[max_growth] ].place_param2 or 1
 			minetest.swap_node(pos, {name = stages.stages_left[max_growth], param2 = p2})
@@ -421,13 +403,10 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 
 		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
 		
-		local timer = minetest.get_node_timer(pos)
 		if growth == max_growth then
 			meta:set_int("t", 0)
-			timer:stop()
 		else
 			meta:set_int("t", timevar)
-			timer:set(math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)-difference, 0)
 		end
 	else
 		return true
