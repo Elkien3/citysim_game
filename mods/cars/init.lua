@@ -662,6 +662,7 @@ local function car_step(self, dtime)
 			end
 		end
 	end
+	local on_asphalt = string.find(node, "asphalt") or string.find(node, "road_black")
 	local driver = self.passengers[1].player
 	if driver then
 		local text = tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH")
@@ -788,7 +789,7 @@ local function car_step(self, dtime)
 			local sign = get_sign(self.wheelpos)
 			
 				self.wheelpos = self.wheelpos - 50*get_sign(self.wheelpos)*dtime
-			if math.abs(self.wheelpos) < 5 or sign ~= get_sign(self.wheelpos) then
+			if math.abs(self.wheelpos) < 1 or sign ~= get_sign(self.wheelpos) then
 				self.wheelpos = 0
 			end
 		end
@@ -881,11 +882,43 @@ local function car_step(self, dtime)
 	yaw = yaw - self.wheelpos/57.32
 	new_velo = get_velocity(self.v, yaw, velocity)
 	local force = vector.distance(velocity, new_velo)/dtime
-	minetest.chat_send_all(force)
-	if force > 10 then
-		force = force - 10
-		factor = math.min(force/10, .95)
+	local maxforce
+	if on_asphalt then
+		maxforce = def.max_force or 20
+	else
+		maxforce = def.max_force_offroad or 1
+	end
+	if force > maxforce then
+		force = force - maxforce
+		factor = math.min(force*.04, .95)
 		new_velo = vector.add(vector.multiply(new_velo, 1-factor), vector.multiply(velocity, factor))
+		if self.skidsound then
+			if self.last_on_asphalt == nil or on_asphalt == self.last_on_asphalt then
+				minetest.sound_fade(self.skidsound, 5, factor)
+			else
+				minetest.sound_fade(self.skidsound, 10, 0)
+				self.skidsound = nil
+			end
+		else
+			local sound
+			if on_asphalt then
+				sound = "tyresound-asphaltskid"
+			else
+				sound = "tyresound-gravelskid"
+			end
+			self.skidsound = minetest.sound_play(sound, {
+				max_hear_distance = 48,
+				object = self.object,
+				gain = factor,
+				fade = 1,
+				loop = true
+			})
+		end
+	else
+		if self.skidsound then
+			minetest.sound_fade(self.skidsound, 10, 0)
+			self.skidsound = nil
+		end--]]
 	end
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
@@ -898,9 +931,11 @@ local function car_step(self, dtime)
 		cars.setlight(lights, "brakelights", false)
 		if self.wheelsound then
 			minetest.sound_stop(self.wheelsound)
+			self.wheelsound = nil
 		end
 		if self.windsound then
-			minetest.sound_fade(self.windsound, .1, 0)
+			minetest.sound_fade(self.windsound, 2, 0)
+			self.windsound = nil
 		end
 		wheelspeed(self)
 		return
@@ -919,7 +954,7 @@ local function car_step(self, dtime)
 		self.object:setacceleration(accel)
 	end--]]
 	self.lastv = new_velo
-	
+	self.last_on_asphalt = on_asphalt
 	--sound
 	local abs_v = math.abs(self.v)
 	--if abs_v > 0 and driver ~= nil then
@@ -963,7 +998,7 @@ local function car_step(self, dtime)
 	if self.timer2 > 2/pitch-.5 then
 		if abs_v > .2 then
 			if node ~= "air" then
-				if string.find(node, "asphalt") then
+				if on_asphalt then
 					self.wheelsound = minetest.sound_play("tyresound-asphaltfade", {
 						max_hear_distance = 48,
 						object = self.object,
@@ -1266,6 +1301,12 @@ function cars_register_car(def)
 			if hp <= 0 then
 				for id, wheel in pairs(self.wheel) do
 					wheel:remove()
+				end
+				if self.lights then
+					self.lights:remove()
+				end
+				if self.skidsound then
+					minetest.sound_fade(self.skidsound, 5, 0)
 				end
 				--todo remove all children
 				for id, passengers in pairs (self.passengers) do
