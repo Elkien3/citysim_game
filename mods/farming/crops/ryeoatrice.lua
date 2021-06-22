@@ -17,6 +17,10 @@ minetest.override_item("farming:rye", {
 	groups = {food_rye = 1, flammable = 4}
 })
 
+minetest.override_item("farming:rye_1", {
+	drop = {}
+})
+
 minetest.register_craft({
 	type = "shapeless",
 	output = "farming:flour",
@@ -41,6 +45,10 @@ minetest.override_item("farming:oat", {
 	groups = {food_oats = 1, flammable = 4}
 })
 
+minetest.override_item("farming:oat_1", {
+	drop = {}
+})
+
 minetest.register_craft({
 	type = "shapeless",
 	output = "farming:flour",
@@ -63,6 +71,10 @@ farming.register_plant("farming:rice", {
 
 minetest.override_item("farming:rice", {
 	groups = {food_rice = 1, flammable = 4}
+})
+
+minetest.override_item("farming:rice_1", {
+	drop = {}
 })
 
 minetest.register_craftitem("farming:rice_bread", {
