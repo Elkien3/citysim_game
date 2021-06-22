@@ -165,7 +165,7 @@ minetest.register_globalstep(function(dtime)
     -- Only count riders who are still logged in.
     local newriding = {}
     for _,p in ipairs(minetest.get_connected_players()) do
-        local pos = p:getpos()
+        local pos = p:get_pos()
         local name = p:get_player_name()
         newriding[name] = riding[name]
         -- If the player is indeed riding, update their position.
