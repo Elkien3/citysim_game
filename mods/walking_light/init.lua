@@ -10,7 +10,7 @@ minetest.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	table.insert(players, player_name)
 	last_wielded[player_name] = player:get_wielded_item():get_name()
-	local pos = player:getpos()
+	local pos = player:get_pos()
 	local rounded_pos = {x=round(pos.x),y=round(pos.y)+1,z=round(pos.z)}
 	local wielded_item = player:get_wielded_item():get_name()
 	if wielded_item ~= "default:torch" and wielded_item ~= "xdecor:candle" and wielded_item ~= "xdecor:lantern" then

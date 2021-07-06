@@ -500,7 +500,7 @@ end
 -- update built-in HUD bars
 local function update_hud(player)
 	if not player_exists(player) then return end
-	if minetest.setting_getbool("enable_damage") then
+	if minetest.settings.get_bool("enable_damage") then
 		if hb.settings.forceload_default_hudbars then
 			hb.unhide_hudbar(player, "health")
 		end
