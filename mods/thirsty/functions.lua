@@ -222,7 +222,7 @@ function thirsty.main_loop(dtime)
             thirsty.hud_update(player, hydro)
 
             -- damage, if enabled
-            if minetest.settings.get_bool("enable_damage") then
+            if minetest.settings:get_bool("enable_damage") then
                 -- maybe not the best way to do this, but it does mean
                 -- we can do anything with one tick loop
                 if hydro <= 0.0 and not pl_afk then
