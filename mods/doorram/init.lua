@@ -14,12 +14,12 @@ local doorhp = {}
 
 if doors then
 	local orig_func = doors.door_toggle
-	doors.door_toggle = function(pos)
+	doors.door_toggle = function(pos, node, clicker)
 		local hash = minetest.hash_node_position(pos)
 		if doorhp[hash] and doorhp[hash] <= 0 then
-			return
+			return false
 		else
-			return orig_func(pos)
+			return orig_func(pos, node, clicker)
 		end
 	end
 end
