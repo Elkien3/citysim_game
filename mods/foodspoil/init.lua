@@ -2,11 +2,11 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	local name = itemstack:get_name()
 	--if the output has no expiration, don't do anything.
 	local expiredef = minetest.registered_items[name].expiration
-	if not expiredef then return end
+	if not expiredef then return itemstack end
 	local day_count = minetest.get_day_count()
 	local avg = 0
 	--if the item is being cooked, dosnt matter how old the items used are
-	local method = minetest.get_craft_recipe(name).method
+	--local method = minetest.get_craft_recipe(name).method
 	--if method ~= "cooking" and method ~= "baking" and method ~= "stovecook" then
 		--get the average expiration percentage of each item in recipe
 		local expirations = {}
@@ -28,9 +28,8 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	--end
 
 	--make and set new expire time based on average of items used
-	local newexpiration = day_count + expiredef
+	local newexpiration = day_count + math.floor(expiredef*avg)
 	local meta = itemstack:get_meta()
-	newexpiration = newexpiration - math.floor(expiredef*avg)
 	meta:set_int("ed", newexpiration)
 	meta:set_string("description", minetest.registered_items[name].description.." ed: "..newexpiration)
 	return itemstack
