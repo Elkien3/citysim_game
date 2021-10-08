@@ -208,35 +208,6 @@ local function rotateVector(x, y, a)
   return c*x - s*y, s*x + c*y
 end
 
-function car_formspec(clickername, owner, keyinvname, def)
-    local form = "" ..
-    "size[9,7]" ..
-    "list[current_player;main;0.5,2.75;8,4.25;0]" ..
-    "button[0.25,1.5;1,1;ignition;Ignition]" ..
-    "button_exit[3.625,1.5;1.75,1;exit;Exit Seat]" ..
-    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]" ..
-    "button[0.25,0.25;1.5,1;headlights;Headlights]" ..
-    "button[2,0.25;1.5,1;flashers;Flashers]"
-    if def.siren then
-		form = form.."button_exit[3.75,0.25;1.5,1;siren;Siren]"
-	end
-    if clickername == owner or (jobs and jobs.permissionstring(clickername, owner)) then
-		form = form.."field[5.6,1.78;1.75,1;owner;Owner;"..minetest.formspec_escape(owner).."]" .."button_exit[6.85,1.5;2,1;changeowner;Change Owner]"
-	else
-		form = form.."label[6,1.75;Owner: "..owner.."]"
-	end
-
-    return form
-end
-
-function seat_formspec(swap)
-    local form = "size[3,3]button_exit[0.5,0.5;2.25,1;exit;Exit Seat]"
-	if swap then
-		form = form.."button_exit[0.5,1.5;2.25,1;swap;Swap to Seat]"
-	end
-    return form
-end
-
 local cars_dyes = {
 	white = {"white",	 "ffffff",		 "White"},
 	grey = {"grey",       "8c8c8c",       "Grey"},
@@ -254,6 +225,64 @@ local cars_dyes = {
 	magenta = {"magenta",    "c30469",    "Magenta"},
 	pink = {"pink",       "f57b7b",       "Pink"},
 }
+
+local function updatetextures(self, def)
+	local prop = self.object:get_properties()
+	prop.textures = {}
+	if self.color then
+		prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
+	else
+		prop.textures[1] = def.initial_properties.textures[1]
+	end
+	if font_api then
+		local color = "black"
+		if cars_dyes[self.textcolor] then color = self.textcolor end
+		local textTex = font_api.get_font("04b03"):render(" "..self.platenumber.text, 130, 8, {maxlines = 1, halign = 'left', valign = 'center'})
+		textTex = textTex.."^("..font_api.get_font("04b03"):render("        "..(self.text or ""), 130, 8, {maxlines = 1, halign = 'left', valign = 'center'})..
+		"^[colorize:#"..cars_dyes[color][2]..":255)"
+		prop.textures[1] = prop.textures[1].."^"..textTex
+	end
+	self.object:set_properties(prop)
+	return prop
+end
+
+function car_formspec(clickername, car, keyinvname, def)
+    local form = "" ..
+    "size[9,7]" ..
+    "list[current_player;main;0.5,2.75;8,4.25;0]" ..
+    "button[0.25,1.5;1,1;ignition;Ignition]" ..
+    "button_exit[3.625,1.5;1.75,1;exit;Exit Seat]" ..
+    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]" ..
+    "button[0.25,0.25;1.5,1;headlights;Headlights]" ..
+    "button[2,0.25;1.5,1;flashers;Flashers]"
+    if def.siren then
+		form = form.."button[3.75,0.25;1.5,1;siren;Siren]"
+	end
+    if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) then
+		local textcolor_item_str = ""
+		for i, item in pairs(cars_dyes) do
+			if i ~= 1 then textcolor_item_str = textcolor_item_str.."," end
+			textcolor_item_str = textcolor_item_str .. minetest.formspec_escape(item[1])
+		end
+		form = form.."field[5.6,1.78;1.75,1;owner;Owner;"..minetest.formspec_escape(car.owner).."]" .."button_exit[6.85,1.5;2,1;changeowner;Change Owner]"..
+		"checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"..
+
+		"field[5.6,.7;2.5,1;text;Custom Text;"..minetest.formspec_escape(car.text or "").."]" ..
+		"dropdown[7.1,0.475;1.5,1;textcolor;"..textcolor_item_str..";".."white"..";false]"
+	else
+		form = form.."label[6,1.75;Owner: "..car.owner.."]"
+	end
+
+    return form
+end
+
+function seat_formspec(swap)
+    local form = "size[3,3]button_exit[0.5,0.5;2.25,1;exit;Exit Seat]"
+	if swap then
+		form = form.."button_exit[0.5,1.5;2.25,1;swap;Swap to Seat]"
+	end
+    return form
+end
 
 function getClosest(player, car, distance)
 	local def = cars_registered_cars[car.object:get_entity_name()]
@@ -424,11 +453,18 @@ local function driver_rightclick(self, clicker)
 	if self.key then
 		local new_stack = ItemStack("default:key")
 		local meta = new_stack:get_meta()
+		local description = def.description
+		if self.color then
+			description = cars_dyes[self.color][3].." "..description
+		end
+		if self.platenumber and self.platenumber.text then
+			description = description.." "..self.platenumber.text
+		end
 		meta:set_string("secret", self.secret)
-		meta:set_string("description", string.format("Key to %s's %s", name, def.description))
+		meta:set_string("description", string.format("Key to %s's %s", self.owner, description))
 		inventory:set_stack("key", 1, new_stack)
 	end
-	local formspec = car_formspec(name, self.owner or "", "cars"..selfname, def)
+	local formspec = car_formspec(name, self, "cars"..selfname, def)
     minetest.show_formspec(name, "cars_form", formspec)
 end
 
@@ -480,7 +516,7 @@ local function register_lightentity(carname)
 						end
 					end
 				end
-				local lighttable = {headlights = self.headlights, brakelights = self.brakelights, leftblinker = self.leftblinker and self.blink, rightblinker = self.rightblinker and self.blink, rightflasher = self.flashers and self.blink, leftflasher = self.flashers and self.blink}
+				local lighttable = {headlights = self.headlights, brakelights = self.brakelights, leftblinker = self.leftblinker and self.blink, rightblinker = self.rightblinker and self.blink, flasheron = self.flashers and self.blink, flasheroff = self.flashers and not self.blink}
 				
 				cars.setlighttexture(self.object, lighttable, carname)
 			end
@@ -528,15 +564,39 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			elseif fields.headlights and car.battery > 0 then
 				cars.setlight(obj, "headlights", "toggle")
 			elseif fields.flashers then
-				--cars.setlight(obj, "flashers", "toggle")
+				cars.setlight(obj, "flashers", "toggle")
 			elseif fields.siren and def.siren then
-				car.siren = not car.siren
-			elseif fields.changeowner and fields.owner and (car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner))) then
-				if minetest.player_exists(fields.owner) or (jobs and jobs.is_job_string(fields.owner)) then
-					car.owner = fields.owner--todo make sure player exists and also add job support
-					minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
+				if car.siren ~= nil then
+					minetest.sound_fade(car.siren, 10, 0)
+					car.siren = nil
+					car.timer3 = nil
 				else
-					minetest.chat_send_player(name, "Invalid owner name")
+					car.siren = true
+					car.timer3 = def.sirenlength or 2
+				end
+			end
+			if car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner)) then
+				if fields.changeowner and fields.owner then
+					if minetest.player_exists(fields.owner) or (jobs and jobs.is_job_string(fields.owner)) then
+						car.owner = fields.owner
+						minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
+					else
+						minetest.chat_send_player(name, "Invalid owner name")
+					end
+				elseif fields.trunklock ~= nil then
+					if fields.trunklock == "true" then
+						car.trunklock = true
+					else
+						car.trunklock = nil
+					end
+				elseif fields.text or fields.textcolor then
+					if fields.text then
+						car.text = fields.text
+					end
+					if fields.textcolor and cars_dyes[fields.textcolor]then
+						car.textcolor = fields.textcolor
+					end
+					updatetextures(car, def)
 				end
 			end
 		end
@@ -553,8 +613,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 end)
-
-local function car_step(self, dtime)
+local lagtable = {}
+local lagcounter = 1
+local function car_step(self, dtime, moveresult)
 	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.object:get_entity_name()]
 	if self.ignition and oil and def.gas_usage then
@@ -894,7 +955,7 @@ local function car_step(self, dtime)
 		new_velo = vector.add(vector.multiply(new_velo, 1-factor), vector.multiply(velocity, factor))
 		if self.skidsound then
 			if self.last_on_asphalt == nil or on_asphalt == self.last_on_asphalt then
-				minetest.sound_fade(self.skidsound, 5, factor)
+				minetest.sound_fade(self.skidsound, 20, factor)
 			else
 				minetest.sound_fade(self.skidsound, 10, 0)
 				self.skidsound = nil
@@ -1027,6 +1088,20 @@ local function car_step(self, dtime)
 		end
 		self.timer2 = 0
 	end
+	if self.siren ~= nil then
+		self.timer3 = self.timer3 + dtime
+		if self.timer3 > (def.sirenlength or 2) then
+			if type(self.siren) == "number" then
+				minetest.sound_stop(self.siren)
+			end
+			self.siren = minetest.sound_play(def.siren, {
+				max_hear_distance = 48,
+				object = self.object,
+				gain = 2
+			})
+			self.timer3 = 0
+		end
+	end
 end
 
 function car_rightclick(self, clicker, closeid)
@@ -1055,12 +1130,14 @@ function car_rightclick(self, clicker, closeid)
 		end
 		if closeid then
 			if closeid == 0 then
-				minetest.sound_play("opentrunk", {
-					max_hear_distance = 24,
-					gain = 1,
-					object = self.object
-				}, true)
-				trunk_rightclick(self, clicker)
+				if self.trunklock == nil or clicker:get_wielded_item():get_meta():get_string("secret") == self.secret then
+					minetest.sound_play("opentrunk", {
+						max_hear_distance = 24,
+						gain = 1,
+						object = self.object
+					}, true)
+					trunk_rightclick(self, clicker)
+				end
 				return
 			end
 			if not self.passengers[closeid].player then
@@ -1145,6 +1222,9 @@ function cars_register_car(def)
 					self.gas = deserialized.gas or 0
 					self.battery = deserialized.battery or 600
 					self.color = deserialized.color
+					self.trunklock = deserialized.trunklock
+					self.text = deserialized.text
+					self.textcolor = deserialized.textcolor
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -1160,15 +1240,7 @@ function cars_register_car(def)
 					random(2^16) - 1, random(2^16) - 1)
 			end
 			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
-			local prop = self.object:get_properties()
-			if self.color then
-				prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
-			end
-			if font_api then
-				local textTex = font_api.get_font("04b03"):render(self.platenumber.text, 6*7, 8, {maxlines = 1, halign = 'center', valign = 'center'}) --42x8
-				prop.textures[1] = prop.textures[1].."^"..textTex
-			end
-			self.object:set_properties(prop)
+			updatetextures(self, def)
 			self.object:setacceleration({x=0, y=-10, z=0})
 			--self.object:set_armor_groups({immortal = 1})
 			self.wheel = {}
@@ -1197,7 +1269,21 @@ function cars_register_car(def)
 			self.object:set_hp(self.hp)
 		end,
 		get_staticdata = function(self)
-			return minetest.serialize({owner = self.owner, trunk = serializeContents(self.trunkinv), secret = self.secret, locked = self.locked, key = self.key, plate = self.platenumber, hp = self.hp, gas = self.gas, battery = self.battery, color = self.color})
+			return minetest.serialize({
+				owner = self.owner,
+				trunk = serializeContents(self.trunkinv),
+				secret = self.secret,
+				locked = self.locked,
+				key = self.key,
+				plate = self.platenumber,
+				hp = self.hp,
+				gas = self.gas,
+				battery = self.battery,
+				color = self.color,
+				trunklock = self.trunklock,
+				text = self.text,
+				textcolor = self.textcolor
+			})
 		end,
 		on_step = function(self, dtime)
 			car_step(self, dtime)
@@ -1264,8 +1350,15 @@ function cars_register_car(def)
 					-- finish and return the new key
 					local new_stack = ItemStack("default:key")
 					local meta = new_stack:get_meta()
+					local description = def.description
+					if self.color then
+						description = cars_dyes[self.color][3].." "..description
+					end
+					if self.platenumber and self.platenumber.text then
+						description = description.." "..self.platenumber.text
+					end
 					meta:set_string("secret", self.secret)
-					meta:set_string("description", string.format("Key to %s's %s", self.owner, def.description))
+					meta:set_string("description", string.format("Key to %s's %s", self.owner, description))
 
 					if punchstack:get_count() == 0 then
 						punchstack = new_stack
@@ -1275,19 +1368,13 @@ function cars_register_car(def)
 						end -- else: added to inventory successfully
 					end
 					minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
-				elseif not self.color then
+				elseif not self.color and def.initial_properties.textures[3] ~= nil then
 					local color = string.sub(punchitem, 5)
 					if color and cars_dyes[color] and punchstack:get_count() >= (def.dyecost or 5) then
 						self.color = color
-						local prop = self.object:get_properties()
-						prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
-						if font_api then
-							local textTex = font_api.get_font("04b03"):render(self.platenumber.text, 6*7, 8, {maxlines = 1, halign = 'center', valign = 'center'}) --42x8
-							prop.textures[1] = prop.textures[1].."^"..textTex
-						end
+						updatetextures(self, def)
 						punchstack:take_item(def.dyecost or 5)
 						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
-						self.object:set_properties(prop)
 					end
 				elseif player_attached[name] ~= self then
 					--minetest.chat_send_all("ow")
@@ -1307,6 +1394,9 @@ function cars_register_car(def)
 				end
 				if self.skidsound then
 					minetest.sound_fade(self.skidsound, 5, 0)
+				end
+				if self.siren and type(self.siren) == "number" then
+					minetest.sound_fade(self.siren, 10, 0)
 				end
 				--todo remove all children
 				for id, passengers in pairs (self.passengers) do

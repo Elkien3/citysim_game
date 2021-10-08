@@ -41,15 +41,34 @@ local sedandef = {
 			collisionbox = {-1, -0.05, -1, 1, 1.1, 1},
 			visual = "mesh",
 			visual_size = {x=1, y=1},
-			mesh = "sedanl.b3d",
-			textures = {'sedan3unpainted.png', "sedan3.png", "sedan3colored.png"},
+			mesh = "sedan2.b3d",
+			textures = {'sedan2UVcombined.png', "sedan2UVcombined.png", "sedan2colored.png"},
 			is_visible = true,
 			makes_footstep_sound = false,
 			automatic_rotate = 0,
 			trunkinv = {},
 		}
 	}
-	cars_register_car(sedandef)
+cars_register_car(sedandef)
+
+local policecardef = table.copy(sedandef)
+sedandef = nil
+
+policecardef.siren = "siren"
+policecardef.sirenlength = 4.4
+policecardef.name = "cars:police_sedan"
+policecardef.description = "Police Sedan"
+policecardef.horn = "uralhorn"
+policecardef.lights = "police_sedan"
+policecardef.acceleration = 5.5
+policecardef.max_speed = 26.8224
+policecardef.craftschems = {"police_sedan", "police_sedan1", "police_sedan2", "police_sedan3"}
+policecardef.max_force_offroad = 2
+policecardef.initial_properties.mesh = "sedan2.b3d"
+policecardef.initial_properties.textures = {'sedan2UVcombined.png'}
+policecardef.inventory_image = "inv_car_grey.png"
+cars_register_car(policecardef)
+policecardef = nil
 	
 minetest.register_entity("cars:sedanwheel", {
     hp_max = 1,
