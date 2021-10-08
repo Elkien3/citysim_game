@@ -229,7 +229,7 @@ local cars_dyes = {
 local function updatetextures(self, def)
 	local prop = self.object:get_properties()
 	prop.textures = {}
-	if self.color and prop.textures[3] then
+	if self.color and prop.initial_properties.textures[3] then
 		prop.textures[1] = def.initial_properties.textures[2].."^("..def.initial_properties.textures[3].."^[multiply:#"..cars_dyes[self.color][2]..")"
 	else
 		prop.textures[1] = def.initial_properties.textures[1]
