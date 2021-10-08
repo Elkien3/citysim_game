@@ -373,7 +373,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local meta = minetest.get_meta(pos)
 	if fields.buy then
 		local inv = meta:get_inventory()
-		local price = tonumber(meta:get_string("price"))
+		local price = tonumber(meta:get_string("price")) or 0
 		local input = inv:get_stack("input", 1)
 		local moneys = {minegeld = 1, minegeld_5 = 5, minegeld_10 = 10}
 		local amount = (moneys[string.gsub(input:get_name(), "currency:", "")] or 0) * input:get_count()
@@ -413,8 +413,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 	if fields.key_enter_field == "price" then
-		local owner = meta:get_string("owner")
-		if owner == "" or owner == name then
+		if default.can_interact_with_node(player, pos) then
 			if tonumber(fields.price) then
 				meta:set_string("price", fields.price)
 			end
@@ -434,13 +433,20 @@ minetest.register_node("oil:pump", {
 	tiles = {"gaspumpUV.png"},
 	groups = {cracky = 3, stone = 1},
 	sounds = default.node_sound_stone_defaults(),
+	can_dig = function(pos, player)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		return inv:is_empty("input") and
+			inv:is_empty("output") and
+			default.can_interact_with_node(player, pos)
+	end,
 	on_rightclick = function(pos, node, clicker)
 		if not clicker then return end
 		local name = clicker:get_player_name()
 		if not name then return end
 		local meta = minetest.get_meta(pos)
 		local owner = meta:get_string("owner")
-		minetest.show_formspec(name,"oil:gas_pump", form_pump(pos, owner == "" or owner == name))
+		minetest.show_formspec(name,"oil:gas_pump", form_pump(pos, default.can_interact_with_node(clicker, pos)))
 		form_table[name] = pos
 	end,
 	after_place_node = function(pos, placer)
@@ -456,7 +462,7 @@ minetest.register_node("oil:pump", {
 		local meta = minetest.get_meta(pos)
 		local name = puncher:get_player_name()
 		if not name then return end
-		if meta:get_string("owner") ~= "" and meta:get_string("owner") ~= name then return end
+		if not default.can_interact_with_node(puncher, pos) then return end
 		if reclick_stopper[name] then reclick_stopper[name] = nil return end
 		local wield = puncher:get_wielded_item():get_name()
 		local gas = meta:get_int("gas") or 0
