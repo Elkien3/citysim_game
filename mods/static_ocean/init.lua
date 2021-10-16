@@ -34,6 +34,6 @@ minetest.register_abm({
 	interval = 4,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		minetest.remove_node(nodepos)
+		minetest.remove_node(pos)
 	end,
 })
