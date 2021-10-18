@@ -1,0 +1,10 @@
+Non concealable guns must be put in the first slot in the hotbar to use
+press zoom key to load guns (you must have the proper ammunition in your main inventory), drop key to unload.
+while loading/unloading multiple rounds, you can use dig key (left mouse) to cancel loading.
+while unloading you can press drop key again to drop the gun.
+dig button (left mouse) to fire, place button (right mouse) to zoom in/out
+
+magazines simply hold bullets, they are not consumed.
+to load a magazine with bullets, put the magazine and the proper ammunition in the craft grid.
+to unload the bullets from the magazine, put only the magazine in the craft grid.
+you must unload the magazine with drop key before loading another with zoom key.

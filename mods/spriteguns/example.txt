@@ -1,0 +1,70 @@
+spriteguns.register_gun("spriteguns:model45",{
+	description = "Model 45 Revolver",
+	inventory_image = "spriteguns_model45.png",
+	zoomfov = 60,
+	zoomspeed = .5,--how much to slow the player when they zoom in
+	scale = 1.5,--if this gun's sprites are larger or smaller change this value
+	range = 200,--damage will drop off to 0 at this distance. at half range it will be 3/4 damage and 3/4 range will be 1/2 damage and so on.
+	fire_sound = "rangedweapons_ak",
+	fire_sound_distant = "distant_local",--audible from much farther than fire_sound
+	magazine = true,--this gun uses a magazine
+	size = 20,--how many bullets the gun can fit, if using a magazine make sure to match this to the magazine size
+	loadtype = "auto",--"auto", "semi", and "manual"
+	ammo = "spriteguns:mag_thompson",--can add a number for how many bullets to load at a time.
+	firetime = .2,--time between shots in seconds. either do it this way or firetime=rps/1 or firetime=rpm/60
+	offsetrecoil = 100, --the maximum of how far the aimpoint moves when you fire
+	targetrecoil = 40,--the maximum of how far away the aimpoint will be from the last one when you fire.
+	damage = 5,
+	maxdev = .12,--maximum deviation of the aimpoint from the center of the screen when holding at hip
+	maxzoomdev = .03,--maximum deviation of the aimpoint from the center of the screen when zoomed in
+	unload_amount = 1,--how many bullets should be unloaded per cycle
+	concealed = true,--gun will not show on the player's back, and can be used in any hotbar slot
+	space = 3,--how many slots the gun takes up in inventory
+	pellets = 8,--how many bullets are fired per shot
+	spread = 3,--0 is perfect accuracy, going up makes the gun more and more inaccurate.
+	reloadresume = false,--if a gun has a long reload animation, allow player's to stop it by switching weapons and resume later.
+	textures = {--nomag textures are only for magazine guns
+		prefix = "model45_",
+		hipidle = "hipidle.png",
+		hipidlenomag = "hipidle.png",
+		hipfire = "hipfire.png",
+		hippostfire = "hipfire.png",
+		aimidle = "aimidle.png",
+		aimidlenomag = "aimidle.png",
+		aimfire = "aimfire.png",
+		aimpostfire = "aimfire.png",
+		load = {--this animation is played whenever you equip the gun, and after you fire a manual action gun.
+			length = .5,--length is how long it takes to go through the entire animation
+			sounds = {nil, "gunslinger_charge"},--what sound to play for each frame
+			frames = {"load1.png", "load2.png"},--the animation frames in order
+			zoomframes = {"load1.png", "load2.png"}--if you want to allow the animation to be played while zoomed in, you need to give zoomed frames
+		},
+		reload = {
+			length = 2,
+			speed = .75,--while the animation is running, the player is slowed this much
+			sounds = {nil, "gunslinger_charge", nil, "gunslinger_charge", nil, "gunslinger_charge"},
+			loopstart = 3,--between these frames the player loads rounds, the rest plays before and after.
+			loopend = 4,
+			frames = {"load2.png", "load1.png", "reload1.png", "reload2.png", "load1.png", "load2.png"}
+		},
+		unload = {
+			length = 2,
+			speed = .75,
+			sounds = {nil, "gunslinger_charge", nil, "gunslinger_charge", nil, "gunslinger_charge"},
+			loopstart = 3,
+			loopend = 4,
+			frames = {"load2.png", "load1.png", "reload1.png", "reload2.png", "load1.png", "load2.png"}
+		},
+	},
+})
+
+minetest.register_craftitem("spriteguns:bullet_45", {
+	description = ".45 Bullet",
+	inventory_image = "rangedweapons_9mm.png",
+})
+
+minetest.register_tool("spriteguns:mag_thompson", {
+	description = "Thompson Magazine",
+	inventory_image = "rangedweapons_stanag_mag.png",
+})
+spriteguns.register_magazine("spriteguns:mag_thompson", "spriteguns:bullet_45", 20)
