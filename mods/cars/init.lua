@@ -864,7 +864,7 @@ local function car_step(self, dtime, moveresult)
 		local maxwheelpos = 45*(8/(abs_v+8))
 		local lastwheelpos = self.wheelpos
 		local turnspeed = 50
-		if self.cruise then turnspeed = 30 end
+		if self.cruise then turnspeed = 36 end
 		if ctrl.left and (self.wheelpos <= 0 or self.cruise) then
 			self.wheelpos = self.wheelpos-turnspeed*dtime*(4/(abs_v+4))
 			if self.wheelpos < -1*maxwheelpos then
@@ -888,7 +888,7 @@ local function car_step(self, dtime, moveresult)
 			if math.abs(self.wheelpos) > math.abs(self.maxwheelpos) then
 				self.maxwheelpos = wheelpos
 			end
-			if (self.wheelpos == 0 and math.abs(self.maxwheelpos) > 15) then
+			if self.maxwheelpos and math.abs(self.maxwheelpos) > 15 and (self.wheelpos == 0 or get_sign(self.wheelpos) ~= get_sign(self.maxwheelpos)) then
 				cars.setlight(lights, "leftblinker", false)
 				cars.setlight(lights, "rightblinker", false)
 			end
@@ -1068,11 +1068,12 @@ local function car_step(self, dtime, moveresult)
 		pitch = rpm+.2
 		if self.timer1 > .2/pitch-.05 then
 				local gain = pitch
-				if slowing or abs_v == 0 then
-					gain = .2
-				end
 				if abs_v == 0 then
 					gain = .15
+				elseif slowing then
+					gain = .2
+				elseif self.cruise then
+					gain = .25
 				end
 				minetest.sound_play(def.enginesound, {
 					max_hear_distance = 48*gain,
@@ -1250,6 +1251,7 @@ function cars_register_car(def)
 					self.hp = deserialized.hp or 20
 					self.gas = deserialized.gas or 0
 					self.battery = deserialized.battery or 600
+					self.cruise = (deserialized.cruise and 0)
 					self.color = deserialized.color
 					self.trunklock = deserialized.trunklock
 					self.text = deserialized.text
@@ -1329,6 +1331,7 @@ function cars_register_car(def)
 				gas = self.gas,
 				battery = self.battery,
 				color = self.color,
+				cruise = self.cruise,
 				trunklock = self.trunklock,
 				text = self.text,
 				textcolor = self.textcolor
