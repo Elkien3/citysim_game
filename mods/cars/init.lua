@@ -690,7 +690,7 @@ local function car_step(self, dtime, moveresult)
 			local objects = minetest.get_objects_inside_radius(checkpos, 1)
 			local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
 			--self.object:set_hp(self.object:get_hp()-dmg/2, "crash")
-			self.object:punch(self.object, nil, {damage_groups={fleshy=dmg/2}})
+			self.object:punch(self.object, nil, {damage_groups={vehicle=dmg/2}})
 			for _,obj in pairs(objects) do
 				if obj:is_player() then
 					for id, passengers in pairs (self.passengers) do
@@ -724,6 +724,15 @@ local function car_step(self, dtime, moveresult)
 		end
 	end
 	local on_asphalt = string.find(node, "asphalt") or string.find(node, "road_black")
+	local max_speed = def.max_speed
+	if not on_asphalt then
+		max_speed = def.max_offroad_speed or max_speed*.66
+	end
+	if self.hp <= (def.initial_properties.hp_max or 20)/2 then
+		local halfmax = (def.initial_properties.hp_max or 20)/2
+		local damagefactor = self.hp/halfmax
+		max_speed = max_speed*damagefactor
+	end
 	local driver = self.passengers[1].player
 	if driver then
 		local text = tostring(math.abs(rnd(self.v*2.23694, 10)).." MPH")
@@ -733,7 +742,8 @@ local function car_step(self, dtime, moveresult)
 		driver:hud_change(self.hud, "text", text)
 		local ctrl = driver:get_player_control()
 		local sign
-		if self.v == 0 then sign = 0 if self.cruise then self.cruise = nil end else sign = get_sign(self.v) end
+		local brakes = false
+		if self.v == 0 then sign = 0 else sign = get_sign(self.v) end
 		if self.lastctrl then
 			if ctrl.sneak and not self.lastctrl.sneak then
 				local lookdir = yaw-driver:get_look_horizontal()
@@ -746,16 +756,16 @@ local function car_step(self, dtime, moveresult)
 					elseif lookdir < -15 then
 						cars.setlight(lights, "leftblinker", "toggle")
 					else
-						if self.v <= 0 or (self.cruise and math.abs(self.cruise - self.v) < .1) then
+						if self.cruise then
 							self.cruise = nil
 						else
-							self.cruise = rnd(self.v*2.23694)/2.23694
-							minetest.sound_play("lighton", {
-								max_hear_distance = 6,
-								gain = 1,
-								object = self.object
-							}, true)
+							self.cruise = self.v
 						end
+						minetest.sound_play("lighton", {
+							max_hear_distance = 6,
+							gain = 1,
+							object = self.object
+						}, true)
 					end
 				end
 			end
@@ -764,44 +774,61 @@ local function car_step(self, dtime, moveresult)
 		--VELOCITY MOVEMENT
 		if self.ignition then
 			local newv = self.v
-			if ctrl.up then
-				if sign >= 0 then
-					newv = newv + def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
-					cars.setlight(lights, "brakelights", false)
-				else
-					if self.cruise then self.cruise = nil end
-					newv = newv + def.braking*dtime
-					cars.setlight(lights, "brakelights", true)
+			if self.cruise then
+				if ctrl.jump then
+					newv = newv - def.braking*dtime*sign
+					self.cruise = newv
+					brakes = true
 					slowing = true
+				elseif ctrl.up then
+					self.cruise = self.v + 4*dtime
+				elseif ctrl.down then
+					self.cruise = self.v - 4*dtime
+					cars.setlight(lights, "brakelights", false)
 				end
-			elseif ctrl.down then
-				if self.cruise then self.cruise = nil end
-				if sign <= 0 then
-					newv = newv - def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
-					cars.setlight(lights, "brakelights", false)
-				else
-					newv = newv - def.braking*dtime
-					cars.setlight(lights, "brakelights", true)
+			else
+				if ctrl.jump then
+					newv = newv - def.braking*dtime*sign
+					brakes = true
 					slowing = true
+				elseif ctrl.up then
+					if sign >= 0 then
+						newv = newv + def.acceleration*dtime*((max_speed-math.abs(self.v)+1)/max_speed)
+					else
+						if self.cruise then self.cruise = nil end
+						newv = newv + def.braking*dtime
+						brakes = true
+						slowing = true
+					end
+				elseif ctrl.down then
+					if self.cruise then self.cruise = nil end
+					if sign <= 0 then
+						newv = newv - def.acceleration*dtime*((max_speed-math.abs(self.v)+1)/max_speed)
+					else
+						newv = newv - def.braking*dtime
+						brakes = true
+						slowing = true
+					end
 				end
 			end
 			if node ~= "air" then
 				carpitch = (newv - self.v)*.07
 				self.v = newv
 			end
-			if not ctrl.up and not ctrl.down and sign ~= 0 then
-				if self.cruise and self.v < self.cruise and node ~= "air" then
-					self.v = self.v + def.acceleration*dtime*((def.max_speed-math.abs(self.v)+1)/def.max_speed)
+			if self.cruise or (not ctrl.up and not ctrl.down) then
+				if self.cruise and not ctrl.up and not ctrl.down and math.abs(self.cruise) < 1 then self.cruise = 0 end
+				if self.cruise and self.cruise ~= 0 and math.abs(self.v) < math.abs(self.cruise) and node ~= "air" then
+					self.v = self.v + def.acceleration*dtime*((max_speed-math.abs(self.v)+1)/max_speed)*get_sign(self.cruise)
 					if self.v > self.cruise then self.v = self.cruise end
-				else
+				elseif sign ~= 0 then
 					self.v = self.v - def.coasting*dtime*get_sign(self.v)
-					cars.setlight(lights, "brakelights", false)
 					slowing = true
 				end
 			end
+			cars.setlight(lights, "brakelights", brakes)
 			if get_sign(self.v) ~= sign and sign ~= 0 then
 				self.v = 0
-				cars.setlight(lights, "brakelights", false)
+				--cars.setlight(lights, "brakelights", false)
 			end
 			
 		else
@@ -836,21 +863,23 @@ local function car_step(self, dtime, moveresult)
 		local abs_v = math.abs(self.v)
 		local maxwheelpos = 45*(8/(abs_v+8))
 		local lastwheelpos = self.wheelpos
-		if ctrl.left and self.wheelpos <= 0 then
-			self.wheelpos = self.wheelpos-50*dtime*(4/(abs_v+4))
+		local turnspeed = 50
+		if self.cruise then turnspeed = 30 end
+		if ctrl.left and (self.wheelpos <= 0 or self.cruise) then
+			self.wheelpos = self.wheelpos-turnspeed*dtime*(4/(abs_v+4))
 			if self.wheelpos < -1*maxwheelpos then
 				self.wheelpos = -1*maxwheelpos
 			end
-		elseif ctrl.right and self.wheelpos >= 0 then
-			self.wheelpos = self.wheelpos+50*dtime*(4/(abs_v+4))
+		elseif ctrl.right and (self.wheelpos >= 0 or self.cruise) then
+			self.wheelpos = self.wheelpos+turnspeed*dtime*(4/(abs_v+4))
 			if self.wheelpos > maxwheelpos then
 				self.wheelpos = maxwheelpos
 			end
-		else
+		elseif not self.cruise or math.abs(self.wheelpos) < 1 then
 			local sign = get_sign(self.wheelpos)
 			
 				self.wheelpos = self.wheelpos - 50*get_sign(self.wheelpos)*dtime
-			if math.abs(self.wheelpos) < 1 or sign ~= get_sign(self.wheelpos) then
+			if math.abs(self.wheelpos) < 2 or sign ~= get_sign(self.wheelpos) then
 				self.wheelpos = 0
 			end
 		end
@@ -930,10 +959,10 @@ local function car_step(self, dtime, moveresult)
 			end
 		end
 	end
-	if self.v > def.max_speed then
-		self.v = def.max_speed
-	elseif self.v < -1*def.max_speed/2 then
-		self.v = -1*def.max_speed/2
+	if self.v > max_speed then
+		--self.v = max_speed
+	elseif self.v < -1*max_speed/2 then
+		self.v = -1*max_speed/2
 	end
 	if node ~= "air" and math.abs(self.v) > 1 and minetest.get_item_group(node, "water") > 0 then
 		self.v = 1*get_sign(self.v)
@@ -1243,6 +1272,7 @@ function cars_register_car(def)
 			updatetextures(self, def)
 			self.object:setacceleration({x=0, y=-10, z=0})
 			--self.object:set_armor_groups({immortal = 1})
+			self.object:set_armor_groups({vehicle = 100})
 			self.wheel = {}
 			wheelspeed(self)
 			local pos = self.object:getpos()
@@ -1267,6 +1297,25 @@ function cars_register_car(def)
 				self.extension:set_attach(self.object, "", def.extension, {x=0,y=0,z=0})
 			end
 			self.object:set_hp(self.hp)
+			local halfmax = (def.initial_properties.hp_max or 20)/2
+			if self.hp <= halfmax then
+				self.enginesmoke = minetest.add_particlespawner({
+					amount = 1,
+					time = 0,
+					minpos = def.engineloc or {x=0,y=.6,z=2},
+					maxpos = def.engineloc or {x=0,y=.6,z=2},
+					minvel = {x=-.3, y=.6, z=-.3},
+					maxvel = {x=.3, y=.8, z=.3},
+					minexptime = 2,
+					maxexptime = 3,
+					minsize = 9,
+					maxsize = 11,
+					collisiondetection = true,
+					attached = self.object,
+					vertical = false,
+					texture = "tnt_smoke.png",
+				})
+			end
 		end,
 		get_staticdata = function(self)
 			return minetest.serialize({
@@ -1376,15 +1425,41 @@ function cars_register_car(def)
 						punchstack:take_item(def.dyecost or 5)
 						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
 					end
+				end--[[
 				elseif player_attached[name] ~= self then
 					--minetest.chat_send_all("ow")
 					return true
 				else
 					return true
 				end
+				return true--]]
 			end
-			local hp = self.object:get_hp() - tool_capabilities.damage_groups.fleshy
+			if not tool_capabilities.damage_groups.vehicle then return true end
+			if self.enginesmoke then
+				minetest.delete_particlespawner(self.enginesmoke)
+				self.enginesmoke = nil
+			end
+			local hp = self.object:get_hp() - tool_capabilities.damage_groups.vehicle
 			self.hp = hp
+			local halfmax = (def.initial_properties.hp_max or 20)/2
+			if self.hp <= halfmax then
+				self.enginesmoke = minetest.add_particlespawner({
+					amount = 1,
+					time = 0,
+					minpos = def.engineloc or {x=0,y=.6,z=2},
+					maxpos = def.engineloc or {x=0,y=.6,z=2},
+					minvel = {x=-.3, y=.6, z=-.3},
+					maxvel = {x=.3, y=.8, z=.3},
+					minexptime = 2,
+					maxexptime = 3,
+					minsize = 9,
+					maxsize = 11,
+					collisiondetection = true,
+					attached = self.object,
+					vertical = false,
+					texture = "tnt_smoke.png",
+				})
+			end
 			if hp <= 0 then
 				for id, wheel in pairs(self.wheel) do
 					wheel:remove()
@@ -1472,3 +1547,4 @@ end)
 dofile(minetest.get_modpath("cars").."/car01.lua")
 dofile(minetest.get_modpath("cars").."/newcars.lua")
 dofile(minetest.get_modpath("cars").."/nodecraft.lua")
+dofile(minetest.get_modpath("cars").."/welding.lua")
