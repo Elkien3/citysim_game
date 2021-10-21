@@ -550,7 +550,7 @@ minetest.register_globalstep(function(dtime)
 	if main_timer > hb.settings.tick or timer > 4 then
 		if main_timer > hb.settings.tick then main_timer = 0 end
 		-- only proceed if damage is enabled
-		if minetest.setting_getbool("enable_damage") or hb.settings.forceload_default_hudbars then
+		if minetest.settings:get_bool("enable_damage") or hb.settings.forceload_default_hudbars then
 			for _, player in pairs(hb.players) do
 				-- update all hud elements
 				update_hud(player)
