@@ -9,6 +9,7 @@ local sedandef = {
 		max_speed = 24.5872,
 		trunksize = {x=6,y=2},
 		trunkloc = {x = 0, y = 4, z = -8},
+		engineloc = {x = 0, y = .6, z = 2},
 		passengers = {
 			{loc = {x = -4.5, y = 4, z = 5.25}, offset = {x = -4.5, y = -2, z = 5.75} },
 			{loc = {x = 4.5, y = 4, z = 5.25}, offset = {x = 4.5, y = -2, z = 5.75} },
