@@ -8,6 +8,11 @@ if minetest.get_modpath("moreores") ~= nil then
 	has_moreores = true
 end
 
+minetest.register_privilege("lockpick", {
+    description = "Can lockpick items",
+    give_to_singleplayer = false
+})
+
 --lockpick definitions
 --[[minetest.register_tool("lockpicks:lockpick_wood", {
 	description="Wooden Lockpick",

@@ -5,6 +5,7 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 	groups = groupies,
 	on_dig = function(pos, node, digger)		
 		local meta = minetest.get_meta(pos)
+		local name = digger:get_player_name()
 		local can_pick = false
 		local tool_group = digger:get_wielded_item():get_tool_capabilities()
 		if meta:get_string("owner") ~= "" then
@@ -15,43 +16,37 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 			end
 		end
 		if minetest.get_modpath("ctf_protect") ~= nil then
-			if minetest.is_protected(pos, digger:get_player_name()) then
+			if minetest.is_protected(pos, name) then
 				can_pick = false
 			end
+		end
+		if not minetest.check_player_privs(name, {lockpick=true}) then
+			can_pick = false
+			minetest.chat_send_player(name, "Your do not have the lockpick priv.")
 		end
 		if can_pick then
 			local wielditem = digger:get_wielded_item()
 			local wieldlevel = tool_group.max_drop_level
 			local rand = math.random(1,10)
-			if rand == 1 or meta:get_string("owner") == digger:get_player_name() then
+			if rand == 1 or meta:get_string("owner") == name then
 				meta:set_string("owner", "")
 				meta:set_string("infotext", newinfotext)
-				minetest.chat_send_player(digger:get_player_name(), "You picked the lock!")
-				minetest.log("action", digger:get_player_name().." picked "..minetest.get_node(pos).name.." with "..digger:get_wielded_item():get_name().." at ("..pos.x..","..pos.y..","..pos.z..")")
+				minetest.chat_send_player(name, "You picked the lock!")
+				minetest.log("action", name.." picked "..minetest.get_node(pos).name.." with "..digger:get_wielded_item():get_name().." at ("..pos.x..","..pos.y..","..pos.z..")")
+				if playercontrol_set_timer then
+					local privs = minetest.get_player_privs(name)
+					privs.lockpick = nil
+					minetest.set_player_privs(name, privs)
+					playercontrol_set_timer(name, "lockpick", 2*60)
+				end
 			elseif rand == 2 then
 				wielditem:clear()
 				digger:set_wielded_item(wieldeditem)
-				minetest.chat_send_player(digger:get_player_name(), "Your lockpick broke!")
+				minetest.chat_send_player(name, "Your lockpick broke!")
 			else
-				minetest.chat_send_player(digger:get_player_name(), "You failed to pick the lock.")
+				minetest.chat_send_player(name, "You failed to pick the lock.")
 			end
 			return false
-		else
-			if not default.can_interact_with_node(digger, pos) then
-				local pla_pos = digger:get_pos()
-				if digger:get_look_vertical() > .8 then
-					digger:setpos({
-					x = pla_pos.x,
-					y = pla_pos.y + 0.4,
-					z = pla_pos.z
-					})
-				else
-					digger:setpos(pla_pos)
-				end
-			elseif meta:get_inventory():is_empty("main") then
-				minetest.remove_node(pos)
-				digger:get_inventory():add_item('main', itemname or nodename)
-			end
 		end
 	end
 	})

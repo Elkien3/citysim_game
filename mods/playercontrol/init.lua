@@ -1,0 +1,140 @@
+local storage = minetest.get_mod_storage()
+
+local postable = {}
+local timertable = {}
+local timerfunctions = {}
+
+local function update()
+	for i, player in pairs(minetest.get_connected_players()) do
+		local name = player:get_player_name()
+		if timertable[name] then
+			local pos = player:get_pos()
+			if vector.distance(pos, postable[name]) > .1 then
+				postable[name] = pos
+				for id, timer in pairs(timertable[name]) do
+					timer = timer - 1
+					if timer <= 0 then
+						timertable[name][id] = nil
+						if timerfunctions[id] then
+							timerfunctions[id](name)
+						end
+					else
+						timertable[name][id] = timer
+					end
+				end
+			end
+			storage:set_string(name, minetest.serialize(timertable[name]))
+		end
+	end
+	minetest.after(60, update)
+end
+update()
+
+local function set_timer(name, id, val)
+	local tbl = timertable[name] or minetest.deserialize(storage:get_string(name)) or {}
+	tbl[id] = val
+	storage:set_string(name, minetest.serialize(tbl))
+	if timertable[name] then
+		timertable[name][id] = val
+	end
+end
+
+playercontrol_set_timer = set_timer
+
+minetest.register_on_joinplayer(function(player, last_login)
+	local name = player:get_player_name()
+	timertable[name] = minetest.deserialize(storage:get_string(name))
+	if timertable[name] then
+		postable[name] = player:get_pos()
+	end
+end)
+
+minetest.register_on_leaveplayer(function(player, timed_out)
+	local name = player:get_player_name()
+	timertable[name] = nil
+	postable[name] = nil
+end)
+
+minetest.register_privilege("pvp", {
+    description = "Can do full pvp damage",
+    give_to_singleplayer = false
+})
+
+minetest.register_on_newplayer(function(player)
+	local name = player:get_player_name()
+	set_timer(name, "pvp", 2*60)
+	set_timer(name, "lockpick", 2*60)
+	set_timer(name, "griefing", 2*60)
+end)
+
+minetest.register_chatcommand("set_playercontrol_timer", {
+    privs = {
+        ban = true,
+    },
+    func = function(name, param)
+        if not param or param == "" then return false, "No param specified" end
+		params = {}
+		for word in param:gmatch("%w+") do table.insert(params, word) end
+		if #params ~= 2 then return false, "Invalid syntax. must be /set_playercontrol_timer <id> <time>" end
+		set_timer(name, params[1], params[2])
+		return true, "Timer set."
+    end,
+})
+
+minetest.register_chatcommand("get_playercontrol_timer", {
+    func = function(name, param)
+		if not timertable[name] then return false, "No timers found for you." end
+		local str = "Your Timers: "
+		for id, timer in pairs(timertable[name]) do
+			str = str.."["..id.."] = "..timer.." minutes "
+		end
+		return true, str
+    end,
+})
+
+timerfunctions["pvp"] = function(name)
+	if not minetest.registered_privileges["pvp"] then return end
+	local privs = minetest.get_player_privs(name)
+	if privs.pvp then return end
+	privs.pvp = true
+	minetest.set_player_privs(name, privs)
+	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'pvp' privilege.")
+end
+timerfunctions["lockpick"] = function(name)
+	if not minetest.registered_privileges["lockpick"] then return end
+	local privs = minetest.get_player_privs(name)
+	if privs.lockpick then return end
+	privs.lockpick = true
+	minetest.set_player_privs(name, privs)
+	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'lockpick' privilege.")
+end
+timerfunctions["griefing"] = function(name)
+	if not minetest.registered_privileges["griefing"] then return end
+	local privs = minetest.get_player_privs(name)
+	if privs.griefing then return end
+	privs.griefing = true
+	minetest.set_player_privs(name, privs)
+	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'griefing' privilege.")
+end
+
+local waspunched = {}
+minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
+	local name = hitter:get_player_name()
+	local plName = player:get_player_name()
+	if not name or not plName then return end
+	if not minetest.check_player_privs(name, {pvp=true}) and not waspunched[name] then
+		damage = damage/3
+		player:set_hp(player:get_hp()-damage, "punch")
+		return true
+	elseif not minetest.check_player_privs(plName, {pvp=true}) then
+		waspunched[plName] = (waspunched[plName] or 0) + 1
+		minetest.after(60, function()
+			if waspunched[plName] then
+				waspunched[plName] = waspunched[plName] - 1
+				if waspunched[plName] <= 0 then
+					waspunched[plName] = nil
+				end
+			end
+		end)
+	end
+end)
