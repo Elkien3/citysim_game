@@ -1,234 +1,330 @@
--- How long in seconds until a battle ends (times since last hit)
-local battletimeout = 15
-local armor_installed = minetest.get_modpath("3d_armor")
--- Fight start message
-local FightMessage = "You entered a Fight!"
+local ghost_time = 5*60--time in seconds to keep a disconnect ghost, timer is reset when interacted with
+local storage = minetest.get_mod_storage()
 
--- Fight end message
-local EndFightMessage = "The Fight is Over!"
+local bodytable = minetest.deserialize(storage:get_string("bodytable")) or {}
 
-local playerinpvp = {}
+for name, tbl in pairs(bodytable) do
+	if tbl.time and tbl.time >= os.time() and not (tbl.pos or tbl.hp or tbl.inv) then
+		bodytable[name] = nil
+	end
+end
+storage:set_string("bodytable", minetest.serialize(bodytable))
 
-minetest.register_privilege("combatlog", {
-	description = "Used to kill a combat logger when he joins.",
-	give_to_singleplayer= false,
-})
-
-local incombat_hud = {}
-
-local function setplayerpvp(playername)
-	if not playerinpvp[playername] then
-		playerinpvp[playername] = 0
-		local player = minetest.get_player_by_name(playername)
-		incombat_hud[playername] = player:hud_add({
-			hud_elem_type = "image",
-			position  = {x = 1, y = .75},
-			offset    = {x = -220, y = 0},
-			text      = "incombat.png",
-			scale     = { x = 10, y = 10},
-			alignment = { x = 1, y = 0 },
-		})
-		--minetest.chat_send_player(playername, FightMessage)
+local lastupdate
+local updatetime = 2
+local updatequeued
+local function update_bodies()
+	if not lastupdate or os.time()-lastupdate >= updatetime then
+		lastupdate = os.time()
+		updatequeued = nil
+		storage:set_string("bodytable", minetest.serialize(bodytable))
+	elseif not updatequeued then
+		updatequeued = true
+		minetest.after(updatetime-(os.time()-lastupdate), update_bodies)
 	end
 end
 
-local function resettime(playername)
-	if playerinpvp[playername] ~= nil then
-		playerinpvp[playername] = 0
+bodies_dragging = {}
+
+local function serializeContents(contents)
+   if not contents then return "" end
+
+   local tabs = {}
+   for i, stack in ipairs(contents) do
+      tabs[i] = stack and stack:to_table() or ""
+   end
+
+   return minetest.serialize(tabs)
+end
+
+local function deserializeContents(data)
+   if not data or data == "" then return nil end
+   local tabs = minetest.deserialize(data)
+   if not tabs or type(tabs) ~= "table" then return nil end
+
+   local contents = {}
+   for i, tab in ipairs(tabs) do
+      contents[i] = ItemStack(tab)
+   end
+
+   return contents
+end
+
+local function get_look_yaw(pos)
+	local pi = math.pi
+	local rotation = minetest.get_node(pos).param2
+	if rotation > 3 then
+		rotation = rotation % 4 -- Mask colorfacedir values
+	end
+	if rotation == 1 then
+		return pi / 2, rotation
+	elseif rotation == 3 then
+		return -pi / 2, rotation
+	elseif rotation == 0 then
+		return pi, rotation
+	else
+		return 0, rotation
 	end
 end
 
-local function endtimer(playername)
-	if playerinpvp[playername] ~= nil then
-		local player = minetest.get_player_by_name(playername)
-		if player then
-			player:hud_remove(incombat_hud[playername])
+local function remove_body(self)
+	local parent = self.object:get_attach()
+	if parent and parent:get_player_name() then
+		bodies_dragging[parent:get_player_name()] = nil
+	end
+	if self.owner and bodytable[self.owner] and not bodytable[self.owner]["pos"] and not bodytable[self.owner]["inv"] and not bodytable[self.owner]["hp"] then
+		bodytable[self.owner] = nil
+		storage:set_string("bodytable", minetest.serialize(bodytable))
+	end
+	self.object:remove()
+end
+
+minetest.register_entity("anticombatlog:entity", {
+	hp_max = 20,
+	physical = true,
+	weight = 5,
+	collisionbox = {-0.3, 0, -0.3, 0.3, .3, 0.3},
+	visual = "mesh",
+	mesh = "character.b3d",
+	textures = {"invisible.png"},
+	is_visible = true,
+	makes_footstep_sound = false,
+    automatic_rotate = 0,
+    on_activate = function(self, staticdata, dtime_s)
+		local deserialized = minetest.deserialize(staticdata)
+		if not deserialized then
+			remove_body(self)
+			return
 		end
-		--minetest.chat_send_player(playername, EndFightMessage)
-		playerinpvp[playername] = nil
-	end
-end
-local drop = function(pos, itemstack)
-	local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
-	if obj then
-		obj:setvelocity({
-			x = math.random(-10, 10) / 9,
-			y = 5,
-			z = math.random(-10, 10) / 9,
-		})
-	end
-end
-local function dropinventory(invref, pos)
-	for i = 1, invref:get_size("main") do
-		drop(pos, invref:get_stack("main", i))
-	end
-end
-
-local function killcombatlogger(player)
-	local player_inv = player:get_inventory()
-	local armor_inv = minetest.get_inventory({type="detached", name=player:get_player_name().."_armor"})
-	player_inv:set_list("main", {})
-	player_inv:set_list("craft", {})
-	if armor_installed then
-		player_inv:set_list("armor", {})
-		armor_inv:set_list("armor", {})
-		armor:save_armor_inventory(player)
-	end
-	player:set_hp(0)
-	local privs = minetest.get_player_privs(player:get_player_name())
-	privs.combatlog = nil
-	privs.interact = true
-	minetest.set_player_privs(player:get_player_name(), privs)
-	minetest.chat_send_player(player:get_player_name(), "You died after combat logging.")
-	
-end
-local ghost_player = {}
-local function on_combatlog(player, playername)
-	--minetest.chat_send_all("*** "..tostring(playername).." Combat Logged!")
-	local skin = "character.png"
-	local armortex = ""
-	if armor_installed then
-		skin = armor.textures[playername].skin or "character.png"
-		armortex = armor.textures[playername].armor
-	end
-	local pos = player:getpos()
-	pos.y = pos.y + 1
-	local obj = minetest.add_entity(pos, "anticombatlog:ghost")
-	ghost_player[playername] = obj
-	if obj then
-		obj:set_armor_groups(player:get_armor_groups())
-		obj:set_properties({nametag = playername})
-		obj:set_hp(player:get_hp())
-		obj:set_wielded_item(player:get_wielded_item())
-		obj:setyaw(player:get_look_horizontal())
-		if armor_installed then
-			obj:set_properties({textures = {skin.."^"..armortex}})
+		self.inv = deserialized.inv
+		self.owner = deserialized.owner
+		if not bodytable[self.owner] then self.object:remove() return end
+		storage:set_string("bodytable", minetest.serialize(bodytable))
+		self.sleeping = deserialized.sleeping
+		self.time = deserialized.expiretime
+		self.hp = deserialized.hp
+		self.armor_groups = deserialized.armor_groups
+		self.object:set_armor_groups(self.armor_groups)
+		if self.hp then
+			self.object:set_hp(self.hp)
+		end
+		if self.time <= os.time() then
+			remove_body(self)
+			return
+		end
+		
+		if self.sleeping then
+			self.object:set_properties({infotext = self.owner.." (sleeping)"})
 		else
-			obj:set_properties({textures = {skin}})
+			self.object:set_properties({infotext = self.owner.." (dead)"})
 		end
-	end
-	local ghost_inv = minetest.create_detached_inventory(playername.."_ghost", {})
-	local player_inv = player:get_inventory()
-	local armor_inv = minetest.get_inventory({type="detached", name=playername.."_armor"})
-	for i = 1, player_inv:get_size("main") do
-		ghost_inv:set_size("main", (ghost_inv:get_size("main")+1))
-		ghost_inv:add_item("main", player_inv:get_stack("main", i))
-	end
-	for i = 1, player_inv:get_size("craft") do
-		ghost_inv:set_size("main", (ghost_inv:get_size("main")+1))
-		ghost_inv:add_item("main", player_inv:get_stack("craft", i))
-	end
-	if armor_installed and armor_inv then
-		for i = 1, armor_inv:get_size("armor") do
-			ghost_inv:set_size("main", (ghost_inv:get_size("main")+1))
-			ghost_inv:add_item("main", armor_inv:get_stack("armor", i))
-		end
-	end
-	minetest.after((battletimeout - playerinpvp[playername]) or battletimeout, function(obj) 
-    obj:remove()
-	end, obj)
-
-end
-
-minetest.register_on_punchplayer(function(player, hitter)
-	if not (player:is_player() and hitter:is_player() ) then
-		return
-	end
-	
-	local hittername = hitter:get_player_name()
-	local victimname = player:get_player_name()
-
-	setplayerpvp(hittername)
-	setplayerpvp(victimname) -- moved OPCE check
-
-	resettime(hittername)
-	resettime(victimname) -- won't affect non-registered victims
-end)
-
-minetest.register_globalstep(function(dtime)
-	for fighter,oldtime in pairs(playerinpvp) do
-		if playerinpvp[fighter] then
-			local newtime = oldtime + dtime
-			playerinpvp[fighter] = newtime
-			if newtime >= battletimeout then
-				endtimer(fighter)
+		
+		local allowfunc = function(inv, listname, index, stack, player, count)
+			if not self then return 0 end
+			if count then
+				return count
+			else
+				return stack:get_count()
 			end
 		end
-	end
-end)
-minetest.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	if playerinpvp[name] and playerinpvp[name] > 0 then
-		on_combatlog(player, name)
-		--endtimer(name)
-	end
-end)
-minetest.register_on_dieplayer(function(player)
-	local name = player:get_player_name()
-	endtimer(name)
-end)
-minetest.register_on_joinplayer(function(player)
-	local playername = player:get_player_name()
-	if ghost_player[playername] and ghost_player[playername]:get_luaentity() then
-		player:set_hp(ghost_player[playername]:get_hp())
-		ghost_player[playername]:remove()
-		incombat_hud[playername] = player:hud_add({
-			hud_elem_type = "image",
-			position  = {x = 1, y = .75},
-			offset    = {x = -220, y = 0},
-			text      = "incombat.png",
-			scale     = { x = 10, y = 10},
-			alignment = { x = 1, y = 0 },
+		local onfunc = function(inv)
+			local lists = inv:get_lists()
+			local listtable = {}
+			for listname, list in pairs(lists) do
+				listtable[listname] = serializeContents(list)
+			end
+			self.inv = listtable
+			bodytable[self.owner]["inv"] = self.inv
+			self.time = os.time() + ghost_time
+			bodytable[self.owner]["time"] = self.time
+			storage:set_string("bodytable", minetest.serialize(bodytable))
+		end
+		local selfname = string.sub(tostring(self), 8)
+		local inv = minetest.create_detached_inventory("bones_"..selfname, {
+			allow_move = allowfunc,
+			allow_put = allowfunc,
+			allow_take = allowfunc,
+			on_take = onfunc,
+			on_move = onfunc,
+			on_put = onfunc,
 		})
-	end
-	local privs = minetest.get_player_privs(playername)
-	if privs.combatlog and not privs.ban then
-		minetest.after(.1, killcombatlogger, player)
-	end
-end)
-
-minetest.register_entity("anticombatlog:ghost",
-{
-    hp_max = 20,
-    physical = false,
-    collisionbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "character.b3d",
-    textures = {"character.png"}, -- number of required textures depends on visual
-    is_visible = true,
-	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		if tool_capabilities then
-			-- Get tool-based damage
-			local current_damage = tool_capabilities.damage_groups.fleshy
-			-- Check if player is punching before full punch interval
-			if time_from_last_punch < tool_capabilities.full_punch_interval then
-				-- Calculate damage for current tool based on the time from last punch
-				current_damage = 
-					math.floor( 
-						(time_from_last_punch / tool_capabilities.full_punch_interval) * current_damage 
-					)
-			end
-			-- Remove guard if killed
-			if self.object:get_hp() - current_damage <= 0 then
-				local playername = self.object:get_properties().nametag
-				local invref = minetest.get_inventory({type="detached", name=playername.."_ghost"})
-				local pos = self.object:get_pos()
-				dropinventory(invref, pos)
-				local privs = minetest.get_player_privs(playername)
-				privs.combatlog = true
-				privs.interact = nil
-				minetest.set_player_privs(playername, privs)
-				self.object:remove()
-			end
+		local lists = {}
+		for listname, serializedList in pairs(self.inv) do
+			lists[listname] = deserializeContents(serializedList)
 		end
-	end,
-	on_activate = function(self, staticdata, dtime_s)
-		if staticdata == "expired" then
-			self.object:remove()
+		inv:set_lists(lists)
+		self.object:set_acceleration({x=0,y=-9.81,z=0})
+		if deserialized.mesh and deserialized.textures and deserialized.yaw then
+			self.mesh = deserialized.mesh
+			self.textures = deserialized.textures
+			self.yaw = deserialized.yaw
+			self.object:set_properties({mesh = deserialized.mesh, textures = deserialized.textures})
+			self.object:set_yaw(deserialized.yaw)
+			self.object:set_animation({x=162,y=167}, 1)
 		end
-	end,
+    end,
 	get_staticdata = function(self)
-		return "expired"
+		return minetest.serialize({owner = self.owner, sleeping = self.sleeping, expiretime = self.time, mesh = self.mesh, textures = self.textures, yaw = self.yaw, inv = self.inv, hp = self.hp, armor_groups = self.armor_groups})
+	end,
+    on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)
+		if not self.owner or not bodytable[self.owner] then return end
+		self.hp = (self.hp or self.object:get_hp()) - damage
+		bodytable[self.owner]["hp"] = self.hp
+		self.time = os.time() + ghost_time
+		bodytable[self.owner]["time"] = self.time
+		if self.hp <= 0 then
+			local drop = function(pos, itemstack)
+				local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
+				if obj then
+					obj:set_velocity({
+						x = math.random(-10, 10) / 9,
+						y = 5,
+						z = math.random(-10, 10) / 9,
+					})
+				end
+			end
+			local lists = {}
+			for listname, serializedList in pairs(self.inv) do
+				local list = deserializeContents(serializedList)
+				lists[listname] = list
+				for index, itemstack in pairs(list) do
+					minetest.after(0, drop, self.object:get_pos(), itemstack)
+					lists[listname][index] = ItemStack()
+				end
+			end
+			local listtable = {}
+			for listname, list in pairs(lists) do
+				listtable[listname] = serializeContents(list)
+			end
+			self.inv = listtable
+			bodytable[self.owner]["inv"] = self.inv
+			local parent = self.object:get_attach()
+			if parent and parent:get_player_name() then
+				bodies_dragging[parent:get_player_name()] = nil
+			end
+		end
+		storage:set_string("bodytable", minetest.serialize(bodytable))
+    end,
+    on_rightclick = function(self, clicker)
+		local name = clicker:get_player_name()
+		if clicker:get_player_control().sneak then
+			self.object:set_attach(clicker, "", {x = 0, y = 0, z = -12}, {x = 0, y = 180, z = 0})
+			bodies_dragging[name] = self
+		else
+			local selfname = string.sub(tostring(self), 8)
+			local formspec =
+				   "size[8,12]"..
+				   "list[detached:bones_"..selfname..";main;0,3.5;8,4;]"..
+				   "list[detached:bones_"..selfname..";craft;2.5,0;3,3;]"..
+				   "list[current_player;main;0,8;8,4;]"
+			minetest.show_formspec(name, "bones_inv", formspec)
+		end
+    end,
+	on_step = function(self, dtime)
+		if not self.owner or not bodytable[self.owner] then remove_body(self) return end
+		if self.time <= os.time() then
+			remove_body(self)
+			return
+		end
+		local pos = self.object:get_pos()
+		if self.lastpos and vector.distance(self.lastpos, pos) > .1 then
+			bodytable[self.owner]["pos"] = pos
+			self.time = os.time() + ghost_time
+			bodytable[self.owner]["time"] = self.time
+			update_bodies()
+		end
+		local parent = self.object:get_attach()
+		if parent and parent:get_player_name() then
+			if parent:get_player_control().jump then--i might be changing this key
+				self.object:set_detach()
+				self.object:set_acceleration({x=0,y=-9.81,z=0})
+				bodies_dragging[parent:get_player_name()] = nil
+			end
+		end
+		self.lastpos = pos
 	end,
 })
+
+if beds then
+	local original = beds.on_rightclick
+	beds.on_rightclick = function(pos, player)
+		local entity = bodies_dragging[player:get_player_name()]
+		if entity then
+			entity.object:set_detach()
+			entity.object:set_acceleration({x=0,y=-9.81,z=0})
+			bodies_dragging[player:get_player_name()] = nil
+			local yaw, param2 = get_look_yaw(pos)
+			--entity.object:set_yaw(yaw)
+			local dir = minetest.facedir_to_dir(param2)
+			-- p.y is just above the nodebox height of the 'Simple Bed' (the highest bed),
+			-- to avoid sinking down through the bed.
+			local p = {
+				x = pos.x + dir.x / 2,
+				y = pos.y + 0.07,
+				z = pos.z + dir.z / 2
+			}
+			entity.object:set_pos(p)
+			beds.spawn[entity.owner] = p
+			beds.save_spawns()
+			return
+		end
+		original(pos, player)
+	end
+end
+
+minetest.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
+	local pos = player:get_pos()
+	if not bodytable[name] then return end
+	if bodytable[name]["pos"] then
+		player:set_pos(bodytable[name]["pos"])
+		minetest.chat_send_player(name, "You were moved while you were sleeping.")
+	end
+	if bodytable[name]["inv"] then
+		local player_inv = player:get_inventory()
+		local lists = {}
+		for listname, serializedList in pairs(bodytable[name]["inv"]) do
+			lists[listname] = deserializeContents(serializedList)
+		end
+		player_inv:set_lists(lists)
+		minetest.chat_send_player(name, "Your inventory was edited while you were sleeping.")
+	end
+	if bodytable[name]["hp"] then
+		player:set_hp(bodytable[name]["hp"])
+		minetest.chat_send_player(name, "You were damaged while you were sleeping.")
+	end
+	bodytable[name] = nil
+	storage:set_string("bodytable", minetest.serialize(bodytable))
+end)
+
+local function place_bone(player, sleeping)
+	local pos = player:get_pos()
+	local name = player:get_player_name()
+	if minetest.check_player_privs(name, {give=true}) or minetest.check_player_privs(name, {creative=true}) then return end
+	local player_inv = player:get_inventory()
+	local lists = player_inv:get_lists()
+	local listtable = {}
+	for listname, list in pairs(lists) do
+		listtable[listname] = serializeContents(list)
+	end
+	pos.y = pos.y-- + 1
+	local props = player:get_properties()
+	local yaw = player:get_look_horizontal()
+	bodytable[name]= {}
+	bodytable[name]["time"] = os.time() + ghost_time
+	local e = minetest.add_entity(pos, "anticombatlog:entity", minetest.serialize({owner = name, sleeping = sleeping, expiretime = os.time() + ghost_time, mesh = props.mesh, textures = props.textures, yaw = yaw, inv = listtable, hp = player:get_hp(), armor_groups = player:get_armor_groups()}))
+end
+
+minetest.register_on_leaveplayer(function(player)
+	place_bone(player, true)
+end)
+
+minetest.register_on_shutdown(function()
+	for _,player in ipairs(minetest.get_connected_players()) do
+		place_bone(player, true)
+	end
+end)
+
+--[[minetest.register_on_dieplayer(function(player)
+	place_bone(player)
+end)--]]
