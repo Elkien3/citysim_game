@@ -200,6 +200,7 @@ function jobs.invite(name, newname, jobname)
 	if jobs.chainofcommand[jobs.getrank(name, jobname)] < 3 then return false, "You are neither the CEO nor a supervisor of '"..jobname..".'" end
 	if not minetest.player_exists(newname) then return false, "Player '"..newname.."' does not exist." end
 	if jobs.list[jobname].employees[newname] then return false, "Player '"..newname.."' is already in '"..jobname.."'." end
+	if jobs.list[jobname].blacklist and jobs.list[jobname].blacklist[newname] then return false, "Player '"..newname.."' has been blacklisted from '"..jobname.."', use '/jobs blacklist' to remove." end
 	if jobs.list[jobname].applications and jobs.list[jobname].applications[newname] then
 		jobs.list[jobname].employees[newname] = jobs.list[jobname].defaultrank
 		if not jobs.players[newname] then jobs.players[newname] = {} end
@@ -215,6 +216,51 @@ jobs.commands["invite"] = function(name, param)
 	return jobs.invite(name, param[2], param[3])
 end
 
+function jobs.uninvite(name, newname, jobname)
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	if not newname then return false, "No playername was given." end
+	if jobs.chainofcommand[jobs.getrank(name, jobname)] < 3 then return false, "You are neither the CEO nor a supervisor of '"..jobname..".'" end
+	if not minetest.player_exists(newname) then return false, "Player '"..newname.."' does not exist." end
+	if jobs.list[jobname].employees[newname] then return false, "Player '"..newname.."' is already in '"..jobname.."', use '/jobs fire' to fire them." end
+	if not jobs.list[jobname].invites or not jobs.list[jobname].invites[newname] then return false, "'"..newname.."' has no invite to '"..jobname.."'." end
+	jobs.list[jobname].invites[newname] = nil
+	return true, newname.."'s invitation to "..jobname.."' was removed."
+end
+jobs.commands["uninvite"] = function(name, param)
+	return jobs.uninvite(name, param[2], param[3])
+end
+
+function jobs.blacklist(name, newname, jobname)
+	if not newname then return false, "No player or job name was given." end
+	if not minetest.player_exists(newname) then
+		if not jobs.list[newname] then return false, "There is no player or job '"..newname.."'." end
+		jobname = newname
+		local str = "Blacklist for '"..jobname.."':"
+		if jobs.list[jobname].blacklist then
+			for bannedname, bannername in pairs(jobs.list[jobname].blacklist) do
+				str = str .. " " .. bannedname
+			end
+		end
+		return true, str
+	end
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	if jobs.list[jobname].employees[newname] then return false, "Player '"..newname.."' is still in '"..jobname.."', use '/jobs fire' to fire them. (they will be added to blacklist automatically)" end
+	if jobs.chainofcommand[jobs.getrank(name, jobname)] < 3 then return false, "You are neither the CEO nor a supervisor of '"..jobname..".'" end
+	if not jobs.list[jobname].blacklist then jobs.list[jobname].blacklist = {} end
+	if jobs.list[jobname].blacklist[newname] then
+		jobs.list[jobname].blacklist[newname] = nil
+		return true, "Player '"..newname.."' was removed from '"..jobname.."'s blacklist."
+	else
+		jobs.list[jobname].blacklist[newname] = name
+		return true, "Player '"..newname.."' was added to '"..jobname.."'s blacklist."
+	end
+end
+jobs.commands["blacklist"] = function(name, param)
+	return jobs.blacklist(name, param[2], param[3])
+end
+
 function jobs.fire(name, newname, jobname)
 	if not jobname then return false, "No Job name given." end
 	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
@@ -227,6 +273,8 @@ function jobs.fire(name, newname, jobname)
 	end
 	jobs.list[jobname].employees[newname] = nil
 	jobs.players[newname][jobname] = nil
+	if not jobs.list[jobname].blacklist then jobs.list[jobname].blacklist = {} end
+	jobs.list[jobname].blacklist[newname] = name
 	return true, "Fired '"..newname.."' from '"..jobname.."'."
 end
 jobs.commands["fire"] = function(name, param)
@@ -237,6 +285,7 @@ function jobs.apply(name, jobname)
 	if not jobname then return false, "No Job name given." end
 	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
 	if jobs.list[jobname].employees[name] then return false, "You are already in '"..jobname.."'." end
+	if jobs.list[jobname].blacklist and jobs.list[jobname].blacklist[name] then return false, "You are blacklisted from '"..jobname.."'." end
 	if (jobs.list[jobname].invites and jobs.list[jobname].invites[name]) or (jobs.list[jobname].open ~= -1 and jobs.list[jobname].open <= jobs.getplaytime(name)) then
 		jobs.list[jobname].employees[name] = jobs.list[jobname].defaultrank
 		if not jobs.players[name] then jobs.players[name] = {} end
@@ -250,6 +299,47 @@ function jobs.apply(name, jobname)
 end
 jobs.commands["apply"] = function(name, param)
 	return jobs.apply(name, param[2])
+end
+
+function jobs.unapply(name, jobname)
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	if jobs.list[jobname].employees[name] then return false, "You are already in '"..jobname.."', use '/jobs quit' to quit the job." end
+	if not jobs.list[jobname].applications or not jobs.list[jobname].applications[name] then return false, "You have no applications for '"..jobname.."'." end
+	jobs.list[jobname].applications[name] = nil
+	return true, "You removed your application to '"..jobname.."'."
+end
+jobs.commands["unapply"] = function(name, param)
+	return jobs.unapply(name, param[2])
+end
+
+function jobs.reject(name, newname, jobname)
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	if not newname then return false, "No playername was given." end
+	if not minetest.player_exists(newname) then return false, "Player '"..newname.."' does not exist." end
+	if jobs.chainofcommand[jobs.getrank(name, jobname)] < 3 then return false, "You are neither the CEO nor a supervisor of '"..jobname..".'" end
+	if not jobs.list[jobname].applications or not jobs.list[jobname].applications[newname] then return false, "'"..newname.."' has no applications for '"..jobname.."'." end
+	jobs.list[jobname].applications[newname] = nil
+	return true, "You rejected "..newname.."'s application to '"..jobname.."'."
+end
+jobs.commands["reject"] = function(name, param)
+	return jobs.reject(name, param[2], param[3])
+end
+
+function jobs.applications(name, jobname)
+	if not jobname then return false, "No Job name given." end
+	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
+	local str = "Applications for '"..jobname.."':"
+	if jobs.list[jobname].applications then
+		for applicantname, val in pairs(jobs.list[jobname].applications) do
+			str = str .. " " .. applicantname
+		end
+	end
+	return true, str
+end
+jobs.commands["applications"] = function(name, param)
+	return jobs.applications(name, param[2])
 end
 
 function jobs.quit(name, jobname)
@@ -461,3 +551,23 @@ end
 jobs.commands["money"] = function(name, param)
 	return jobs.money(name, param[2], param[3], param[4])
 end
+
+local function get_table_length(tbl)
+	i = 0
+	for index, val in pairs(tbl) do
+		i = i + 1
+	end
+	return i
+end
+
+minetest.register_on_joinplayer(function(player, _)
+	local name = player:get_player_name()
+	if not jobs.players[name] then return end
+	for jobname, rank in pairs (jobs.players[name]) do
+		if jobs.chainofcommand[rank] > 2 then
+			if jobs.list[jobname].applications and get_table_length(jobs.list[jobname].applications) > 0 then
+				minetest.chat_send_player(name, "There are pending applications for '"..jobname.."', use '/jobs applications' to see them.")
+			end
+		end
+	end
+end)
