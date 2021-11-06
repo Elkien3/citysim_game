@@ -5,12 +5,23 @@ local grace_period = 5 -- in minutes
 local loglength = 7 -- in days
 jobs.punchlogs = minetest.deserialize(jobs.storage:get_string("punchlogs")) or {}
 
+local function get_table_length(tbl)
+	local i = 0
+	for index, val in pairs(tbl) do
+		i = i + 1
+	end
+	return i
+end
+
 for jobname, table in pairs(jobs.punchlogs) do
 	local currenttime = os.time()
 	for time, message in pairs(table) do
 		if currenttime-time > loglength*24*60*60 then
 			jobs.punchlogs[jobname][time] = nil
 		end
+	end
+	if get_table_length(jobs.punchlogs[jobname]) == 0 then
+		jobs.punchlogs[jobname] = nil
 	end
 	jobs.storage:set_string("punchlogs", minetest.serialize(jobs.punchlogs))
 end

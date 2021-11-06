@@ -12,14 +12,18 @@ local function update()
 			if vector.distance(pos, postable[name]) > .1 then
 				postable[name] = pos
 				for id, timer in pairs(timertable[name]) do
-					timer = timer - 1
-					if timer <= 0 then
-						timertable[name][id] = nil
-						if timerfunctions[id] then
-							timerfunctions[id](name)
-						end
+					if id == "playtime" then
+						timertable[name][id] = timer + 1
 					else
-						timertable[name][id] = timer
+						timer = timer - 1
+						if timer <= 0 then
+							timertable[name][id] = nil
+							if timerfunctions[id] then
+								timerfunctions[id](name)
+							end
+						else
+							timertable[name][id] = timer
+						end
 					end
 				end
 			end
@@ -29,6 +33,12 @@ local function update()
 	minetest.after(60, update)
 end
 update()
+
+function get_player_playtime(name)
+	if not minetest.player_exists(name) then return 0 end
+	if not timertable[name] or not timertable[name]["playtime"] then return 0 end
+	return timertable[name]["playtime"]/60
+end
 
 local function set_timer(name, id, val)
 	local tbl = timertable[name] or minetest.deserialize(storage:get_string(name)) or {}
@@ -62,6 +72,7 @@ minetest.register_privilege("pvp", {
 
 minetest.register_on_newplayer(function(player)
 	local name = player:get_player_name()
+	set_timer(name, "playtime", 0)
 	set_timer(name, "pvp", 2*60)
 	set_timer(name, "lockpick", 2*60)
 	set_timer(name, "griefing", 2*60)
@@ -75,20 +86,31 @@ minetest.register_chatcommand("set_playercontrol_timer", {
         if not param or param == "" then return false, "No param specified" end
 		params = {}
 		for word in param:gmatch("%w+") do table.insert(params, word) end
-		if #params ~= 2 then return false, "Invalid syntax. must be /set_playercontrol_timer <id> <time>" end
-		set_timer(name, params[1], params[2])
+		if #params ~= 3 then return false, "Invalid syntax. must be /set_playercontrol_timer <name> <id> <time>" end
+		set_timer(params[1], params[2], params[3])
 		return true, "Timer set."
     end,
 })
 
 minetest.register_chatcommand("get_playercontrol_timer", {
     func = function(name, param)
-		if not timertable[name] then return false, "No timers found for you." end
-		local str = "Your Timers: "
+		if not param or param == "" then param = name end
+		if not timertable[param] then return false, "No timers found for '"..param.."'" end
+		local str = "Timers for '"..param.."': "
 		for id, timer in pairs(timertable[name]) do
 			str = str.."["..id.."] = "..timer.." minutes "
 		end
 		return true, str
+    end,
+})
+
+minetest.register_chatcommand("get_playtime", {
+    func = function(name, param)
+        if not param or param == "" then param = name end
+		if not timertable[param] or not timertable[param]["playtime"] then return false, "No playtime fould for '"..param.."'" end
+		local playtime = timertable[param]["playtime"]/60
+		playtime = math.floor(playtime*100)/100
+		return true, "'"..param.."' has "..tostring(playtime).." hours of playtime"
     end,
 })
 

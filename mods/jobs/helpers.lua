@@ -10,7 +10,11 @@ function jobs.split (inputstr, sep)
 end
 
 function jobs.getplaytime(name)
-	return 0
+	if get_player_playtime then
+		return get_player_playtime(name)
+	else
+		return 0
+	end
 end
 
 function jobs.round(num, numDecimalPlaces)
