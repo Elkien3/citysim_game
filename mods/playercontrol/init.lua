@@ -107,7 +107,7 @@ minetest.register_chatcommand("get_playercontrol_timer", {
 minetest.register_chatcommand("get_playtime", {
     func = function(name, param)
         if not param or param == "" then param = name end
-		if not timertable[param] or not timertable[param]["playtime"] then return false, "No playtime fould for '"..param.."'" end
+		if not timertable[param] or not timertable[param]["playtime"] then return false, "No playtime found for '"..param.."'" end
 		local playtime = timertable[param]["playtime"]/60
 		playtime = math.floor(playtime*100)/100
 		return true, "'"..param.."' has "..tostring(playtime).." hours of playtime"
