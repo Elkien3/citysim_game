@@ -185,10 +185,7 @@ function jobs.open(name, jobname, val)
 	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
 	if not val then return true, "'"..jobname.."' is open to players with "..jobs.list[jobname].open.." hours of playtime. (-1 is never)" end
 	if jobs.chainofcommand[jobs.getrank(name, jobname)] < 3 then return false, "You are neither the CEO nor a supervisor of '"..jobname..".'" end
-	if not tonumber(val) then return false, "Enter in hours how much playtime is required before joining without invite is possible. -1 for never, 0 for always, maximum is 12." end
-	if tonumber(val) > 12 then
-		val = "12"
-	end
+	if not tonumber(val) then return false, "Enter in hours how much playtime is required before joining without invite is possible. -1 for never, 0 for always" end
 	jobs.list[jobname].open = tonumber(val)
 	return true, "'"..jobname.."' is now open to players with "..val.." hours of playtime (-1 for never)"
 end
