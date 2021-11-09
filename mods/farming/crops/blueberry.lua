@@ -57,7 +57,7 @@ local crop_def = {
 	selection_box = farming.select,
 	groups = {
 		snappy = 3, flammable = 2, plant = 1, attached_node = 1,
-		not_in_creative_inventory = 1, growing = 1
+		not_in_creative_inventory = 1, growing = 1, snowy = 1, icy = 1
 	},
 	sounds = default.node_sound_leaves_defaults()
 }

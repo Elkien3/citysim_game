@@ -79,7 +79,7 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 36000
+local STAGE_LENGTH_AVG = 72000
 local STAGE_LENGTH_AVG_ORIGINAL = STAGE_LENGTH_AVG
 local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
 function farming_setspeed(factor)
@@ -88,6 +88,22 @@ function farming_setspeed(factor)
 	STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
 end
 
+--return wether the biome is icy, snowy, grassy, or rainy
+local function get_biome_characteristic(pos)
+	local id = minetest.get_biome_data(pos).biome
+	local name = minetest.get_biome_name(id)
+	if string.find(name, "rainforest") then
+		return "rainy"
+	elseif string.find(name, "desert") or string.find(name, "savanna") or string.find(name, "sandstone_desert") then
+		return "desert"
+	elseif string.find(name, "grassland") or string.find(name, "coniferous_forest") or string.find(name, "deciduous_forest") then
+		return "grassy"
+	elseif string.find(name, "taiga") or string.find(name, "snowy_grassland") then
+		return "snowy"
+	elseif string.find(name, "tundra") or string.find(name, "cold_desert") or string.find(name, "ice_sheet") then
+		return "icy"
+	end
+end
 
 -- return plant name and stage from node provided
 local function plant_name_stage(node)
@@ -386,18 +402,23 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	if minetest.registered_nodes[stages.stages_left[growth]] then
 		local timevar = os.time()
 		local meta = minetest.get_meta(pos)
+		local characteristics = get_biome_characteristic(pos)
+		local boost = 2
+		if characteristics and minetest.get_node_group(node_name, characteristics) > 0 then
+			boost = 1
+		end
 		local t = meta:get_int("t")
-		local difference = (timevar-t) - STAGE_LENGTH_AVG
+		local timepassed = (timevar-t)
 		if t ~= 0 then
 			while true do
-				local rand = math.random(STAGE_LENGTH_DEV, STAGE_LENGTH_AVG)
-				if difference > rand then
+				local rand = math.random(STAGE_LENGTH_DEV*boost, STAGE_LENGTH_AVG*boost)
+				if timepassed > rand then
 					growth = growth + 1
-					difference = difference - rand
+					timepassed = timepassed - rand
 					if growth >= max_growth then growth = max_growth break end
 				else break end
 			end
-			if difference < 0 then difference = 0 end
+			if timepassed < 0 then timepassed = 0 end
 		end
 		local p2 = minetest.registered_nodes[stages.stages_left[growth] ].place_param2 or 1
 
@@ -584,6 +605,11 @@ farming.register_plant = function(name, def)
 			snappy = 3, flammable = 2, plant = 1, growing = 1,
 			attached_node = 1, not_in_creative_inventory = 1,
 		}
+		if def.groups then
+			for groupname, groupval in pairs(def.groups) do
+				g[groupname] = groupval
+			end
+		end
 
 		-- Last step doesn't need growing=1 so Abm never has to check these
 		if i == def.steps then

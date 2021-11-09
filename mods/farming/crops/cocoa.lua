@@ -125,7 +125,7 @@ local crop_def = {
 	},
 	groups = {
 		snappy = 3, flammable = 2, plant = 1, growing = 1,
-		not_in_creative_inventory=1, leafdecay = 1, leafdecay_drop = 1
+		not_in_creative_inventory=1, leafdecay = 1, leafdecay_drop = 1, rainy = 1
 	},
 	sounds = default.node_sound_leaves_defaults(),
 	growth_check = function(pos, node_name)

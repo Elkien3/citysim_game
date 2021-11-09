@@ -11,6 +11,7 @@ farming.register_plant("farming:rye", {
 	inventory_image = "farming_rye_seed.png",
 	steps = 8,
 	place_param2 = 3,
+	groups = {flammable = 2, snowy = 1, icy = 1}
 })
 
 minetest.override_item("farming:rye", {
@@ -39,6 +40,7 @@ farming.register_plant("farming:oat", {
 	inventory_image = "farming_oat_seed.png",
 	steps = 8,
 	place_param2 = 3,
+	groups = {flammable = 2, grassy = 1}
 })
 
 minetest.override_item("farming:oat", {
@@ -67,6 +69,7 @@ farming.register_plant("farming:rice", {
 	inventory_image = "farming_rice_seed.png",
 	steps = 8,
 	place_param2 = 3,
+	groups = {flammable = 2, rainy = 1}
 })
 
 minetest.override_item("farming:rice", {
