@@ -48,16 +48,16 @@ end
 
 local function overwrite_trees()
 	local trees = {
-		["default:bush_sapling"],
-		["default:blueberry_bush_sapling"],
-		["default:acacia_bush_sapling"],
-		["default:pine_bush_sapling"],
-		["default:sapling"],
-		["default:junglesapling"],
-		["default:emergent_jungle_sapling"],
-		["default:pine_sapling"],
-		["default:acacia_sapling"],
-		["default:aspen_sapling"],
+		"default:bush_sapling",
+		"default:blueberry_bush_sapling",
+		"default:acacia_bush_sapling",
+		"default:pine_bush_sapling",
+		"default:sapling",
+		"default:junglesapling",
+		"default:emergent_jungle_sapling",
+		"default:pine_sapling",
+		"default:acacia_sapling",
+		"default:aspen_sapling",
 	}
 	for id, name in pairs (trees) do
 		minetest.override_item(name, {
