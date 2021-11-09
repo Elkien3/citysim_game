@@ -4,3 +4,5 @@ binoculars
 farming
 drug_wars?
 areas?
+technic?
+seasons?

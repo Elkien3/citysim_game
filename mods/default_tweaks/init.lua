@@ -158,4 +158,4 @@ end
 
 dofile(modpath.."/plantrot.lua")
 dofile(modpath.."/protection.lua")
-dofile(modpath.."/falldamage.lua")
+dofile(modpath.."/plantgrowspeeds.lua")

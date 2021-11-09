@@ -101,50 +101,12 @@ local function changeflowertextures(revert)
 	end
 end
 
-local function slowtreegrowth()
-	local trees = {}
-	table.insert(trees, "sapling")
-	table.insert(trees, "junglesapling")
-	table.insert(trees, "pine_sapling")
-	table.insert(trees, "acacia_sapling")
-	table.insert(trees, "aspen_sapling")
-	for id, name in pairs (trees) do
-		minetest.override_item("default:" .. name, {
-			on_construct = function(pos)
-				minetest.get_node_timer(pos):start(math.random(2*60*60, 3*60*60))
-			end,
-		})
-	end
-end
-slowtreegrowth()
-
-minetest.register_lbm({
-	name = "seasons:ensuresaplingtimer",
-	nodenames = {":moretrees:rubber_tree_sapling", "default:sapling", "default:junglesapling", "default:pine_sapling", "default:acacia_sapling", "default:aspen_sapling"},
-	run_at_every_load = true,
-	action = function(pos, node)
-		local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(math.random(2*60*60, 3*60*60))
-		end
-	end,
-})
-
 local originalflowerspread = flowers.flower_spread
 flowers.flower_spread = function(pos, node)
 	if node.name ~= "flowers:mushroom_red" and node.name ~= "flowers:mushroom_brown" and seasons_getseason == "Winter" then
 		return
 	else
 		originalflowerspread(pos, node)
-	end
-end
-
-local originalgrowsapling = default.grow_sapling
-default.grow_sapling = function(pos)
-	if seasons_getseason == "Winter" then
-		minetest.get_node_timer(pos):start(math.random(2*60*60, 3*60*60))
-	else
-		originalgrowsapling(pos)
 	end
 end
 
