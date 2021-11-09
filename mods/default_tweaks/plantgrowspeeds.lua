@@ -79,7 +79,7 @@ minetest.override_item("default:blueberry_bush_leaves_with_berries", {
 })
 
 minetest.override_item("default:large_cactus_seedling", {
-	on_construct - function(pos)
+	on_construct = function(pos)
 		local growth_time = 3800*get_growth_multiplier(pos, "default:large_cactus_seedling")
 		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
 	end,
