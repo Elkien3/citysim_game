@@ -100,7 +100,7 @@ local function get_biome_characteristic(pos)
 		return "grassy"
 	elseif string.find(name, "taiga") or string.find(name, "snowy_grassland") then
 		return "snowy"
-	elseif string.find(name, "tundra") or string.find(name, "cold_desert") or string.find(name, "ice_sheet") then
+	elseif string.find(name, "tundra") or string.find(name, "cold_desert") or string.find(name, "icesheet") then
 		return "icy"
 	end
 end

@@ -6,3 +6,5 @@ drug_wars?
 areas?
 technic?
 seasons?
+moreores?
+oil?
