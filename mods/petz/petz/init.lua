@@ -20,6 +20,7 @@ petz = {}
 --Settings
 --
 petz.settings = {}
+petz.settings.pregnancy_time = 600
 petz.settings.mesh = nil
 petz.settings.visual_size = {}
 petz.settings.rotate = 0
