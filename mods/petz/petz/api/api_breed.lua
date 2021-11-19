@@ -102,7 +102,6 @@ end
 
 petz.pregnant_timer = function(self, dtime)
 	self.pregnant_time = mobkit.remember(self, "pregnant_time", (self.pregnant_time or 0) + dtime)
-	minetest.log("error", petz.settings.pregnancy_time)
 	if self.pregnant_time >= petz.settings.pregnancy_time then
 		local baby_entity = petz.childbirth(self)
 		if self.is_mountable == true then

@@ -25,7 +25,6 @@ petz.settings.visual_size = {}
 petz.settings.rotate = 0
 
 assert(loadfile(modpath .. "/settings.lua"))(modpath) --Load the settings
-petz.settings.pregnancy_time = 600
 
 petz.tamed_by_owner = {} --a list of tamed petz with owner
 
