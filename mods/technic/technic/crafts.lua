@@ -85,7 +85,7 @@ minetest.register_craft({
 		{'dye:blue', 'technic:battery', 'moreores:mithril_ingot'},
 	}
 })
-
+--]]
 minetest.register_craft({
 	output = 'technic:red_energy_crystal',
 	recipe = {
@@ -94,7 +94,7 @@ minetest.register_craft({
 		{'dye:red', 'technic:battery', 'moreores:silver_ingot'},
 	}
 })
---]]
+
 minetest.register_craft({
 	output = 'technic:copper_coil 1',
 	recipe = {

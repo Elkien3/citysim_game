@@ -52,7 +52,7 @@ minetest.register_tool("technic:green_energy_crystal", {
 		}
 	}
 })
-
+--]]
 minetest.register_tool("technic:red_energy_crystal", {
 	description = S("Red Energy Crystal"),
 	inventory_image = minetest.inventorycube(
@@ -68,7 +68,7 @@ minetest.register_tool("technic:red_energy_crystal", {
 		}
 	}
 })
---]]
+
 minetest.register_craftitem("technic:copper_coil", {
 	description = S("Copper Coil"),
 	inventory_image = "technic_copper_coil.png",
