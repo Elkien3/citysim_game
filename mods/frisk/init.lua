@@ -394,4 +394,248 @@ minetest.register_on_dieplayer(function(player)
 	end
 end)
 
+--METAL DETECTORS
+
+local function has_metal(player)
+	local inv = player:get_inventory()
+	for listname, list in pairs(inv:get_lists()) do
+		for i, itemstack in pairs(list) do
+			local name = itemstack:get_name()
+			if minetest.get_item_group(name, "detectable_metal") > 0 then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function add_metal_group(itemname)
+	local groups = {}
+	if not minetest.registered_items[itemname] then return end 
+	if minetest.registered_items[itemname].groups then groups = table.copy(minetest.registered_items[itemname].groups) end
+	groups.detectable_metal = 1
+	minetest.override_item(itemname, {
+	   groups = groups,
+	})
+end
+--[[
+local metal_items_steel_nonweapon = {
+	"3d_armor_stand:locked_armor_stand",
+	"army:chainlink",
+	"army:light",
+	"basic_materials:chain_steel",
+	"basic_materials:chainlink_steel",
+	"basic_materials:gear_steel",
+	"basic_materials:motor",
+	"basic_materials:padlock",
+	"basic_materials:steel_bar",
+	"basic_materials:steel_wire",
+	"bed_metal:bed_bottom",
+}--]]
+local metal_items_raw = {
+	"default:steel_ingot",
+	"default:iron_lump",
+	"default:stone_with_iron",
+	"technic:wrought_iron_dust",
+	"default_steelblock",
+	"stairs:stair_steelblock",
+	"stairs:slab_steelblock",
+	"technic:carbon_steel_ingot",
+	"technic:cast_iron_ingot",
+	"vessels:steel_bottle",
+	"default:mese_crystal_fragment",
+	"default:mese_crystal",
+	"default:mese",
+	"default:diamond",
+	"default:diamondblock",
+	"default:bronze_ingot",
+	"default:bronzeblock",
+	"stairs:stair_bronzeblock",
+	"stairs:slab_bronzeblock",
+	"default:copper_ingot",
+	"default:copper_lump",
+	"technic:copper_dust",
+	"default:stone_with_copper",
+	"moreores:mineral_mithril",
+	"moreores:mithril_ingot",
+	"moreores:mithril_lump",
+	"technic:mithril_dust",
+	"moreores:mithril_block",
+	"moreores:mineral_silver",
+	"moreores:silver_ingot",
+	"moreores:silver_lump",
+	"technic:silver_dust",
+	"moreores:silver_block",
+	"technic:composite_plate",
+	"technic:copper_plate",
+}
+for i, itemname in pairs(metal_items_raw) do
+	add_metal_group(itemname)
+end
+
+local metal_items_weapons = {
+	"army:barbedwire",
+	"default:axe_steel",
+	"default:axe_mese",
+	"default:axe_diamond",
+	"default:axe_bronze",
+	"default:pick_steel",
+	"default:pick_mese",
+	"default:pick_diamond",
+	"default:pick_bronze",
+	"default:sword_steel",
+	"default:sword_mese",
+	"default:sword_diamond",
+	"default:sword_bronze",
+	"drug_wars:machete_mese",
+	"drug_wars:machete_steel",
+	"frisk:handcuffs",
+	"frisk:handcuff_key",
+	"grenades_basic:flashbang",
+	"grenades_basic:frag",
+	"grenades_basic:smoke",
+	"gun_lathe:gun_barrel_carbon_steel",
+	"gun_lathe:gun_barrel_iron",
+	"gun_lathe:gun_barrel_stainless_steel",
+	"lockpicks:lockpick_copper",
+	"lockpicks:lockpick_gold",
+	"lockpicks:lockpick_mithril",
+	"lockpicks:lockpick_silver",
+	"lockpicks:lockpick_steel",
+	"modern_armor:helmet_military",
+	"modern_armor:helmet_swat",
+	"modern_armor:vest_military",
+	"modern_armor:vest_swat",
+	"modern_armor:vest_police",
+	"moreores:axe_mithril",
+	"moreores:axe_silver",
+	"moreores:pick_mithril",
+	"moreores:pick_silver",
+	"moreores:sword_mithril",
+	"moreores:sword_silver",
+	"shooter:flaregun",
+	"shooter:grapple_gun",
+	"shooter:grapple_hook",
+	"shooter:rocket",
+	"shooter:rocket_gun",
+	"spriteguns:bullet_12",
+	"spriteguns:bullet_45",
+	"spriteguns:bullet_762",
+	"spriteguns:coltarmy",
+	"spriteguns:cz527",
+	"spriteguns:mini14",
+	"spriteguns:pardini",
+	"spriteguns:remington870",
+	"spriteguns:thompson",
+	"spriteguns:mag_cz527",
+	"spriteguns:mag_mini14",
+	"spriteguns:mag_pardini",
+	"spriteguns:mag_thompson",
+	"technic:chernobylite_block",
+	"technic:chernobylite_dust",
+	"xdecor:baricade",
+}
+for i, itemname in pairs(metal_items_weapons) do
+	add_metal_group(itemname)
+end
+
+local function finishmetaldetect(player, pName, oldpos)
+	local pPlayer = minetest.get_player_by_name(pName)
+	local name = player:get_player_name()
+	local pos = pPlayer:getpos()
+	if pPlayer:get_attach() then
+		pos = pPlayer:get_attach():getpos()
+	end
+	if vector.distance(pos, oldpos) > .1 then
+		minetest.chat_send_player(pName, "You moved, metal detection canceled.")
+		minetest.chat_send_player(name, pName.." moved, metal detection canceled.")
+		return
+	end
+	if has_metal(pPlayer) then
+		minetest.chat_send_player(name, pName.." has metal detected.")
+		minetest.sound_play("metal_detector_detected",{
+			object = player,
+		})
+	else
+		minetest.chat_send_player(name, pName.." had nothing detected.")
+		minetest.sound_play("metal_detector_not_detected",{
+			object = player,
+		})
+	end
+	minetest.chat_send_player(pName, "You were metal detected by "..name..".")
+end
+
+local function startmetaldetect(stack, player, pointedThing)
+	local obj = pointedThing.ref
+	if obj and pointedThing.type == "object" then
+		local pName = obj:get_player_name()
+		if pName ~= "" then
+			local name = player:get_player_name()
+			minetest.chat_send_player(pName, name.." is checking you for metal, move to cancel.")
+			minetest.chat_send_player(name, "You are checking "..pName.." for metal.")
+			local oldpos = obj:getpos()
+			if obj:get_attach() then
+				oldpos = obj:get_attach():getpos()
+			end
+			minetest.after(1, finishmetaldetect, player, pName, oldpos)
+		end
+	end
+end
+
+minetest.register_tool('frisk:handheld_metal_detector', {
+	description = i18n('Handeld Metal Detector'),
+	inventory_image = 'frisk_screen.png',
+	range = 1,
+	on_use = startmetaldetect,
+})
+
+minetest.register_node("frisk:metal_detector", {
+	description = "Metal Detector",
+	tiles = {
+		"default_silver_sandstone.png",
+		"default_silver_sandstone.png",
+		"default_silver_sandstone.png",
+		"default_silver_sandstone.png",
+		"default_silver_sandstone.png",
+		"default_silver_sandstone.png"
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, -0.375, 1.375, 0.5}, -- NodeBox1
+			{0.375, -0.5, -0.5, 0.5, 1.375, 0.5}, -- NodeBox2
+			{-0.5, 1.375, -0.5, 0.5, 1.5, 0.5}, -- NodeBox3
+		}
+	},
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+		local metaldetected = false
+		local name = clicker:get_player_name()
+		for i, connectedplayer in pairs (minetest.get_connected_players()) do
+			local plpos = vector.round(connectedplayer:get_pos())
+			if vector.distance(plpos, pos) < .1 then
+				if has_metal(connectedplayer) then
+					metaldetected = true
+				end
+			end
+		end
+		if metaldetected then
+			minetest.sound_play("metal_detector_detected",{
+				pos = pos,
+			})
+			if name then
+				minetest.chat_send_player(name, "Metal was detected.")
+			end
+		else
+			minetest.sound_play("metal_detector_not_detected",{
+				pos = pos,
+			})
+			if name then
+				minetest.chat_send_player(name, "Nothing was detected.")
+			end
+		end
+	end
+})
+
 minetest.log('action', 'MOD: Frisk version ' .. frisk_version .. ' loaded.')

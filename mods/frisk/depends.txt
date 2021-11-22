@@ -1,3 +1,16 @@
 default
 intllib?
 interacthandler?
+technic?
+stairs?
+vessels?
+moreores?
+army?
+drug_wars?
+grenades_basic?
+gun_lathe?
+lockpicks?
+modern_armor?
+shooter?
+spriteguns?
+xdecor?
