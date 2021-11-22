@@ -1,4 +1,4 @@
-local max_fish = 16--maximum amount of fish in an area
+local max_fish = 8--maximum amount of fish in an area
 local area_size = 64 --data should be reset if you change this 
 local update_time = 60--time in minutes to see if fishes should be updated, and update if so
 local update_days = 7--time in minetest days the update should take place
