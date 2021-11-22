@@ -166,10 +166,25 @@ cooking.register_craft({
 minetest.register_craft({
 	recipe = {
 		{"group:wood", "", "group:wood"},
+		{"", "group:wood", ""}
+	},
+	output = "cooking:bowl 4"
+})
+minetest.register_craft({
+	recipe = {
+		{"group:wood", "", "group:wood"},
 		{"group:wood", "", "group:wood"},
 		{"", "group:wood", ""}
 	},
-	output = "cooking:bowl 2"
+	output = "cooking:mixing_bowl 2"
+})
+minetest.register_craft({
+	recipe = {
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"}
+	},
+	output = "cooking:pot_0 2"
 })
 minetest.register_craft({
 	recipe = {

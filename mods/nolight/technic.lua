@@ -266,6 +266,14 @@ minetest.register_node('nolight:distributor', {
 	end,
 })
 
+minetest.register_craft({
+	output = "nolight:distributor",
+	recipe = {
+		{"basic_materials:copper_wire"}, {"technic:lv_cable"}, {"basic_materials:copper_wire"},
+		{"default:cobble"}, {"default:cobble"}, {"default:cobble"},
+	}
+})
+
 local function light_switch(pos, node, val)
 	local id = minetest.get_meta(pos):get_int("switch_id")
 	if id == 0 then return end
@@ -347,7 +355,7 @@ for _, onoff in ipairs ({"on", "off"}) do
 			not_in_creative_inventory = (onoff == "on") and 1 or nil
 		},
 		walkable = false,
-		drops = "homedecor:light_switch_off",
+		drops = "nolight:light_switch_off",
 		mesecons = switch_mesecon,
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
@@ -370,6 +378,28 @@ for _, onoff in ipairs ({"on", "off"}) do
 			meta:set_string("switch_id", fields.channel)
 			meta:set_string("formspec", "")
 		end,
+	})
+end
+
+if minetest.get_modpath("mesecons_walllever") then
+	minetest.register_craft({
+		type = "shapeless",
+		output = "nolight:light_switch_off",
+		recipe = {"mesecons_walllever:wall_lever_off"},
+	})
+	minetest.register_craft({
+		type = "shapeless",
+		output = "mesecons_walllever:wall_lever_off",
+		recipe = {"nolight:light_switch_off"},
+	})
+else
+	minetest.register_craft({
+		output = "nolight:light_switch_off",
+		recipe = {
+			{"default:mese_crystal_fragment"},
+			{"default:stone"},
+			{"default:stick"},
+		}
 	})
 end
 

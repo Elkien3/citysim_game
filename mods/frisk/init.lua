@@ -638,4 +638,25 @@ minetest.register_node("frisk:metal_detector", {
 	end
 })
 
+local copperitem = "default:copper_ingot"
+if minetest.get_modpath("technic") then
+	copperitem = "technic:copper_coil"
+end
+minetest.register_craft({
+	output = "frisk:metal_detector",
+	recipe = {
+		{"default:steel_ingot","default:steel_ingot","default:steel_ingot"},
+		{copperitem,"",copperitem},
+		{"default:steel_ingot","","default:steel_ingot"},
+	}
+})
+minetest.register_craft({
+	output = "frisk:handheld_metal_detector",
+	recipe = {
+		{copperitem},
+		{copperitem},
+		{"default:steel_ingot"},
+	}
+})
+
 minetest.log('action', 'MOD: Frisk version ' .. frisk_version .. ' loaded.')

@@ -97,3 +97,9 @@ minetest.register_node("areas:shop",
 	end,
 	on_rightclick = show_shop_formspec
 })
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "areas:shop",
+	recipe = {"currency:shop", "group:book"},
+})
