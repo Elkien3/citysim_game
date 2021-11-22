@@ -338,7 +338,7 @@ farming.scythe_not_drops = {"farming:trellis", "farming:beanpole"}
 farming.add_to_scythe_not_drops = function(item)
 	table.insert(farming.scythe_not_drops, item)
 end
-
+--[[
 minetest.register_tool("farming:scythe_mithril", {
 	description = S("Mithril Scythe (Right-click crop to harvest and replant)"),
 	inventory_image = "farming_scythe_mithril.png",
@@ -457,18 +457,18 @@ minetest.register_tool("farming:scythe_mithril", {
 			return itemstack
 		end
 	end,
-})
+})--]]
 
 if minetest.get_modpath("moreores") then
 
-	minetest.register_craft({
+	--[[minetest.register_craft({
 		output = "farming:scythe_mithril",
 		recipe = {
 			{"", "moreores:mithril_ingot", "moreores:mithril_ingot"},
 			{"moreores:mithril_ingot", "", "group:stick"},
 			{"", "", "group:stick"}
 		}
-	})
+	})--]]
 
 	farming.register_hoe(":moreores:hoe_silver", {
 		description = S("%s Hoe"):format(S("Silver")),
