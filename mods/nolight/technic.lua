@@ -269,8 +269,8 @@ minetest.register_node('nolight:distributor', {
 minetest.register_craft({
 	output = "nolight:distributor",
 	recipe = {
-		{"basic_materials:copper_wire"}, {"technic:lv_cable"}, {"basic_materials:copper_wire"},
-		{"default:cobble"}, {"default:cobble"}, {"default:cobble"},
+		{"basic_materials:copper_wire", "technic:lv_cable", "basic_materials:copper_wire"},
+		{"default:cobble", "default:cobble", "default:cobble"},
 	}
 })
 
