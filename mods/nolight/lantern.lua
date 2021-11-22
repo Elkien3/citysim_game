@@ -276,7 +276,7 @@ minetest.register_node("nolight:lantern_active", {
 		nodemeta:set_float("fuel_totaltime", meta:get_float("fuel_totaltime"))
 		local inv = nodemeta:get_inventory()
 		inv:set_stack('fuel', 1, meta:get_string("stack"))
-		minetest.get_node_timer(pos):start(0)
+		minetest.get_node_timer(pos):set(1,1)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
