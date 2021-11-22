@@ -3,15 +3,6 @@ local distributor_square_radius = 10
 local demand_per_light       = 5
 local demand_update = {}
 
-minetest.register_craft({
-	output = 'nolight:distributor',
-	recipe = {
-		{'default:steel_ingot', 'default:diamond',        'default:steel_ingot'},
-		{'default:diamond',        'technic:machine_casing', 'default:diamond'},
-		{'default:mossycobble',    'technic:lv_cable',       'default:mossycobble'},
-	}
-})
-
 local function is_mesecon_operable(def)
 	if def.mesecons then return true end
 	local groups = def.groups
