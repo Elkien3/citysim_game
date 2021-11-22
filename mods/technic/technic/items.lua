@@ -20,7 +20,7 @@ minetest.register_craftitem( "technic:diamond_drill_head", {
 	description = S("Diamond Drill Head"),
 	inventory_image = "technic_diamond_drill_head.png",
 })
-
+--[[
 minetest.register_tool("technic:blue_energy_crystal", {
 	description = S("Blue Energy Crystal"),
 	inventory_image = minetest.inventorycube(
@@ -68,7 +68,7 @@ minetest.register_tool("technic:red_energy_crystal", {
 		}
 	}
 })
-
+--]]
 minetest.register_craftitem("technic:copper_coil", {
 	description = S("Copper Coil"),
 	inventory_image = "technic_copper_coil.png",
