@@ -185,3 +185,16 @@ minetest.register_tool("doorram:ram", {
 		return itemstack
 	end
 })
+
+local craftmat = "default:steelblock"
+if minetest.get_modpath("technic") then
+	craftmat = "technic:carbon_steel_block"
+end
+minetest.register_craft({
+	recipe = {
+		{"", "default:steel_ingot", ""},
+		{craftmat, "default:steel_ingot", "default:steel_ingot"},
+		{"", "default:steel_ingot", ""}
+	},
+	output = "doorram:ram"
+})

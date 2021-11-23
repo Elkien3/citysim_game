@@ -26,7 +26,7 @@ spriteguns.register_gun("spriteguns:remington870",{
 	firetime = .2,
 	offsetrecoil = 120,
 	targetrecoil = 80,
-	damage = 2,
+	damage = 3,
 	maxdev = .16,
 	maxzoomdev = .06,
 	pellets = 12,
@@ -80,7 +80,7 @@ spriteguns.register_gun("spriteguns:thompson",{
 	firetime = 60/700,
 	offsetrecoil = 40,
 	magazine = true,
-	targetrecoil = 30,
+	targetrecoil = 20,
 	damage = 5,
 	maxdev = .16,
 	maxzoomdev = .06,
@@ -176,15 +176,6 @@ spriteguns.register_gun("spriteguns:cz527",{
 	},
 })
 
-minetest.register_craft({
-	output = "spriteguns:cz527",
-	recipe = {
-		{"default:diamondblock", "", "default:obsidian_glass"},
-		{"group:tree", "default:diamondblock", ""},
-		{"", "group:tree", "group:tree"}
-	}
-})
-
 minetest.register_tool("spriteguns:mag_cz527", {
 	description = "CZ 527 Magazine",
 	inventory_image = "rangedweapons_sniper_mag.png",
@@ -243,15 +234,6 @@ spriteguns.register_gun("spriteguns:mini14",{
 	},
 })
 
-minetest.register_craft({
-	output = "spriteguns:mini14",
-	recipe = {
-		{"default:diamondblock", "", ""},
-		{"group:tree", "default:diamondblock", ""},
-		{"", "group:tree", "group:tree"}
-	}
-})
-
 minetest.register_tool("spriteguns:mag_mini14", {
 	description = "Mini-14 Magazine",
 	inventory_image = "rangedweapons_ak47_mag.png",
@@ -267,13 +249,13 @@ spriteguns.register_gun("spriteguns:pardini",{
 	fire_sound = "pardini_fire",
 	fire_gain = 10,
 	fire_sound_distant = "distant_local",
-	size = 13,
+	size = 10,
 	loadtype = "semi",--"auto", "semi", and "manual"
 	ammo = "spriteguns:mag_pardini",
 	firetime = .125,
 	offsetrecoil = 60,
 	targetrecoil = 30,
-	damage = 6,
+	damage = 5,
 	maxdev = .12,
 	maxzoomdev = .04,
 	magazine = true,
@@ -388,4 +370,13 @@ spriteguns.register_gun("spriteguns:binoculars",{
 			frames = {"_hipidle.png"}
 		},
 	},
+})
+
+minetest.register_craft({
+	output = "spriteguns:binoculars",
+	recipe = {
+		{"default:obsidian_glass", "", "default:obsidian_glass"},
+		{"default:bronze_ingot", "default:bronze_ingot", "default:bronze_ingot"},
+		{"default:obsidian_glass", "", "default:obsidian_glass"},
+	}
 })

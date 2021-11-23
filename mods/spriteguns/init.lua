@@ -54,7 +54,7 @@ minetest.register_chatcommand("spritegunlowres",{
 	end
 })
 
-if binoculars then binoculars.update_player_property = function() end end--die zoomer
+if binoculars then binoculars.update_player_property = function() minetest.unregister_item("binoculars:binoculars") end end--die zoomer
 minetest.register_on_joinplayer(function(player)
 	player:set_properties({zoom_fov = 0})
 end)
