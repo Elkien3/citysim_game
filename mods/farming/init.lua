@@ -295,15 +295,13 @@ minetest.register_lbm({
 })
 
 minetest.register_abm{
-	name = "farming:abm",
+	label = "farming:abm",
 	nodenames = { "group:growing" },
-	run_at_every_load = true,
 	interval = 300,
-	chance = 4,
-	catch_up = false,
+	chance = 8,
 	action = function(pos, node)
 		farming.handle_growth(pos, node)
-	end
+	end,
 }
 
 
@@ -351,7 +349,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		end
 	end
 
-	local growth
+	local growth = 0
 	local light_pos = {x = pos.x, y = pos.y, z = pos.z} --  was y + 1
 	local lambda = 1-- elapsed / STAGE_LENGTH_AVG
 
@@ -393,13 +391,11 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		end
 
 		growth = statistics.poisson(lambda, max_growth)
-
 		if growth < 1 then
 			return true
 		end
 	end--]]
-
-	if minetest.registered_nodes[stages.stages_left[growth]] then
+	if minetest.registered_nodes[stages.stages_left[1]] then
 		local timevar = os.time()
 		local meta = minetest.get_meta(pos)
 		local characteristics = get_biome_characteristic(pos)
@@ -409,6 +405,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		end
 		local t = meta:get_int("t")
 		local timepassed = (timevar-t)
+
 		if t ~= 0 then
 			while true do
 				local rand = math.random(STAGE_LENGTH_DEV*boost, STAGE_LENGTH_AVG*boost)
@@ -420,19 +417,19 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 			end
 			if timepassed < 0 then timepassed = 0 end
 		end
-		local p2 = minetest.registered_nodes[stages.stages_left[growth] ].place_param2 or 1
-
-		minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
 		
-		if growth == max_growth then
-			meta:set_int("t", 0)
-		else
-			meta:set_int("t", timevar)
+		if growth > 0 then
+			local p2 = minetest.registered_nodes[stages.stages_left[growth]].place_param2 or 1
+			minetest.swap_node(pos, {name = stages.stages_left[growth], param2 = p2})
+			if growth == max_growth then
+				meta:set_int("t", 0)
+			else
+				meta:set_int("t", timevar)
+			end
 		end
 	else
 		return true
 	end
-
 	return growth ~= max_growth
 end
 
@@ -511,8 +508,8 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 
 		minetest.set_node(pt.above, {name = plantname, param2 = p2})
 
---minetest.get_node_timer(pt.above):start(1)
-farming.handle_growth(pt.above)--, node)
+	--minetest.get_node_timer(pt.above):start(1)
+	farming.handle_growth(pt.above)--, node)
 
 		minetest.sound_play("default_place_node", {pos = pt.above, gain = 1.0})
 
