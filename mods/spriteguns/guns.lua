@@ -295,7 +295,7 @@ minetest.register_tool("spriteguns:mag_pardini", {
 	description = "Pardini Magazine",
 	inventory_image = "rangedweapons_9mm_mag.png",
 })
-spriteguns.register_magazine("spriteguns:mag_pardini", "spriteguns:bullet_45", 13)
+spriteguns.register_magazine("spriteguns:mag_pardini", "spriteguns:bullet_45", 10)
 
 spriteguns.register_gun("spriteguns:coltarmy",{
 	description = "Colt  Army Revolver",
