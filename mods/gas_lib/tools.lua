@@ -277,7 +277,7 @@ if minetest.get_modpath("basic_materials") then
 	minetest.register_craft({
 		output = "gas_lib:furnace",
 		recipe = {
-			{"group:stone", "default:copper_ingot", "group:stone"},
+			{"basic_materials:copper_strip", "basic_materials:copper_strip", "basic_materials:copper_strip"},
 			{"group:stone", "", "group:stone"},
 			{"group:stone", "group:stone", "group:stone"},
 		}
@@ -286,7 +286,7 @@ else
 	minetest.register_craft({
 		output = "gas_lib:furnace",
 		recipe = {
-			{"basic_materials:copper_strip", "basic_materials:copper_strip", "basic_materials:copper_strip"},
+			{"group:stone", "default:copper_ingot", "group:stone"},
 			{"group:stone", "", "group:stone"},
 			{"group:stone", "group:stone", "group:stone"},
 		}
