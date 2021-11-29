@@ -296,7 +296,7 @@ end
 local exchangertick = 10
 
 minetest.register_node("gas_lib:heat_exchanger", {
-	description = "Heat Exchanger",
+	description = "Heat Exchanger (Put cool liquid on top to cool a hot gas below)",
 	tiles = {
 		"gas_lib_exchanger_top.png", "gas_lib_exchanger_bottom.png",
 		"gas_lib_exchanger_side.png", "gas_lib_exchanger_side.png",
