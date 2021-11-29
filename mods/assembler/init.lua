@@ -43,7 +43,7 @@ assembler.register_base_machine({
 	machine_desc = "LV Assembler",
 	tier = "LV",
 	demand = {200},
-	speed = 1,
+	speed = .5,
 })
 technic.register_recipe_type("5x5assemble", {description = "5x5 Assembly" })
 assembler.register_base_machine({
