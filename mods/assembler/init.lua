@@ -55,3 +55,21 @@ assembler.register_base_machine({
 	demand = {400},
 	speed = 1,
 })
+
+minetest.register_craft({
+	output = "assembler:lv_assembler",
+	recipe = {
+		{"basic_materials:motor", "technic:control_logic_unit", "basic_materials:motor"},
+		{"basic_materials:steel_wire", "technic:machine_casing", "basic_materials:steel_wire"},
+		{"basic_materials:gear_steel", "default:diamondblock", "basic_materials:gear_steel"},
+	}
+})
+minetest.register_craft({
+	output = "assembler:mv_assembler",
+	recipe = {
+		{"technic:stainless_steel_ingot", "technic:stainless_steel_ingot", "basic_materials:motor", "technic:control_logic_unit"},
+		{"technic:stainless_steel_ingot",  "assembler:lv_assembler", "basic_materials:gear_steel", "basic_materials:steel_wire"},
+		{"basic_materials:steel_wire", "basic_materials:gear_steel",  "assembler:lv_assembler", "technic:stainless_steel_ingot"},
+		{"technic:control_logic_unit", "basic_materials:motor", "technic:stainless_steel_ingot", "technic:stainless_steel_ingot"},
+	}
+})
