@@ -1,5 +1,18 @@
 -- yes, the power meter is technically a bed
 
+local recipe = {}
+if minetest.get_modpath("currency") then
+	recipe = {
+		{"", "technic:control_logic_unit", ""},
+		{"technic:lv_cable", "currency:shop", "technic:lv_cable"},
+	}
+else
+	recipe = {
+		{"", "technic:control_logic_unit", ""},
+		{"technic:lv_cable", "default:chest", "technic:lv_cable"},
+	}
+end
+
 beds.register_bed("technic_powermeter:meter", {
 	description = "Power Meter",
 	inventory_image = "technic_powermeter_meter.png",
@@ -27,10 +40,7 @@ beds.register_bed("technic_powermeter:meter", {
 		top = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 	},
 	selectionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 1.5},
-	recipe = {
-		{"wool:red", "wool:grey", "wool:white"},
-		{"group:wood", "group:wood", "group:wood"}
-	},
+	recipe = recipe
 })
 
 local function form_meter(pos, owner)

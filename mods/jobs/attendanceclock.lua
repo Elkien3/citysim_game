@@ -206,3 +206,21 @@ minetest.register_node("jobs:clock", {
 		end
     end
 })
+
+if minetest.get_modpath("mesecons_button") and minetest.get_modpath("mesecons_luacontroller") and minetest.get_modpath("ontime_clocks") then
+	minetest.register_craft({
+		recipe = {
+			{"ontime_clocks:green_digital", "mesecons_luacontroller:luacontroller0000"},
+			{"mesecons_button:button_off", "mesecons_button:button_off"},
+		},
+		output = "jobs:clock"
+	})
+else
+	minetest.register_craft({
+		recipe = {
+			{"default:glass", "default:sign_wall_steel"},
+			{"default:mese_crystal_fragment", "default:mese_crystal_fragment"},
+		},
+		output = "jobs:clock"
+	})
+end

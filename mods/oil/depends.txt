@@ -4,3 +4,6 @@ bucket
 dynamic_liquid
 currency
 waterworks?
+mesecons_button?
+currency?
+basic_materials?

@@ -16,9 +16,9 @@ local function throw_grenade(name, player)
 	end
 	local obj = minetest.add_entity({x = pos.x + dir.x, y = pos.y + 1.5, z = pos.z + dir.z}, name)
 	local self = obj:get_luaentity()
-	local m = 33
+	local m = 20
 	obj:set_velocity({x = dir.x * m, y = dir.y * m, z = dir.z * m})
-	obj:set_acceleration({x = 0, y = -30, z = 0})
+	obj:set_acceleration({x = 0, y = -10, z = 0})
 	self.dir = dir
 
 	return(obj:get_luaentity())

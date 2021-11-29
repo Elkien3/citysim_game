@@ -84,4 +84,21 @@ minetest.register_tool("cars:welding_torch", welderdef)
 
 if technic then
 	technic.register_power_tool("cars:welding_torch", technic_charge_amount)
+	minetest.register_craft({
+		output = "cars:welding_torch",
+		recipe = {
+			{"basic_materials:heating_element", "basic_materials:heating_element", "technic:copper_coil"},
+			{"", "technic:stainless_steel_ingot", "technic:battery"},
+			{"", "technic:stainless_steel_ingot", "technic:battery"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "cars:welding_torch",
+		recipe = {
+			{"default:copper_ingot", "default:copper_ingot", "default:diamond"},
+			{"", "default:steel_ingot", "default:mese_crystal"},
+			{"", "default:steel_ingot", "default:mese_crystal"},
+		}
+	})
 end

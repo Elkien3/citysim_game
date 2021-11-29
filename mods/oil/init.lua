@@ -511,3 +511,22 @@ minetest.register_node("oil:pump", {
 		return true
 	end
 })
+if minetest.get_modpath("mesecons_button") and minetest.get_modpath("currency") and minetest.get_modpath("basic_materials") then
+	minetest.register_craft({
+		recipe = {
+			{"default:steel_ingot", "default:steel_ingot"},
+			{"mesecons_button:button_off", "currency:shop"},
+			{"bucket:bucket_empty", "basic_materials:motor"},
+		},
+		output = "oil:pump"
+	})
+else
+	minetest.register_craft({
+		recipe = {
+			{"default:steel_ingot", "default:steel_ingot"},
+			{"default:stick", "default:mese_crystal"},
+			{"bucket:bucket_empty", "default:copper_ingot"},
+		},
+		output = "oil:pump"
+	})
+end

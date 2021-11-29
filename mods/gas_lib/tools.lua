@@ -273,15 +273,25 @@ minetest.register_node("gas_lib:furnace_active", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 })
-
-minetest.register_craft({
-	output = "gas_lib:furnace",
-	recipe = {
-		{"group:stone", "group:stone", "group:stone"},
-		{"group:stone", "default:wood", "group:stone"},
-		{"group:stone", "group:stone", "group:stone"},
-	}
-})
+if minetest.get_modpath("basic_materials") then
+	minetest.register_craft({
+		output = "gas_lib:furnace",
+		recipe = {
+			{"group:stone", "default:copper_ingot", "group:stone"},
+			{"group:stone", "", "group:stone"},
+			{"group:stone", "group:stone", "group:stone"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "gas_lib:furnace",
+		recipe = {
+			{"basic_materials:copper_strip", "basic_materials:copper_strip", "basic_materials:copper_strip"},
+			{"group:stone", "", "group:stone"},
+			{"group:stone", "group:stone", "group:stone"},
+		}
+	})
+end
 
 local exchangertick = 10
 
@@ -311,6 +321,26 @@ minetest.register_node("gas_lib:heat_exchanger", {
 		return true
 	end
 })
+
+if minetest.get_modpath("basic_materials") then
+	minetest.register_craft({
+		output = "gas_lib:heat_exchanger",
+		recipe = {
+			{"basic_materials:copper_strip", "basic_materials:copper_strip", "basic_materials:copper_strip"},
+			{"group:stone", "default:copper_ingot", "group:stone"},
+			{"basic_materials:copper_strip", "basic_materials:copper_strip", "basic_materials:copper_strip"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "gas_lib:heat_exchanger",
+		recipe = {
+			{"group:stone", "default:copper_ingot", "group:stone"},
+			{"group:stone", "default:copper_ingot", "group:stone"},
+			{"group:stone", "default:copper_ingot", "group:stone"},
+		}
+	})
+end
 
 minetest.register_lbm{
 	name="gas_lib:heattimer",

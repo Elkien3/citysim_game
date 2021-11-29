@@ -69,6 +69,8 @@ shared_nodes["inbox:full"] = true
 shared_nodes["currency:shop"] = true
 shared_nodes["locksmith:mesecon_switch_on"] = true
 shared_nodes["locksmith:mesecon_switch_off"] = true
+shared_nodes["oil:pump"] = true
+shared_nodes["technic_powermeter:meter_bottom"] = true
 
 local locksmith_forms = {}
 
@@ -117,3 +119,22 @@ end)
 if minetest.get_modpath("mesecons_switch") then
 	dofile(minetest.get_modpath("locksmith").."/switch.lua")
 end
+
+local recipe = {}
+
+for i, item in pairs({
+		"default:skeleton_key",
+		"lockpicks:lockpick_steel",
+		"basic_materials:padlock",
+		"screwdriver:screwdriver"
+	}) do
+	if minetest.registered_items[item] then
+		table.insert(recipe, item)
+	end
+end
+
+minetest.register_craft({
+	type = "shapeless",
+	recipe = recipe,
+	output = "locksmith:tool"
+})
