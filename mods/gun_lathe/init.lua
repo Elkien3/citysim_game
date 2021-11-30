@@ -82,6 +82,25 @@ minetest.register_craft({
 	},
 	output = "gun_lathe:lv_lathe"
 })
+minetest.register_craft({
+	recipe = {
+		{"default:diamond", "default:diamond", "basic_materials:motor", "basic_materials:motor"},
+		{"default:mese", "default:diamond", "technic:machine_casing", "technic:mv_cable"},
+		{"basic_materials:steel_bar", "", "gun_lathe:lv_lathe", "technic:mv_cable"},
+		{"basic_materials:gear_steel", "basic_materials:steel_bar", "technic:mv_cable", "technic:control_logic_unit"}
+	},
+	output = "gun_lathe:mv_lathe"
+})
+minetest.register_craft({
+	recipe = {
+		{"", "", "", "basic_materials:motor", "basic_materials:motor"},
+		{"default:diamond", "default:diamond", "", "basic_materials:motor", "basic_materials:motor"},
+		{"moreores:mithril_block", "default:diamond", "", "technic:machine_casing", "technic:hv_cable"}
+		{"basic_materials:steel_bar", "", "", "technic:hv_cable", "gun_lathe:mv_lathe"},
+		{"basic_materials:gear_steel", "basic_materials:steel_bar", "technic:hv_cable", "technic:control_logic_unit", "technic:control_logic_unit"}
+	},
+	output = "gun_lathe:hv_lathe"
+})
 
 
 minetest.register_craftitem("gun_lathe:gun_barrel_iron", {
