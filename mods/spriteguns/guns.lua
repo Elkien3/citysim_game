@@ -1,14 +1,60 @@
+local casingmat = "default:bronze_ingot"
+local bulletmat = "default:steel_ingot"
+local shotguncasemat = "default:paper"
+if minetest.get_modpath("basic_materials") then
+	casingmat = "basic_materials:brass_ingot"
+	shotguncasemat = "basic_materials:plastic_strip"
+end
+if minetest.get_modpath("technic") then
+	bulletmat = "technic:lead_ingot"
+end
 minetest.register_craftitem("spriteguns:bullet_45", {
 	description = ".45 ACP Bullet",
 	inventory_image = "rangedweapons_9mm.png",
+})
+minetest.register_craft({
+	output = "spriteguns:bullet_45 80",
+	recipe = {
+		{"", bulletmat, ""},
+		{casingmat, "tnt:gunpowder", casingmat},
+		{casingmat, "tnt:gunpowder", casingmat},
+	}
 })
 minetest.register_craftitem("spriteguns:bullet_762", {
 	description = "7.62x39 Bullet",
 	inventory_image = "rangedweapons_762mm.png",
 })
+if minetest.get_modpath("assembler") then
+	minetest.register_craft({
+		output = "spriteguns:bullet_762 60",
+		recipe = {
+			{"", bulletmat, ""},
+			{casingmat, "tnt:gunpowder", casingmat},
+			{casingmat, "tnt:gunpowder", casingmat},
+			{casingmat, "tnt:gunpowder", casingmat},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:bullet_762 60",
+		recipe = {
+			{casingmat, bulletmat, casingmat},
+			{casingmat, "tnt:gunpowder", casingmat},
+			{casingmat, "tnt:gunpowder", casingmat},
+		}
+	})
+end
 minetest.register_craftitem("spriteguns:bullet_12", {
 	description = "12 Gauge Buckshot",
 	inventory_image = "rangedweapons_12g.png",
+})
+minetest.register_craft({
+	output = "spriteguns:bullet_12 60",
+	recipe = {
+		{shotguncasemat, bulletmat, shotguncasemat},
+		{shotguncasemat, "tnt:gunpowder", shotguncasemat},
+		{casingmat, "tnt:gunpowder", casingmat},
+	}
 })
 
 spriteguns.register_gun("spriteguns:remington870",{
