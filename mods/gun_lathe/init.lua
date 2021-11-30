@@ -74,6 +74,16 @@ technic.swap_node = function(pos, name)
 	end
 end
 
+minetest.register_craft({
+	recipe = {
+		{"default:diamond", "basic_materials:motor", "technic:lv_cable"},
+		{"basic_materials:steel_bar", "technic:machine_casing", "technic:lv_cable"},
+		{"basic_materials:gear_steel", "technic:lv_cable", "technic:control_logic_unit"}
+	},
+	output = "gun_lathe:lv_lathe"
+})
+
+
 minetest.register_craftitem("gun_lathe:gun_barrel_iron", {
 	description = "Iron Gun Barrel",
 	inventory_image = "gunbarrel.png"
