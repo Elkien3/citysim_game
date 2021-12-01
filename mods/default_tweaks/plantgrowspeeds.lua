@@ -73,7 +73,7 @@ overwrite_trees()
 minetest.override_item("default:blueberry_bush_leaves_with_berries", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		minetest.set_node(pos, {name = "default:blueberry_bush_leaves"})
-		local growth_time = 12*60*60**get_growth_multiplier(pos, "default:blueberry_bush_leaves_with_berries")
+		local growth_time = 12*60*60*get_growth_multiplier(pos, "default:blueberry_bush_leaves_with_berries")
 		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
 	end,
 })
