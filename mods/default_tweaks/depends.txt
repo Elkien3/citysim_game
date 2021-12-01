@@ -1,6 +1,6 @@
 default
 fire
-binoculars
+binoculars?
 farming
 drug_wars?
 areas?
