@@ -112,7 +112,7 @@ minetest.register_craftitem("gun_lathe:gun_barrel_carbon_steel", {
 	inventory_image = "gunbarrel_carbon_steel.png"
 })
 minetest.register_craftitem("gun_lathe:gun_barrel_stainless_steel", {
-	description = "Stainles Steel Gun Barrel",
+	description = "Stainless Steel Gun Barrel",
 	inventory_image = "gunbarrel_stainless_steel.png"
 })
 technic.register_recipe("lvlathe", {input = {"default:steel_ingot 4"}, output = "gun_lathe:gun_barrel_iron", time = 60})
