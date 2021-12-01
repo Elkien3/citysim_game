@@ -8,7 +8,7 @@ local function check_for_flashlight(player)
 	local inv = player:get_inventory()
 	local hotbar = inv:get_list("main")
 	for i = 1, 8 do
-		if hotbar[i]:get_name() == "technic:flashlight" then
+		if hotbar[i] and hotbar[i]:get_name() == "technic:flashlight" then
 			local meta = minetest.deserialize(hotbar[i]:get_metadata())
 			if meta and meta.charge and meta.charge >= flashlight_charge_per_second then
 				if not technic.creative_mode then
