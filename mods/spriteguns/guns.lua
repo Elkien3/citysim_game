@@ -272,7 +272,7 @@ spriteguns.register_gun("spriteguns:cz527",{
 		},
 	},
 })
-})
+
 if fancycrafts then
 	minetest.register_craft({
 		output = "spriteguns:cz527 1 65534",
