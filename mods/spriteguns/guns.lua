@@ -1,9 +1,12 @@
 local casingmat = "default:bronze_ingot"
 local bulletmat = "default:steel_ingot"
 local shotguncasemat = "default:paper"
+local magspringmat = "group:sapling"
+local fancycrafts = minetest.get_modpath("gun_lathe") ~= nil and minetest.get_modpath("assembler") ~= nil
 if minetest.get_modpath("basic_materials") then
 	casingmat = "basic_materials:brass_ingot"
 	shotguncasemat = "basic_materials:plastic_strip"
+	magspringmat = "basic_materials:steel_wire"
 end
 if minetest.get_modpath("technic") then
 	bulletmat = "technic:lead_ingot"
@@ -24,7 +27,7 @@ minetest.register_craftitem("spriteguns:bullet_762", {
 	description = "7.62x39 Bullet",
 	inventory_image = "rangedweapons_762mm.png",
 })
-if minetest.get_modpath("assembler") then
+if fancycrafts then
 	minetest.register_craft({
 		output = "spriteguns:bullet_762 60",
 		recipe = {
@@ -111,6 +114,26 @@ spriteguns.register_gun("spriteguns:remington870",{
 		},
 	},
 })
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:remington870 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_carbon_steel", "", ""},
+			{"group:tree", "gun_lathe:gun_barrel_carbon_steel", ""},
+			{"", "group:tree", "moreores:mithril_ingot"},
+			{"", "group:tree", "group:tree"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:remington870 1 65534",
+		recipe = {
+			{"default:steel_ingot", "", ""},
+			{"group:tree", "default:steel_ingot", "default:mese_crystal"},
+			{"", "group:tree", "group:tree"},
+		}
+	})
+end
 
 spriteguns.register_gun("spriteguns:thompson",{
 	description = "Thompson Submachine gun",
@@ -167,7 +190,35 @@ minetest.register_tool("spriteguns:mag_thompson", {
 	description = "Thompson Magazine",
 	inventory_image = "rangedweapons_smg_mag.png",
 })
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:thompson 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_carbon_steel", "", "", ""},
+			{"group:tree", "gun_lathe:gun_barrel_carbon_steel", "", ""},
+			{"group:tree", "", "moreores:mithril_ingot", ""},
+			{"", "", "group:tree", "group:tree"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:thompson 1 65534",
+		recipe = {
+			{"default:steel_ingot", "default:diamond", ""},
+			{"", "default:steel_ingot", "default:diamond"},
+			{"", "group:tree", "group:tree"},
+		}
+	})
+end
 spriteguns.register_magazine("spriteguns:mag_thompson", "spriteguns:bullet_45", 30)
+minetest.register_craft({
+	output = "spriteguns:mag_thompson 1 65534",
+	recipe = {
+		{"default:steel_ingot"},
+		{"default:steel_ingot"},
+		{magspringmat},
+	}
+})
 
 spriteguns.register_gun("spriteguns:cz527",{
 	description = "CZ 527 Rifle",
@@ -221,12 +272,41 @@ spriteguns.register_gun("spriteguns:cz527",{
 		},
 	},
 })
+})
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:cz527 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_stainless_steel", "default:obsidian_glass", "", "", ""},
+			{"", "gun_lathe:gun_barrel_stainless_steel", "default:diamondblock", "", ""},
+			{"", "group:tree", "gun_lathe:gun_barrel_stainless_steel", "default:obsidian_glass", ""},
+			{"", "", "group:tree", "moreores:mithril_block", ""},
+			{"", "", "", "group:tree", "group:tree"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:cz527 1 65534",
+		recipe = {
+			{"default:steel_ingot", "default:diamondblock", ""},
+			{"group:tree", "default:steel_ingot", "default:diamondblock"},
+			{"", "group:tree", "group:tree"},
+		}
+	})
+end
 
 minetest.register_tool("spriteguns:mag_cz527", {
 	description = "CZ 527 Magazine",
 	inventory_image = "rangedweapons_sniper_mag.png",
 })
 spriteguns.register_magazine("spriteguns:mag_cz527", "spriteguns:bullet_762", 5)
+minetest.register_craft({
+	output = "spriteguns:mag_cz527 1 65534",
+	recipe = {
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"", magspringmat, ""},
+	}
+})
 
 spriteguns.register_gun("spriteguns:mini14",{
 	description = "Mini-14 Rifle",
@@ -279,12 +359,41 @@ spriteguns.register_gun("spriteguns:mini14",{
 		},
 	},
 })
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:mini14 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_stainless_steel", "default:diamond", "", "", ""},
+			{"", "gun_lathe:gun_barrel_stainless_steel", "", "", ""},
+			{"", "group:tree", "gun_lathe:gun_barrel_stainless_steel", "default:diamond", ""},
+			{"", "", "group:tree", "moreores:mithril_block", ""},
+			{"", "", "", "group:tree", "group:tree"},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:mini14 1 65534",
+		recipe = {
+			{"default:steel_ingot", "", ""},
+			{"group:tree", "default:steel_ingot", "default:diamondblock"},
+			{"", "group:tree", "group:tree"},
+		}
+	})
+end
 
 minetest.register_tool("spriteguns:mag_mini14", {
 	description = "Mini-14 Magazine",
 	inventory_image = "rangedweapons_ak47_mag.png",
 })
 spriteguns.register_magazine("spriteguns:mag_mini14", "spriteguns:bullet_762", 15)
+minetest.register_craft({
+	output = "spriteguns:mag_mini14 1 65534",
+	recipe = {
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"", magspringmat, ""},
+	}
+})
 
 spriteguns.register_gun("spriteguns:pardini",{
 	description = "Pardini Pistol",
@@ -341,7 +450,34 @@ minetest.register_tool("spriteguns:mag_pardini", {
 	description = "Pardini Magazine",
 	inventory_image = "rangedweapons_9mm_mag.png",
 })
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:pardini 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_iron", "", ""},
+			{"default:steel_ingot", "gun_lathe:gun_barrel_iron", ""},
+			{"", "default:steel_ingot", "default:steel_ingot"},
+			{"default:steel_ingot", "default:steel_ingot", ""},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:pardini 1 65534",
+		recipe = {
+			{"default:steel_ingot", "", ""},
+			{"", "default:steel_ingot", "default:diamond"},
+			{"", "default:steel_ingot", ""},
+		}
+	})
+end
 spriteguns.register_magazine("spriteguns:mag_pardini", "spriteguns:bullet_45", 10)
+minetest.register_craft({
+	output = "spriteguns:mag_pardini 1 65534",
+	recipe = {
+		{"default:steel_ingot"},
+		{magspringmat},
+	}
+})
 
 spriteguns.register_gun("spriteguns:coltarmy",{
 	description = "Colt  Army Revolver",
@@ -397,6 +533,26 @@ spriteguns.register_gun("spriteguns:coltarmy",{
 		},
 	},
 })
+if fancycrafts then
+	minetest.register_craft({
+		output = "spriteguns:coltarmy 1 65534",
+		recipe = {
+			{"gun_lathe:gun_barrel_iron", "", ""},
+			{"default:steel_ingot", "gun_lathe:gun_barrel_iron", ""},
+			{"", "default:steel_ingot", "group:tree"},
+			{"", "group:tree", ""},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "spriteguns:coltarmy 1 65534",
+		recipe = {
+			{"default:steel_ingot", "", ""},
+			{"", "default:steel_ingot", "default:mese_crystal"},
+			{"", "group:tree", ""},
+		}
+	})
+end
 
 spriteguns.register_gun("spriteguns:binoculars",{
 	description = "Binoculars",
