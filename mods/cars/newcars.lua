@@ -1,3 +1,92 @@
+minetest.register_node("cars:engine", {
+	description = "Car Engine",
+	tiles = {"engine.png"}, 
+})
+minetest.register_node("cars:transmission", {
+	description = "Car Transmission",
+	tiles = {"transmission.png"}, 
+})
+minetest.register_node("cars:seat", {
+	description = "Car Seat",
+	tiles = {"seat.png"}, 
+})
+minetest.register_node("cars:wheel", {
+	description = "Car Wheel",
+	tiles = {"wheel.png"}, 
+})
+
+if minetest.get_modpath("assembler") and minetest.get_modpath("technic") and minetest.get_modpath("mesecons_pistons") then
+	minetest.register_craft({
+		output = "cars:engine",
+		recipe = {
+			{"", "moreores:mithril_block", "pipeworks:tube_1", "moreores:mithril_block", ""},
+			{"default:obsidian_shard", "mesecons_pistons:piston_normal_off", "pipeworks:tube_1", "", "default:obsidian_shard"},
+			{"default:mese_crystal", "", "pipeworks:tube_1", "mesecons_pistons:piston_normal_off", "default:mese_crystal"},
+			{"basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:motor"},
+			{"", "", "", "", "technic:lv_battery_box0"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:transmission",
+		recipe = {
+			{"", "", "", "basic_materials:steel_bar", ""},
+			{"", "basic_materials:gear_steel", "basic_materials:steel_bar", "", "technic:control_logic_unit"},
+			{"basic_materials:gear_steel", "default:obsidian", "basic_materials:gear_steel", "", "technic:control_logic_unit"},
+			{"", "basic_materials:gear_steel", "", "", ""},
+			{"basic_materials:steel_bar", "basic_materials:gear_steel", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:seat",
+		recipe = {
+			{"", "group:wool"},
+			{"group:wool", "group:wool"},
+			{"basic_materials:steel_bar", "basic_materials:steel_bar"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:wheel",
+		recipe = {
+			{"technic:rubber", "technic:rubber", "technic:rubber"},
+			{"technic:rubber", "default:steel_ingot", "technic:rubber"},
+			{"technic:rubber", "technic:rubber", "technic:rubber"}
+		}
+	})
+else
+	minetest.register_craft({
+		output = "cars:engine",
+		recipe = {
+			{"default:obsidian", "default:mese", "default:copper_ingot"},
+			{"", "default:obsidian_shard", "default:copper_ingot"},
+			{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:transmission",
+		recipe = {
+			{"", "default:obsidian_shard", ""},
+			{"default:obsidian_shard", "default:obsidian", "default:obsidian_shard"},
+			{"", "default:obsidian_shard", ""}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:seat",
+		recipe = {
+			{"", "group:wool"},
+			{"group:wool", "group:wool"},
+			{"default:steel_ingot", "default:steel_ingot"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:wheel",
+		recipe = {
+			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"},
+			"default:obsidian_shard", "default:steel_ingot", "default:obsidian_shard"},
+			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"}
+		}
+	})
+end
+
 local sedandef = {
 		name = "cars:sedan",
 		description = "Sedan",
@@ -226,6 +315,87 @@ minetest.register_entity("cars:uralextension", {
 				return
 			end
 			self.object:set_armor_groups({immortal = 1})
+		end)
+	end,
+})
+
+local truckdef = {
+		name = "cars:truck",
+		description = "Truck",
+		acceleration = 4,
+		braking = 10,
+		axisval = 12,
+		coasting = 2,
+		gas_usage = 1.2,
+		gas_offset = {x=-1,y=.88,z=-1.9766},
+		max_speed = 24.5872,
+		trunksize = {x=8,y=4},
+		trunkloc = {x = 0, y = 5.2, z = -7},
+		engineloc = {x = 0, y = 1.4, z = .825},
+		passengers = {
+			{loc = {x = -5, y = 9.6, z = -3.75}, offset = {x = -5, y = 3.6, z = -3.25} },--offset is loc - 6y +.5z
+			{loc = {x = 5, y = 9.6, z = -3.75}, offset = {x = 5, y = 3.6, z = -3.25} },
+		},
+		max_force_offroad = 6,
+		max_offroad_speed = 20,
+		wheel = {
+			frontright = {x=-7.8,y=3.9,z=7.101},
+			frontleft = {x=7.8,y=3.9,z=7.101},
+		},
+		wheelname = "cars:truckwheel",
+		lights = "truck",
+		steeringwheel = {x=-5.525,y=13.975,z=.60103},
+		--licenseplate = {x = 0, y = 4.5, z = -23.3},
+		horn = "horn",
+		rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
+		rpmvalues = {{18, 48, .6}, {12, 32, .7}, {8, 20, .7}, {0, 10, .6}},
+		enginesound = "longerenginefaded",
+		ignitionsound = "ignition",
+		enginesound = "uralenginefaded",
+		ignitionsound = "uralignition",
+		--[[craft = {
+			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
+			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
+		},--]]
+		--craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+		inventory_image = "inv_car_grey.png",
+		initial_properties = {
+			hp_max = 20,
+			physical = true,
+			stepheight = 1.1,
+			weight = 5,
+			collisionbox = {-1, -0.05, -1, 1, 1.5, 1},
+			visual = "mesh",
+			visual_size = {x=1, y=1},
+			mesh = "truck.b3d",
+			textures = {'truckuv.png', "truckuv.png", "truckuvcolored.png"},
+			is_visible = true,
+			makes_footstep_sound = false,
+			automatic_rotate = 0,
+			trunkinv = {},
+		}
+	}
+cars_register_car(truckdef)
+
+minetest.register_entity("cars:truckwheel", {
+    hp_max = 1,
+    physical = false,
+	pointable = false,
+	collide_with_objects = false,
+    weight = 5,
+    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
+    visual = "mesh",
+    visual_size = {x=1, y=1},
+    mesh = "truckwheel.b3d",
+    textures = {"truckuv.png"}, -- number of required textures depends on visual
+    is_visible = true,
+    --makes_footstep_sound = false,
+    --automatic_rotate = true,
+	on_activate = function(self, staticdata, dtime_s)
+		minetest.after(.1, function()
+			if not self.object:get_attach() then
+				self.object:remove()
+			end
 		end)
 	end,
 })

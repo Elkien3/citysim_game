@@ -294,16 +294,16 @@ function getClosest(player, car, distance)
 	local playeryaw = player:get_look_horizontal()
 	local x, z = rotateVector(offset.x, offset.z, playeryaw)
 	offset = vector.multiply({x=x, y=offset.y, z=z}, .1)
-	if not player:get_attach() then playerPos = vector.add(playerPos, offset) end
-		if DEBUG_WAYPOINT then 
-			local marker = player:hud_add({
-				hud_elem_type = "waypoint",
-				name = "start",
-				number = 0xFF0000,
-				world_pos = playerPos
-			})
-			minetest.after(5, function() player:hud_remove(marker) end, player, marker)
-		end
+	playerPos = vector.add(playerPos, offset)
+	if DEBUG_WAYPOINT then 
+		local marker = player:hud_add({
+			hud_elem_type = "waypoint",
+			name = "start",
+			number = 0xFF0000,
+			world_pos = playerPos
+		})
+		minetest.after(5, function() player:hud_remove(marker) end, player, marker)
+	end
 	local punchPos = vector.add(playerPos, vector.multiply(dir, distance or vector.distance(playerPos, carPos)))
 	if minetest.raycast then
 		local ray = minetest.raycast(playerPos, vector.add(playerPos, vector.multiply(dir, vector.distance(playerPos, carPos))))
