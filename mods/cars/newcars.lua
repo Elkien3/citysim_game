@@ -81,7 +81,7 @@ else
 		output = "cars:wheel",
 		recipe = {
 			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"},
-			"default:obsidian_shard", "default:steel_ingot", "default:obsidian_shard"},
+			{"default:obsidian_shard", "default:steel_ingot", "default:obsidian_shard"},
 			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"}
 		}
 	})
