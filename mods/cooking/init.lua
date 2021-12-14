@@ -33,11 +33,38 @@ local function table_to_string(tbl)
 	return str
 end
 
+local crafttypelist = {
+	stack = "Stacking",
+	mix = "Mixing",
+	cut = "Cutting",
+	press = "Pressing",
+	roll = "Rolling",
+	stove = "Stove",
+	oven = "Oven",
+	soup = "Soup",
+}
+if craftguide then
+	for craftname, tbl in pairs(crafttypelist) do
+		craftguide.register_craft_type(craftname, {
+			description = tbl[1],
+			icon = "craftguide_"..craftname.."_icon.png",
+		})
+	end
+end
+if unified_inventory then
+	for craftname, tbl in pairs(crafttypelist) do
+		unified_inventory.register_craft_type(craftname, {
+			description = tbl[1],
+			width = 1,
+			height = 0,
+		})
+	end
+end
 cooking.register_craft = function(tbl)
 	assert(tbl.type, "No Craft Type Specified")
 	assert(tbl.recipe, "No Craft Recipe Specified")
 	assert(tbl.output, "No Craft Output Specified")
-	if unified_inventory then
+	if unified_inventory or craftguide then
 		local output = table_to_string(tbl.output)
 		for word in string.gmatch(tbl.output, '([^,]+)') do
 			output = word
@@ -49,12 +76,31 @@ cooking.register_craft = function(tbl)
 		else
 			items = table.copy(tbl.recipe)
 		end
-		unified_inventory.register_craft({
-			type = string.gsub(tbl.type, "^%l", string.upper),
-			output = output,
-			items = items,
-			width = 0,
-		})
+		if unified_inventory then
+			unifieditems = table.copy(items)
+			unified_inventory.register_craft({
+				type = string.gsub(tbl.type, "^%l", string.upper),
+				output = output,
+				items = unifieditems,
+			})
+		end
+		if craftguide then
+			craftguideitems = table.copy(items)
+			if (tbl.type == "stack" or tbl.type == "mix" or tbl.type == "soup") and #items ~= 1 then
+				local addon = ""
+				for i = 2, #items do
+					addon = addon..", "
+				end
+				for i, item in pairs(items) do
+					craftguideitems[#items+1-i] = item..addon
+				end
+			end
+			craftguide.register_craft({
+				type   = tbl.type,
+				result = output,
+				items  = craftguideitems,
+			})
+		end
 	end
 	if tbl.type == "oven" or tbl.type == "stove" then
 		tbl.recipe = table_to_string(tbl.recipe)

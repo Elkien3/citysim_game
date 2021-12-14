@@ -1,0 +1,43 @@
+in ovenstove.lua there is some copied and edited code from minetest_game default mod, which is under the following license:
+----------------------
+
+GNU Lesser General Public License, version 2.1
+Copyright (C) 2011-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2011-2018 Various Minetest developers and contributors
+
+This program is free software; you can redistribute it and/or modify it under the terms
+of the GNU Lesser General Public License as published by the Free Software Foundation;
+either version 2.1 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Lesser General Public License for more details:
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+on technic.lua there is some copied and edited code from the technic mod, which is under the following license:
+-------------------------
+LGPLv2
+
+Credits for technic mod:
+kpoppel
+Nekogloop
+Nore/Ekdohibs
+ShadowNinja
+VanessaE
+And many others...
+
+craftguide_cut_icon.png contains default_sword_steel.png from minetest_game default mod, which is under the following license:
+-------------------------------
+Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+Attribution 3.0 Unported (CC BY 3.0)
+CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+See https://github.com/minetest/minetest_game/blob/master/mods/default/license.txt for more infomation
+
+jelys_pizzaria_rolling_pin_inv.png and craftguide_roll_icon.png
+------------------------------
+Attribution-ShareAlike 3.0 (CC BY-SA 3.0) Extex
+inspired by https://www.brik.co/blogs/pixel-art/rolling-pin-pixel-art
+
+all other code, textures, and models:
+----------------------
+Attribution 2.0 Generic (CC BY 2.0) Elkien3

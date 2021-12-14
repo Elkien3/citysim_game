@@ -3,3 +3,5 @@ technic?
 farming?
 foodspoil?
 flowers?
+craftguide?
+unified_inventory?

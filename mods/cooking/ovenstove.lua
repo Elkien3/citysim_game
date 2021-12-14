@@ -1,4 +1,8 @@
--- default/furnace.lua
+--some code is copied and edited from default/furnace.lua from minetest_game
+--GNU Lesser General Public License, version 2.1
+--Copyright (C) 2011-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+--Copyright (C) 2011-2018 Various Minetest developers and contributors
+--see license.txt for more info
 
 -- support for MT game translation.
 local S = default.get_translator
