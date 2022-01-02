@@ -144,3 +144,56 @@ minetest.register_chatcommand("vote_protect", {
 		})
 	end
 })
+
+minetest.register_chatcommand("vote_change_owner", {
+	params = "<name>",
+	description = "Start a vote to change the area's owner",
+	privs = {
+		vote_area = true,
+	},
+	func = function(name, param)
+		local id, newOwner = param:match("^(%d+)%s(%S+)$")
+		if not id then
+			return false, S("Invalid usage, see"
+					.." /help @1.", "change_owner")
+		end
+
+		if not areas:player_exists(newOwner) then
+			return false, S("The player \"@1\" does not exist.", newOwner)
+		end
+
+		id = tonumber(id)
+		if not areas.areas[id] then
+			return false, S("Area does not exist.")
+		end
+		
+		return vote.new_vote(name, {
+			description = "Change the owner of area " ..id..
+				" to "..newOwner,
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_area = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if #yes >= votesneeded then
+					areas.areas[id].owner = newOwner
+					areas:save()
+					minetest.chat_send_all(S("Area @1 owner changed to @2. (@3/@4)", id, newOwner, #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to change area @1 owner to @2. (@3/@4)", id, newOwner, #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
