@@ -379,7 +379,7 @@ minetest.register_craft({
 	cooktime = 5,
 	replacements = {{ "mobs:bucket_milk", "bucket:bucket_empty"}}
 })
-
+--[[
 -- cheese block
 minetest.register_node(":mobs:cheeseblock", {
 	description = S("Cheese Block"),
@@ -404,3 +404,4 @@ minetest.register_craft({
 		{"mobs:cheeseblock"},
 	}
 })
+--]]
