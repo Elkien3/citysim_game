@@ -44,7 +44,7 @@ minetest.register_craft({
 	recipe = "mobs:meat_raw",
 	cooktime = 5
 })
-
+--[[
 -- lasso
 minetest.register_tool("mobs:lasso", {
 	description = S("Lasso (right-click animal to put in inventory)"),
@@ -145,7 +145,7 @@ minetest.register_craft({
 		{"mobs:leather", "default:steel_ingot", "mobs:leather"}
 	}
 })
-
+--]]
 
 -- make sure we can register fences
 if minetest.get_modpath("default") and default.register_fence then
@@ -352,7 +352,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 end)
 
-
+--[[
 -- Meat Block (thanks to painterlypack.net for allowing me to use these textures)
 minetest.register_node("mobs:meatblock", {
 	description = S("Meat Block"),
@@ -373,3 +373,4 @@ minetest.register_craft({
 		{"group:food_meat", "group:food_meat", "group:food_meat"}
 	}
 })
+--]]

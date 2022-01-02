@@ -410,7 +410,7 @@ minetest.register_craft({
 	recipe  = "mobs:chicken_raw",
 	output = "mobs:chicken_cooked",
 })
-
+--[[
 -- feather
 minetest.register_craftitem(":mobs:chicken_feather", {
 	description = S("Feather"),
@@ -422,4 +422,4 @@ minetest.register_craft({
 	type = "fuel",
 	recipe = "mobs:chicken_feather",
 	burntime = 1,
-})
+})--]]

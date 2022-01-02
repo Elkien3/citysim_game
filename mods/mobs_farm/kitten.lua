@@ -203,7 +203,7 @@ mobs:register_egg("mobs_farm:kitten", S("Kitten"), "mobs_kitten_inv.png", 0)
 
 mobs:alias_mob("mobs:kitten", "mobs_farm:kitten") -- compatibility
 
-
+--[[
 local hairball_items = {
 	"default:stick", "default:coal_lump", "default:dry_shrub", "flowers:rose",
 	"mobs_farm:rat", "default:grass_1", "farming:seed_wheat", "dye:green", "",
@@ -240,3 +240,4 @@ minetest.register_craftitem(":mobs:hairball", {
 		return itemstack
 	end,
 })
+--]]
