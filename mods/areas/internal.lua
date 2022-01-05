@@ -307,7 +307,7 @@ function areas:isAreaOwner(id, name)
 			cur = self.areas[cur.parent]
 		elseif cur.owner == name then
 			return true
-		elseif jobs and jobs.permissionstring(name, cur.owner) then
+		elseif (jobs and (jobs.list[jobs.split(cur.owner, ":")[1]] or {ceo = ""}).ceo == name) then
 			return true
 		else
 			return false

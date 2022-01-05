@@ -174,3 +174,90 @@ function areas:canInteractInArea(pos1, pos2, name, allow_open)
 	-- intersecting areas and they are all owned by the player.
 	return true
 end
+
+local function get_area(area)
+	local length = (math.abs(area.pos2.x - area.pos1.x))--+1)
+	local width = (math.abs(area.pos2.z - area.pos1.z))--+1)
+	return length*width
+end
+
+local function is_equal(area1, area2)
+	return vector.equals(area1.pos1, area2.pos1) and vector.equals(area1.pos2, area2.pos2)
+end
+
+local function get_intersect(area1, area2)
+	local a1p1, a1p2 = area1.pos1, area1.pos2
+	local a2p1, a2p2 = area2.pos1, area2.pos2
+	if
+		(a1p1.x < a2p2.x and a1p2.x > a2p1.x) and
+		(a1p1.y <= a2p2.y and a1p2.y >= a2p1.y) and
+		(a1p1.z < a2p2.z and a1p2.z > a2p1.z) then
+		local newarea = {}
+		--minetest.chat_send_all("intersect")
+		newarea.pos1 = {x=math.max(a1p1.x,a2p1.x), y=math.max(a1p1.y,a2p1.y), z=math.max(a1p1.z,a2p1.z)}
+		newarea.pos2 = {x=math.min(a1p2.x,a2p2.x), y=math.min(a1p2.y,a2p2.y), z=math.min(a1p2.z,a2p2.z)}
+		newarea.pos1, newarea.pos2 = areas:sortPos(newarea.pos1, newarea.pos2)
+		return newarea
+	end
+end
+
+--Im using the Inclusion-Exclusion method
+local function inclusionExclusion(areatbl, include)
+	if include == nil then include = true end
+	local totalarea = 0
+	local intersecttbl = {}
+	local temparealist = table.copy(areatbl)
+	for i, area in pairs(areatbl) do
+		if include then
+			totalarea = totalarea+get_area(area)
+		else
+			totalarea = totalarea-get_area(area)
+		end
+		for i2, area2 in pairs(temparealist) do
+			if i~=i2 then
+				local intersect = get_intersect(area, area2)
+				if intersect then
+					table.insert(intersecttbl, intersect)
+				end
+			end
+		end
+	end
+	for i, area in pairs(intersecttbl) do
+		for i2, area2 in pairs(intersecttbl) do
+			if i~=i2 and is_equal(area, area2) then
+				table.remove(intersecttbl, i2)
+				--minetest.chat_send_all("duplicate intersect detected")
+			end
+		end
+	end
+	if #intersecttbl > 0 then
+		totalarea = totalarea+inclusionExclusion(intersecttbl, (not include))
+	end
+	
+	return totalarea
+end
+
+function areas:get_player_total_area(playername)
+	local areatbl = {}
+	--local t1 = minetest.get_us_time()
+	for id, area in pairs(self.areas) do--area finding loop
+		if not area.parent
+		and (area.owner == playername or (jobs and (jobs.list[jobs.split(area.owner, ":")[1]] or {ceo = ""}).ceo == playername))
+		then
+			for id2, area2 in pairs(areas:getAreasIntersectingArea(area.pos1, area.pos2)) do
+				if id2 ~= id and self:isSubarea(area.pos1, area.pos2, id2) and (area2.parent and area2.parent~=id) then
+					goto next
+				end
+			end
+			local temparea = table.copy(area)
+			temparea.pos1 = vector.subtract(temparea.pos1, 1)--doing this so i can act as though the position goes down the side of the node instead of the middle
+			temparea.pos1.y = 0
+			temparea.pos2.y = 0
+			table.insert(areatbl, temparea)
+			::next::
+		end
+	end
+	local result = inclusionExclusion(areatbl)
+	--minetest.chat_send_all(string.format("elapsed time: %g ms", (minetest.get_us_time() - t1) / 1000))
+	return result
+end

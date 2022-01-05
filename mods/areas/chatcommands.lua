@@ -460,3 +460,19 @@ minetest.register_chatcommand("areas_cleanup", {
 			count .. " areas. New count: " .. (total - count)
 	end
 })
+
+minetest.register_chatcommand("get_area_total", {
+	params = S("<PlayerName>"),
+	description = S("See the total area protected by a certain player"),
+	privs = {[areas.config.self_protection_privilege]=true},
+	func = function(name, param)
+		if param == "" then
+			return false, S("Invalid usage, see /help @1.", "get_area_total")
+		end
+		if not areas:player_exists(param) then
+			return false, S("That player does not exist.")
+		end
+		
+		return true, S("Player @1 has @2 square meters of protection.", param, areas:get_player_total_area(param))
+	end
+})
