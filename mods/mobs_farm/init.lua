@@ -164,7 +164,7 @@ minetest.register_node("mobs_farm:pet_bowl", table.copy(bowldef))
 
 minetest.register_craft({
 	output = "mobs_farm:pet_bowl",
-		{"basic_materials:plastic_sheet", "dye:red", "basic_materials:plastic_sheet"},
+	recipe = {{"basic_materials:plastic_sheet", "dye:red", "basic_materials:plastic_sheet"},
 		{"", "basic_materials:plastic_sheet", ""},
 	}
 })
