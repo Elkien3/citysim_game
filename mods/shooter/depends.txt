@@ -1,7 +1,0 @@
-default
-dye
-tnt
-wool
-mobs?
-gunslinger_rangedweapons?
-grenades_basic?
