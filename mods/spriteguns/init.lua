@@ -772,7 +772,27 @@ minetest.register_globalstep(function(dtime)
 		end
 		if not tbl.firing or t1-tbl.firing > .1 then
 			local light = minetest.get_node_light(plpos) or 0
-			tex = tex.."^[colorize:#000000:"..(-light*17+255)
+			local lightvalcolors = {
+				"000000",
+				"131313",
+				"1f1f1f",
+				"2b2b2b",
+				"383838",
+				"454545",
+				"535353",
+				"616161",
+				"6f6f6f",
+				"7e7e7e",
+				"8d8d8d",
+				"9d9d9d",
+				"acacac",
+				"bcbcbc",
+				"cdcdcd",
+				"dddddd",
+				"eeeeee",
+				"ffffff"
+			}
+			tex = tex.."^[multiply:#"..lightvalcolors[light+1]
 		end
 		if not tbl.lasttex or tbl.lasttex ~= tex then
 			player:hud_change(tbl.hud, "text", tex)
