@@ -1,0 +1,5 @@
+#    Enable HammerNoise Sound
+midi.salamander.hammernoise (HammerNoise) bool false
+
+#    Enable Pedal Sound
+midi.salamander.pedal (Pedal) bool false
