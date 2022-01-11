@@ -10,3 +10,6 @@ If there is an issue of any kind with the stamping a self-explanatory error mess
 base64 midi files must have fewer than 20000 characters by default or it will not allow you to press. (this is double the size allowed for default books)
 
 You can put a local midi file onto an external/public server by downloading the modpack, putting the midi file to be converted into the appropriate folder, running the modpack on a local world, and copying the results from '/midiconvert midifile.mid', and pasting them into a record stamper on the destination server.
+
+I currently have one default midi file that comes with the mod, called "simpleboogiewoogie.mid"
+as with any other midi files you add, you can play to yourself with '/midi simpleboogiewoogie.mid', and convert to base64 for use in a record stamper with '/midiconvert simpleboogiewoogie.mid'
