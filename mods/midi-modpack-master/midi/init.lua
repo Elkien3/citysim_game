@@ -364,6 +364,7 @@ minetest.register_chatcommand("midiconvert", {
 		if not file then return false, "Could not find file '"..param.."'" end
 		local midi = file:read("*all")
 		file:close()
+		if not midi then return false, "Could not parse file '"..param.."'" end
 		midi = minetest.encode_base64(midi)
 		--[[local file = io.open(modpath .. "/midi/" .. "temp.mid", "w+")
 		file:write(midi)
