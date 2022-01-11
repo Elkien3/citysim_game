@@ -200,7 +200,7 @@ minetest.register_craft({
 	output = "jukebox:record",
 	recipe = {
 		{"", "dye:black", ""},
-		{"dye:black", "dye:black", "dye:black"},
+		{"dye:black", center, "dye:black"},
 		{"", "dye:black", ""},
 	}
 })
