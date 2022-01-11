@@ -341,6 +341,7 @@ minetest.register_chatcommand("midi", {
 minetest.register_chatcommand("midistopall", {
 	description = "Stop all midi songs",
 	params = "<midiname> [delay]",
+	privs = {server = true},
 	func = function(name, param)
 		for i, tbl in pairs(midi.playingsongs) do
 			midi.stop_midi(i, true)
