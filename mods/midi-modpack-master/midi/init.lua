@@ -372,35 +372,3 @@ minetest.register_chatcommand("midiconvert", {
 		return true, "Converted Succesfully"
 	end
 })
-
-minetest.register_chatcommand("midiplay", {
-	description = "Play midi",
-	params = "<midiname> [delay]",
-	func = function(name, param)
-		if param == "" then
-			local player = minetest.get_player_by_name(name)
-			local item = player:get_wielded_item()
-			if item:get_name() == "default:book_written" then
-				param = item:get_meta():get_string("text")
-				--local form = "size[5,2]field[1,1;4,1;field;Copy/Paste from here;"..minetest.formspec_escape(param).."]"
-				--minetest.show_formspec(name, "midi:convert", form)
-			end
-		end
-		if param == "" then
-			return false, "midiname required"
-		end
-		
-		midi_name = param
-
-		local flag, ret = pcall(function()
-			local midi_path = midi_name
-			return midi.load_midi(midi_path)
-		end)
-
-		if not flag then
-			return false, ret
-		end
-
-		midi.play_midi(name, ret, 1)
-	end
-})
