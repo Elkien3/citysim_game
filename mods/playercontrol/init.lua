@@ -152,7 +152,7 @@ minetest.register_on_joinplayer(function(player, last_login)
 	if not minetest.registered_privileges["vote"] then return end
 	local name = player:get_player_name()
 	local privs = minetest.get_player_privs(name)
-	if (privs.vote or (timertable[name] and timertable[name]["voting"])) and os.time()-last_login > 30*60*60*24
+	if (privs.vote or (timertable[name] and timertable[name]["voting"])) and os.time()-last_login > 30*60*60*24 then
 		set_timer(name, "voting", 2*60)
 		privs.vote = nil
 		minetest.set_player_privs(name, privs)
