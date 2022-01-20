@@ -60,14 +60,19 @@ minetest.register_chatcommand("set_owner", {
 
 		local id = areas:add(ownerName, areaName, pos1, pos2, nil)
 		areas:save()
-
-		minetest.chat_send_player(ownerName,
-				S("You have been granted control over area #@1. "..
-				"Type /list_areas to show your areas.", id))
+		
+		local msg = S("You have been granted control over area #@1. "..
+				"Type /list_areas to show your areas.", id)
+		local ownerName = (jobs and (jobs.list[jobs.split(ownerName, ":")[1]] or {}).ceo) or ownerName
+		if minetest.get_player_by_name(ownerName) then
+			minetest.chat_send_player(ownerName, msg)
+		elseif email then
+			email.send_mail(name, ownerName, msg)
+		end
+		
 		return true, S("Area protected. ID: @1", id)
 	end
 })
-
 
 minetest.register_chatcommand("add_owner", {
 	params = S("<ParentID>").." "..S("<PlayerName>").." "..S("<AreaName>"),
@@ -106,9 +111,15 @@ minetest.register_chatcommand("add_owner", {
 		local id = areas:add(ownerName, areaName, pos1, pos2, pid)
 		areas:save()
 
-		minetest.chat_send_player(ownerName,
-				S("You have been granted control over area #@1. "..
-				"Type /list_areas to show your areas.", id))
+		local msg = S("You have been granted control over area #@1. "..
+				"Type /list_areas to show your areas.", id)
+		local ownerName = (jobs and (jobs.list[jobs.split(ownerName, ":")[1]] or {}).ceo) or ownerName
+		
+		if minetest.get_player_by_name(ownerName) then
+			minetest.chat_send_player(ownerName, msg)
+		elseif email then
+			email.send_mail(name, ownerName, msg)
+		end
 		return true, S("Area protected. ID: @1", id)
 	end
 })

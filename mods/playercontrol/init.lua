@@ -76,6 +76,7 @@ minetest.register_on_newplayer(function(player)
 	set_timer(name, "pvp", 2*60)
 	set_timer(name, "lockpick", 2*60)
 	set_timer(name, "griefing", 2*60)
+	set_timer(name, "voting", 2*60)
 end)
 
 minetest.register_chatcommand("set_playercontrol_timer", {
@@ -138,6 +139,25 @@ timerfunctions["griefing"] = function(name)
 	minetest.set_player_privs(name, privs)
 	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'griefing' privilege.")
 end
+timerfunctions["voting"] = function(name)
+	if not minetest.registered_privileges["vote"] then return end
+	local privs = minetest.get_player_privs(name)
+	if privs.vote then return end
+	privs.vote = true
+	minetest.set_player_privs(name, privs)
+	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'vote' privilege.")
+end
+--if you havent logged in a month no voting for 2 hours of playtime to prevent dormant voting alts
+minetest.register_on_joinplayer(function(player, last_login)
+	if not minetest.registered_privileges["vote"] then return end
+	local name = player:get_player_name()
+	local privs = minetest.get_player_privs(name)
+	if (privs.vote or (timertable[name] and timertable[name]["voting"])) and os.time()-last_login > 30*60*60*24
+		set_timer(name, "voting", 2*60)
+		privs.vote = nil
+		minetest.set_player_privs(name, privs)
+	end
+end)
 
 local waspunched = {}
 minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)

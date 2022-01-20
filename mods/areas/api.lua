@@ -237,10 +237,10 @@ local function inclusionExclusion(areatbl, include)
 	return totalarea
 end
 
-function areas:get_player_total_area(playername)
+function areas:get_player_total_area(playername, arealist)
 	local areatbl = {}
 	--local t1 = minetest.get_us_time()
-	for id, area in pairs(self.areas) do--area finding loop
+	for id, area in pairs(arealist or self.areas) do--area finding loop
 		if not area.parent
 		and (area.owner == playername or (jobs and (jobs.list[jobs.split(area.owner, ":")[1]] or {ceo = ""}).ceo == playername))
 		then

@@ -172,14 +172,22 @@ function vote.update_hud(player)
 		vote.hud:remove(player, "vote:help")
 		return
 	end
-
+	local bg_scale = 1
+	if voteset.description then
+		local votelength = #voteset.description
+		if voteset.help and #voteset.help > votelength then
+			votelength = #voteset.help
+		end
+		bg_scale = math.max(1, ((votelength*8)/200))
+	end
 	if not vote.hud:exists(player, "vote:bg") then
 		vote.hud:add(player, "vote:bg", {
 			hud_elem_type = "image",
 			position = {x = 1, y = 0.5},
-			scale = {x = 1, y = 1},
+			scale = {x = bg_scale, y = 1},
+			alignment = {x=-1,y=0},
 			text = "vote_background.png",
-			offset = {x=-100, y = 10},
+			offset = {x=0, y = 10},
 			number = 0xFFFFFF
 		})
 	end
@@ -191,8 +199,9 @@ function vote.update_hud(player)
 			hud_elem_type = "text",
 			position = {x = 1, y = 0.5},
 			scale = {x = 100, y = 100},
+			alignment = {x=-1,y=0},
 			text = voteset.description .. "?",
-			offset = {x=-100, y = 0},
+			offset = {x=-8, y = 0},
 			number = 0xFFFFFF
 		})
 	end
@@ -230,11 +239,11 @@ minetest.after(5, vote.update_all_hud)
 minetest.register_privilege("vote", {
 	description = "Can vote on issues",
 })
-
+--[[
 minetest.register_privilege("vote_starter", {
 	description = "Can start votes on issues",
 })
-
+--]]
 minetest.register_chatcommand("yes", {
 	privs = {
 		interact = true,
@@ -309,7 +318,4 @@ minetest.register_chatcommand("abstain", {
 	end
 })
 
-local set = minetest.settings:get("vote.kick_vote")
-if set == nil or minetest.is_yes(set) then
-	dofile(minetest.get_modpath("vote") .. "/vote_areas.lua")
-end
+dofile(minetest.get_modpath("vote") .. "/vote_government.lua")
