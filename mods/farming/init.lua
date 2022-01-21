@@ -357,7 +357,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		return true
 	end
 
-	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 13
+	local MIN_LIGHT = minetest.registered_nodes[node_name].minlight or 15
 	local MAX_LIGHT = minetest.registered_nodes[node_name].maxlight or 15
 	--print ("---", MIN_LIGHT, MAX_LIGHT)
 
@@ -405,8 +405,11 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		end
 		local t = meta:get_int("t")
 		local timepassed = (timevar-t)
-		if (minetest.get_node_light(light_pos, 0.5) < MIN_LIGHT and math.floor(minetest.get_node(pos).param1 / 16) < 13)
-		or minetest.get_node_light(pos, 0.5) > MAX_LIGHT then
+		local above_light = minetest.get_node_light(light_pos, 0.5)
+		local at_light = minetest.get_node_light(pos, 0.5)
+		if (above_light and at_light) and
+		(above_light < MIN_LIGHT and math.floor(minetest.get_node(pos).param1 / 16) < 13)
+		or at_light > MAX_LIGHT then
 			--plant is neither in the sun nor lit artificially, reset timer.
 			meta:set_int("t", timevar)
 			return true
