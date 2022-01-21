@@ -17,6 +17,13 @@ farming.place_seed = function(itemstack, placer, pointed_thing, plantname)
 	return itemstack
 end
 
+local function clamp(num, min, max)
+	if not num then return end
+	if max and num > max then num = max end
+	if min and num < min then num = min end
+	return num
+end
+
 --how much hunger should go down per ingame day
 local hungerrate = 5/time_speed
 local thirstrate = 5/time_speed
