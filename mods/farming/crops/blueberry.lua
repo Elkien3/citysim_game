@@ -89,7 +89,7 @@ minetest.register_node("farming:blueberry_4", table.copy(crop_def))
 farming.registered_plants["farming:blueberries"] = {
 	crop = "farming:blueberry",
 	seed = "farming:blueberries",
-	minlight = 13,
+	minlight = 15,
 	maxlight = 15,
 	steps = 4
 }

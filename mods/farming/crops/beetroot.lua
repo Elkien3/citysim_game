@@ -88,7 +88,7 @@ minetest.register_node("farming:beetroot_5", table.copy(crop_def))
 farming.registered_plants["farming:beetroot"] = {
 	crop = "farming:beetroot",
 	seed = "farming:beetroot",
-	minlight = 13,
+	minlight = 15,
 	maxlight = 15,
 	steps = 5
 }

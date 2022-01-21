@@ -10,6 +10,8 @@ farming.register_plant("farming:rye", {
 	paramtype2 = "meshoptions",
 	inventory_image = "farming_rye_seed.png",
 	steps = 8,
+	minlight = 15,
+	maxlight = 15,
 	place_param2 = 3,
 	groups = {flammable = 2, snowy = 1, icy = 1}
 })
@@ -39,6 +41,8 @@ farming.register_plant("farming:oat", {
 	paramtype2 = "meshoptions",
 	inventory_image = "farming_oat_seed.png",
 	steps = 8,
+	minlight = 15,
+	maxlight = 15,
 	place_param2 = 3,
 	groups = {flammable = 2, grassy = 1}
 })
@@ -68,6 +72,8 @@ farming.register_plant("farming:rice", {
 	paramtype2 = "meshoptions",
 	inventory_image = "farming_rice_seed.png",
 	steps = 8,
+	minlight = 15,
+	maxlight = 15,
 	place_param2 = 3,
 	groups = {flammable = 2, rainy = 1}
 })
