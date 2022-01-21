@@ -16,7 +16,7 @@ minetest.register_craft({
 
 
 local run = function(pos, node)
-	-- The action here is to make the solar panel prodice power
+	-- The action here is to make the solar panel produce power
 	-- Power is dependent on the light level and the height above ground
 	-- There are many ways to cheat by using other light sources like lamps.
 	-- As there is no way to determine if light is sunlight that is just a shame.
@@ -27,7 +27,7 @@ local run = function(pos, node)
 
 	local light = minetest.get_node_light(pos1, nil)
 	local time_of_day = minetest.get_timeofday()
-	light = minetest.get_natural_light(pos)
+	light = minetest.get_natural_light(pos1)
 	local meta = minetest.get_meta(pos)
 	if light == nil then light = 0 end
 	-- turn on panel only during day time and if sufficient light
