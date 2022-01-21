@@ -320,7 +320,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		return false
 	end
 	
-	if seasons_getseason and seasons_getseason() == "Winter" and math.floor(minetest.get_node(pos).param1 / 16) ~= 13 then--if its winter and the plant isnt being lit by a max light dont grow.
+	if seasons_getseason and seasons_getseason() == "Winter" and math.floor(minetest.get_node(pos).param1 / 16) < 13 then--if its winter and the plant isnt being lit by a max light dont grow.
 		--minetest.chat_send_all(minetest.get_modpath("default_tweaks"))
 		if minetest.get_modpath("default_tweaks") then--if plantrot is enabled rot the plant as opposed to simply stopping it from growing further
 			local p2 = minetest.registered_nodes[stages.stages_left[max_growth] ].place_param2 or 1
@@ -350,7 +350,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 	end
 
 	local growth = 0
-	local light_pos = {x = pos.x, y = pos.y, z = pos.z} --  was y + 1
+	local light_pos = {x = pos.x, y = pos.y + 1, z = pos.z}
 	local lambda = 1-- elapsed / STAGE_LENGTH_AVG
 
 	if lambda < 0.1 then
@@ -405,7 +405,12 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		end
 		local t = meta:get_int("t")
 		local timepassed = (timevar-t)
-
+		if (minetest.get_node_light(light_pos, 0.5) < MIN_LIGHT and math.floor(minetest.get_node(pos).param1 / 16) < 13)
+		or minetest.get_node_light(pos, 0.5) > MAX_LIGHT then
+			--plant is neither in the sun nor lit artificially, reset timer.
+			meta:set_int("t", timevar)
+			return true
+		end
 		if t ~= 0 then
 			while true do
 				local rand = math.random(STAGE_LENGTH_DEV*boost, STAGE_LENGTH_AVG*boost)
