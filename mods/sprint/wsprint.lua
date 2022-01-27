@@ -150,7 +150,12 @@ function setState(playerName, state) --Sets the state of a player (0=stopped, 1=
 		elseif state == 2 then --Primed
 			players[playerName]["timeOut"] = gameTime
 		elseif state == 3 then --Sprinting
-			player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
+			if playercontrol then
+				playercontrol.set_effect(playerName, "speed", SPRINT_SPEED, "sprint", true)
+				playercontrol.set_effect(playerName, "jump", SPRINT_JUMP, "sprint", true)
+			else
+				player:set_physics_override({speed=SPRINT_SPEED,jump=SPRINT_JUMP})
+			end
 			if player:hud_get_flags().wielditem or interacthandler then
 				if interacthandler then
 					interacthandler.revoke(playerName)

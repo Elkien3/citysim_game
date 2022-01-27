@@ -201,6 +201,15 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 				player:set_physics_override({speed = finalval})
 			end
 			return finalval
+	elseif effect == "jump" then
+		finalval = 1
+		for i, val in pairs(effects[effect]) do
+			finalval = finalval*val
+		end
+		if apply then
+			player:set_physics_override({jump = finalval})
+		end
+		return finalval
 	elseif effect == "fov" then
 		finalval = 72--assuming client's default fov is 72, meh.
 		for i, val in pairs(effects[effect]) do

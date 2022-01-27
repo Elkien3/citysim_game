@@ -16,11 +16,19 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 		players[playerName]["sprinting"] = sprinting
 		local currentPhy = player:get_physics_override()
 		local newPhy = currentPhy
+		if playercontrol then
+			newPhy = {speed = 1, jump = 1}
+		end
 		local privs = minetest.get_player_privs(playerName)
 
 		if sprinting == true then
-			newPhy.speed = newPhy.speed + SPRINT_SPEED
-			newPhy.jump = newPhy.jump + SPRINT_JUMP
+			if playercontrol then
+				newPhy.speed = playercontrol.set_effect(playerName, "speed", (1+SPRINT_SPEED), "sprint", false)
+				newPhy.jump = playercontrol.set_effect(playerName, "speed", (1+SPRINT_JUMP), "sprint", false)
+			else
+				newPhy.speed = newPhy.speed + SPRINT_SPEED
+				newPhy.jump = newPhy.jump + SPRINT_JUMP
+			end
 			if player:hud_get_flags().wielditem or interacthandler then
 				if interacthandler then
 					interacthandler.revoke(playerName)
@@ -35,8 +43,13 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 				end
 			end
 		elseif sprinting == false then
-			newPhy.speed = newPhy.speed - SPRINT_SPEED
-			newPhy.jump = newPhy.jump - SPRINT_JUMP
+			if playercontrol then
+				newPhy.speed = playercontrol.set_effect(playerName, "speed", nil, "sprint", false)
+				newPhy.jump = playercontrol.set_effect(playerName, "jump", nil, "sprint", false)
+			else
+				newPhy.speed = newPhy.speed - SPRINT_SPEED
+				newPhy.jump = newPhy.jump - SPRINT_JUMP
+			end
 			minetest.after(0.2, function()
 					if players[playerName]["sprinting"] == false then
 						if interacthandler then
