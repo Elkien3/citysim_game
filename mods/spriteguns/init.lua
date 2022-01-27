@@ -105,7 +105,7 @@ local function set_physics(player, amount)
 	if playercontrol then
 		playercontrol.set_effect(player:get_player_name(), "speed", amount, "spriteguns", true)
 	else
-		player:set_physics_override({speed = amount})
+		player:set_physics_override({speed = amount or 1})
 	end
 end
 

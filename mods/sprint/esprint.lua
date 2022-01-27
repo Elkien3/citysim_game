@@ -14,17 +14,13 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 	local player = minetest.get_player_by_name(playerName)
 	if players[playerName] then
 		players[playerName]["sprinting"] = sprinting
-		local currentPhy = player:get_physics_override()
-		local newPhy = currentPhy
-		if playercontrol then
-			newPhy = {speed = 1, jump = 1}
-		end
+		local newPhy = player:get_physics_override()
 		local privs = minetest.get_player_privs(playerName)
 
 		if sprinting == true then
 			if playercontrol then
-				newPhy.speed = playercontrol.set_effect(playerName, "speed", (1+SPRINT_SPEED), "sprint", false)
-				newPhy.jump = playercontrol.set_effect(playerName, "speed", (1+SPRINT_JUMP), "sprint", false)
+				newPhy.speed = playercontrol.set_effect(playerName, "speed", (1+SPRINT_SPEED), "sprint", true)
+				newPhy.jump = playercontrol.set_effect(playerName, "jump", (1+SPRINT_JUMP), "sprint", true)
 			else
 				newPhy.speed = newPhy.speed + SPRINT_SPEED
 				newPhy.jump = newPhy.jump + SPRINT_JUMP
@@ -44,8 +40,8 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 			end
 		elseif sprinting == false then
 			if playercontrol then
-				newPhy.speed = playercontrol.set_effect(playerName, "speed", nil, "sprint", false)
-				newPhy.jump = playercontrol.set_effect(playerName, "jump", nil, "sprint", false)
+				newPhy.speed = playercontrol.set_effect(playerName, "speed", nil, "sprint", true)
+				newPhy.jump = playercontrol.set_effect(playerName, "jump", nil, "sprint", true)
 			else
 				newPhy.speed = newPhy.speed - SPRINT_SPEED
 				newPhy.jump = newPhy.jump - SPRINT_JUMP
@@ -66,7 +62,9 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 			end)
 			
 		end
-		player:set_physics_override(newPhy)
+		if not playercontrol then
+			player:set_physics_override(newPhy)
+		end
 		return true
 	end
 	return false
