@@ -10,7 +10,7 @@ local function remove_flora(pos, radius)
 end
 
 grenades.register_grenade("grenades_basic:frag", {
-	description = "Frag grenade (Kills anyone near blast)",
+	description = "Frag grenade",
 	image = "grenades_frag.png",
 	on_explode = function(pos, name)
 		if not name or not pos then
@@ -154,7 +154,7 @@ grenades.register_grenade("grenades_basic:flashbang", {
 })
 
 grenades.register_grenade("grenades_basic:smoke", {
-	description = "Smoke grenade (Generates smoke around blast site)",
+	description = "Smoke grenade",
 	image = "grenades_smoke_grenade.png",
 	on_explode = function(pos)
 		minetest.sound_play("grenades_glasslike_break", {
@@ -192,6 +192,176 @@ grenades.register_grenade("grenades_basic:smoke", {
 				texture = "grenades_smoke.png",
 			})
 		end
+	end,
+	particle = {
+		image = "grenades_smoke.png",
+		life = 1,
+		size = 4,
+		glow = 0,
+		interval = 5,
+	}
+})
+
+local teargastbl = {}
+local gas_lifetime = 10
+local gas_timer = 0
+local gaseffecttbl = {}
+
+local gas_entity = {
+	initial_properties = {
+		physical = true,
+		pointable = false,
+		visual = "sprite",
+		collide_with_objects = false,
+		textures = {"grenades_smoke.png"},
+		visual_size = {x=1.2, y=1.2},
+		collisionbox = {-0.25, -0.25, -0.25, 0.25, 0.25, 0.25}
+	},
+	on_step = function(self, dtime, moveresult)
+		self.lifetime = self.lifetime - dtime
+		if self.lifetime <= 0 then
+			self.object:remove()
+			return
+		end
+		for i, player in pairs(minetest.get_connected_players()) do
+			local pos = player:get_pos()
+			local selfpos = self.object:get_pos()
+			if vector.distance(pos, selfpos) < 20 then--cull anyone farther than 20 blocks
+				pos = player:get_pos()
+				pos.y = pos.y + 1.45
+				local offset = player:get_eye_offset()
+				offset = vector.rotate(offset, {x=0,y=player:get_look_horizontal(), z=0})
+				pos = vector.add(pos, offset)
+				if vector.distance(pos, selfpos) < 1.5 then
+					gaseffecttbl[player:get_player_name()] = 20
+				end
+			end
+		end
+		if moveresult.collisions then
+			local newvel
+			for i, col in pairs(moveresult.collisions) do
+				local vel = col.old_velocity
+				if vel[col.axis] > 0 then
+					if not newvel then newvel = table.copy(vel) end
+					newvel[col.axis] = -vel[col.axis]
+				end
+			end
+			if newvel then
+				self.object:set_velocity(newvel)
+			end
+		end
+		if math.random(30) == 1 then--some random movement
+			local vel = self.object:get_velocity()
+			local randvel = vector.normalize({x=math.random(-100,100),y=0,z=math.random(-100,100)})
+			randvel = vector.multiply(randvel, (math.random(10,20)/100))
+			self.object:set_velocity(vector.add(vel, randvel))
+		end
+	end,
+	on_activate = function(self, staticdata)
+		if not staticdata or staticdata == "" then
+			self.object:remove()
+		else
+			self.lifetime = tonumber(staticdata)
+		end
+	end
+}
+minetest.register_entity("grenades_basic:gas_entity", gas_entity)
+local gashuds = {}
+minetest.register_globalstep(function(dtime)
+	gas_timer = gas_timer + dtime
+	if gas_timer >= .5 then
+		gas_timer = 0
+		for name, timer in pairs(gaseffecttbl) do
+			local player = minetest.get_player_by_name(name)
+			if not player then gaseffecttbl[name] = nil gashuds[name] = nil return end
+			if not gashuds[name] then
+				gashuds[name] = player:hud_add({
+					hud_elem_type = "image",
+					position = {x = 0.5, y = 0.5},
+					scale = {
+						x = -100,
+						y = -100
+					},
+					text = "overlay.png"
+				})
+			end
+			gaseffecttbl[name] = timer - .5
+			if gaseffecttbl[name] <= 0 then
+				if gashuds[name] then
+					player:hud_remove(gashuds[name])
+					gashuds[name] = nil
+				end
+				if playercontrol then
+					playercontrol.set_effect(name, "gunwag", nil, "teargas", true)
+					local fov = playercontrol.set_effect(name, "fov", nil, "teargas", false)
+					if fov then player:set_fov(fov, false, 1) end
+				else
+					player:set_fov(0, false, 1)
+				end
+				gaseffecttbl[name] = nil
+				return
+			end
+			--[[if math.random(4) == 1 then
+				local vert = math.random(-100,100)/100
+				local hori = math.random(-100,100)/100
+				local total = (math.abs(vert) + math.abs(hori))*math.random(8, 12)
+				vert = vert/total
+				hori = hori/total
+				player:set_look_vertical(player:get_look_vertical()+vert)
+				player:set_look_horizontal(player:get_look_horizontal()+hori)
+			end--]]
+			if math.random(4) == 1 then
+				local randvel = vector.normalize({x=math.random(-100,100),y=0,z=math.random(-100,100)})
+				randvel = vector.multiply(randvel, (math.random(30,40)/10))
+				player:add_velocity(randvel)
+			end
+			if playercontrol then
+				playercontrol.set_effect(name, "gunwag", 20, "teargas", true)
+				local fov = playercontrol.set_effect(name, "fov", math.random(60, 80), "teargas", false)
+				if fov then player:set_fov(fov, false, 1) end
+			else
+				player:set_fov(math.random(60, 80), false, 1)
+			end
+			if math.random(3) == 1 then
+				local hp = player:get_hp()
+				player:set_hp(hp-1)
+				player:set_hp(hp)
+			end
+		end
+		for i, tbl in pairs(teargastbl) do
+			tbl.lifetime = tbl.lifetime - .5
+			if tbl.lifetime <= 0 then
+				table.remove(teargastbl, i)
+			else
+				local obj = minetest.add_entity(tbl.pos, "grenades_basic:gas_entity", gas_lifetime+math.random(-2,2))
+				local randvel = vector.normalize({x=math.random(-100,100),y=math.random(-100,100),z=math.random(-100,100)})
+				randvel = vector.multiply(randvel, (math.random(10,20)/20))
+				obj:set_velocity(randvel)
+			end
+		end
+	end
+end)
+
+grenades.register_grenade("grenades_basic:tear_gas", {
+	description = "Tear Gas grenade",
+	image = "grenades_smoke_grenade.png",
+	on_explode = function(pos)
+		minetest.sound_play("grenades_glasslike_break", {
+			pos = pos,
+			gain = 1.0,
+			max_hear_distance = 32,
+		})
+
+		local hiss = minetest.sound_play("grenades_hiss", {
+			pos = pos,
+			gain = 1.0,
+			loop = true,
+			max_hear_distance = 32,
+		})
+
+		minetest.after(40, minetest.sound_stop, hiss)
+
+		table.insert(teargastbl, {pos = pos, lifetime = 40})
 	end,
 	particle = {
 		image = "grenades_smoke.png",
