@@ -101,6 +101,14 @@ local function NearestPointOnFiniteLine(lineStart, lineEnd, pnt)
     return vector.add(lineStart, vector.multiply(line, d))
 end
 
+local function set_physics(player, amount)
+	if playercontrol then
+		playercontrol.set_effect(player:get_player_name(), "speed", amount, "spriteguns", true)
+	else
+		player:set_physics_override({speed = amount})
+	end
+end
+
 local function zoom(name, def, val)
 	if not name then return end
 	if not gun_huds[name] then add_gun(name, def.gunname) end
@@ -111,13 +119,22 @@ local function zoom(name, def, val)
 	if val == nil then val = not gun_huds[name].zoom end
 	gun_huds[name].zoom = val
 	if val then
-		player:set_physics_override({speed = def.zoomspeed or .5})
+		set_physics(player, (def.zoomspeed or .5))
 		if def and def.zoomfov then
-			player:set_fov(def.zoomfov, false, .15)
+			if playercontrol then
+				local fov = playercontrol.set_effect(name, "fov", def.zoomfov, "spriteguns", false)
+				if fov then player:set_fov(fov, false, .15) end
+			else
+				player:set_fov(def.zoomfov, false, .15)
+			end
 		end
 	else
-		player:set_physics_override({speed = 1})
-		player:set_fov(0, false, .15)
+		set_physics(player, nil)
+		if playercontrol then
+			player:set_fov(playercontrol.set_effect(name, "fov", nil, "spriteguns", false) or 0, false, .15)
+		else
+			player:set_fov(0, false, .15)
+		end
 	end
 end
 
@@ -604,6 +621,9 @@ minetest.register_globalstep(function(dtime)
 		--have gun move around when idle
 		if not tbl.t2 then tbl.t2 = 1 end
 		local wagspeed = .5
+		if tbl.wag then
+			wagspeed = wagspeed*tbl.wag
+		end
 		if hb and hb.get_hudtable("sprint") then--if sprinting with hudbars is enabled use it to decide if wagspeed should be higher
 			local state = hb.get_hudtable("sprint").hudstate[name]
 			if state then
@@ -679,7 +699,7 @@ minetest.register_globalstep(function(dtime)
 					anim.endfunc(player, def)
 				end--]]
 				if anim.speed then
-					player:set_physics_override({speed = 1})
+					set_physics(player, nil)
 				end
 				tbl.anim = nil
 				tbl.animtimer = nil
@@ -701,7 +721,7 @@ minetest.register_globalstep(function(dtime)
 					zoom(name, def, false)
 				end
 				if anim.speed then
-					player:set_physics_override({speed = anim.speed})
+					set_physics(player, anim.speed)
 				end
 				if anim.startfunc then
 					anim.startfunc(player, def)
@@ -958,6 +978,11 @@ function spriteguns.register_magazine(magazine, ammunition, size)
 			end
 		end
 	end)
+end
+
+function spriteguns.set_wag(name, value)
+	if not name or not gun_huds[name] then return end
+	gun_huds[name].wag = value
 end
 
 local mp = minetest.get_modpath("spriteguns")

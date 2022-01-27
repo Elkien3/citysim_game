@@ -2,3 +2,4 @@ binoculars?
 assembler?
 basic_materials?
 technic?
+playercontrol?
