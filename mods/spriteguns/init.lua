@@ -628,7 +628,7 @@ minetest.register_globalstep(function(dtime)
 			local state = hb.get_hudtable("sprint").hudstate[name]
 			if state then
 				local val = state.value
-				wagspeed = .5+(10-val)*.4
+				wagspeed = math.max(.5+(10-val)*.4, wagspeed)
 			end		
 		end
 		tbl.t2 = tbl.t2 + dtime
