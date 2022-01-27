@@ -75,8 +75,34 @@ grenades.register_grenade("grenades_basic:frag", {
 
 -- Flashbang Grenade
 
-local flash_huds = {}
 local flash_sounds = {}
+local flash_spawners = {}
+
+local function add_flashparticlespawner(player, name, step)
+	if not flash_spawners[name] then flash_spawners[name] = {} end
+	local distance = 20
+	flash_spawners[name][step] = minetest.add_particlespawner({
+		amount = 320,
+		-- Number of particles spawned over the time period `time`.
+		time = .1,
+		-- Lifespan of spawner in seconds.
+		-- If time is 0 spawner has infinite lifespan and spawns the `amount` on
+		-- a per-second basis.
+		minpos = {x=-distance, y=1.5-distance, z=-distance},
+		maxpos = {x=distance, y=1.5+distance, z=distance},
+		--minvel = {x=-speed/4, y=-speed/4, z=-speed/4},
+		--maxvel = {x=speed/4, y=speed/4, z=speed/4},
+		minexptime = 2,
+		maxexptime = 2.2,
+		minsize = 500,
+		maxsize = 500,
+		attached = player,
+		glow = 14,
+		texture = "flash"..tostring(step)..".png",
+		playername = name,
+	})
+	return flash_spawners[name][step]
+end
 
 grenades.register_grenade("grenades_basic:flashbang", {
 	description = "Flashbang grenade (Blinds all who look at blast)",
@@ -108,61 +134,24 @@ grenades.register_grenade("grenades_basic:flashbang", {
 						minetest.sound_stop(flash_sounds[pname])
 						flash_sounds[pname] = nil
 					end
-					if flash_huds[pname] then
-						for id, data in pairs(flash_huds[pname]) do
-							minetest.get_player_by_name(pname):hud_remove(data)
-						end
-					end
-					flash_huds[pname] = {}
 					flash_sounds[pname] = minetest.sound_play("grenades_tinnitus", {
-						player = v,
+						to_player = pname,
 						gain = 1.0,
 					})
+					if flash_spawners[pname] then
+						for i, spawner in pairs(flash_spawners[pname]) do
+							minetest.delete_particlespawner(spawner, pname)
+						end
+					end
+					flash_spawners[pname] = {}
 					for i = 0, 5, 1 do
-						local key = v:hud_add({
-							hud_elem_type = "image",
-							position = {x = 0, y = 0},
-							name = "flashbang hud "..pname,
-							scale = {x = -200, y = -200},
-							text = "grenades_white.png^[opacity:"..tostring(255 - (i * 20)),
-							alignment = {x = 0, y = 0},
-							offset = {x = 0, y = 0}
-						})
-
-						flash_huds[pname][i+1] = key
-
-						minetest.after(2 * i, function(id)
-							if minetest.get_player_by_name(pname) then
-								if flash_huds[pname] ~= id then return end
-								minetest.get_player_by_name(pname):hud_remove(key)
-								if flash_huds[pname] then
-									table.remove(flash_huds[pname], 1)
-								end
-
-								if i == 5 then
-									flash_huds[pname] = nil
-								end
-							end
-						end, flash_huds[pname])
+						minetest.after(i*2, add_flashparticlespawner, v, pname, i)
 					end
 				end
-
 			end
 		end
 	end,
 })
-
-minetest.register_on_dieplayer(function(player)
-	local name = player:get_player_name()
-
-	if flash_huds[name] then
-		for _, v in ipairs(flash_huds[name]) do
-			player:hud_remove(v)
-		end
-
-		flash_huds[name] = nil
-	end
-end)
 
 grenades.register_grenade("grenades_basic:smoke", {
 	description = "Smoke grenade (Generates smoke around blast site)",
