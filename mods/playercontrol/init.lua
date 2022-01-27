@@ -3,6 +3,7 @@ local storage = minetest.get_mod_storage()
 local postable = {}
 local timertable = {}
 local timerfunctions = {}
+playercontrol = {}
 
 local function update()
 	for i, player in pairs(minetest.get_connected_players()) do
@@ -180,3 +181,45 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 		end)
 	end
 end)
+
+player_effects = {}
+playercontrol.set_effect = function(name, effect, value, modname, apply)
+	local player = minetest.get_player_by_name(name)
+	if not player then player_effects[name] = nil return end
+	if not player_effects[name] then player_effects[name] = {} end
+	local effects = player_effects[name]
+	if not effects[effect] then
+		effects[effect] = {}
+	end
+	effects[effect][modname] = value
+	if effect == "speed" then
+			finalval = 1
+			for i, val in pairs(effects[effect]) do
+				finalval = finalval*val
+			end
+			if apply then
+				player:set_physics_override({speed = finalval})
+			end
+			return finalval
+	elseif effect == "fov" then
+		finalval = 72--assuming client's default fov is 72, meh.
+		for i, val in pairs(effects[effect]) do
+			finalval = finalval*(val/72)
+		end
+		if finalval == 72 then finalval = 0 end
+		if apply then
+			player:set_fov(finalval, false, .5)
+		end
+		return finalval
+	elseif effect == "gunwag" then
+		finalval = 1
+		for i, val in pairs(effects[effect]) do
+			finalval = finalval*(val/1)
+		end
+		if finalval == 1 then finalval = nil end
+		if apply then
+			spriteguns.set_wag(name, finalval)
+		end
+		return finalval
+	end
+end
