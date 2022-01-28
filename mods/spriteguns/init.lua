@@ -3,7 +3,6 @@ spriteguns.registered_guns = {}
 local storage = minetest.get_mod_storage()
 local scalepref = minetest.deserialize(storage:get_string("scalepref")) or {}
 local skipsteppref = minetest.deserialize(storage:get_string("skipsteppref")) or {}
-local lowrespref = minetest.deserialize(storage:get_string("lowrespref")) or {}
 local gun_huds = {}
 local max_wear = 65534
 local max_speed = (minetest.settings:get("movement_speed_walk") or 4) + 1
@@ -30,27 +29,6 @@ minetest.register_chatcommand("spritegunskipstep",{
 		skipsteppref[name] = param
 		storage:set_string("skipsteppref", minetest.serialize(skipsteppref))
 		return true, "Sprite Gun Skip Step preference set to "..tostring(param)
-	end
-})
-
-minetest.register_chatcommand("spritegunlowres",{
-	params = "<scale>",  -- Short parameter description
-	description = "Set wether or not to use low res textures",  -- Full description
-	func = function(name, param)
-		if not param or (param ~= "false" and param ~= "true") then return false, "Invalid Input, must be 'true' or 'false'" end
-		param = param == "true"
-		if param == lowrespref[name] then
-			return false, "Sprite Gun Low Res already preference set to "..tostring(param)
-		end
-		lowrespref[name] = param
-		storage:set_string("lowrespref", minetest.serialize(lowrespref))
-		if param then
-			scalepref[name] = (scalepref[name] or 1)*6
-		else
-			scalepref[name] = (scalepref[name] or 6)/6
-		end
-		storage:set_string("scalepref", minetest.serialize(scalepref))
-		return true, "Sprite Gun Low Res preference set to "..tostring(param)
 	end
 })
 
@@ -162,7 +140,7 @@ local function add_gun(name, gunname)
 	end
 	player:hud_set_flags({wielditem=false})
 	player:hud_set_flags({hotbar=false})
-	local scale = def.scale or 1.5
+	local scale = def.scale or 7.5
 	if scalepref[name] then
 		scale = scale * scalepref[name]
 	end
@@ -786,9 +764,6 @@ minetest.register_globalstep(function(dtime)
 				end
 			end
 			tex = def.textures.prefix..def.textures[tex]
-		end
-		if lowrespref[name] then
-			tex = string.gsub(tex, ".png", "_lowres.png")
 		end
 		if not tbl.firing or t1-tbl.firing > .1 then
 			local light = minetest.get_node_light(plpos) or 0
