@@ -39,6 +39,16 @@ if not minetest.get_modpath("ctf_crafting") then
 			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
 		},
 	})
+	
+	minetest.register_craft({
+		type = "shaped",
+		output = "grenades_basic:tear_gas",
+		recipe = {
+			{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"},
+			{"farming:peppercorn", "grenades_basic:smoke", "farming:peppercorn"},
+			{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"}
+		}
+	})
 
 	-- Other
 

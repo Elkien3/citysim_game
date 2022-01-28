@@ -234,6 +234,11 @@ local gas_entity = {
 				pos = vector.add(pos, offset)
 				if vector.distance(pos, selfpos) < 1.5 then
 					gaseffecttbl[player:get_player_name()] = 20
+					if playercontrol then
+						playercontrol.set_effect(player:get_player_name(), "speed", .9, "teargas", true)
+					else
+						player:set_physics_override({speed = .9})
+					end
 				end
 			end
 		end
@@ -295,8 +300,10 @@ minetest.register_globalstep(function(dtime)
 					playercontrol.set_effect(name, "gunwag", nil, "teargas", true)
 					local fov = playercontrol.set_effect(name, "fov", nil, "teargas", false)
 					if fov then player:set_fov(fov, false, 1) end
+					playercontrol.set_effect(player:get_player_name(), "speed", nil, "teargas", true)
 				else
 					player:set_fov(0, false, 1)
+					player:set_physics_override({speed = .9})
 				end
 				gaseffecttbl[name] = nil
 				return
@@ -344,7 +351,7 @@ end)
 
 grenades.register_grenade("grenades_basic:tear_gas", {
 	description = "Tear Gas grenade",
-	image = "grenades_smoke_grenade.png",
+	image = "grenades_tear_gas.png",
 	on_explode = function(pos)
 		minetest.sound_play("grenades_glasslike_break", {
 			pos = pos,
