@@ -421,7 +421,7 @@ function seat_formspec(swap)
 end
 
 function getClosest(player, car, distance)
-	local def = cars_registered_cars[car.object:get_entity_name()]
+	local def = cars_registered_cars[car.name]
 	local playerPos = player:getpos()
 	local dir = player:get_look_dir()
 	playerPos.y = playerPos.y + 1.45
@@ -515,7 +515,7 @@ end
 
 local car_forms = {}
 local function trunk_rightclick(self, clicker)
-	local def = cars_registered_cars[self.object:get_entity_name()]
+	local def = cars_registered_cars[self.name]
 	local name = clicker:get_player_name()
 	car_forms[name] = self
 	local selfname = string.sub(tostring(self), 8)
@@ -579,7 +579,7 @@ local function trunk_rightclick(self, clicker)
 end
 
 local function driver_rightclick(self, clicker)
-	local def = cars_registered_cars[self.object:get_entity_name()]
+	local def = cars_registered_cars[self.name]
 	local name = clicker:get_player_name()
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
@@ -693,7 +693,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local car = car_forms[name]
 		local def
 		if car then
-			def = cars_registered_cars[car.object:get_entity_name()]
+			def = cars_registered_cars[car.name]
 		end
 		if car and def then
 			if fields.detachtow and car.towline and car.towline.finishobj ~= car.object then
@@ -715,7 +715,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local car = player_attached[name]
 		local def
 		if car then
-			def = cars_registered_cars[car.object:get_entity_name()]
+			def = cars_registered_cars[car.name]
 			if not def then return end
 		else
 			return
@@ -810,7 +810,7 @@ local lagtable = {}
 local lagcounter = 1
 local function car_step(self, dtime, moveresult)
 	if dtime > .2 then dtime = .2 end
-	local def = cars_registered_cars[self.object:get_entity_name()]
+	local def = cars_registered_cars[self.name]
 	if self.ignition and oil and def.gas_usage then
 		if self.gas <= 0 then
 			self.ignition = false
