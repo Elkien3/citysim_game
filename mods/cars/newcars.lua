@@ -333,18 +333,18 @@ local truckdef = {
 		trunkloc = {x = 0, y = 5.2, z = -7},
 		engineloc = {x = 0, y = 1.4, z = .825},
 		passengers = {
-			{loc = {x = -5, y = 9.6, z = -3.75}, offset = {x = -5, y = 3.6, z = -3.25} },--offset is loc - 6y +.5z
-			{loc = {x = 5, y = 9.6, z = -3.75}, offset = {x = 5, y = 3.6, z = -3.25} },
+			{loc = {x = -5.0625, y = 10.8, z = -4.3625}, offset = {x = -5.0625, y = 4.8, z = -3.8625} },--offset is loc - 6y +.5z
+			{loc = {x = 5.0625, y = 10.8, z = -4.3625}, offset = {x = 5.0625, y = 4.8, z = -3.8625} },
 		},
 		max_force_offroad = 6,
 		max_offroad_speed = 20,
 		wheel = {
-			frontright = {x=-7.8,y=3.9,z=7.101},
-			frontleft = {x=7.8,y=3.9,z=7.101},
+			frontright = {x=-8.77501,y=4.05,z=8.37496},
+			frontleft = {x=8.77501,y=4.05,z=8.37496},
 		},
 		wheelname = "cars:truckwheel",
 		lights = "truck",
-		steeringwheel = {x=-5.525,y=13.975,z=.60103},
+		steeringwheel = {x=-5.0625,y=14.4542,z=1.27493},
 		--licenseplate = {x = 0, y = 4.5, z = -23.3},
 		horn = "horn",
 		rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
@@ -368,14 +368,21 @@ local truckdef = {
 			visual = "mesh",
 			visual_size = {x=1, y=1},
 			mesh = "truck.b3d",
-			textures = {'truckuv.png', "truckuv.png", "truckuvcolored.png"},
+			textures = {'truckuvunpainted.png', "truckuv.png", "truckuvcolored.png"},
 			is_visible = true,
 			makes_footstep_sound = false,
 			automatic_rotate = 0,
 			trunkinv = {},
 		}
 	}
-cars_register_car(truckdef)
+cars_register_car(table.copy(truckdef))
+truckdef.mesh = "towtruck.b3d"
+truckdef.name = "cars:towtruck"
+truckdef.description = "Tow Truck"
+truckdef.trunksize = {x=0,y=0}
+truckdef.towloc = {x=0,y=25,z=-33.475}
+truckdef.initial_properties.textures = {'towtruckuvunpainted.png', "towtruckuv.png", "truckuvcolored.png"}
+cars_register_car(table.copy(truckdef))
 
 minetest.register_entity("cars:truckwheel", {
     hp_max = 1,
@@ -388,6 +395,93 @@ minetest.register_entity("cars:truckwheel", {
     visual_size = {x=1, y=1},
     mesh = "truckwheel.b3d",
     textures = {"truckuv.png"}, -- number of required textures depends on visual
+    is_visible = true,
+    --makes_footstep_sound = false,
+    --automatic_rotate = true,
+	on_activate = function(self, staticdata, dtime_s)
+		minetest.after(.1, function()
+			if not self.object:get_attach() then
+				self.object:remove()
+			end
+		end)
+	end,
+})
+
+local jackhammerdef = {
+		name = "cars:jackhammer",
+		description = "Jackhammer Vehicle",
+		acceleration = 2,
+		braking = 4,
+		axisval = 10,
+		coasting = 2,
+		gas_usage = 1.2,
+		gas_offset = {x=-.35,y=1.3,z=-.7},
+		max_speed = 6.7056,
+		--trunksize = {x=0,y=0},
+		--trunkloc = {x = 0, y = 5.2, z = -7},
+		engineloc = {x = 0, y = .75, z = -1},
+		passengers = {
+			{loc = {x = 0, y = 7, z = -2.5}, offset = {x = 0, y = 1, z = -3} },--offset is loc - 6y +.5z
+		},
+		max_force_offroad = 8,
+		max_offroad_speed = 6.7056,
+		wheel = {
+			frontright = {x=-5.525,y=2.925,z=5.85},
+			frontleft = {x=5.525,y=2.925,z=5.85},
+		},
+		wheelname = "cars:jackhammerwheel",
+		steeringwheel = {x=0,y=10.725,z=3.25},
+		--licenseplate = {x = 0, y = 4.5, z = -23.3},
+		horn = "horn",
+		rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
+		rpmvalues = {{18, 48, .6}, {12, 32, .7}, {8, 20, .7}, {0, 10, .6}},
+		enginesound = "longerenginefaded",
+		ignitionsound = "ignition",
+		enginesound = "uralenginefaded",
+		ignitionsound = "uralignition",
+		--[[craft = {
+			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
+			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
+		},--]]
+		--craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+		inventory_image = "inv_car_grey.png",
+		drill = {
+			{},
+			{x=0,y=.45,z=1.6},
+			{x=0,y=1.45,z=1.8},
+			{x=0,y=2,z=1.2},
+			{x=0,y=-.15,z=1}
+		},
+		initial_properties = {
+			hp_max = 20,
+			physical = true,
+			stepheight = 1.1,
+			weight = 5,
+			collisionbox = {-.9, -0.05, -.9, .9, 1.2, .9},
+			visual = "mesh",
+			visual_size = {x=1, y=1},
+			mesh = "jackhammer.b3d",
+			textures = {'jackhammerUV.png'},
+			is_visible = true,
+			makes_footstep_sound = false,
+			automatic_rotate = 0,
+			--trunkinv = {},
+		}
+	}
+
+cars_register_car(table.copy(jackhammerdef))
+
+minetest.register_entity("cars:jackhammerwheel", {
+    hp_max = 1,
+    physical = false,
+	pointable = false,
+	collide_with_objects = false,
+    weight = 5,
+    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
+    visual = "mesh",
+    visual_size = {x=1, y=1},
+    mesh = "jackhammerwheel.b3d",
+    textures = {"jackhammerUV.png"}, -- number of required textures depends on visual
     is_visible = true,
     --makes_footstep_sound = false,
     --automatic_rotate = true,

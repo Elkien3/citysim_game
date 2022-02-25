@@ -14,17 +14,28 @@ local function rnd(number, decimal)
 	return math.floor(number*decimal+.5)/decimal
 end
 local player_attached = {}
+local drilledblocks = {}
 
 local attachTimer = 0
 local animateTimer = 0
+local drilltimer = 0
 minetest.register_globalstep(function(dtime)
-	attachTimer = attachTimer + dtime;
+	attachTimer = attachTimer + dtime
 	animateTimer = animateTimer + dtime
+	drilltimer = drilltimer + dtime
 	if attachTimer >= 5 then
 		minetest.after(0, function() attachTimer = 0 end)
 	end
 	if animateTimer >= .08 then
 		minetest.after(0, function() animateTimer = 0 end)
+	end
+	if drilltimer >= 1 then
+		drilltimer = 0
+		for posstring, tbl in pairs(drilledblocks) do
+			if tbl.last+300 <= os.time() then
+				drilledblocks[posstring] = nil
+			end
+		end
 	end
 end)
 
@@ -236,9 +247,11 @@ local function updatetextures(self, def)
 	end
 	if font_api then
 		local color = "black"
+		--local width = 130--original val
+		local textwidth = 47 + ((self.text and #self.text*8) or 0)
 		if cars_dyes[self.textcolor] then color = self.textcolor end
 		local textTex = font_api.get_font("04b03"):render(" "..self.platenumber.text, 130, 8, {maxlines = 1, halign = 'left', valign = 'center'})
-		textTex = textTex.."^("..font_api.get_font("04b03"):render("        "..(self.text or ""), 130, 8, {maxlines = 1, halign = 'left', valign = 'center'})..
+		textTex = textTex.."^("..font_api.get_font("04b03"):render("        "..(self.text or ""), textwidth, 8, {maxlines = 1, halign = 'left', valign = 'center'})..
 		"^[colorize:#"..cars_dyes[color][2]..":255)"
 		prop.textures[1] = prop.textures[1].."^"..textTex
 	end
@@ -246,29 +259,152 @@ local function updatetextures(self, def)
 	return prop
 end
 
+local function remove_towline(car)
+	if not car and not car.towline and not car.get_luaentity then return end
+	if not car.towline then car = car:get_luaentity() end
+	local ent = car.towline
+	if ent.finishobj and ent.finishobj.get_luaentity and ent.finishobj:get_luaentity() then
+		ent.finishobj:get_luaentity().towline = nil
+	end
+	if ent.finishobj and ent.finishobj.is_player and ent.finishobj:is_player() then
+		holdingtowlines[ent.finishobj:get_player_name()] = nil
+	end
+	ent.object:remove()
+	car.towline = nil
+end
+
+minetest.register_entity("cars:towline", {
+    hp_max = 1,
+    physical = false,
+	pointable = false,
+    weight = 5,
+    visual = "cube",
+    visual_size = {x=.1, y=.1},
+    textures = {"towline.png", "towline.png", "towline.png", "towline.png", "towline.png", "towline.png"}, 
+	on_step = function(self, dtime)
+		--self.los_timer = (self.los_timer or 0) + dtime
+		if dtime > .2 then dtime = .2 end
+		if self.startobj then
+			self.start = self.startobj:get_pos()
+			if self.startoffset then
+				local offset = table.copy(self.startoffset)
+				local rot = {x=0,y=0,z=0}
+				if self.startobj:is_player() then
+					rot.y = self.startobj:get_look_horizontal() or 0
+					--rot.x = self.startobj:get_look_vertical() or 0
+				else
+					rot = self.startobj:get_rotation()
+				end
+				offset = vector.rotate(offset, rot)
+				self.start = vector.add(self.start,offset)
+			end
+		end
+		if self.finishobj then
+			self.finish = self.finishobj:get_pos()
+			if self.finishoffset then
+				local offset = table.copy(self.finishoffset)
+				local rot = {x=0,y=0,z=0}
+				if self.finishobj:is_player() then
+					rot.y = self.finishobj:get_look_horizontal() or 0
+					--rot.x = self.finishobj:get_look_vertical() or 0
+				else
+					rot = self.finishobj:get_rotation()
+				end
+				offset = vector.rotate(offset, rot)
+				self.finish = vector.add(self.finish,offset)
+			end
+		end
+		local sp = self.start
+		local fp = self.finish
+		if not sp or not fp then self.object:remove() return end
+		if self.laststart and self.lastfinish and vector.equals(self.laststart, sp) and vector.equals(self.lastfinish, fp)
+		and (not self.length or self.length == 2.5) then return end
+		
+		local child = self.finishobj
+		if child and self.length then
+			local vel = child:get_velocity()
+			if self.length > 2.5 then
+				self.length = self.length-dtime
+				if self.length < 2.5 then
+					self.length = 2.5
+				end
+			end
+			local dist = vector.distance(sp, fp)
+			if dist > self.length then
+				local chainforce = (dist-self.length)*.4
+				if chainforce > 2 then
+					remove_towline(self.startobj)
+					return
+				end
+				vel = vector.add(vel, vector.multiply(vector.direction(fp, sp), chainforce))
+				local olddir = vector.rotate({x=0,y=0,z=1}, child:get_rotation())
+				local newdir = vector.direction(fp, sp)
+				newdir = vector.add(vector.multiply(newdir, chainforce*.2), olddir)				
+				child:set_rotation(vector.dir_to_rotation(newdir))
+				child:set_velocity(vel)
+			end
+		end
+		local delta = vector.subtract(sp, fp)
+		local yaw = math.atan2(delta.z, delta.x) - math.pi / 2
+		local pitch = math.atan2(delta.y,  math.sqrt(delta.z*delta.z + delta.x*delta.x))
+		pitch = pitch + math.pi/2
+		local dist = vector.distance(sp, fp)
+		if dist > 50 then
+			remove_towline(self.startobj)
+			return
+		end
+		--[[if self.los_timer > 1 then
+			self.los_timer = 0
+			if not minetest.line_of_sight(sp, fp)then
+				remove_towline(self.startobj)
+				return
+			end
+		end--]]
+		self.object:move_to({x=(sp.x+fp.x)/2, y=(sp.y+fp.y)/2, z=(sp.z+fp.z)/2, })
+		self.object:set_rotation({x=pitch, y=yaw, z=0})
+		self.object:set_properties({visual_size = {x=.1, y=dist}})
+		self.laststart = sp
+		self.lastfinish = fp
+	end,
+	on_activate = function(self, staticdata, dtime_s)
+		if not staticdata or staticdata == "" then self.object:remove() return end
+	end
+})
+
 function car_formspec(clickername, car, keyinvname, def)
     local form = "" ..
     "size[9,7]" ..
     "list[current_player;main;0.5,2.75;8,4.25;0]" ..
     "button[0.25,1.5;1,1;ignition;Ignition]" ..
     "button_exit[3.625,1.5;1.75,1;exit;Exit Seat]" ..
-    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]" ..
-    "button[0.25,0.25;1.5,1;headlights;Headlights]" ..
-    "button[2,0.25;1.5,1;flashers;Flashers]"
+    "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]"
+	if def.lights then
+		form = form.."button[0.25,0.25;1.5,1;headlights;Headlights]" .. "button[2,0.25;1.5,1;flashers;Flashers]"
+	end
+	if def.drill then
+		form = form.."dropdown[0.25,0.25;2,1;drillselect;Drill Off,Drill Front,Drill High,Drill Above,Drill Below;"..(car.drill or 1)..";true]"
+	end
     if def.siren then
 		form = form.."button[3.75,0.25;1.5,1;siren;Siren]"
 	end
     if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) then
 		local textcolor_item_str = ""
-		for i, item in pairs(cars_dyes) do
+		local current_textcolor_idx = 1
+		local i = 0
+		for colorname, item in pairs(cars_dyes) do
+			i = i + 1
+			if car.textcolor and colorname == car.textcolor then current_textcolor_idx = i end
 			if i ~= 1 then textcolor_item_str = textcolor_item_str.."," end
 			textcolor_item_str = textcolor_item_str .. minetest.formspec_escape(item[1])
 		end
+		textcolor_item_str = textcolor_item_str..";"..current_textcolor_idx
 		form = form.."field[5.6,1.78;1.75,1;owner;Owner;"..minetest.formspec_escape(car.owner).."]" .."button_exit[6.85,1.5;2,1;changeowner;Change Owner]"..
-		"checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"..
-
-		"field[5.6,.7;2.5,1;text;Custom Text;"..minetest.formspec_escape(car.text or "").."]" ..
-		"dropdown[7.1,0.475;1.5,1;textcolor;"..textcolor_item_str..";".."white"..";false]"
+		"field[5.6,.7;2,1;text;Custom Text;"..minetest.formspec_escape(car.text or "").."]" ..
+		"dropdown[7.1,0.475;1.5,1;textcolor;"..textcolor_item_str..";false]"
+		
+		if def.trunkloc then
+			form = form.."checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"
+		end
 	else
 		form = form.."label[6,1.75;Owner: "..car.owner.."]"
 	end
@@ -420,11 +556,25 @@ local function trunk_rightclick(self, clicker)
 	local formx = x
 	inventory:set_size("trunk", x * y)
 	if x < 8 then formx = 8 end
+	if def.towloc then
+		y = y + 1
+	end
 	inventory:set_list("trunk", table.copy(self.trunkinv))
 	local formspec =
            "size["..formx..","..5+y.."]"..
-           "list[detached:cars"..selfname..";trunk;0,.5;"..x..","..y..";]"..
+           "list[detached:cars"..selfname..";trunk;0,.5;"..x..","..def.trunksize.y..";]"..
            "list[current_player;main;0,"..1+y..";8,4;]"
+	if def.towloc then
+		if self.towline then
+			if self.towline.finishobj == self.object then
+				formspec = formspec.."button[3,"..(y-.25)..";2,1;notow;Cannot Tow]"
+			else
+				formspec = formspec.."button[3,"..(y-.25)..";2,1;detachtow;Detach Tow]"
+			end
+		else
+			formspec = formspec.."button[3,"..(y-.25)..";2,1;attachtow;Attach Tow]"
+		end
+	end
     minetest.show_formspec(name, "cars_trunk", formspec)
 end
 
@@ -524,6 +674,8 @@ local function register_lightentity(carname)
 	})
 end
 
+holdingtowlines = {}
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "cars_trunk" then
 		if fields.quit then
@@ -535,6 +687,27 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					object = car_forms[name].object
 				}, true)
 				car_forms[name] = nil
+			end
+		end
+		local name = player:get_player_name()
+		local car = car_forms[name]
+		local def
+		if car then
+			def = cars_registered_cars[car.object:get_entity_name()]
+		end
+		if car and def then
+			if fields.detachtow and car.towline and car.towline.finishobj ~= car.object then
+				remove_towline(car)
+			end
+			if fields.attachtow and not car.towline then
+				if holdingtowlines[name] then return end
+				car.towline = minetest.add_entity(car.object:get_pos(), "cars:towline", "spawn"):get_luaentity()
+				local ent = car.towline
+				ent.finishobj = player
+				ent.startobj = car.object--startobj is what is the 'parent'
+				ent.startoffset = vector.multiply(def.towloc, .1)
+				ent.finishoffset = {x=0,y=1,z=0}
+				holdingtowlines[name] = ent--todo remove other line if the player is already holding one
 			end
 		end
 	elseif formname == "cars_form" then
@@ -589,6 +762,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					else
 						car.trunklock = nil
 					end
+				elseif car.ignition and fields.drillselect then
+					car.drill = tonumber(fields.drillselect)
+					if car.drill == 1 then
+						car.drill = nil
+						if car.drillsound then
+							minetest.sound_fade(car.drillsound, 10, 0)
+							car.drillsound = nil
+						end
+					elseif not car.drillsound then
+						car.drillsound = minetest.sound_play("jackhammerloop", {
+							max_hear_distance = 64,
+							loop = true,
+							gain = 1,
+							object = car.object
+						})
+					end
+					car.drilltimer = nil
+					local prop = car.object:get_properties()
+					prop.mesh = string.gsub(def.initial_properties.mesh, ".b3d", "")..(car.drill or "")..".b3d"
+					car.object:set_properties(prop)
 				elseif fields.text or fields.textcolor then
 					if fields.text then
 						car.text = fields.text
@@ -710,7 +903,33 @@ local function car_step(self, dtime, moveresult)
 			end
 		end
 	end
-	local nodepos = pos
+	if self.towline and self.towline.finishobj == self.object then
+		local vel = self.object:get_velocity()
+		if moveresult.touching_ground then
+			vel = vector.multiply(vel, 1-4*dtime)
+			local rot = self.object:get_rotation()
+			local function get_sign(num)
+				if num == 0 then return 1 end
+				return num/math.abs(num)
+			end
+			local sign = get_sign(rot.x)
+			rot.x = rot.x*.96-.02*sign
+			if get_sign(rot.x)~=sign then
+				rot.x = 0
+			end
+			sign = get_sign(rot.z)
+			rot.z = rot.z*.96-.02*sign
+			if get_sign(rot.z)~=sign then
+				rot.z = 0
+			end
+			self.object:set_rotation(rot)
+		else
+			vel = vector.multiply(vel, 1-.5*dtime)
+		end
+		self.object:set_velocity(vel)
+		return
+	end
+	local nodepos = table.copy(pos)
 	local node = minetest.get_node(nodepos).name
 	if node == "air" then
 		nodepos.y = nodepos.y - 1
@@ -950,7 +1169,7 @@ local function car_step(self, dtime, moveresult)
 		end
 	end
 	
-	if attachTimer >= 5 and false then --CHANGE BACK, REMOVE 'AND FALSE'
+	if attachTimer >= 5 then--removed an 'and false', forgot abt it, not sure how long it was there
 		for id, passengers in pairs (self.passengers) do
 			local player = passengers.player
 			if player then
@@ -968,9 +1187,7 @@ local function car_step(self, dtime, moveresult)
 		self.v = 1*get_sign(self.v)
 	end
 	local new_velo
-	--local yaw = self.object:getyaw()
-	yaw = yaw - self.wheelpos/57.32
-	new_velo = get_velocity(self.v, yaw, velocity)
+	new_velo = get_velocity(self.v, (yaw - self.wheelpos/57.32), velocity)
 	local force = vector.distance(velocity, new_velo)/dtime
 	local maxforce
 	if on_asphalt then
@@ -1049,6 +1266,37 @@ local function car_step(self, dtime, moveresult)
 	local abs_v = math.abs(self.v)
 	--if abs_v > 0 and driver ~= nil then
 	if self.ignition then
+		if self.drill then
+			self.drilltimer = (self.drilltimer or 0) + dtime
+			if self.drilltimer >= 1 then
+				self.drilltimer = 0
+				local drilloffset = vector.rotate(def.drill[self.drill], {x=0,y=yaw,z=0})
+				
+				--[[local sparky = minetest.get_player_by_name("sparky")--to help find where the drilling offsets need to be
+				local marker = sparky:hud_add({
+					hud_elem_type = "waypoint",
+					name = "start",
+					number = 0xFF0000,
+					world_pos = vector.add(pos, drilloffset)
+				})
+				minetest.after(5, function() sparky:hud_remove(marker) end, sparky, marker)--]]
+				
+				local drillpos = vector.round(vector.add(pos, drilloffset))
+				local drillnode = minetest.get_node(drillpos).name
+				if drillnode ~= "air" then
+					local posstring = minetest.pos_to_string(pos, 0)
+					if not drilledblocks[posstring] or drilledblocks[posstring].name ~= drillnode then
+						drilledblocks[posstring] = {name = drillnode, health = 10}--todo give different blocks different health
+					end
+					drilledblocks[posstring].last = os.time()
+					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
+					if drilledblocks[posstring].health <= 0 then
+						drilledblocks[posstring] = nil
+						minetest.dig_node(drillpos)--todo some more logic here, probably have to use remove node
+					end
+				end
+			end
+		end
 		self.battery = math.min(self.battery + dtime*2, 600)
 		if oil and def.gas_usage and not slowing then
 			if self.v == 0 or self.cruise then--idle gas usage
@@ -1083,6 +1331,13 @@ local function car_step(self, dtime, moveresult)
 				}, true)
 			self.timer1 = 0
 		end
+	elseif self.drill or self.drillsound then
+		minetest.sound_fade(self.drillsound, 10, 0)
+		self.drill = nil
+		self.drillsound = nil
+		local prop = self.object:get_properties()
+		prop.mesh = def.initial_properties.mesh
+		self.object:set_properties(prop)
 	end
 	self.timer2 = self.timer2 + dtime
 	local pitch = 1 + (abs_v/def.max_speed)*.6
@@ -1337,9 +1592,12 @@ function cars_register_car(def)
 				textcolor = self.textcolor
 			})
 		end,
-		on_step = function(self, dtime)
-			car_step(self, dtime)
+		on_deactivate = function(self)
+			if self.drillsound then
+				minetest.sound_fade(self.drillsound, 10, 0)
+			end
 		end,
+		on_step = car_step,
 		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 			if puncher ~= self.object then
 				local name = puncher:get_player_name()
@@ -1367,6 +1625,15 @@ function cars_register_car(def)
 							ent.finishoffset = def.gas_offset
 						end
 					end
+				elseif holdingtowlines[name] and not self.towline then
+					local ent = holdingtowlines[name]
+					ent.finishobj = self.object
+					local offset = vector.multiply(def.wheel.frontright, .1)
+					offset.x = 0
+					ent.finishoffset = offset
+					ent.length = vector.distance(ent.start, self.object:get_pos()) + 4
+					self.towline = ent
+					holdingtowlines[name] = nil
 				elseif (punchitem == "") and (time_from_last_punch >= tool_capabilities.full_punch_interval) and math.random(1,2) == 1 then
 					local closeid = getClosest(puncher, self)
 					if DEBUG_TEXT then
