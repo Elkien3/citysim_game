@@ -16,6 +16,7 @@ farming.place_seed = function(itemstack, placer, pointed_thing, plantname)
 	and minetest.get_item_group(above.name, "plant") == 0
 	and minetest.get_item_group(under.name, "seed") == 0 then
 		minetest.set_node(pointed_thing.above, {name = plantname, param2 = 1})
+		minetest.sound_play("default_place_node", {pos = pointed_thing.above, gain = 1.0})
 		if not minetest.is_creative_enabled(placer:get_player_name()) then
 			itemstack:take_item()
 		end
