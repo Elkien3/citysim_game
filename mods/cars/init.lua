@@ -192,7 +192,7 @@ end
 local function wheelspeed(car)
 	if not car then return end
 	if not car.object then return end
-	if not car.object:getvelocity() then return end
+	if not car.object:get_velocity() then return end
 	if not car.wheel then return end
 	local direction = 1
 	if car.v then
@@ -422,10 +422,10 @@ end
 
 function getClosest(player, car, distance)
 	local def = cars_registered_cars[car.name]
-	local playerPos = player:getpos()
+	local playerPos = player:get_pos()
 	local dir = player:get_look_dir()
 	playerPos.y = playerPos.y + 1.45
-	local carPos = car.object:getpos()
+	local carPos = car.object:get_pos()
 	local offset, _ = player:get_eye_offset()
 	local playeryaw = player:get_look_horizontal()
 	local x, z = rotateVector(offset.x, offset.z, playeryaw)
@@ -817,8 +817,8 @@ local function car_step(self, dtime, moveresult)
 			self.gas = 0
 		end
 	end
-	local velocity = self.object:getvelocity()
-	local yaw = self.object:getyaw()
+	local velocity = self.object:get_velocity()
+	local yaw = self.object:get_yaw()
 	if not yaw then return end
 	local yaw = get_yaw(yaw)
 	local slowing = false
@@ -835,7 +835,7 @@ local function car_step(self, dtime, moveresult)
 	if not self.v then self.v = 0 end
 	self.v = get_v(velocity) * get_sign(self.v)
 	--local accel = 0--def.coasting*get_sign(self.v)
-	local pos = self.object:getpos()
+	local pos = self.object:get_pos()
 	if not velocity then return end
 	if self.lastv then
 		local newv = velocity
@@ -1230,7 +1230,7 @@ local function car_step(self, dtime, moveresult)
 	self.object:setvelocity(new_velo)
 	--ACCELERATION TEST
 	--[[if accel ~= 0 then
-		self.object:setacceleration(get_velocity(accel, self.object:getyaw(), {y=-10}))
+		self.object:setacceleration(get_velocity(accel, self.object:get_yaw(), {y=-10}))
 	end--]]
 	if math.abs(self.v) < .05 and math.abs(self.v) > 0 then
 		self.object:setvelocity({x = 0, y = 0, z = 0})
@@ -1450,7 +1450,7 @@ function car_rightclick(self, clicker, closeid)
 		end
 		
 		player_attached[name] = self
-		--[[local obj = minetest.add_entity(self.object:getpos(), "cars:seat")
+		--[[local obj = minetest.add_entity(self.object:get_pos(), "cars:seat")
 		obj:set_attach(self.object, "", self.passengers[i].loc, {x = 0, y = 0, z = 0})
 		clicker:set_attach(obj, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 		clicker:set_eye_offset({x=0,y=-6,z=0}, {x=0,y=0,z=0})--]]
@@ -1461,7 +1461,7 @@ function car_rightclick(self, clicker, closeid)
 		minetest.after(.1, function()
 			default.player_set_animation(clicker, "sit" , 30)
 		end)
-		clicker:set_look_horizontal(get_yaw(self.object:getyaw()))
+		clicker:set_look_horizontal(get_yaw(self.object:get_yaw()))
 	elseif closeid ~= 0 then
 		if closeid == 1 and self.passengers[1].player == clicker then
 			driver_rightclick(self, clicker)
@@ -1532,7 +1532,7 @@ function cars_register_car(def)
 			self.object:set_armor_groups({vehicle = 100})
 			self.wheel = {}
 			wheelspeed(self)
-			local pos = self.object:getpos()
+			local pos = self.object:get_pos()
 			for index, wheel in pairs(def.wheel) do
 				if not self.wheel[index] then
 					self.wheel[index] = minetest.add_entity(pos, def.wheelname or "cars:wheel")
