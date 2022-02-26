@@ -478,7 +478,7 @@ end
 
 
 local function custom_hud(player)
-	if minetest.setting:get_bool("enable_damage") or hb.settings.forceload_default_hudbars then
+	if minetest.settings:get_bool("enable_damage") or hb.settings.forceload_default_hudbars then
 		local hide
 		if minetest.settings:get_bool("enable_damage") then
 			hide = false
