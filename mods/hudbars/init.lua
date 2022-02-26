@@ -20,11 +20,11 @@ hb.settings = {}
 function hb.load_setting(sname, stype, defaultval, valid_values)
 	local sval
 	if stype == "string" then
-		sval = minetest.setting_get(sname)
+		sval = minetest.settings:get(sname)
 	elseif stype == "bool" then
-		sval = minetest.setting_getbool(sname)
+		sval = minetest.settings:get_bool(sname)
 	elseif stype == "number" then
-		sval = tonumber(minetest.setting_get(sname))
+		sval = tonumber(minetest.settings:get(sname))
 	end
 	if sval ~= nil then
 		if valid_values ~= nil then
@@ -83,7 +83,7 @@ hb.settings.forceload_default_hudbars = hb.load_setting("hudbars_forceload_defau
 hb.settings.alignment_pattern = hb.load_setting("hudbars_alignment_pattern", "string", "zigzag", {"zigzag", "stack_up", "stack_down"})
 hb.settings.autohide_breath = hb.load_setting("hudbars_autohide_breath", "bool", true)
 
-local sorting = minetest.setting_get("hudbars_sorting")
+local sorting = minetest.settings:get("hudbars_sorting")
 if sorting ~= nil then
 	hb.settings.sorting = {}
 	hb.settings.sorting_reverse = {}
@@ -464,7 +464,7 @@ function hb.get_hudbar_state(player, identifier)
 end
 
 --register built-in HUD bars
-if minetest.setting_getbool("enable_damage") or hb.settings.forceload_default_hudbars then
+if minetest.settings:get_bool("enable_damage") or hb.settings.forceload_default_hudbars then
 	hb.register_hudbar("health", 0xFFFFFF, S("Health"), { bar = "hudbars_bar_health.png", icon = "hudbars_icon_health.png", bgicon = "hudbars_bgicon_health.png" }, 20, 20, false)
 	hb.register_hudbar("breath", 0xFFFFFF, S("Breath"), { bar = "hudbars_bar_breath.png", icon = "hudbars_icon_breath.png", bgicon = "hudbars_bgicon_breath.png" }, 10, 10, true)
 end
@@ -478,9 +478,9 @@ end
 
 
 local function custom_hud(player)
-	if minetest.setting_getbool("enable_damage") or hb.settings.forceload_default_hudbars then
+	if minetest.setting:get_bool("enable_damage") or hb.settings.forceload_default_hudbars then
 		local hide
-		if minetest.setting_getbool("enable_damage") then
+		if minetest.settings:get_bool("enable_damage") then
 			hide = false
 		else
 			hide = true
