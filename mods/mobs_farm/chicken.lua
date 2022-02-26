@@ -9,9 +9,16 @@ end
 local orig_func = farming.place_seed
 farming.place_seed = function(itemstack, placer, pointed_thing, plantname)
 	if minetest.is_protected(pointed_thing.above, placer:get_player_name()) then return itemstack end
-	minetest.set_node(pointed_thing.above, {name = itemstack:get_name(), param2 = 1})
-	if not minetest.is_creative_enabled(placer:get_player_name()) then
-		itemstack:take_item()
+	local under = minetest.get_node(pointed_thing.under)
+	local above = minetest.get_node(pointed_thing.above)
+	if minetest.registered_nodes[above.name].buildable_to
+	and minetest.get_item_group(under.name, "soil") < 2
+	and minetest.get_item_group(above.name, "plant") == 0
+	and minetest.get_item_group(under.name, "seed") == 0 then
+		minetest.set_node(pointed_thing.above, {name = plantname, param2 = 1})
+		if not minetest.is_creative_enabled(placer:get_player_name()) then
+			itemstack:take_item()
+		end
 	end
 	orig_func(itemstack, placer, pointed_thing, plantname)
 	return itemstack
