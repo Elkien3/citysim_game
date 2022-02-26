@@ -42,7 +42,7 @@ settings = {}
 -- @return The value from the configuration with the given name. If the read
 --         value is nil, the default value is returned or nil.
 function settings.get(name, default_value, cast_function)
-	local value = minetest.setting_get(name)
+	local value = minetest.settings:get(name)
 	
 	if value ~= nil and cast_function ~= nil then
 		value = cast_function(value)
@@ -63,7 +63,7 @@ end
 -- @return The boolean with the given name, or the default value if it is nil,
 --         or nil.
 function settings.get_bool(name, default_value)
-	local value = minetest.setting_getbool(name)
+	local value = minetest.settings:get_bool(name)
 	
 	if value ~= nil then
 		return value
@@ -110,7 +110,7 @@ end
 -- @return The pos with the given name, or the default value if it is nil,
 --         or nil.
 function settings.get_pos2d(name, default_value)
-	local value = minetest.setting_get(name)
+	local value = minetest.settings:get(name)
 	
 	if value ~= nil then
 		local splitted_value = stringutil.split(value, ",")
@@ -193,7 +193,7 @@ end
 
 --- Saves all settings to configuration file.
 function settings.save()
-	minetest.setting_save()
+	minetest.settings:write()
 end
 
 --- Set a value with the given name into the configuration.
@@ -201,7 +201,7 @@ end
 -- @param name The name of the value to set. Is not allowed to contain '="#{}'.
 -- @param value The value.
 function settings.set(name, value)
-	minetest.setting_set(name, value)
+	minetest.settings:set(name, value)
 end
 
 --- Gets a pos from the configuration, this is an alias for get_pos3d.
