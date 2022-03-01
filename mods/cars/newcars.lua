@@ -149,38 +149,81 @@ policecardef.sirenlength = 4.4
 policecardef.name = "cars:police_sedan"
 policecardef.description = "Police Sedan"
 policecardef.horn = "uralhorn"
-policecardef.lights = "police_sedan"
+policecardef.lights = "copcar"
 policecardef.acceleration = 5.5
 policecardef.max_speed = 26.8224
 policecardef.craftschems = {"police_sedan", "police_sedan1", "police_sedan2", "police_sedan3"}
 policecardef.max_force_offroad = 2
-policecardef.initial_properties.mesh = "sedan2.b3d"
-policecardef.initial_properties.textures = {'sedan2UVcombined.png'}
+policecardef.initial_properties.mesh = "copcar.b3d"
+policecardef.initial_properties.textures = {'copcaruv.png'}
 policecardef.inventory_image = "inv_car_grey.png"
 cars_register_car(policecardef)
 policecardef = nil
-	
-minetest.register_entity("cars:sedanwheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "sedanwheel.b3d",
-    textures = {"sedan2.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			end
-		end)
-	end,
+
+
+local vandef = {
+	name = "cars:van",
+	description = "Van",
+	acceleration = 3,
+	braking = 8,
+	coasting = 2.5,
+	gas_usage = 1.2,
+	axisval = 14,
+	gas_offset = {x=-9.78,y=12.6,z=-17},
+	max_speed = 24.5872,
+	engineloc = {x = 0, y = .6, z = 2},
+	passengers = {
+		{loc = {x = -4.8, y = 10.2, z = 2}, offset = {x = -4.8, y = 4.2, z = 2.5} }, --offset is loc - 6y +.5z
+		{loc = {x = 4.8, y = 10.2, z = 2}, offset = {x = 4.8, y = 4.2, z = 2.5} },
+		{loc = {x = -4.8, y = 10.2, z = -7.6}, offset = {x = -4.8, y = 4.2, z = -6.1} },--each seat pair is 9.6 behind the last
+		{loc = {x = 4.8, y = 10.2, z = -7.6}, offset = {x = 4.8, y = 4.2, z = -6.1} },
+		{loc = {x = -4.8, y = 10.2, z = -17.2}, offset = {x = -4.8, y = 4.2, z = -16.7} },
+		{loc = {x = 4.8, y = 10.2, z = -17.2}, offset = {x = 4.8, y = 4.2, z = -16.7} },
+		{loc = {x = -4.8, y = 10.2, z = -26.8}, offset = {x = -4.8, y = 4.2, z = -25.3} },
+		{loc = {x = 4.8, y = 10.2, z = -26.8}, offset = {x = 4.8, y = 4.2, z = -25.3} },
+	}, 
+	wheel = {
+		frontright = {x=-8.29681,y=3.9,z=9.7},
+		frontleft = {x=8.29681,y=3.9,z=9.7},
+	},
+	wheelname = "cars:vanwheel",
+	extension = {x=0,y=0,z=-18},
+	extensionname = "cars:vanextension",
+	lights = "van",
+	steeringwheel = {x=-4.8,y=14.4,z=6.1},
+	horn = "horn",
+	rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
+	enginesound = "longerenginefaded",
+	ignitionsound = "ignition",
+	craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+	inventory_image = "inv_car_grey.png",
+	initial_properties = {
+		hp_max = 20,
+		physical = true,
+		stepheight = 1.1,
+		weight = 5,
+		collisionbox = {-1.1, -0.05, -1.1, 1.1, 1.6, 1.1},
+		visual = "mesh",
+		visual_size = {x=1, y=1},
+		mesh = "van.b3d",
+		textures = {'vanuvunpainted.png', 'vanuv.png', 'vanuvcolored.png'},
+		is_visible = true,
+		makes_footstep_sound = false,
+		automatic_rotate = 0,
+	}
+}
+cars_register_car(vandef)
+
+cars_register_extension("cars:vanextension", {collisionbox = {-1.1, -0.05, -1.1, 1.1, 1.6, 1.1}})
+
+cars_register_wheel("cars:vanwheel", {
+	mesh = "vanwheel.b3d",
+    textures = {"vanuv.png"},
+})
+
+cars_register_wheel("cars:sedanwheel", {
+	mesh = "sedanwheel.b3d",
+    textures = {"sedan2.png"},
 })
 
 local uraldef = {
@@ -245,79 +288,13 @@ local uraldef = {
 		}
 	}
 cars_register_car(uraldef)
-	
-		
-minetest.register_entity("cars:uralwheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
+
+cars_register_wheel("cars:uralwheel", {
     mesh = "uralwheel.b3d",
-    textures = {"uralUV.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			end
-		end)
-	end,
+    textures = {"uralUV.png"},
 })
 
-minetest.register_entity("cars:uralextension", {
-    hp_max = 1,
-    physical = true,
-    weight = 5,
-    collisionbox = {-1.2, -0.05, -1.2, 1.2, 2.2, 1.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "uralwheel.b3d",
-    textures = {"invisible.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		local parent = self.object:get_attach()
-		if not parent then
-			self.object:remove()
-			return
-		end
-		parent:punch(puncher, time_from_last_punch, tool_capabilities, dir)
-	end,
-	on_rightclick = function(self, clicker)
-		local parent = self.object:get_attach()
-		if not parent then
-			self.object:remove()
-			return
-		end
-		local name = clicker:get_player_name()
-		parent = parent:get_luaentity()
-		if false and default.player_attached[name] and clicker:get_attach() and clicker:get_attach() == parent.object then
-			for id, info in pairs(parent.passengers) do
-				if info.player and name == info.player:get_player_name() then
-					car_rightclick(parent, clicker, id)
-				end
-			end
-		else
-			car_rightclick(parent, clicker, getClosest(clicker, parent, 1))
-		end
-	end,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-				return
-			end
-			self.object:set_armor_groups({immortal = 1})
-		end)
-	end,
-})
+cars_register_extension("cars:uralextension", {collisionbox = {-1.2, -0.05, -1.2, 1.2, 2.2, 1.2}})
 
 local truckdef = {
 		name = "cars:truck",
@@ -346,6 +323,8 @@ local truckdef = {
 		lights = "truck",
 		steeringwheel = {x=-5.0625,y=14.4542,z=1.27493},
 		--licenseplate = {x = 0, y = 4.5, z = -23.3},
+		extension = {x=0,y=0,z=-18},
+		extensionname = "cars:truckextension",
 		horn = "horn",
 		rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
 		rpmvalues = {{18, 48, .6}, {12, 32, .7}, {8, 20, .7}, {0, 10, .6}},
@@ -384,28 +363,11 @@ truckdef.towloc = {x=0,y=25,z=-33.475}
 truckdef.initial_properties.textures = {'towtruckuvunpainted.png', "towtruckuv.png", "truckuvcolored.png"}
 cars_register_car(table.copy(truckdef))
 
-minetest.register_entity("cars:truckwheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
+cars_register_wheel("cars:truckwheel", {
     mesh = "truckwheel.b3d",
-    textures = {"truckuv.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			end
-		end)
-	end,
+    textures = {"truckuv.png"},
 })
+cars_register_extension("cars:truckextension", {collisionbox = {-1, -0.05, -1, 1, 1.5, 1}})
 
 local jackhammerdef = {
 		name = "cars:jackhammer",
@@ -471,25 +433,7 @@ local jackhammerdef = {
 
 cars_register_car(table.copy(jackhammerdef))
 
-minetest.register_entity("cars:jackhammerwheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
+cars_register_wheel("cars:jackhammerwheel", {
     mesh = "jackhammerwheel.b3d",
-    textures = {"jackhammerUV.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
-				self.object:remove()
-			end
-		end)
-	end,
+    textures = {"jackhammerUV.png"},
 })

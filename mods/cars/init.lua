@@ -1783,29 +1783,82 @@ function cars_register_car(def)
 		register_lightentity(def.lights)
 	end
 end
-	
-minetest.register_entity("cars:wheel", {
-    hp_max = 1,
-    physical = false,
-	pointable = false,
-	collide_with_objects = false,
-    weight = 5,
-    collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},
-    visual = "mesh",
-    visual_size = {x=1, y=1},
-    mesh = "wheel.x",
-    textures = {"car_dark_grey.png"}, -- number of required textures depends on visual
-    is_visible = true,
-    --makes_footstep_sound = false,
-    --automatic_rotate = true,
-	on_activate = function(self, staticdata, dtime_s)
-		minetest.after(.1, function()
-			if not self.object:get_attach() then
+
+function cars_register_wheel(name, def)
+	if not def then def = {} end
+	for defname, val in pairs({
+		hp_max = 1,
+		physical = false,
+		pointable = false,
+		is_visible = true,
+		visual = "mesh",
+		mesh = "wheel.x",
+		textures = {"car_dark_grey.png"},
+		on_activate = function(self, staticdata, dtime_s)
+			minetest.after(.1, function()
+				if not self.object:get_attach() then
+					self.object:remove()
+				end
+			end)
+		end,})
+	do
+		if not def[defname] then def[defname] = val end
+	end
+	minetest.register_entity(name, def)
+end
+
+cars_register_wheel("cars:wheel")
+
+function cars_register_extension(name, def)
+	if not def then def = {} end
+	for defname, val in pairs({
+		hp_max = 1,
+		physical = true,
+		collisionbox = {-1, -0.05, -1, 1, 1.2, 1},
+		visual = "sprite",
+		visual_size = {x=1, y=1},
+		textures = {"invisible.png"},
+		is_visible = true,
+		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+			local parent = self.object:get_attach()
+			if not parent then
 				self.object:remove()
+				return
 			end
-		end)
-	end,
-})
+			parent:punch(puncher, time_from_last_punch, tool_capabilities, dir)
+		end,
+		on_rightclick = function(self, clicker)
+			local parent = self.object:get_attach()
+			if not parent then
+				self.object:remove()
+				return
+			end
+			local name = clicker:get_player_name()
+			parent = parent:get_luaentity()
+			if false and default.player_attached[name] and clicker:get_attach() and clicker:get_attach() == parent.object then
+				for id, info in pairs(parent.passengers) do
+					if info.player and name == info.player:get_player_name() then
+						car_rightclick(parent, clicker, id)
+					end
+				end
+			else
+				car_rightclick(parent, clicker, getClosest(clicker, parent, 1))
+			end
+		end,
+		on_activate = function(self, staticdata, dtime_s)
+			minetest.after(.1, function()
+				if not self.object:get_attach() then
+					self.object:remove()
+					return
+				end
+				self.object:set_armor_groups({immortal = 1})
+			end)
+		end,})
+	do
+		if not def[defname] then def[defname] = val end
+	end
+	minetest.register_entity(name, def)
+end
 
 minetest.register_on_leaveplayer(function(player)
 	detach(player)
