@@ -15,12 +15,16 @@ for i, name in pairs({"default:grass_", "default:dry_grass_", "default:marram_gr
 		if minetest.registered_nodes[name.. i] then
 				local groups = minetest.registered_nodes[name.. i].groups
 				groups.level = 1
-				minetest.override_item(name..i, {groups = groups, drop = {items = {{tools = {"~sword"}, items = {name.."1"}}}}})
+				local newdrop = {items = {{tools = {"~sword"}, items = {name.."1"}}}}
+				if name == "default:grass_" then
+					table.insert(newdrop.items, {items = {"farming:seed_wheat"}, rarity = 5})
+				end
+				minetest.override_item(name..i, {groups = groups, drop = newdrop})
 		end
 	end
 end
 if minetest.registered_nodes["default:junglegrass"] then
-	minetest.override_item("default:junglegrass", {drop = {items = {{tools = {"~sword"}, items = {"default:junglegrass"}}}}})
+	minetest.override_item("default:junglegrass", {drop = {items = {{items = {"farming:seed_cotton"}, rarity = 8}, {tools = {"~sword"}, items = {"default:junglegrass"}}}}})
 end
 
 if flowers then
