@@ -169,9 +169,9 @@ local vandef = {
 	coasting = 2.5,
 	gas_usage = 1.2,
 	axisval = 14,
-	gas_offset = {x=-9.78,y=12.6,z=-17},
+	gas_offset = {x=-1.02,y=1.14,z=-1.9},
 	max_speed = 24.5872,
-	engineloc = {x = 0, y = .6, z = 2},
+	engineloc = {x = 0, y = 1, z = 1.5},
 	passengers = {
 		{loc = {x = -4.8, y = 10.2, z = 2}, offset = {x = -4.8, y = 4.2, z = 2.5} }, --offset is loc - 6y +.5z
 		{loc = {x = 4.8, y = 10.2, z = 2}, offset = {x = 4.8, y = 4.2, z = 2.5} },
