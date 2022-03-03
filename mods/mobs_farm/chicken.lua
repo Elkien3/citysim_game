@@ -113,7 +113,7 @@ mobs:register_mob("mobs_farm:chicken", {
 		if mobs:capture_mob(self, clicker, 30, 50, 80, false, nil) then return end--]]
 		
 		-- feed or tame
-		if mobs:feed_tame(self, clicker, 4, false, true) then return	end
+		if not self.tamed and mobs:feed_tame(self, clicker, 4, false, true) then return	end
 		if mobs:feed_tame(self, clicker, 20, true, false) then return	end
 
 		--if mobs:protect(self, clicker) then return end

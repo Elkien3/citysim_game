@@ -94,7 +94,7 @@ stepheight = 0.6,
 	--stay_near = {{"group:grass", "default:water_source", "static_ocean:water_source", "mobs_farm:pet_bowl_grass", "mobs_farm:pet_bowl_water"}, 10},
 	on_rightclick = function(self, clicker)
 		-- feed or tame
-		if mobs:feed_tame(self, clicker, 4, false, true) then self.runaway_from = {"mobs_farm:wolf"} return end
+		if not self.tamed and mobs:feed_tame(self, clicker, 4, false, true) then self.runaway_from = {"mobs_farm:wolf"} return end
 		--if mobs:protect(self, clicker) then return end
 		--if mobs:capture_mob(self, clicker, 30, 50, 80, false, nil) then return end
 

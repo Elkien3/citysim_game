@@ -263,7 +263,7 @@ dog.on_rightclick = function(self, clicker)
 	--if mobs:protect(self, clicker) then return end
 	--if item:get_name() ~= "" and mobs:capture_mob(self, clicker, 0, 2, 80, false, nil) then return end
 	
-	if item:get_name() == "mobs:meat_raw" then
+	if false and item:get_name() == "mobs:meat_raw" then
 		-- Feed to increase health
 		local hp = self.health
 		local hp_add = 0

@@ -122,7 +122,7 @@ mobs:register_mob("mobs_farm:cow", {
 	on_rightclick = function(self, clicker)
 
 		-- feed or tame
-		if mobs:feed_tame(self, clicker, 4, false, true) then return end
+		if not self.tamed and mobs:feed_tame(self, clicker, 4, false, true) then return end
 		if mobs:feed_tame(self, clicker, 20, true, false) then return end
 
 		--if mobs:protect(self, clicker) then return end

@@ -104,7 +104,7 @@ mobs:register_mob("mobs_farm:kitten", {
 	--stay_near = {{"default:water_source", "static_ocean:water_source", "mobs_farm:pet_bowl_fish", "mobs_farm:pet_bowl_water"}, 10},
 	on_rightclick = function(self, clicker)
 
-		if mobs:feed_tame(self, clicker, 4, false, true) then return end
+		if not self.tamed and mobs:feed_tame(self, clicker, 4, false, true) then return end
 		--if mobs:protect(self, clicker) then return end
 		--if mobs:capture_mob(self, clicker, 50, 50, 90, false, nil) then return end
 
