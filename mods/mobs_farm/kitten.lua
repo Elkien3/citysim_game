@@ -56,7 +56,7 @@ mobs:register_mob("mobs_farm:kitten", {
 	},--]]
 	water_damage = 0,
 	lava_damage = 5,
-	fear_height = 2,
+	fear_height = 3,
 	animation = {
 		speed_normal = 42,
 		stand_start = 97,

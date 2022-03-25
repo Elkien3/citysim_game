@@ -108,7 +108,7 @@ mobs:register_mob("mobs_farm:cow", {
 		--{"default:dirt_with_grass", "default:dirt", -1}
 	},
 	--stay_near = {{"farming:straw", "group:grass", "default:water_source", "static_ocean:water_source"}, 10},
-	fear_height = 2,
+	fear_height = 3,
 	after_activate = function(self, staticdata, def, dtime)
 		if not self.food then
 			self.food = 0

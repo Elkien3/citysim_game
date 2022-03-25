@@ -73,7 +73,7 @@ mobs:register_mob("mobs_farm:chicken", {
 	light_damage = 0,
 	fall_damage = 0,
 	fall_speed = -4,
-	fear_height = 5,
+	fear_height = 3,
 	animation = {
 		stand_speed = 25, walk_speed = 25, run_speed = 50,
 		stand_start = 0,		stand_end = 0,
