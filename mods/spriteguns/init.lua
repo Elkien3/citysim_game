@@ -20,6 +20,10 @@ minetest.register_chatcommand("spritegunscale",{
 	end
 })
 
+spriteguns.is_wielding_gun = function(name)
+	return gun_huds[name] ~= nil
+end
+
 minetest.register_chatcommand("spritegunskipstep",{
 	params = "<scale>",  -- Short parameter description
 	description = "Set wether or not to skip every other step's hud update",  -- Full description
