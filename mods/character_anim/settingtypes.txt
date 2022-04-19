@@ -1,0 +1,33 @@
+[*character_anim.default]
+[**character_anim.default.arm_right]
+# Right arm spin radius
+character_anim.default.arm_right.radius (Character anim Default Arm right Radius) float 10
+# Right arm spin speed
+character_anim.default.arm_right.speed (Character anim Default Arm right Speed) float 1000
+[***character_anim.default.arm_right.yaw]
+# Right arm yaw (max)
+character_anim.default.arm_right.yaw.max (Character anim Default Arm right Yaw Max) float 160
+# Right arm yaw (min)
+character_anim.default.arm_right.yaw.min (Character anim Default Arm right Yaw Min) float -30
+[**character_anim.default.body]
+# Body turn speed
+character_anim.default.body.turn_speed (Character anim Default Body Turn speed) float 0.2
+[**character_anim.default.head]
+[***character_anim.default.head.pitch]
+# Head pitch (max)
+character_anim.default.head.pitch.max (Character anim Default Head Pitch Max) float 80
+# Head pitch (min)
+character_anim.default.head.pitch.min (Character anim Default Head Pitch Min) float -60
+[***character_anim.default.head.yaw]
+# Head yaw (max)
+character_anim.default.head.yaw.max (Character anim Default Head Yaw Max) float 90
+# Head yaw (min)
+character_anim.default.head.yaw.min (Character anim Default Head Yaw Min) float -90
+[***character_anim.default.head.yaw_restricted]
+# Head yaw restricted (max)
+character_anim.default.head.yaw_restricted.max (Character anim Default Head Yaw restricted Max) float 45
+# Head yaw restricted (min)
+character_anim.default.head.yaw_restricted.min (Character anim Default Head Yaw restricted Min) float 0
+# Head yaw restriction
+character_anim.default.head.yaw_restriction (Character anim Default Head Yaw restriction) float 60
+[*character_anim.models]
