@@ -195,14 +195,8 @@ local function handle_player_animations(dtime, player)
 	-- HACK assumes that Body is root & parent bone of Head, only takes rotation around X-axis into consideration
 	Head.x = normalize_angle(Head.x + Body.x)
 	if interacting then Arm_Right.x = normalize_angle(Arm_Right.x + Body.x) end
-
-	Head.x = clamp(Head.x, conf.head.pitch)
-	Head.y = clamp(Head.y, conf.head.yaw)
-	if math.abs(Head.y) > conf.head.yaw_restriction then
-		Head.x = clamp(Head.x, conf.head.yaw_restricted)
-	end
-	Arm_Right.y = clamp(Arm_Right.y, conf.arm_right.yaw)
 	
+	local clamphead = true
 	if spriteguns and spriteguns.is_wielding_gun(name) then
 		local tempvertlook = math.rad(look_vertical)
 		local Rightval = vector.multiply(vector.dir_to_rotation(vector.rotate({x=0,y=0,z=1}, {x=tempvertlook,y=0,z=0})), 180/math.pi)
@@ -213,6 +207,30 @@ local function handle_player_animations(dtime, player)
 		Leftval.x = Leftval.x + 85
 		bone_positions.Arm_Left.euler_rotation = Leftval
 		bone_positions.Arm_Left.position.x = bone_positions.Arm_Left.position.x - .9
+		if attach_parent then
+			clamphead = false
+			local parent_rotation = attach_parent:get_rotation()
+			local total_rotation = normalize_rotation(vector.add(attach_rotation, vector.apply(parent_rotation, math.deg)))
+			local function rotate_relative(euler_rotation)
+				-- HACK +180
+				euler_rotation.y = euler_rotation.y + look_horizontal + 180
+				local new_rotation = normalize_rotation(vector.add(euler_rotation, total_rotation))
+				euler_rotation.x, euler_rotation.y, euler_rotation.z = new_rotation.x, new_rotation.y, new_rotation.z
+			end
+			rotate_relative(bone_positions.Body.euler_rotation)
+			bone_positions.Head.euler_rotation = vector.subtract(bone_positions.Head.euler_rotation, bone_positions.Body.euler_rotation)
+			bone_positions.Leg_Left.euler_rotation = vector.subtract(bone_positions.Leg_Left.euler_rotation, bone_positions.Body.euler_rotation)
+			bone_positions.Leg_Right.euler_rotation = vector.subtract(bone_positions.Leg_Right.euler_rotation, bone_positions.Body.euler_rotation)
+		end
+	end
+	
+	if clamphead then
+		Head.x = clamp(Head.x, conf.head.pitch)
+		Head.y = clamp(Head.y, conf.head.yaw)
+		if math.abs(Head.y) > conf.head.yaw_restriction then
+			Head.x = clamp(Head.x, conf.head.yaw_restricted)
+		end
+		Arm_Right.y = clamp(Arm_Right.y, conf.arm_right.yaw)
 	end
 	
 	for bone, values in pairs(bone_positions) do
