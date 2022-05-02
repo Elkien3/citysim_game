@@ -52,7 +52,7 @@ minetest.register_node("default_tweaks:protect", {
 	groups = {dig_immediate = 2, unbreakable = 1},
 	is_ground_content = false,
 	paramtype = "light",
-	light_source = 4,
+	light_source = 3,
 
 	node_box = {
 		type = "fixed",
