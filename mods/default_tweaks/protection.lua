@@ -39,6 +39,108 @@ minetest.register_privilege("griefing", {
     give_to_singleplayer = false
 })
 
+local tempprotect = {}
+minetest.register_node("default_tweaks:protect", {
+	description = "Protection Block, works against all players.",
+	drawtype = "nodebox",
+	tiles = {
+		"default_stone.png^protector_overlay.png",
+		"default_stone.png^protector_overlay.png",
+		"default_stone.png^protector_overlay.png^protector_logo.png"
+	},
+	sounds = default.node_sound_stone_defaults(),
+	groups = {dig_immediate = 2, unbreakable = 1},
+	is_ground_content = false,
+	paramtype = "light",
+	light_source = 4,
+
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5 ,-0.5, -0.5, 0.5, 0.5, 0.5}
+		}
+	},
+	on_construct = function(pos)
+		tempprotect[minetest.pos_to_string(pos)] = true
+		local meta = minetest.get_meta(pos)
+		meta:set_int("exp", 15)
+		meta:set_string("infotext", "Protection (expires in 15 minutes)")
+		local timer = minetest.get_node_timer(pos)
+		timer:start(60)
+	end,
+	
+	on_timer = function(pos, elapsed)
+		local meta = minetest.get_meta(pos)
+		local expire = meta:get_int("exp")
+		expire = expire - 1
+		if expire <= 0 then
+			minetest.dig_node(pos)
+			return false
+		end
+		meta:set_int("exp", expire)
+		meta:set_string("infotext", "Protection (expires in "..tostring(expire).." minutes)")
+		return true
+	end,
+
+	on_rightclick = function(pos, node, clicker, itemstack)
+		local meta = minetest.get_meta(pos)
+		meta:set_int("exp", 15)
+		meta:set_string("infotext", "Protection (expires in 15 minutes)")
+		local timer = minetest.get_node_timer(pos)
+		timer:start(60)
+	end,
+
+	on_punch = function(pos, node, puncher)
+		local meta = minetest.get_meta(pos)
+		meta:set_int("exp", 15)
+		meta:set_string("infotext", "Protection (expires in 15 minutes)")
+		local timer = minetest.get_node_timer(pos)
+		timer:start(60)
+	end,
+
+	can_dig = function(pos, player)
+		return true
+	end,
+	after_destruct = function(pos, oldnode)
+		tempprotect[minetest.pos_to_string(pos)] = nil
+	end
+})
+
+minetest.register_craft({
+	output = "default_tweaks:protect",
+	recipe = {
+		{"default:stone", "default:stone", "default:stone"},
+		{"default:stone", "default:gold_ingot", "default:stone"},
+		{"default:stone", "default:stone", "default:stone"}
+	}
+})
+
+minetest.register_lbm({
+	label = "Add Temp Protect",
+	name = "default_tweaks:protectadd",
+	nodenames = {"default_tweaks:protect"},
+	run_at_every_load = true,
+	action = function(pos, node)
+		local timer = minetest.get_node_timer(pos)
+		if not timer:is_started() then
+			timer:start(60)
+		end
+		tempprotect[minetest.pos_to_string(pos)] = true
+	end,
+})
+
+local function is_tempprotected(pos, range)
+	if not range then range = 16 end
+	for posstring, _ in pairs(tempprotect) do
+		local pos2 = minetest.string_to_pos(posstring)
+		local diff = vector.subtract(pos, pos2)
+		if diff.x <= range and diff.y <= range and diff.z <= range then
+			return true
+		end
+	end
+	return false
+end
+
 local old_is_protected = minetest.is_protected
 function minetest.is_protected(pos, name)
 	if not minetest.check_player_privs(name, {griefing=true}) then
@@ -55,7 +157,9 @@ function minetest.is_protected(pos, name)
 			if def.type == "node" then
 				nodename = stack:get_name()
 			else
-				return old_is_protected(pos, name)
+				if is_tempprotected(pos) then return true else
+					return old_is_protected(pos, name)
+				end
 			end
 		end
 	end
