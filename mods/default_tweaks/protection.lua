@@ -144,7 +144,9 @@ end
 local old_is_protected = minetest.is_protected
 function minetest.is_protected(pos, name)
 	if not minetest.check_player_privs(name, {griefing=true}) then
-		return old_is_protected(pos, name)
+		if is_tempprotected(pos) then return true else
+			return old_is_protected(pos, name)
+		end
 	end
 	local nodename = minetest.get_node(pos).name
 	local player = minetest.get_player_by_name(name)
