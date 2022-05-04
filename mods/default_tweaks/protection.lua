@@ -3,6 +3,9 @@ if core.is_protected(place_to, playername, true, def.name) then
 if core.is_protected(pos, diggername, false, node.name) then
 for place and dig respectively, or protected blocks not in exception list will only be diggable with drill vehicle
 --]]
+if minetest.settings:get_bool("default_tweaks.overwrite_item", false) then
+	dofile(minetest.get_modpath("default_tweaks").."/builtin-item.lua")--this will overwrite the default item.lua. copied from 5.5.0-dev
+end
 
 local list = {
 	"beds:bed_bottom", "beds:fancy_bed_bottom", "xdecor:baricade", "streets:roadwork_delineator_bottom", "streets:roadwork_delineator_light_bottom",
@@ -200,6 +203,7 @@ minetest.register_on_mods_loaded(function()
 	["technic:steel_strut_with_insulator_clip"] = 60, ["technic:granite"] = 60, ["streets:concrete_wall"] = 60,
 	["streets:roadwork_traffic_barrier"] = 60, ["streets:bigpole"] = 30, ["streets:bigpole_corner"] = 30, ["streets:bigpole_cross"] = 30,
 	["streets:bigpole_edge"] = 30, ["streets:bigpole_short"] = 30, ["streets:bigpole_tjunction"] = 30}
+	
 	local strongdoorlist = {["doors:door_steel"] = 60*1,["doors:trapdoor_steel"] = 60*1, ["xpanes:door_steel_bar"] = 60*1,
 	["xpanes:trapdoor_steel_bar"] = 60*1, ["doors:prison_door"] = 60*1, ["doors:rusty_prison_door"] = 60*1}
 	for nodename, strength in pairs(strongblocklist) do
