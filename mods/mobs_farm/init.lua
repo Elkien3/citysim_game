@@ -59,6 +59,16 @@ minetest.register_node("mobs_farm:bones", {
 	sunlight_propagates = true,
 	walkable = true,
 	groups = {dig_immediate = 2, attached_node = 1, temp_pass = 1, falling_node = 1},
+	can_dig = function(pos, player)
+		local meta = minetest.get_meta(pos)
+		local name
+		if player then name = player:get_player_name() end
+		if meta:get_string("infotext") == "" then
+			return true
+		else
+			return minetest.is_protected(pos, name)
+		end
+	end,
 	--sounds = default.node_sound_gravel_defaults(),
 })
 
