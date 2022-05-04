@@ -381,7 +381,7 @@ function car_formspec(clickername, car, keyinvname, def)
 	if def.lights then
 		form = form.."button[0.25,0.25;1.5,1;headlights;Headlights]" .. "button[2,0.25;1.5,1;flashers;Flashers]"
 	end
-	if def.drill then
+	if def.drill and minetest.check_player_privs(clickername, {griefing=true}) then
 		form = form.."dropdown[0.25,0.25;2,1;drillselect;Drill Off,Drill Front,Drill High,Drill Above,Drill Below;"..(car.drill or 1)..";true]"
 	end
     if def.siren then
@@ -674,6 +674,57 @@ local function register_lightentity(carname)
 	})
 end
 
+local function drill_remove_node(pos, node)
+	diggername = "cars:drill"
+	local log = minetest.log
+	local def = core.registered_nodes[node.name]
+	-- Copy pos because the callback could modify it
+	if def and not def.diggable then
+		log("info", diggername .. " tried to dig "
+			.. node.name .. " which is not diggable "
+			.. core.pos_to_string(pos))
+		return false
+	end
+
+	if core.is_protected(pos, diggername, false, node.name) then
+		log("action", diggername
+				.. " tried to dig " .. node.name
+				.. " at protected position "
+				.. core.pos_to_string(pos))
+		core.record_protection_violation(pos, diggername)
+		return false
+	end
+
+	log('action', diggername .. " digs "
+		.. node.name .. " at " .. core.pos_to_string(pos))
+
+	local drops = core.get_node_drops(node, "")
+	
+	local inv = minetest.get_inventory({type="node", pos=pos})
+	if inv then
+		for listname, listtbl in pairs(inv:get_lists()) do
+			for i = 1, inv:get_size(listname) do
+				table.insert(drops, inv:get_stack(listname, i))
+			end
+		end
+	end
+
+	-- Handle drops
+	core.handle_node_drops(pos, drops)
+
+	-- Remove node and update
+	core.remove_node(pos)
+
+	-- Play sound if it was done by a player
+	if diggername ~= "" and def and def.sounds and def.sounds.dug then
+		core.sound_play(def.sounds.dug, {
+			pos = pos,
+		}, true)
+	end
+
+	return true
+end
+
 holdingtowlines = {}
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -762,7 +813,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					else
 						car.trunklock = nil
 					end
-				elseif car.ignition and fields.drillselect then
+				elseif car.ignition and fields.drillselect and minetest.check_player_privs(name, {griefing=true}) then
 					car.drill = tonumber(fields.drillselect)
 					if car.drill == 1 then
 						car.drill = nil
@@ -1282,17 +1333,19 @@ local function car_step(self, dtime, moveresult)
 				minetest.after(5, function() sparky:hud_remove(marker) end, sparky, marker)--]]
 				
 				local drillpos = vector.round(vector.add(pos, drilloffset))
-				local drillnode = minetest.get_node(drillpos).name
-				if drillnode ~= "air" then
+				local drillnode = minetest.get_node(drillpos)
+				if drillnode.name ~= "air" then
 					local posstring = minetest.pos_to_string(pos, 0)
-					if not drilledblocks[posstring] or drilledblocks[posstring].name ~= drillnode then
-						drilledblocks[posstring] = {name = drillnode, health = 10}--todo give different blocks different health
+					if not drilledblocks[posstring] or drilledblocks[posstring].name ~= drillnode.name then
+						local health = minetest.get_node_group(drillnode.name, "strong")
+						if health == 0 then health = 3 end--default 3 seconds to destroy non strong node
+						drilledblocks[posstring] = {name = drillnode.name, health = health}
 					end
 					drilledblocks[posstring].last = os.time()
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
 					if drilledblocks[posstring].health <= 0 then
 						drilledblocks[posstring] = nil
-						minetest.dig_node(drillpos)--todo some more logic here, probably have to use remove node
+						drill_remove_node(drillpos, drillnode)
 					end
 				end
 			end
