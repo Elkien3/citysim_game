@@ -91,7 +91,7 @@ function get_chest_formspec(pos)
 	return formspec
 end
 		
-local newrightclick = function(pos, node, clicker, itemstack, pointed_thing)
+local newchestrightclick = function(pos, node, clicker, itemstack, pointed_thing)
 	local wield = clicker:get_wielded_item():get_name()
 	local def = minetest.registered_tools[wield]
 	if not default.can_interact_with_node(clicker, pos)
@@ -114,8 +114,8 @@ local newrightclick = function(pos, node, clicker, itemstack, pointed_thing)
 	default.chest.open_chests[clicker:get_player_name()] = { pos = pos,
 			sound = sound_close, swap = name }
 end
-minetest.override_item("default:chest_locked", {on_rightclick = newrightclick})
-minetest.override_item("default:chest_locked_open", {on_rightclick = newrightclick})
+minetest.override_item("default:chest_locked", {on_rightclick = newchestrightclick})
+minetest.override_item("default:chest_locked_open", {on_rightclick = newchestrightclick})
 
 --locked node definitions
 

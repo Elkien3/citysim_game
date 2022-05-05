@@ -53,7 +53,10 @@ minetest.register_node("inbox:empty", {
   end,
   on_rightclick = function(pos, node, clicker, itemstack)
     local player = clicker:get_player_name()
-    if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
+    local wield = clicker:get_wielded_item():get_name()
+	local def = minetest.registered_tools[wield]
+	if (default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1)
+	or (def and def.tool_capabilities and def.tool_capabilities.groupcaps and def.tool_capabilities.groupcaps.locked) then
       minetest.show_formspec(
         player,
         "default:chest_locked",
@@ -136,7 +139,10 @@ minetest.register_node("inbox:full", {
   end,
   on_rightclick = function(pos, node, clicker, itemstack)
     local player = clicker:get_player_name()
-    if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
+    local wield = clicker:get_wielded_item():get_name()
+	local def = minetest.registered_tools[wield]
+	if (default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1)
+	or (def and def.tool_capabilities and def.tool_capabilities.groupcaps and def.tool_capabilities.groupcaps.locked) then
       minetest.show_formspec(
         player,
         "default:chest_locked",
