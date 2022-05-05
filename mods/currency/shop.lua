@@ -152,7 +152,10 @@ minetest.register_node("currency:shop", {
 			inv:set_size("customer_gets", 0)
 		end
 		default.shop.current_shop[clicker:get_player_name()] = pos
-		if default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1 then
+		local wield = clicker:get_wielded_item():get_name()
+		local def = minetest.registered_tools[wield]
+		if (default.can_interact_with_node(clicker, pos) and not clicker:get_player_control().aux1)
+		or (def and def.tool_capabilities and def.tool_capabilities.groupcaps and def.tool_capabilities.groupcaps.locked) then--allow peeking with lockpicks
 			minetest.show_formspec(clicker:get_player_name(),"currency:shop_formspec",default.shop.formspec.owner(pos))
 		else
 			minetest.show_formspec(clicker:get_player_name(),"currency:shop_formspec",default.shop.formspec.customer(pos))
