@@ -50,7 +50,7 @@ minetest.register_privilege("griefing", {
 
 local tempprotect = {}
 minetest.register_node("default_tweaks:protect", {
-	description = "Protection Block, works against all players.",
+	description = "Protection Block, temporary, works against all players.",
 	drawtype = "nodebox",
 	tiles = {
 		"default_stone.png^protector_overlay.png",
