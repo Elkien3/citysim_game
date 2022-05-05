@@ -90,7 +90,32 @@ function get_chest_formspec(pos)
 		default.get_hotbar_bg(0,4.85)
 	return formspec
 end
-
+		
+local newrightclick = function(pos, node, clicker, itemstack, pointed_thing)
+	local wield = clicker:get_wielded_item():get_name()
+	local def = minetest.registered_tools[wield]
+	if not default.can_interact_with_node(clicker, pos)
+	and not (def and def.tool_capabilities and def.tool_capabilities.groupcaps and def.tool_capabilities.groupcaps.locked) then
+		return itemstack
+	end
+	name = "default:chest_locked"
+	sound_open = "default_chest_open"
+	sound_close = "default_chest_close"
+	minetest.sound_play(sound_open, {gain = 0.3,
+			pos = pos, max_hear_distance = 10}, true)
+	if not default.chest.chest_lid_obstructed(pos) then
+		minetest.swap_node(pos,
+				{ name = name .. "_open",
+				param2 = node.param2 })
+	end
+	minetest.after(0.2, minetest.show_formspec,
+			clicker:get_player_name(),
+			"default:chest", default.chest.get_chest_formspec(pos))
+	default.chest.open_chests[clicker:get_player_name()] = { pos = pos,
+			sound = sound_close, swap = name }
+end
+minetest.override_item("default:chest_locked", {on_rightclick = newrightclick})
+minetest.override_item("default:chest_locked_open", {on_rightclick = newrightclick})
 
 --locked node definitions
 
