@@ -437,7 +437,7 @@ local metal_items_raw = {
 	"default:iron_lump",
 	"default:stone_with_iron",
 	"technic:wrought_iron_dust",
-	"default_steelblock",
+	"default:steelblock",
 	"stairs:stair_steelblock",
 	"stairs:slab_steelblock",
 	"technic:carbon_steel_ingot",
@@ -567,10 +567,10 @@ end
 
 local function startmetaldetect(stack, player, pointedThing)
 	local obj = pointedThing.ref
+	local name = player:get_player_name()
 	if obj and pointedThing.type == "object" then
 		local pName = obj:get_player_name()
 		if pName ~= "" then
-			local name = player:get_player_name()
 			minetest.chat_send_player(pName, name.." is checking you for metal, move to cancel.")
 			minetest.chat_send_player(name, "You are checking "..pName.." for metal.")
 			local oldpos = obj:getpos()
@@ -579,13 +579,45 @@ local function startmetaldetect(stack, player, pointedThing)
 			end
 			minetest.after(1, finishmetaldetect, player, pName, oldpos)
 		end
+	elseif pointedThing.type == "node" then--searching for nodes that are detectable or inventory nodes with detectable metals in them
+		if minetest.find_node_near(pointedThing.above, 5, "group:detectable_metal", true) then
+			minetest.chat_send_player(name, "metal was detected nearby.")
+			minetest.sound_play("metal_detector_detected",{
+				object = player,
+			})
+			return
+		end
+		local nodes = minetest.find_nodes_with_meta(vector.subtract(pointedThing.above, 6), vector.add(pointedThing.above, 6))
+		for i, nodepos in pairs(nodes) do
+			if vector.distance(nodepos, pointedThing.above) <= 5 then
+				local inv = minetest.get_inventory({type="node", pos=nodepos})
+				if inv then
+					for listname, listtbl in pairs(inv:get_lists()) do
+						for i2 = 1, inv:get_size(listname) do
+							local stack = inv:get_stack(listname, i2)
+							if minetest.get_item_group(stack:get_name(), "detectable_metal") > 0 then
+								minetest.chat_send_player(name, "metal was detected nearby.")
+								minetest.sound_play("metal_detector_detected",{
+									object = player,
+								})
+								return
+							end
+						end
+					end
+				end
+			end
+		end
+		minetest.chat_send_player(name, "No metal was detected nearby.")
+		minetest.sound_play("metal_detector_not_detected",{
+			object = player,
+		})
 	end
 end
 
 minetest.register_tool('frisk:handheld_metal_detector', {
 	description = i18n('Handeld Metal Detector'),
 	inventory_image = 'frisk_screen.png',
-	range = 1,
+	range = 1.5,
 	on_use = startmetaldetect,
 })
 
