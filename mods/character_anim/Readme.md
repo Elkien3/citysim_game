@@ -4,7 +4,7 @@ Animates the character. Resembles [`playeranim`](https://github.com/minetest-mod
 
 ## About
 
-Depends on [`modlib`](https://github.com/appgurueu/modlib). Code written by Lars Mueller aka LMD or appguru(eu) and licensed under the MIT license. Media (player model) was created by [MTG contributors](https://github.com/minetest/minetest_game/blob/master/mods/player_api/README.txt) (MirceaKitsune, stujones11 and An0n3m0us) and is licensed under the CC BY-SA 3.0 license, as must be its derivatives (`skinsdb` and `3d_armor` variants).
+Depends on [`modlib`](https://github.com/appgurueu/modlib). Code written by Lars Mueller aka LMD or appguru(eu) and licensed under the MIT license.
 
 ## Screenshot
 
@@ -20,6 +20,7 @@ Depends on [`modlib`](https://github.com/appgurueu/modlib). Code written by Lars
 ## Features
 
 * Animates head, right arm & body
+* Also provides support for arbitrary player models, as long as `Head`, `Arm_Right` & `Body` bones exist
 * Advantages over `playeranim`:
   * Extracts exact animations and bone positions from glTF models
   * Also animates attached players (with restrictions on angles)
@@ -27,16 +28,6 @@ Depends on [`modlib`](https://github.com/appgurueu/modlib). Code written by Lars
   * Provides compatibility for Minetest 5.2.0 and lower
   * Head angles are clamped, head can tilt sideways
   * Animates right arm & body as well
-
-## Instructions
-
-0. If you want to use a custom model, install [`binarystream`](https://luarocks.org/modules/Tarik02/binarystream) from LuaRocks:
-   1. `sudo luarocks install binarystream` on many UNIX-systems
-   2. `sudo luarocks install luabitop` if you're not using LuaJIT
-   3. Disable mod security. **Make sure you trust all your mods! Ideally import models with all other mods disabled.**
-   4. Export the model as `glTF` and save it under `models/modelname.extension.gltf`
-   5. Do `/ca_import modelname.extension`
-1. Install and use `character_anim` like any other mod
 
 ## Configuration
 
@@ -51,8 +42,8 @@ Right arm spin radius
 
 * Type: number
 * Default: `10`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 ##### `speed`
 
@@ -60,8 +51,8 @@ Right arm spin speed
 
 * Type: number
 * Default: `1000`
-* &gt; 0
-* &lt;= 10000
+* &gt; `0`
+* &lt;= `10000`
 
 ##### `yaw`
 
@@ -71,8 +62,8 @@ Right arm yaw (max)
 
 * Type: number
 * Default: `160`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 ###### `min`
 
@@ -80,8 +71,8 @@ Right arm yaw (min)
 
 * Type: number
 * Default: `-30`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 
 
@@ -93,8 +84,8 @@ Body turn speed
 
 * Type: number
 * Default: `0.2`
-* &gt; 0
-* &lt;= 1000
+* &gt; `0`
+* &lt;= `1000`
 
 
 #### `head`
@@ -107,8 +98,8 @@ Head pitch (max)
 
 * Type: number
 * Default: `80`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 ###### `min`
 
@@ -116,8 +107,8 @@ Head pitch (min)
 
 * Type: number
 * Default: `-60`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 
 ##### `yaw`
@@ -128,8 +119,8 @@ Head yaw (max)
 
 * Type: number
 * Default: `90`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 ###### `min`
 
@@ -137,8 +128,8 @@ Head yaw (min)
 
 * Type: number
 * Default: `-90`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 
 ##### `yaw_restricted`
@@ -149,8 +140,8 @@ Head yaw restricted (max)
 
 * Type: number
 * Default: `45`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 ###### `min`
 
@@ -158,8 +149,8 @@ Head yaw restricted (min)
 
 * Type: number
 * Default: `0`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 
 ##### `yaw_restriction`
@@ -168,8 +159,8 @@ Head yaw restriction
 
 * Type: number
 * Default: `60`
-* &gt;= -180
-* &lt;= 180
+* &gt;= `-180`
+* &lt;= `180`
 
 
 
