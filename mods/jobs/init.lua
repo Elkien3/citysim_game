@@ -157,6 +157,7 @@ function jobs.remove(name, jobname)
 	end
 	money3.transfer(":"..jobname, name, money3.get(":"..jobname))
 	jobs.list[jobname] = nil
+	jobs.purge_unread()
 	return true, "Job '"..jobname.."' succesfully removed."
 end
 jobs.commands["remove"] = function(name, param)

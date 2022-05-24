@@ -61,7 +61,7 @@ local function msg_perm(name, jobname, channel, sending)
 		rank = 0
 	end
 	if channel == "announcements" and (not sending or rank > 2) then return true end
-	if channel == "supervisor" and not rank > 2 then return false end
+	if channel == "supervisor" and rank < 3 then return false end
 	if rank == 0 then return false end
 	return true
 end
@@ -74,6 +74,72 @@ local function get_msg_sender(msg)
 end
 
 local form_table = {}
+local unread_msg = minetest.deserialize(jobs.storage:get_string("unread_msg")) or {}
+
+function jobs.purge_unread()
+	for name, tbl in pairs(unread_msg) do
+		for jobname, tbl2 in pairs(tbl) do
+			if not jobs.list[jobname] or (not jobs.players[name] or not jobs.players[name][jobname]) then--if job dosnt exist or player is not in job
+				unread_msg[name][jobname] = nil
+			end
+		end
+		local isempty = true
+		for jobname, tbl2 in pairs(tbl) do
+			if tbl2 == true then isempty = false else
+				for channel, tbl3 in pairs(tbl2) do
+					isempty = false
+				end
+			end
+			if isempty == false then break end
+		end
+		if isempty then
+			unread_msg[name] = nil
+		end
+	end
+	jobs.storage:set_string("unread_msg", minetest.serialize(unread_msg))
+end
+
+jobs.purge_unread()--do some culling every startup
+
+local function add_unread(name, jobname, channel)
+	if not unread_msg[name] then unread_msg[name] = {} end
+	if not unread_msg[name][jobname] then unread_msg[name][jobname] = {} end
+	if not unread_msg[name][jobname][channel] and unread_msg[name][jobname] ~= true then
+		unread_msg[name][jobname][channel] = true
+		local isfull = 0
+		for channel2, val in pairs(unread_msg[name][jobname]) do
+			isfull = isfull + 1
+		end
+		if isfull == 4 then
+			unread_msg[name][jobname] = true--set whole table to true if all channels have unread messages.
+		end
+		jobs.storage:set_string("unread_msg", minetest.serialize(unread_msg))
+	end
+end
+
+local function remove_unread(name, jobname, channel)
+	if not unread_msg[name] then return end
+	if not unread_msg[name][jobname] then return end
+	if unread_msg[name][jobname] == true then--if all channels in job are unread
+		unread_msg[name][jobname] = {announcements = true, external = true, internal = true, supervisor = true}
+	end
+	unread_msg[name][jobname][channel] = nil
+	local isempty = true
+	for jobname, tbl2 in pairs(unread_msg[name]) do
+		local jobempty = true
+		for channel, tbl3 in pairs(tbl2) do
+			isempty = false
+			jobempty = false
+		end
+		if jobempty then
+			unread_msg[name][jobname] = nil
+		end
+	end
+	if isempty then
+		unread_msg[name] = nil
+	end
+	jobs.storage:set_string("unread_msg", minetest.serialize(unread_msg))
+end
 
 local function remove_message(jobname, channel, msgid)
 	local msgtbl = jobs.list[jobname].messages[channel]
@@ -117,8 +183,10 @@ function jobs.new_message(name, msg, jobname, channel)
 	for name2, rank2 in pairs(jobs.list[jobname].employees) do
 		if minetest.get_player_by_name(name2) and name2 ~= name then
 			minetest.chat_send_player(name2, minetest.colorize("#ff9415", "<"..name.."> ("..jobname..":"..channel..") "..msg))
+		elseif name2 ~= name then
+			add_unread(name2, jobname, channel)
 		end
-	end--todo keep track of unread messages
+	end
 	jobs.save()
 end
 
@@ -132,6 +200,25 @@ local function get_rank_num(name, jobname)
 	end
 	return rank
 end
+
+minetest.register_on_joinplayer(function(player, _)
+	local name = player:get_player_name()
+	if not unread_msg[name] then return end
+	local sendmsg = false
+	for jobname, tbl in pairs(unread_msg[name]) do
+		if tbl == true then sendmsg = true break end
+		for channelname, tbl2 in pairs(tbl) do
+			if msg_perm(name, jobname, channelname, false) then--only notify the player if they have privs to see that channel
+				sendmsg = true
+				break
+			end
+		end
+		if sendmsg then break end
+	end
+	if sendmsg then
+		minetest.chat_send_player(name, "You have unread job messages, do /jobs to see them.")
+	end
+end)
 
 --form_table["Elkien"] = {page = "announcements", message = messageid, job = jobname}
 function job_message_form(name)
@@ -148,7 +235,23 @@ function job_message_form(name)
 	if jobtbl then
 		for jobname, rank in pairs(jobtbl) do
 			if joblist_item_str ~= "" then joblist_item_str = joblist_item_str.."," end
-			joblist_item_str = joblist_item_str .. minetest.formspec_escape(jobname)
+			local has_unread = false
+			if unread_msg[name] and unread_msg[name][jobname] then
+				if unread_msg[name][jobname] == true then has_unread = true else
+					for channelname, val in pairs(unread_msg[name][jobname]) do
+						if msg_perm(name, jobname, channelname, false) then
+							has_unread = true
+							break
+						end
+						if has_unread then break end
+					end
+				end
+			end
+			if has_unread then
+				joblist_item_str = joblist_item_str .. minetest.formspec_escape(jobname.."*")
+			else
+				joblist_item_str = joblist_item_str .. minetest.formspec_escape(jobname)
+			end
 			if not tbl.job then tbl.job = jobname end
 			if tbl.job == jobname then
 				joblist_selected = joblist_num
@@ -177,7 +280,15 @@ function job_message_form(name)
 	local rank = get_rank_num(name, tbl.job)
 	
 	local buttonlbl = {announcements = "Announcements", external = "External", internal = "Internal", supervisor = "Supervisor"}
+	if unread_msg[name] and unread_msg[name][tbl.job] then
+		for buttonname, label in pairs(buttonlbl) do
+			if unread_msg[name][tbl.job] == true or unread_msg[name][tbl.job][buttonname] == true then
+				buttonlbl[buttonname] = label.."*"
+			end
+		end
+	end
 	buttonlbl[tbl.page] = minetest.formspec_escape("["..buttonlbl[tbl.page].."]")
+	remove_unread(name, tbl.job, tbl.page)
 	
     local form = "" ..
     "size[15,9]" ..
@@ -202,7 +313,11 @@ function job_message_form(name)
 			if sender == name or (rank > 2 and rank > senderrank) then
 				form = form.."button[3,7.7;2,1;delete;Delete Message]"
 				if sender ~= name then
-					form = form.."button[5,7.7;2,1;mute;Mute Player]"
+					if jobs.list[tbl.job].muted and jobs.list[tbl.job].muted[sender] then
+						form = form.."button[5,7.7;2,1;mute;Unmute Player]"
+					else
+						form = form.."button[5,7.7;2,1;mute;Mute Player]"
+					end
 				end
 			end
 		end
@@ -227,7 +342,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not name then return true end
 	local tbl = form_table[name]
 	if not tbl then return true end
-	
+	if fields.joblist then
+		fields.joblist = string.gsub(fields.joblist, "*", "")
+	end
 	--minetest.chat_send_all(dump(fields))
 
 	local rank = get_rank_num(name, tbl.job)
@@ -250,7 +367,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				if not jobs.list[tbl.job].muted then
 					jobs.list[tbl.job].muted = {}
 				end
-				jobs.list[tbl.job].muted[name2] = true
+				if jobs.list[tbl.job].muted and jobs.list[tbl.job].muted[name2] then
+					jobs.list[tbl.job].muted[name2] = nil
+					local isempty = true
+					for mutename, val in pairs(jobs.list[tbl.job].muted) do
+						if mutename then
+							isempty = false
+							break
+						end
+					end
+					if isempty then
+						jobs.list[tbl.job].muted = nil
+					end
+				else
+					jobs.list[tbl.job].muted[name2] = true
+				end
 			elseif fields.delete then
 				remove_message(tbl.job, tbl.page, tbl.message)
 			end
