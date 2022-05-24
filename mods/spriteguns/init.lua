@@ -603,8 +603,8 @@ minetest.register_globalstep(function(dtime)
 		--have gun move around when idle
 		if not tbl.t2 then tbl.t2 = 1 end
 		local wagspeed = .5
-		if tbl.wag then
-			wagspeed = wagspeed*tbl.wag
+		if wagtbl[name] then
+			wagspeed = wagspeed+wagtbl[name]
 		end
 		if hb and hb.get_hudtable("sprint") then--if sprinting with hudbars is enabled use it to decide if wagspeed should be higher
 			local state = hb.get_hudtable("sprint").hudstate[name]
@@ -959,9 +959,10 @@ function spriteguns.register_magazine(magazine, ammunition, size)
 	end)
 end
 
+local wagtbl = {}
 function spriteguns.set_wag(name, value)
-	if not name or not gun_huds[name] then return end
-	gun_huds[name].wag = value
+	if not name then return end
+	wagtbl[name] = value
 end
 
 local mp = minetest.get_modpath("spriteguns")

@@ -222,11 +222,11 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 		end
 		return finalval
 	elseif effect == "gunwag" then
-		finalval = 1
+		finalval = 0
 		for i, val in pairs(effects[effect]) do
-			finalval = finalval*(val/1)
+			finalval = finalval+val
 		end
-		if finalval == 1 then finalval = nil end
+		if finalval == 0 then finalval = nil end
 		if apply then
 			spriteguns.set_wag(name, finalval)
 		end
