@@ -66,7 +66,8 @@ minetest.register_chatcommand("jobs", {
         interact = true,
     },
     func = function(name, param)
-		if not param or param == "" then minetest.show_formspec(name, "jobs_form_main", jobs.form.main) return end--return false, "No input." end
+		--if not param or param == "" then minetest.show_formspec(name, "jobs_form_main", jobs.form.main) return end--return false, "No input." end
+		if not param or param == "" then minetest.show_formspec(name, "jobs_gui", job_message_form(name)) return end--return false, "No input." end
         param = jobs.split(param)
 		if not param[1] then return false, "No input." end
 		if not jobs.commands[param[1]] then return false, "'"..param[1].."' is not a valid command." end
