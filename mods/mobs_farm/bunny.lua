@@ -101,7 +101,11 @@ stepheight = 0.6,
 		-- Monty Python tribute
 		local item = clicker:get_wielded_item()
 
-		if item:get_name() == "mobs:lava_orb" then
+		local name = clicker:get_player_name()
+		if self.owner and name and self.owner == name and clicker:get_player_control().sneak then
+				minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]field_close_on_enter[changeowner;false]")
+				mobs_farm.form[name] = self
+		elseif item:get_name() == "mobs:lava_orb" then
 
 			if not mobs.is_creative(clicker:get_player_name()) then
 				item:take_item()

@@ -109,7 +109,11 @@ mobs:register_mob("mobs_farm:kitten", {
 		--if mobs:capture_mob(self, clicker, 50, 50, 90, false, nil) then return end
 
 		-- by right-clicking owner can switch between staying and walking
-		if self.owner and self.owner == clicker:get_player_name() then
+		local name = clicker:get_player_name()
+		if self.owner and name and self.owner == name and clicker:get_player_control().sneak then
+				minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]field_close_on_enter[changeowner;false]")
+				mobs_farm.form[name] = self
+		elseif self.owner and self.owner == clicker:get_player_name() then
 
 			if self.order ~= "stand" then
 				self.order = "stand"

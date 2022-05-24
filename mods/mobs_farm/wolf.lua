@@ -262,8 +262,11 @@ dog.on_rightclick = function(self, clicker)
 
 	--if mobs:protect(self, clicker) then return end
 	--if item:get_name() ~= "" and mobs:capture_mob(self, clicker, 0, 2, 80, false, nil) then return end
-	
-	if false and item:get_name() == "mobs:meat_raw" then
+	local name = clicker:get_player_name()
+	if self.owner and name and self.owner == name and clicker:get_player_control().sneak then
+			minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]field_close_on_enter[changeowner;false]")
+			mobs_farm.form[name] = self
+	elseif false and item:get_name() == "mobs:meat_raw" then
 		-- Feed to increase health
 		local hp = self.health
 		local hp_add = 0

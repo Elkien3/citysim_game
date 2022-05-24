@@ -129,10 +129,13 @@ mobs:register_mob("mobs_farm:cow", {
 		--if mobs:capture_mob(self, clicker, 0, 5, 60, false, nil) then return end
 
 		local tool = clicker:get_wielded_item()
-		local name = clicker:get_player_name()
 
 		-- milk cow with empty bucket
-		if tool:get_name() == "bucket:bucket_empty" then
+		local name = clicker:get_player_name()
+		if self.owner and name and self.owner == name and clicker:get_player_control().sneak then
+				minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]field_close_on_enter[changeowner;false]")
+				mobs_farm.form[name] = self
+		elseif tool:get_name() == "bucket:bucket_empty" then
 
 			if self.gotten == true
 			or self.child == true then

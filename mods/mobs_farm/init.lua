@@ -247,5 +247,19 @@ if mobs.custom_spawn_animal then
 	dofile(path .. "spawn.lua")
 end
 
+mobs_farm.form = {}
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	--minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]")
+	if formname ~= "mobs_farm_changeowner" then return end
+	local name = player:get_player_name()
+	if not mobs_farm.form[name] then return true end
+	if fields.quit then mobs_farm.form[name] = nil return true end
+	if not mobs_farm.form[name].owner or mobs_farm.form[name].owner ~= name then return true end
+	if not minetest.player_exists(fields.changeowner) then return true end
+	mobs_farm.form[name].owner = fields.changeowner
+	mobs_farm.form[name] = nil
+	minetest.close_formspec(name, "mobs_farm_changeowner")
+end)
+
 
 print (S("[MOD] Mobs Redo Animals loaded"))

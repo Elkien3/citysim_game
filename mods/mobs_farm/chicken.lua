@@ -115,7 +115,12 @@ mobs:register_mob("mobs_farm:chicken", {
 		-- feed or tame
 		if not self.tamed and mobs:feed_tame(self, clicker, 4, false, true) then return	end
 		if mobs:feed_tame(self, clicker, 20, true, false) then return	end
-
+		
+		local name = clicker:get_player_name()
+		if self.owner and name and self.owner == name and clicker:get_player_control().sneak then
+				minetest.show_formspec(name, "mobs_farm_changeowner", "size[5,2]field[1,1;4,1;changeowner;Change Owner;]field_close_on_enter[changeowner;false]")
+				mobs_farm.form[name] = self
+		end
 		--if mobs:protect(self, clicker) then return end
 		--if mobs:capture_mob(self, clicker, 0, 5, 60, false, nil) then return end
 	end,
