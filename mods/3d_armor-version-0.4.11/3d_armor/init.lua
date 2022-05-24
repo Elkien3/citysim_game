@@ -405,7 +405,7 @@ if armor.config.water_protect == true or armor.config.fire_protect == true then
 						end
 						if hp > 0 and armor.def[name].fire < row[2] then
 							hp = hp - row[3] * armor.config.update_time
-							player:set_hp(hp)
+							player:set_hp(hp, {type = "node_damage", node = row[1]})
 							break
 						end
 					end

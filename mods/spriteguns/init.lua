@@ -390,7 +390,7 @@ local function fire(player, def, itemstack)
 				if distmulti > 1 then distmulti = 1 end
 				dmg = dmg*distmulti
 				if dmg < 0 then dmg = 0 end
-				target:punch(player, nil, {damage_groups={fleshy=dmg}})
+				target:punch(player, nil, {damage_groups={fleshy=dmg,sharp=1,medical_dir=1}}, dir)
 			end
 		end
 		for _,player2 in ipairs(minetest.get_connected_players()) do

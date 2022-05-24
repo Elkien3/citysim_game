@@ -260,7 +260,7 @@ local function apply_fractional_damage(o, dmg)
 	end
 	if dmg_int > 0 then
 		local new_hp = math.max(o:get_hp() - dmg_int, 0)
-		o:set_hp(new_hp)
+		o:set_hp(new_hp, {type = "radiation"})
 		return new_hp == 0
 	end
 	return false
