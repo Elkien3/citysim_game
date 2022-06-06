@@ -93,8 +93,8 @@ minetest.register_abm({
 	label = "Tunnel Filling",
 	nodenames = {"default_tweaks:tunnel_filler"},
 	neighbors = {"default:stone", "default:gravel", "default:sandstone", "default:silver_sandstone"},
-	interval = 10,
-	chance = 10,
+	interval = 3600,--every hour one in 1000 blocks are filled up, every block should fill up in abt 1 irl month
+	chance = 1000,
 	min_y = -32768,
 	max_y = fill_limit,
 	catch_up = true,
