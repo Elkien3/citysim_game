@@ -10,8 +10,22 @@ minetest.register_on_prejoinplayer(function(name, ip)
 		privs.interact = true
 		minetest.set_player_privs(name, privs)
 		oldplayers[name] = nil
-		storage:set_string("player", oldplayers)
+		storage:set_string("player", minetest.serialize(oldplayers))
 	end
+end)
+
+minetest.register_on_priv_grant(function(name, granter, priv)
+	if priv ~= "interact" then return end
+	if not granter then return end
+	interacthandler.player[name] = nil
+	storage:set_string("player", minetest.serialize(interacthandler.player))
+end)
+
+minetest.register_on_priv_revoke(function(name, revoker, priv)
+	if priv ~= "interact" then return end
+	if not revoker then return end
+	interacthandler.player[name] = nil
+	storage:set_string("player", minetest.serialize(interacthandler.player))
 end)
 
 interacthandler.revoke = function(name)
@@ -21,7 +35,6 @@ interacthandler.revoke = function(name)
 		interacthandler.player[name] = 0
 	end
 	interacthandler.player[name] = interacthandler.player[name] + 1
-	--minetest.chat_send_all(tostring(interacthandler.player[name]))
 	if interacthandler.player[name] > 0 then
 		privs.interact = nil
 		minetest.set_player_privs(name, privs)
@@ -33,7 +46,6 @@ interacthandler.grant = function(name, force)
 	local privs = minetest.get_player_privs(name)
 	if not privs or not interacthandler.player[name] then return end
 	interacthandler.player[name] = interacthandler.player[name] - 1
-	--minetest.chat_send_all(tostring(interacthandler.player[name]))
 	if interacthandler.player[name] <= 0 or force then
 		interacthandler.player[name] = nil
 		privs.interact = true

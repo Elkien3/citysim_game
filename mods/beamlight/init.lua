@@ -12,7 +12,7 @@ local function placelight(pos, name)
 		local timer = minetest.get_node_timer(pos)
 		timer:start(ticktime*3)
 		--minetest.chat_send_all("restarted")
-	elseif node.name == "air" or string.find(node.name, 'beamlight:light_') then
+	elseif node.name == "air" or string.find(node.name, 'beamlight:light_') or minetest.get_item_group(node.name, "light_replaceable") > 0 then
 		minetest.set_node(pos, {name=name})
 		--minetest.chat_send_all("placed")
 	end
