@@ -420,7 +420,14 @@ armor.get_player_skin = function(self, name)
 		return wardrobe.playerSkins[name]
 	elseif self.skin_mod == "charactercreation" then
 		local skindata = charactercreation_getskin(name)
-		local skin = "(skin"..skindata.skintype..".png^[multiply:#"..skindata.skincolor..")"
+		local skin
+		if spood_get_effect then
+			local speed, sideeffect = spood_get_effect(name)
+			local opacity = math.min(sideeffect*25, 255)
+			skin = "((skin"..skindata.skintype..".png^(spoodcharacteroverlay.png^[opacity:"..opacity.."))^[multiply:#"..skindata.skincolor..")"
+		else
+			skin = "(skin"..skindata.skintype..".png^[multiply:#"..skindata.skincolor..")"
+		end
 		local eyes = "(eye"..skindata.eyetype..".png)^(eye"..skindata.eyetype.."color.png^[multiply:#"..skindata.eyecolor..")"
 		--local face = "(face"..skindata.facetype..".png^[multiply:#"..skindata.facecolor..")"
 		--local hair = "(hair"..skindata.hairtype..".png^[multiply:#"..skindata.haircolor..")"

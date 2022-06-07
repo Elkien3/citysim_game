@@ -39,7 +39,14 @@ local function doskinny(player, skindata)
 	local sd = skindata
 	if not sd then sd = minetest.deserialize(mod_storage:get_string(name)) end
 	if not sd or sd == "" then sd = defaultskin end
-	local skin = "(skin"..sd.skintype..".png^[multiply:#"..sd.skincolor..")"
+	local skin
+	if spood_get_effect then
+		local speed, sideeffect = spood_get_effect(name)
+		local opacity = math.min(sideeffect*25, 255)--if you take 10 spood at once youll get full overlay
+		skin = "((skin"..sd.skintype..".png^(spoodcharacteroverlay.png^[opacity:"..opacity.."))^[multiply:#"..sd.skincolor..")"
+	else
+		skin = "(skin"..sd.skintype..".png^[multiply:#"..sd.skincolor..")"
+	end
 	local eyes = "(eye"..sd.eyetype..".png)^(eye"..sd.eyetype.."color.png^[multiply:#"..sd.eyecolor..")"
 	local face = "(face"..sd.facetype..".png^[multiply:#"..sd.facecolor..")"
 	local hair = "(hair"..sd.hairtype..".png^[multiply:#"..sd.haircolor..")"
@@ -61,6 +68,10 @@ end
 minetest.register_on_joinplayer(function(player)
 	minetest.after(0, doskinny, player)
 end)
+
+function charactercreation_update(player)
+	return doskinny(player)
+end
 
 local formspecplayer = {}
 
