@@ -78,7 +78,7 @@ local function spoodtick()
 		end
 	end
 	storage:set_string("data", minetest.serialize(spoodtbl))
-	minetest.after(1, spoodtick)
+	minetest.after(60, spoodtick)
 end
 spoodtick()
 
