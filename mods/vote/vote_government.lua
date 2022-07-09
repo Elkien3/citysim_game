@@ -817,7 +817,10 @@ minetest.register_chatcommand("laws", {
 local licenses = minetest.deserialize(storage:get_string("licenses")) or {}
 local playerlicenses = minetest.deserialize(storage:get_string("playerlicenses")) or {}
 local licenseperms = minetest.deserialize(storage:get_string("licenseperms")) or {}
-local is_job_string = jobs.is_job_string
+local is_job_string
+if jobs then
+	is_job_string = jobs.is_job_string
+end
 
 function get_player_licenses(name)
 	local tbl = {}
