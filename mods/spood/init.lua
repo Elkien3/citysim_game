@@ -4,20 +4,22 @@ local spoodtbl = minetest.deserialize(storage:get_string("data")) or {}
 local function calceffect(name, forced)
 	local speed = 1
 	local sideeffect = 0
-	for id, effect in pairs(spoodtbl[name]) do
-		if not forced then
-			effect.timer = effect.timer + 1
-		end
-		if effect.timer == 300 then--effects end after 300 minutes (5 hours) of playtime
-			spoodtbl[name][id] = nil
-			if next(spoodtbl[name]) == nil then
-			   return nil, nil
+	if spoodtbl[name] then
+		for id, effect in pairs(spoodtbl[name]) do
+			if not forced then
+				effect.timer = effect.timer + 1
 			end
-		else
-			speed = speed *(math.sin((.33*effect.timer)^.4)*((10*effect.mutli)/(effect.timer+100))+1)
-			--speed over time, effect goes down depending on how many timers are in the player's name
-			sideeffect = sideeffect + math.sin(.01*effect.timer)
-			--side effects over time, peaking halfway through, not caring about how many timers there are
+			if effect.timer == 300 then--effects end after 300 minutes (5 hours) of playtime
+				spoodtbl[name][id] = nil
+				if next(spoodtbl[name]) == nil then
+				   return nil, nil
+				end
+			else
+				speed = speed *(math.sin((.33*effect.timer)^.4)*((10*effect.mutli)/(effect.timer+100))+1)
+				--speed over time, effect goes down depending on how many timers are in the player's name
+				sideeffect = sideeffect + math.sin(.01*effect.timer)
+				--side effects over time, peaking halfway through, not caring about how many timers there are
+			end
 		end
 	end
 	return speed, sideeffect
