@@ -335,7 +335,7 @@ minetest.register_node(":farming:spood_8", table.copy(crop_def))
 
 -- add to registered_plants
 farming.registered_plants["spood:spood"] = {
-	crop = "spood:raw_spood",
+	crop = "farming:spood",
 	seed = "spood:seed_spood",
 	minlight = 15,
 	maxlight = 15,
