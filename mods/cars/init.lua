@@ -1,5 +1,6 @@
 cars = {}
 local go = false
+local storage = minetest.get_mod_storage()
 local DEBUG_WAYPOINT = false
 local DEBUG_TEXT = false
 local function get_sign(i)
@@ -50,6 +51,16 @@ local new_func = function(itemstack, user, pointed_thing)
 	return orig_func(itemstack, user, pointed_thing)
 end
 minetest.override_item("default:skeleton_key", {on_use = new_func})
+
+function cars.get_database()
+	return minetest.deserialize(storage:get_string("database")) or {}
+end
+function cars.set_database_entry(licenseplate, tbl)
+	if licenseplate == nil then return end
+	local db = cars.get_database()
+	db[licenseplate] = tbl
+	storage:set_string("database", minetest.serialize(db))
+end
 
 function cars.setlighttexture(obj, table, prefix)
 	if not obj or not table then return end
@@ -803,6 +814,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				if fields.changeowner and fields.owner then
 					if minetest.player_exists(fields.owner) or (jobs and jobs.is_job_string(fields.owner)) then
 						car.owner = fields.owner
+						local color = "Unpainted"
+						if car.color then
+							color = cars_dyes[car.color][3]
+						end
+						cars.set_database_entry(car.platenumber.text, {color = color, owner = car.owner, desc = def.description})
 						minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
 					else
 						minetest.chat_send_player(name, "Invalid owner name")
@@ -1537,6 +1553,16 @@ function cars_register_car(def)
 		trunkinv = {},
 		key = true,
 		owner = "",
+		on_deactivate = function(self, removal)
+			if removal and self.platenumber then
+				cars.set_database_entry(self.platenumber.text, nil)
+			end
+		end,
+		on_death = function(self, killer)
+			if self.platenumber then
+				cars.set_database_entry(self.platenumber.text, nil)
+			end
+		end,
 		on_activate = function(self, staticdata)
 			if not self.wheelpos then self.wheelpos = 0 end
 			if not self.timer1 then self.timer1 = 0 end
@@ -1578,7 +1604,14 @@ function cars_register_car(def)
 					random(2^16) - 1, random(2^16) - 1,
 					random(2^16) - 1, random(2^16) - 1)
 			end
-			if not self.platenumber.text or self.platenumber.text == "" then self.platenumber.text = randomNumber(3).."-"..randomString(3) end
+			if not self.platenumber.text or self.platenumber.text == "" then
+				self.platenumber.text = randomNumber(3).."-"..randomString(3)
+				local color = "Unpainted"
+				if self.color then
+					color = cars_dyes[self.color][3]
+				end
+				cars.set_database_entry(self.platenumber.text, {color = color, owner = self.owner, desc = def.description})
+			end
 			updatetextures(self, def)
 			self.object:setacceleration({x=0, y=-10, z=0})
 			--self.object:set_armor_groups({immortal = 1})
@@ -1744,6 +1777,7 @@ function cars_register_car(def)
 					local color = string.sub(punchitem, 5)
 					if color and cars_dyes[color] and punchstack:get_count() >= (def.dyecost or 5) then
 						self.color = color
+						cars.set_database_entry(self.platenumber.text, {color = cars_dyes[color][3], owner = self.owner, desc = def.description})
 						updatetextures(self, def)
 						punchstack:take_item(def.dyecost or 5)
 						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
