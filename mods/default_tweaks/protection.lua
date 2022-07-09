@@ -1,4 +1,4 @@
---[[IMPORTANT you need to change your builtin/items.lua usage of is_protected from its original to
+--[[IMPORTANT you need to change your builtin/game/item.lua usage of is_protected from its original to
 if core.is_protected(place_to, playername, true, def.name) then
 if core.is_protected(pos, diggername, false, node.name) then
 for place and dig respectively, or protected blocks not in exception list will only be diggable with drill vehicle
