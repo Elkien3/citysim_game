@@ -541,6 +541,12 @@ local f = 1.2--]]
 
 local skipstep = false
 
+local wagtbl = {}
+function spriteguns.set_wag(name, value)
+	if not name then return end
+	wagtbl[name] = value
+end
+
 local warnedplayers = {}
 minetest.register_globalstep(function(dtime)
 	local t1 = minetest.get_us_time()/1000000
@@ -957,12 +963,6 @@ function spriteguns.register_magazine(magazine, ammunition, size)
 			end
 		end
 	end)
-end
-
-local wagtbl = {}
-function spriteguns.set_wag(name, value)
-	if not name then return end
-	wagtbl[name] = value
 end
 
 local mp = minetest.get_modpath("spriteguns")
