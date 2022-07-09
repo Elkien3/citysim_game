@@ -175,6 +175,18 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
+local function has_all_groups(tbl, required_groups)
+	if type(required_groups) == "string" then
+		return (tbl[required_groups] or 0) ~= 0
+	end
+	for _, group in ipairs(required_groups) do
+		if (tbl[group] or 0) == 0 then
+			return false
+		end
+	end
+	return true
+end
+
 function core.get_node_drops(node, toolname)
 	-- Compatibility, if node is string
 	local nodename = node
@@ -214,7 +226,7 @@ function core.get_node_drops(node, toolname)
 		if item.rarity ~= nil then
 			good_rarity = item.rarity < 1 or math.random(item.rarity) == 1
 		end
-		if item.tools ~= nil then
+		if item.tools ~= nil or item.tool_groups ~= nil then
 			good_tool = false
 		end
 		if item.tools ~= nil and toolname then
@@ -226,6 +238,27 @@ function core.get_node_drops(node, toolname)
 				end
 				if good_tool then
 					break
+				end
+			end
+		end
+		if item.tool_groups ~= nil and toolname then
+			local tooldef = core.registered_items[toolname]
+			if tooldef ~= nil and type(tooldef.groups) == "table" then
+				if type(item.tool_groups) == "string" then
+					-- tool_groups can be a string which specifies the required group
+					good_tool = core.get_item_group(toolname, item.tool_groups) ~= 0
+				else
+					-- tool_groups can be a list of sufficient requirements.
+					-- i.e. if any item in the list can be satisfied then the tool is good
+					assert(type(item.tool_groups) == "table")
+					for _, required_groups in ipairs(item.tool_groups) do
+						-- required_groups can be either a string (a single group),
+						-- or an array of strings where all must be in tooldef.groups
+						good_tool = has_all_groups(tooldef.groups, required_groups)
+						if good_tool then
+							break
+						end
+					end
 				end
 			end
 		end
@@ -466,34 +499,41 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			return result
 		end
 	end
+	-- read definition before potentially emptying the stack
 	local def = itemstack:get_definition()
-	if itemstack:take_item() ~= nil then
-		user:set_hp(user:get_hp() + hp_change)
+	if itemstack:take_item():is_empty() then
+		return itemstack
+	end
 
-		if def and def.sound and def.sound.eat then
-			core.sound_play(def.sound.eat, {
-				pos = user:get_pos(),
-				max_hear_distance = 16
-			}, true)
-		end
+	if def and def.sound and def.sound.eat then
+		core.sound_play(def.sound.eat, {
+			pos = user:get_pos(),
+			max_hear_distance = 16
+		}, true)
+	end
 
-		if replace_with_item then
-			if itemstack:is_empty() then
-				itemstack:add_item(replace_with_item)
+	-- Changing hp might kill the player causing mods to do who-knows-what to the
+	-- inventory, so do this before set_hp().
+	if replace_with_item then
+		if itemstack:is_empty() then
+			itemstack:add_item(replace_with_item)
+		else
+			local inv = user:get_inventory()
+			-- Check if inv is null, since non-players don't have one
+			if inv and inv:room_for_item("main", {name=replace_with_item}) then
+				inv:add_item("main", replace_with_item)
 			else
-				local inv = user:get_inventory()
-				-- Check if inv is null, since non-players don't have one
-				if inv and inv:room_for_item("main", {name=replace_with_item}) then
-					inv:add_item("main", replace_with_item)
-				else
-					local pos = user:get_pos()
-					pos.y = math.floor(pos.y + 0.5)
-					core.add_item(pos, replace_with_item)
-				end
+				local pos = user:get_pos()
+				pos.y = math.floor(pos.y + 0.5)
+				core.add_item(pos, replace_with_item)
 			end
 		end
 	end
-	return itemstack
+	user:set_wielded_item(itemstack)
+
+	user:set_hp(user:get_hp() + hp_change)
+
+	return nil -- don't overwrite wield item a second time
 end
 
 function core.item_eat(hp_change, replace_with_item)
@@ -574,7 +614,7 @@ function core.node_dig(pos, node, digger)
 	if wielded then
 		local wdef = wielded:get_definition()
 		local tp = wielded:get_tool_capabilities()
-		local dp = core.get_dig_params(def and def.groups, tp)
+		local dp = core.get_dig_params(def and def.groups, tp, wielded:get_wear())
 		if wdef and wdef.after_use then
 			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 		else
@@ -636,9 +676,7 @@ function core.node_dig(pos, node, digger)
 	-- Run script hook
 	for _, callback in ipairs(core.registered_on_dignodes) do
 		local origin = core.callback_origins[callback]
-		if origin then
-			core.set_last_run_mod(origin.mod)
-		end
+		core.set_last_run_mod(origin.mod)
 
 		-- Copy pos and node because callback can modify them
 		local pos_copy = vector.new(pos)

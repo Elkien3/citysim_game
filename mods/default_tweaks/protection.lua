@@ -4,7 +4,7 @@ if core.is_protected(pos, diggername, false, node.name) then
 for place and dig respectively, or protected blocks not in exception list will only be diggable with drill vehicle
 --]]
 if minetest.settings:get_bool("default_tweaks.overwrite_item", false) then
-	dofile(minetest.get_modpath("default_tweaks").."/builtin-item.lua")--this will overwrite the default item.lua. copied from 5.5.0-dev
+	dofile(minetest.get_modpath("default_tweaks").."/builtin-item.lua")--this will overwrite the default item.lua. copied from 5.5.1
 end
 
 local list = {
