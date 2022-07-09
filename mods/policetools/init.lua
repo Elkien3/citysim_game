@@ -222,3 +222,7 @@ if knockout then
 		replacements = {{'policetools:taser', 'policetools:taser_cartridge'}},
 	})
 end
+
+if jobs then
+	dofile(minetest.get_modpath("policetools").."/computer.lua")
+end

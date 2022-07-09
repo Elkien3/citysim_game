@@ -813,3 +813,482 @@ minetest.register_chatcommand("laws", {
 		minetest.show_formspec(name, "laws", get_laws_form())
 	end
 })
+
+local licenses = minetest.deserialize(storage:get_string("licenses")) or {}
+local playerlicenses = minetest.deserialize(storage:get_string("playerlicenses")) or {}
+local licenseperms = minetest.deserialize(storage:get_string("licenseperms")) or {}
+local is_job_string = jobs.is_job_string
+
+function get_player_licenses(name)
+	local tbl = {}
+	if playerlicenses[name] then tbl = table.copy(playerlicenses[name]) end
+	if jobs and jobs.players[name] then
+		for jobstring, permtbl in pairs(playerlicenses) do
+			if is_job_string(jobstring) and jobs.permissionstring(name, jobstring) then
+				for i, licensename in pairs(permtbl) do
+					table.insert(tbl, licensename.." ("..jobstring..")")
+				end
+			end
+		end
+	end
+	return tbl
+end
+
+function player_has_license(name, license, checkjobs)
+	if playerlicenses[name] then
+		for i, license2 in pairs(playerlicenses[name]) do
+			if license2 == license then
+				return true
+			end
+		end
+	end
+	if jobs and (checkjobs == nil or checkjobs == true) and jobs.players[name] then
+		for jobstring, permtbl in pairs(playerlicenses) do
+			if is_job_string(jobstring) and jobs.permissionstring(name, jobstring) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function has_licenseperms(name)
+	if licenseperms[name] == true then return true end
+	if jobs then
+		for jobstring, permtbl in pairs(licenseperms) do
+			if is_job_string(jobstring) and jobs.permissionstring(name, jobstring) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function params_reduce(params)--used after a string split by space to result in only two strings
+	if #params < 2 then return params end
+	for i, param2 in pairs(params) do
+		if i > 2 then
+			params[2] = params[2].." "..param2
+		end
+	end
+	return {params[1], params[2]}
+end
+
+minetest.register_chatcommand("vote_license_add", {
+	params = "license name: license info",
+	description = "Start a vote to add a license.",
+	privs = {
+		vote_government = true,
+	},
+	func = function(name, param)
+		local params = param:split(": ")
+		if not params or #params ~= 2 then
+			return false, "Invalid input. do /vote_license_add license name: license info"
+		end
+		if licenses[params[1]] then
+			return false, "license already exists, use /vote_license_remove to remove it."
+		end
+		
+		return vote.new_vote(name, {
+			description = "Add license "..param,
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_government = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if #yes >= votesneeded then
+					licenses[params[1]] = params[2]
+					storage:set_string("licenses", minetest.serialize(licenses))
+					minetest.chat_send_all(S("License '@1' has been made. (@2/@3)", params[1], #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to make '@1' License. (@2/@3)", params[1], #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
+
+minetest.register_chatcommand("vote_license_remove", {
+	params = "<licensename>",
+	description = "Start a vote to remove a license.",
+	privs = {
+		vote_government = true,
+	},
+	func = function(name, param)
+		if param == "" then
+			return false, "Invalid input. do /vote_license_remove license name"
+		end
+		if not licenses[param] then
+			return false, "That license does not exist."
+		end
+		
+		return vote.new_vote(name, {
+			description = "Remove license "..param,
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_government = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if #yes >= votesneeded then
+					licenses[param] = nil
+					for pname, licensetbl in pairs(playerlicenses) do
+						for i, licensename in pairs(licensetbl) do
+							if licensename == param then
+								table.remove(playerlicenses[pname], i)
+								goto next
+							end
+						end
+						::next::
+					end
+					storage:set_string("licenses", minetest.serialize(licenses))
+					storage:set_string("playerlicenses", minetest.serialize(playerlicenses))
+					minetest.chat_send_all(S("'@1' license has been removed. (@2/@3)", param, #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to remove license '@1' (@2/@3)", param, #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
+
+minetest.register_chatcommand("vote_license_permission", {
+	params = "playername/jobname",
+	description = "Give or remove permission to player or job rank to give licenses. Give no input to see all with permission already.",
+	privs = {
+		vote_government = true,
+	},
+	func = function(name, param)
+		if param == "" then
+			local str = ""
+			for name2, tbl in pairs(licenseperms) do
+				if str ~= "" then
+					str = str..", "
+				end
+				str = str..name2
+			end
+			str = "All entries for license permission: "..str
+			return true, str
+		end
+		if not minetest.player_exists(param) and (not jobs or not is_job_string(param)) then
+			return false, "Player or job not found."
+		end
+		local text = {"Grant", "granted", "grant"}
+		if licenseperms[param] then
+			text = {"Revoke", "revoked", "revoke"}
+		end
+		return vote.new_vote(name, {
+			description = (text[1]).." license permissions to "..param,
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_government = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if not minetest.player_exists(param) and (not jobs or not is_job_string(param)) then
+					minetest.chat_send_all("Player or job not found.")
+					return false
+				end
+				if #yes >= votesneeded then
+					if licenseperms[param] then
+						licenseperms[param] = nil
+					else
+						licenseperms[param] = true
+					end
+					storage:set_string("licenseperms", minetest.serialize(licenseperms))
+					minetest.chat_send_all(S("'@1' has been @2 license permissions. (@3/@4)", param, text[2], #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to @1 license permissions to '@2' (@3/@4)", text[3], param, #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
+
+minetest.register_chatcommand("vote_license_grant", {
+	params = "playername licensename",
+	description = "Grant a license to a person/job",
+	privs = {
+		vote_government = true,
+	},
+	func = function(name, param)
+		local params = param:split(" ")
+		params = params_reduce(params)
+		if not params or #params ~= 2 then
+			return false, "Invalid input. do /license_grant <playername/jobname:rank> <licensename>"
+		end
+		if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+			minetest.chat_send_all("Player or job not found.")
+			return false
+		end
+		if not licenses[params[2]] then
+			return false, "That license does not exist."
+		end
+		if player_has_license(params[1], params[2], false) then
+			return false, "Player or job already has license."
+		end
+		return vote.new_vote(name, {
+			description = S("Grant @1 a @2 license", params[1], params[2]),
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_government = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+					minetest.chat_send_all("Player or job not found.")
+					return false
+				end
+				if not licenses[params[2]] then
+					minetet.chat_send_all("That license does not exist.")
+					return false
+				end
+				if player_has_license(params[1], params[2], false) then
+					minetest.chat_send_all("Player or job already has license.")
+					return false
+				end
+				if #yes >= votesneeded then
+					if not playerlicenses[params[1]] then playerlicenses[params[1]] = {} end
+					table.insert(playerlicenses[params[1]], params[2])
+					storage:set_string("playerlicenses", minetest.serialize(playerlicenses))
+					minetest.chat_send_all(S("'@1' has granted a @2 license. (@3/@4)", params[1], params[2], #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to grant @1 a @2 license. (@3/@4)", params[1], params[2], #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
+minetest.register_chatcommand("license_grant", {
+	params = "<playername/jobname:rank> <licensename>",
+	description = "Give a license to a player or job rank",
+	func = function(name, param)
+		if not has_licenseperms(name) then
+			return false, "You do not have permissions to grant or revoke licenses"
+		end
+		local params = param:split(" ")
+		params = params_reduce(params)
+		if not params or #params ~= 2 then
+			return false, "Invalid input. do /license_grant <playername/jobname:rank> <licensename>"
+		end
+		if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+			minetest.chat_send_all("Player or job not found.")
+			return false
+		end
+		if not licenses[params[2]] then
+			return false, "That license does not exist."
+		end
+		if player_has_license(params[1], params[2], false) then
+			return false, "Player or job already has license."
+		end
+		if name == params[1] then
+			return false, "Cannot grant yourself licenses"
+		end
+		if not playerlicenses[params[1]] then playerlicenses[params[1]] = {} end
+		table.insert(playerlicenses[params[1]], params[2])
+		storage:set_string("playerlicenses", minetest.serialize(playerlicenses))
+		return true, "Granted "..params[2].." license to "..params[1]
+	end
+})
+
+minetest.register_chatcommand("vote_license_revoke", {
+	params = "playername licensename",
+	description = "Revoke a license to a person/job",
+	privs = {
+		vote_government = true,
+	},
+	func = function(name, param)
+		local params = param:split(" ")
+		params = params_reduce(params)
+		if not params or #params ~= 2 then
+			return false, "Invalid input. do /vote_license_revoke <playername/jobname:rank> <licensename>"
+		end
+		if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+			minetest.chat_send_all("Player or job not found.")
+			return false
+		end
+		if not licenses[params[2]] then
+			return false, "That license does not exist."
+		end
+		if not player_has_license(params[1], params[2], false) then
+			return false, "Player does not have that license."
+		end
+		return vote.new_vote(name, {
+			description = S("Revoke @1 license from @2", params[2], params[1]),
+			help = "/yes,  /no  or  /abstain",
+			name = name,
+			duration = 20,
+			perc_needed = 0,
+
+			can_vote = function(self, pname)
+				return minetest.check_player_privs(pname,{vote_government = true})
+			end,
+
+			on_result = function(self, result, results)
+				local yes = results.yes or {}
+				if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+					minetest.chat_send_all("Player or job not found.")
+					return false
+				end
+				if not licenses[params[2]] then
+					minetest.chat_send_all("That license does not exist.")
+					return false
+				end
+				if not player_has_license(params[1], params[2], false) then
+					minetest.chat_send_all("Player does not have that license.")
+					return false
+				end
+				if #yes >= votesneeded then
+					for i, licensename in pairs(playerlicenses[params[1]]) do
+						if licensename == params[2] then
+							table.remove(playerlicenses[params[1]], i)
+						end
+					end
+					if #playerlicenses[params[1]] == 0 then playerlicenses[params[1]] = nil end
+					storage:set_string("playerlicenses", minetest.serialize(playerlicenses))
+					minetest.chat_send_all(S("@1 license was revoked from @2. (@3/@4)", params[2], params[1], #yes, votesneeded))
+				else
+					minetest.chat_send_all(S("Failed to revoke @1 license from @2 (@3/@4)", params[2], params[1], #yes, votesneeded))
+				end
+			end,
+
+			on_vote = function(self, voter, value)
+				minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+						self.description .. "'")
+			end
+		})
+	end
+})
+minetest.register_chatcommand("license_revoke", {
+	params = "<playername/jobname:rank> <licensename>",
+	description = "Revoke a license from a player or job rank",
+	func = function(name, param)
+		if not has_licenseperms(name) then
+			return false, "You do not have permissions to grant or revoke licenses"
+		end
+		local params = param:split(" ")
+		params = params_reduce(params)
+		if not params or #params ~= 2 then
+			return false, "Invalid input. do /license_revoke <playername/jobname:rank> <licensename>"
+		end
+		if not minetest.player_exists(params[1]) and (not jobs or not is_job_string(params[1])) then
+			minetest.chat_send_all("Player or job not found.")
+			return false
+		end
+		if not licenses[params[2]] then
+			return false, "That license does not exist."
+		end
+		if not player_has_license(params[1], params[2], false) then
+			return false, "Player does not have that license."
+		end
+		if name == params[1] then
+			return false, "Cannot revoke your own licenses"
+		end
+		for i, licensename in pairs(playerlicenses[params[1]]) do
+			if licensename == params[2] then
+				table.remove(playerlicenses[params[1]], i)
+			end
+		end
+		if #playerlicenses[params[1]] == 0 then playerlicenses[params[1]] = nil end
+		storage:set_string("playerlicenses", minetest.serialize(playerlicenses))
+		return true, "Revoked "..params[2].." license from "..params[1]
+	end
+})
+
+minetest.register_chatcommand("licenses", {
+	params = "<license>",
+	description = "list all licenses or show specific license",
+	func = function(name, param)
+		local str = ""
+		if param == "" then
+			for licensename, licenseinfo in pairs(licenses) do
+				if str ~= "" then
+					str = str..", "
+				end
+				str = str..licensename
+			end
+		elseif licenses[param] then
+			str = param..": "..licenses[param]
+		else
+			return false, "No such license"
+		end
+		return true, str
+	end
+})
+
+minetest.register_chatcommand("playerlicenses", {
+	params = "<license>",
+	description = "list all players with all or a specific license.",
+	func = function(name, param)
+		local str = ""
+		if param ~= "" and not licenses[param] then return false, "No such license" end
+		if param == "" then
+			for pname, licensetbl in pairs(playerlicenses) do
+				for i, licensename in pairs(licensetbl) do
+					if str ~= "" then
+						str = str..", "
+					end
+					str = str..pname..": "..licensename
+				end
+				::next::
+			end
+			str = "All players with licenses: "..str
+		else
+			for pname, licensetbl in pairs(playerlicenses) do
+				for i, licensename in pairs(licensetbl) do
+					if param == "" or licensename == param then
+						if str ~= "" then
+							str = str..", "
+						end
+						str = str..pname
+						goto next
+					end
+				end
+				::next::
+			end
+			str = "All players with "..param.." license: "..str
+		end
+		return true, str
+	end
+})
