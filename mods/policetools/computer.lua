@@ -537,7 +537,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not name then return true end
 	local tbl = form_table[name]
 	if not tbl then return true end
-	minetest.chat_send_all(dump(fields))
+	--minetest.chat_send_all(dump(fields))
 	local rank = get_police_rank(name)
 	for pagename, func in pairs(pages) do
 		if fields[pagename] and (pagename ~= "approvals" or rank > 1) then
