@@ -482,25 +482,6 @@ local function show_police_formspec(name)
 	minetest.show_formspec(name, "policetools:computer", form)
 end
 
-minetest.register_chatcommand("police", {
-	params = "<none>",
-	description = "Show Police Computer",
-	privs = {},
-	func = function(name, param)
-		show_police_formspec(name)
-	end
-})
-
-minetest.register_chatcommand("testalarm", {
-	params = "<none>",
-	description = "Add an alarm to the system",
-	privs = {},
-	func = function(name, param)
-		local loc = vector.round(minetest.get_player_by_name(name):get_pos())
-		table.insert(alarms, {owner = name, time = os.time(), loc = loc, desc = param})
-	end
-})
-
 local function is_law(lawname)
 	for i, tbl in pairs(laws) do
 		if tbl.name and tbl.name == lawname then
@@ -768,3 +749,52 @@ end)
 minetest.register_on_leaveplayer(function(player, timed_out)
 	form_table[name] = nil
 end)
+
+--[[
+minetest.register_chatcommand("police", {
+	params = "<none>",
+	description = "Show Police Computer",
+	privs = {},
+	func = function(name, param)
+		show_police_formspec(name)
+	end
+})
+
+minetest.register_chatcommand("testalarm", {
+	params = "<none>",
+	description = "Add an alarm to the system",
+	privs = {},
+	func = function(name, param)
+		local loc = vector.round(minetest.get_player_by_name(name):get_pos())
+		table.insert(alarms, {owner = name, time = os.time(), loc = loc, desc = param})
+	end
+})
+--]]
+
+minetest.register_node("policetools:computer", {--using homedecor television
+	description = S("Police Computer"),
+	tiles = { 'homedecor_television_top.png',
+		  'homedecor_television_bottom.png',
+		  'homedecor_television_left.png^[transformFX',
+		  'homedecor_television_left.png',
+		  'homedecor_television_back.png',
+		  'homedecor_television_front.png',
+	},
+	light_source = default.LIGHT_MAX - 2,
+	groups = { snappy = 3 },
+	sounds = default.node_sound_wood_defaults(),
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+		if clicker:is_player() then
+			show_police_formspec(clicker:get_player_name())
+		end
+	end
+})
+
+minetest.register_craft( {
+	output = "policetools:television",
+	recipe = {
+		{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
+		{ "basic_materials:plastic_sheet", "default:glass", "basic_materials:plastic_sheet" },
+		{ "basic_materials:ic", "basic_materials:energy_crystal_simple", "basic_materials:ic" },
+	},
+})
