@@ -470,7 +470,7 @@ function pages.playerwarrants(name)
 	return form
 end
 
-local function show_police_formspec(name)
+function show_police_formspec(name)
 	if not form_table[name] then form_table[name] = {["page"] = "warrants"} end
 	local form = pages.main(name)
 	if form_table[name].page and pages[form_table[name].page] then

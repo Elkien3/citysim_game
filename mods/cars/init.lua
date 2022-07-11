@@ -390,13 +390,16 @@ function car_formspec(clickername, car, keyinvname, def)
     "button_exit[3.625,1.5;1.75,1;exit;Exit Seat]" ..
     "list[detached:"..minetest.formspec_escape(keyinvname)..";key;1.25,1.5;1,1;0]"
 	if def.lights then
-		form = form.."button[0.25,0.25;1.5,1;headlights;Headlights]" .. "button[2,0.25;1.5,1;flashers;Flashers]"
+		form = form.."button[0.25,0.25;1.5,1;headlights;Headlights]" .. "button[1.6,0.25;1.5,1;flashers;Flashers]"
 	end
 	if def.drill and minetest.check_player_privs(clickername, {griefing=true}) then
 		form = form.."dropdown[0.25,0.25;2,1;drillselect;Drill Off,Drill Front,Drill High,Drill Above,Drill Below;"..(car.drill or 1)..";true]"
 	end
     if def.siren then
-		form = form.."button[3.75,0.25;1.5,1;siren;Siren]"
+		form = form.."button[2.95,0.25;1.25,1;siren;Siren]"
+	end
+	if show_police_formspec and def.policecomputer then
+		form = form.."button[4,0.25;1.5,1;computer;Computer]"
 	end
     if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) then
 		local textcolor_item_str = ""
@@ -809,6 +812,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					car.siren = true
 					car.timer3 = def.sirenlength or 2
 				end
+			elseif show_police_formspec and fields.computer then
+				show_police_formspec(name)
 			end
 			if car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner)) then
 				if fields.changeowner and fields.owner then

@@ -157,6 +157,7 @@ policecardef.max_force_offroad = 2
 policecardef.initial_properties.mesh = "copcar.b3d"
 policecardef.initial_properties.textures = {'copcaruv.png'}
 policecardef.inventory_image = "inv_car_grey.png"
+policecardef.policecomputer = true
 cars_register_car(policecardef)
 policecardef = nil
 
