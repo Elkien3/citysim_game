@@ -791,7 +791,7 @@ minetest.register_node("policetools:computer", {--using homedecor television
 })
 
 minetest.register_craft( {
-	output = "policetools:television",
+	output = "policetools:computer",
 	recipe = {
 		{ "basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet" },
 		{ "basic_materials:plastic_sheet", "default:glass", "basic_materials:plastic_sheet" },
