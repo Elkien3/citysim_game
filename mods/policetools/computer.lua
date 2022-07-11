@@ -772,7 +772,7 @@ minetest.register_chatcommand("testalarm", {
 --]]
 
 minetest.register_node("policetools:computer", {--using homedecor television
-	description = S("Police Computer"),
+	description = "Police Computer",
 	tiles = { 'homedecor_television_top.png',
 		  'homedecor_television_bottom.png',
 		  'homedecor_television_left.png^[transformFX',
