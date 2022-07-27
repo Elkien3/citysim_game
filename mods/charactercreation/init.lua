@@ -157,7 +157,7 @@ local function do_HSL_formspec(player, name, fields)
 		previewcolor[name] = ""
 		previewcolor[name] = rgbToHex(hslToRgb(hue, sat, val))
 		if hudpreview[name] then
-			player:hud_change(hudpreview[name], number, "0x"..previewcolor[name])
+			player:hud_change(hudpreview[name], "number", "0x"..previewcolor[name])
 		else
 			hudpreview[name] = player:hud_add({
 				hud_elem_type = "text",
