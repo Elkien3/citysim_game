@@ -120,7 +120,7 @@ minetest.register_entity("anticombatlog:entity", {
 		end
 		
 		local allowfunc = function(inv, listname, index, stack, player, count)
-			if not self then return 0 end
+			if not self or not self.object or not self.object:get_pos() then return 0 end
 			if count then
 				return count
 			else
