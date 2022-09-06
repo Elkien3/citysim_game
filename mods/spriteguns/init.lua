@@ -120,6 +120,35 @@ local function zoom(name, def, val)
 	end
 end
 
+--add particles when holding a gun to make third person peeking less of an issue
+local particlespawners = {}
+local function add_thirdperson_particles(player)
+	local name = player:get_player_name()
+	local amount = 60
+	local spawnerdef = {
+		amount = amount,
+		time = 0,
+		minpos = {x=0, y=1.5, z=-1},
+		maxpos = {x=0, y=1.5, z=-1},
+		minexptime = 4/(amount),
+		maxexptime = 4/(amount),
+		minsize = 200,
+		maxsize = 200,
+		attached = player,
+		texture = "black.png",
+		playername = name,
+	}
+	particlespawners[name] = minetest.add_particlespawner(spawnerdef)
+end
+local function remove_thirdperson_particles(player)
+	local name = player:get_player_name()
+	if particlespawners[name] then
+		minetest.delete_particlespawner(particlespawners[name])
+		particlespawners[name] = nil
+	end
+end
+minetest.register_on_leaveplayer(remove_thirdperson_particles)
+
 local function add_gun(name, gunname)
 	if not name then return end
 	local player = minetest.get_player_by_name(name)
@@ -130,7 +159,9 @@ local function add_gun(name, gunname)
 		player:hud_remove(gun_huds[name].hud)
 		player:hud_remove(gun_huds[name].hotbar)
 		gun_huds[name] = nil
+		remove_thirdperson_particles(player)
 	end
+	add_thirdperson_particles(player)
 	gun_huds[name] = {stack = itemstack, index = player:get_wield_index(), gun = gunname, point = {x=0,y=0,z=0}, zoom = false, target = {x=math.random(-def.targetrecoil,def.targetrecoil)/1000,y= math.random(-def.targetrecoil,def.targetrecoil)/1000, z=0}, offset = {x=0,y=-1,z=0}, t = 0, vel = {}}
 	if itemstack:get_wear() ~= max_wear then
 		gun_huds[name].anim = "load"
@@ -185,6 +216,7 @@ local function remove_gun(name)
 	end
 	zoom(name, nil, false)
 	gun_huds[name] = nil
+	remove_thirdperson_particles(player)
 end
 local function rotateVector(x, y, a)
   local c = math.cos(a)
