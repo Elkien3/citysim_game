@@ -472,6 +472,7 @@ end
 
 function show_police_formspec(name)
 	if not form_table[name] then form_table[name] = {["page"] = "warrants"} end
+	form_table[name].quit = nil
 	local form = pages.main(name)
 	if form_table[name].page and pages[form_table[name].page] then
 		form = form..pages[form_table[name].page](name)
@@ -504,7 +505,7 @@ end
 
 local function update_form(pagename, playername)--function to update the forms of all players on a certain page
 	for name, tbl in pairs(form_table) do
-		if tbl.page == pagename and (not playername or playername == tbl.name) then
+		if tbl.page == pagename and (not playername or playername == tbl.name) and not tbl.quit then
 			minetest.after(0, show_police_formspec, name)
 		end
 	end
@@ -526,6 +527,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			show_police_formspec(name)
 			return
 		end
+	end
+	if fields.quit then
+		form_table[name].quit = true
 	end
 	if tbl.page == "approvals" then
 		for fieldname, fieldval in pairs(fields) do
@@ -551,6 +555,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				if apptbl.clearer then--its a warrant or citation clear request
 					if apptbl.fine then
 						table.remove(citations[apptbl.subject], apptbl.id)
+						if #citations[apptbl.subject] == 0 then
+							citations[apptbl.subject] = nil
+						end
 						fix_approval_ids(apptbl.subject, apptbl.id, true)
 						storage:set_string("citations", minetest.serialize(citations))
 					else
@@ -747,7 +754,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 minetest.register_on_leaveplayer(function(player, timed_out)
-	form_table[name] = nil
+	form_table[player:get_player_name()] = nil
 end)
 
 --[[
@@ -797,4 +804,159 @@ minetest.register_craft( {
 		{ "basic_materials:plastic_sheet", "default:glass", "basic_materials:plastic_sheet" },
 		{ "basic_materials:ic", "basic_materials:energy_crystal_simple", "basic_materials:ic" },
 	},
+})
+
+--alarm block
+
+--[[
+alarm block: description, owner
+goes off if given mesecon signal or drill machine is drilling nearby
+if an alarm from the same location already exists and was not cleared do not create another
+--]]
+local alarm_form_table = {}
+function police_add_alarm(pos)
+	local node = minetest.get_node(pos)
+	if node.name ~= "policetools:alarm" then return end
+	local meta = minetest.get_meta(pos)
+	if not meta then return end
+	local owner = meta:get_string("owner")
+	local desc = meta:get_string("desc")
+	if owner == "" or desc == "" then return end
+	for i, alarmtbl in pairs(alarms) do--if an alarm already exists at that location then simply update it instead of making a new one
+		if vector.equals(alarmtbl.loc, pos) and not alarmtbl.clearer then
+			alarms[i].time = os.time()
+			return
+		end
+	end
+	table.insert(alarms, {owner = owner, time = os.time(), loc = pos, desc = desc})
+end
+if minetest.get_modpath("mesecons_pressureplates") then
+	minetest.register_node("policetools:alarm", {
+		description = "Alarm Block",
+		tiles = {
+			"mesecons_wireless_metal.png",
+			"mesecons_wireless_metal.png",
+			"mesecons_wireless_transmitter_off.png"
+		},
+		groups = { snappy = 3 },
+		sounds = default.node_sound_wood_defaults(),
+		after_place_node = function(pos, placer, itemstack, pointed_thing)
+			if not placer:is_player() then return end
+			local name = placer:get_player_name()
+			local meta = minetest.get_meta(pos)
+			meta:set_string("owner", name)
+			meta:set_string("infotext", "Owned by "..name)
+		end,
+		on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+			if clicker:is_player() then
+				local name = clicker:get_player_name()
+				local meta = minetest.get_meta(pos)
+				local owner = meta:get_string("owner")
+				if name == owner then
+					local form = "size[7,2]field[1,1;6,1;desc;Alarm Description (no description will disable the alarm);"..minetest.formspec_escape(meta:get_string("desc")).."]"
+					minetest.show_formspec(name, "policetools:alarmblock", form)
+					alarm_form_table[name] = pos
+				end
+			end
+		end,
+		mesecons = {effector = {
+			action_on = police_add_alarm,
+			rules = mesecon.rules.pplate
+		}}
+	})
+
+	minetest.register_on_player_receive_fields(function(player, formname, fields)
+		if formname == "policetools:alarmblock" then
+			local name = player:get_player_name()
+			local pos = alarm_form_table[name]
+			if not pos then return true end
+			local meta = minetest.get_meta(pos)
+			local owner = meta:get_string("owner")
+			if owner ~= name then return true end
+			if fields.key_enter_field == "desc" then
+				meta:set_string("desc", fields.desc)
+			end
+			alarm_form_table[name] = nil
+			return true
+		end
+	end)
+
+	minetest.register_craft( {
+		output = "policetools:alarm",
+		recipe = {
+			{ "basic_materials:plastic_sheet", "default:glass" },
+			{ "basic_materials:ic", "basic_materials:energy_crystal_simple"},
+		},
+	})
+end
+
+--citation paying/viewing
+
+minetest.register_chatcommand("citations", {
+	params = "<none/citationid/payall>",
+	description = "Show or pay your citations",
+	privs = {},
+	func = function(name, param)
+		if param == "" then
+			local str = ""
+			if citations[name] then
+				for i, tbl in pairs(citations[name]) do
+					if str ~= "" then
+						str = str..", "
+					end
+					str = str..string.format("%s: %s %s", i, tbl.law, tbl.fine)
+				end
+				return true, str
+			else
+				return true, "No citations to pay"
+			end
+		else
+			local function paycitation(id)
+				local amount = citations[name][id].fine
+				if money3.dec(name, amount) then
+					return false, "You do not have enough money in your account."
+				else
+					taxes.add(amount)
+					table.remove(citations[name], id)
+					if #citations[name] == 0 then
+						citations[name] = nil
+					end
+					fix_approval_ids(name, id, true)
+					storage:set_string("citations", minetest.serialize(citations))
+					return true, "Paid "..amount
+				end
+			end
+			if param == "payall" then
+				if citations[name] then
+					local str = ""
+					while citations[name] ~= nil do
+						local result, resultstr = paycitation(1)--I think its goofing up since its doing for while also table.remove
+						if str ~= "" then
+							str = str.."\n"
+						end
+						str = str..resultstr
+						if result ~= true then
+							return false, str
+						end
+					end
+					update_form("citations")
+					update_form("playerfile", name)
+					update_form("playercitations", name)
+					return true, str.."\nAll citations paid!"
+				else
+					return false, "No citations to pay"
+				end
+			elseif tonumber(param) and (citations[name] and citations[name][tonumber(param)]) then
+				local result, resultstr = paycitation(tonumber(param))
+				if result == true then
+					update_form("citations")
+					update_form("playerfile", name)
+					update_form("playercitations", name)
+				end
+				return result, resultstr
+			else
+				return false, "Invalid input"
+			end
+		end
+	end
 })

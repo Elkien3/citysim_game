@@ -1361,6 +1361,16 @@ local function car_step(self, dtime, moveresult)
 						local health = minetest.get_node_group(drillnode.name, "strong")
 						if health == 0 then health = 3 end--default 3 seconds to destroy non strong node
 						drilledblocks[posstring] = {name = drillnode.name, health = health}
+						
+						--if police tools alarm block exists, trip any alarms within 32 blocks
+						if police_add_alarm then
+							local nodes = minetest.find_nodes_in_area(vector.subtract(drillpos, 32), vector.add(drillpos, 32), "policetools:alarm")
+							for i, nodepos in pairs(nodes) do
+								if vector.distance(drillpos, nodepos) <= 32 then
+									police_add_alarm(nodepos)
+								end
+							end
+						end
 					end
 					drilledblocks[posstring].last = os.time()
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
