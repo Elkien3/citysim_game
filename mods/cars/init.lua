@@ -883,6 +883,10 @@ local lagcounter = 1
 local function car_step(self, dtime, moveresult)
 	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.name]
+	if self.deathtime and os.time()-self.deathtime >= 1800 then--repair the car within 30 minutes and it will be saved
+		self.object:remove()
+		return
+	end
 	if self.ignition and oil and def.gas_usage then
 		if self.gas <= 0 then
 			self.ignition = false
@@ -950,12 +954,21 @@ local function car_step(self, dtime, moveresult)
 				pitch = .7,
 				gain = 10,
 				object = self.object
-			}, true)
-			local checkpos = vector.add(pos, vector.multiply(vector.normalize(self.lastv), .8))
-			local objects = minetest.get_objects_inside_radius(checkpos, 1)
+			}, true)			
 			local dmg = ((vector.length(self.lastv)-4)/(20-4))*20
 			--self.object:set_hp(self.object:get_hp()-dmg/2, "crash")
 			self.object:punch(self.object, nil, {damage_groups={vehicle=dmg/2}})
+			local objects = {}
+			if moveresult and moveresult.collisions then
+				for i, collision in pairs(moveresult.collisions) do
+					if collision.type == "object" then
+						table.insert(objects, collision.object)
+					end
+				end
+			elseif not moveresult then
+				local checkpos = vector.add(pos, vector.multiply(vector.normalize(self.lastv), .8))
+				local objects = minetest.get_objects_inside_radius(checkpos, 1)
+			end
 			for _,obj in pairs(objects) do
 				if obj:is_player() then
 					for id, passengers in pairs (self.passengers) do
@@ -966,11 +979,13 @@ local function car_step(self, dtime, moveresult)
 					local name = obj:get_player_name()
 					if default.player_attached[name] then
 						dmg = dmg*.5
-					elseif obj:is_player() then
+					else
 						obj:add_player_velocity(self.lastv)
 					end
 					obj:punch(puncher, nil, {damage_groups={fleshy=dmg}})
 					::next::
+				elseif cars_registered_cars[obj:get_luaentity().name] then
+					obj:punch(self.object, nil, {damage_groups={vehicle=dmg/2}})
 				end
 			end
 		end
@@ -1021,7 +1036,7 @@ local function car_step(self, dtime, moveresult)
 	end
 	if self.hp <= (def.initial_properties.hp_max or 20)/2 then
 		local halfmax = (def.initial_properties.hp_max or 20)/2
-		local damagefactor = self.hp/halfmax
+		local damagefactor = (self.hp-1)/halfmax
 		max_speed = max_speed*damagefactor
 	end
 	local driver = self.passengers[1].player
@@ -1063,7 +1078,7 @@ local function car_step(self, dtime, moveresult)
 		end
 		local carpitch = 0
 		--VELOCITY MOVEMENT
-		if self.ignition then
+		if self.ignition and max_speed > 0 then
 			local newv = self.v
 			if self.cruise then
 				if ctrl.jump then
@@ -1569,11 +1584,52 @@ function cars_register_car(def)
 		key = true,
 		owner = "",
 		on_deactivate = function(self, removal)
-			if removal and self.platenumber then
-				cars.set_database_entry(self.platenumber.text, nil)
+			if self.drillsound then
+				minetest.sound_fade(self.drillsound, 10, 0)
+			end
+			if removal then
+				for id, wheel in pairs(self.wheel) do
+					wheel:remove()
+				end
+				if self.lights then
+					self.lights:remove()
+				end
+				if self.skidsound then
+					minetest.sound_fade(self.skidsound, 5, 0)
+				end
+				if self.siren and type(self.siren) == "number" then
+					minetest.sound_fade(self.siren, 10, 0)
+				end
+				for id, passengers in pairs (self.passengers) do
+					local player = passengers.player
+					if player then
+						detach(player)
+					end
+				end
+				if self.platenumber then
+					cars.set_database_entry(self.platenumber.text, nil)
+				end
 			end
 		end,
-		on_death = function(self, killer)
+		on_death = function(self, killer)--i think i wont need this since hp is always kept at least 1hp till its removed by the death timer
+			for id, wheel in pairs(self.wheel) do
+				wheel:remove()
+			end
+			if self.lights then
+				self.lights:remove()
+			end
+			if self.skidsound then
+				minetest.sound_fade(self.skidsound, 5, 0)
+			end
+			if self.siren and type(self.siren) == "number" then
+				minetest.sound_fade(self.siren, 10, 0)
+			end
+			for id, passengers in pairs (self.passengers) do
+				local player = passengers.player
+				if player then
+					detach(player)
+				end
+			end
 			if self.platenumber then
 				cars.set_database_entry(self.platenumber.text, nil)
 			end
@@ -1605,6 +1661,7 @@ function cars_register_car(def)
 					self.trunklock = deserialized.trunklock
 					self.text = deserialized.text
 					self.textcolor = deserialized.textcolor
+					self.deathtime = deserialized.deathtime
 					if deserialized.plate then
 						self.platenumber.text = deserialized.plate.text
 					end
@@ -1690,17 +1747,13 @@ function cars_register_car(def)
 				cruise = self.cruise,
 				trunklock = self.trunklock,
 				text = self.text,
-				textcolor = self.textcolor
+				textcolor = self.textcolor,
+				deathtime = self.deathtime
 			})
-		end,
-		on_deactivate = function(self)
-			if self.drillsound then
-				minetest.sound_fade(self.drillsound, 10, 0)
-			end
 		end,
 		on_step = car_step,
 		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-			if puncher ~= self.object then
+			if puncher ~= self.object and not tool_capabilities.damage_groups.vehicle then
 				local name = puncher:get_player_name()
 				if puncher == self.passengers[1].player then
 					minetest.sound_play(def.horn, {
@@ -1832,26 +1885,17 @@ function cars_register_car(def)
 					texture = "tnt_smoke.png",
 				})
 			end
-			if hp <= 0 then
-				for id, wheel in pairs(self.wheel) do
-					wheel:remove()
+			if hp <= 1 then
+				if not self.deathtime then
+					self.deathtime = os.time()
 				end
-				if self.lights then
-					self.lights:remove()
+				if hp < 1 then
+					self.object:set_hp(1)
+					return true
 				end
-				if self.skidsound then
-					minetest.sound_fade(self.skidsound, 5, 0)
-				end
-				if self.siren and type(self.siren) == "number" then
-					minetest.sound_fade(self.siren, 10, 0)
-				end
-				--todo remove all children
-				for id, passengers in pairs (self.passengers) do
-					local player = passengers.player
-					if player then
-						detach(player)
-					end
-				end
+			end
+			if self.deathtime and hp > 1 then
+				self.deathtime = nil
 			end
 		end,
 		on_rightclick = function(self, clicker)
