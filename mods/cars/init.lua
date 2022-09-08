@@ -40,7 +40,7 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
-local keydef = minetest.registered_items["default:skeleton_key"]
+local keydef = minetest.registered_items["keys:skeleton_key"]
 local orig_func = keydef.on_use
 local new_func = function(itemstack, user, pointed_thing)
 	if pointed_thing.type == "object" then
@@ -50,7 +50,7 @@ local new_func = function(itemstack, user, pointed_thing)
 	end
 	return orig_func(itemstack, user, pointed_thing)
 end
-minetest.override_item("default:skeleton_key", {on_use = new_func})
+minetest.override_item("keys:skeleton_key", {on_use = new_func})
 
 function cars.get_database()
 	return minetest.deserialize(storage:get_string("database")) or {}
@@ -401,6 +401,9 @@ function car_formspec(clickername, car, keyinvname, def)
 	if show_police_formspec and def.policecomputer then
 		form = form.."button[4,0.25;1.5,1;computer;Computer]"
 	end
+	if def.trunkloc then
+		form = form.."checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"
+	end
     if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) then
 		local textcolor_item_str = ""
 		local current_textcolor_idx = 1
@@ -415,10 +418,6 @@ function car_formspec(clickername, car, keyinvname, def)
 		form = form.."field[5.6,1.78;1.75,1;owner;Owner;"..minetest.formspec_escape(car.owner).."]" .."button_exit[6.85,1.5;2,1;changeowner;Change Owner]"..
 		"field[5.6,.7;2,1;text;Custom Text;"..minetest.formspec_escape(car.text or "").."]" ..
 		"dropdown[7.1,0.475;1.5,1;textcolor;"..textcolor_item_str..";false]"
-		
-		if def.trunkloc then
-			form = form.."checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"
-		end
 	else
 		form = form.."label[6,1.75;Owner: "..car.owner.."]"
 	end
@@ -598,24 +597,33 @@ local function driver_rightclick(self, clicker)
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
 		on_put = function(inv, listname, index, stack, player)
-			self.key = inv:contains_item("key", "default:key")
+			self.key = inv:contains_item("key", "keys:key")
+			if not self.key and not stack:is_empty() then
+				self.key = stack:to_string()
+			end
 		end,
 		on_take = function(inv, listname, index, stack, player)
-			self.key = inv:contains_item("key", "default:key")
+			self.key = inv:contains_item("key", "keys:key")
 			if not self.key then turncaroff(self) end
+			if not self.key and not inv:is_empty("key") then
+				self.key = inv:get_stack("key", 1):to_string()
+			end
 		end,
         allow_put = function(inv, listname, index, stack, player)
 			if stack:get_meta():get_string("secret") == self.secret then
 				return 1
 			else
+				local cap = stack:get_tool_capabilities()
+				if cap.groupcaps and cap.groupcaps.locked and cap.groupcaps.locked.maxlevel and cap.groupcaps.locked.maxlevel > 1 then
+					return 1
+				end
 				return 0
 			end
 		end,
-		--todo: make it so only the right key can be put into the slot
 	})
 	inventory:set_size("key", 1)
-	if self.key then
-		local new_stack = ItemStack("default:key")
+	if self.key == true then
+		local new_stack = ItemStack("keys:key")
 		local meta = new_stack:get_meta()
 		local description = def.description
 		if self.color then
@@ -627,6 +635,8 @@ local function driver_rightclick(self, clicker)
 		meta:set_string("secret", self.secret)
 		meta:set_string("description", string.format("Key to %s's %s", self.owner, description))
 		inventory:set_stack("key", 1, new_stack)
+	elseif self.key and type(self.key) == "string" then
+		inventory:set_stack("key", 1, ItemStack(self.key))
 	end
 	local formspec = car_formspec(name, self, "cars"..selfname, def)
     minetest.show_formspec(name, "cars_form", formspec)
@@ -788,20 +798,32 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if car.passengers[1].player == player then
 			local obj
 			if car.lights then obj = car.lights:get_luaentity() end
-			if fields.ignition and car.key then
+			if fields.ignition and car.key and not car.igniting then
 				if car.ignition then
 					turncaroff(car, obj)
 				else
+					car.igniting = true
 					minetest.sound_play(def.ignitionsound, {
 						max_hear_distance = 24,
 						gain = 1,
 						object = car.object
 					}, true)
-					minetest.after(.8, function(car) car.ignition = true end, car)
+					minetest.after(.8, function(car)
+						car.igniting = nil
+						if type(car.key) == "boolean" then
+							car.ignition = true
+						elseif math.random(10) == 1 then
+							car.ignition = true
+							car.alarm = 30
+							if obj then
+								cars.setlight(obj, "flashers", true)
+							end
+						end
+					end, car)
 				end
 			elseif fields.headlights and car.battery > 0 then
 				cars.setlight(obj, "headlights", "toggle")
-			elseif fields.flashers then
+			elseif fields.flashers and not car.alarm then
 				cars.setlight(obj, "flashers", "toggle")
 			elseif fields.siren and def.siren then
 				if car.siren ~= nil then
@@ -814,6 +836,32 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				end
 			elseif show_police_formspec and fields.computer then
 				show_police_formspec(name)
+			elseif fields.trunklock ~= nil then
+				if fields.trunklock == "true" then
+					car.trunklock = true
+				else
+					car.trunklock = nil
+				end
+			elseif car.ignition and fields.drillselect and minetest.check_player_privs(name, {griefing=true}) then
+				car.drill = tonumber(fields.drillselect)
+				if car.drill == 1 then
+					car.drill = nil
+					if car.drillsound then
+						minetest.sound_fade(car.drillsound, 10, 0)
+						car.drillsound = nil
+					end
+				elseif not car.drillsound then
+					car.drillsound = minetest.sound_play("jackhammerloop", {
+						max_hear_distance = 64,
+						loop = true,
+						gain = 1,
+						object = car.object
+					})
+				end
+				car.drilltimer = nil
+				local prop = car.object:get_properties()
+				prop.mesh = string.gsub(def.initial_properties.mesh, ".b3d", "")..(car.drill or "")..".b3d"
+				car.object:set_properties(prop)
 			end
 			if car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner)) then
 				if fields.changeowner and fields.owner then
@@ -828,32 +876,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					else
 						minetest.chat_send_player(name, "Invalid owner name")
 					end
-				elseif fields.trunklock ~= nil then
-					if fields.trunklock == "true" then
-						car.trunklock = true
-					else
-						car.trunklock = nil
-					end
-				elseif car.ignition and fields.drillselect and minetest.check_player_privs(name, {griefing=true}) then
-					car.drill = tonumber(fields.drillselect)
-					if car.drill == 1 then
-						car.drill = nil
-						if car.drillsound then
-							minetest.sound_fade(car.drillsound, 10, 0)
-							car.drillsound = nil
-						end
-					elseif not car.drillsound then
-						car.drillsound = minetest.sound_play("jackhammerloop", {
-							max_hear_distance = 64,
-							loop = true,
-							gain = 1,
-							object = car.object
-						})
-					end
-					car.drilltimer = nil
-					local prop = car.object:get_properties()
-					prop.mesh = string.gsub(def.initial_properties.mesh, ".b3d", "")..(car.drill or "")..".b3d"
-					car.object:set_properties(prop)
 				elseif fields.text or fields.textcolor then
 					if fields.text then
 						car.text = fields.text
@@ -886,6 +908,25 @@ local function car_step(self, dtime, moveresult)
 	if self.deathtime and os.time()-self.deathtime >= 1800 then--repair the car within 30 minutes and it will be saved
 		self.object:remove()
 		return
+	end
+	if self.alarm then
+		local oldalarm = math.floor(self.alarm)
+		self.alarm = self.alarm - dtime
+		local newalarm = math.floor(self.alarm)
+		if oldalarm ~= newalarm then
+			minetest.sound_play(def.horn, {
+				max_hear_distance = 48,
+				gain = 8,
+				object = self.object
+			}, true)
+		end
+		if self.alarm <= 0 then
+			self.alarm = nil
+			if self.lights then
+				local obj = self.lights:get_luaentity()
+				cars.setlight(obj, "flashers", false)
+			end
+		end
 	end
 	if self.ignition and oil and def.gas_usage then
 		if self.gas <= 0 then
@@ -1575,6 +1616,64 @@ function car_rightclick(self, clicker, closeid)
 	end
 end
 
+--car lockpicking
+local carlockpicktbl = {}
+
+local function pick_car(digger, obj)
+	local car = obj:get_luaentity()
+	local pos = obj:get_pos()
+	local name = digger:get_player_name()
+	local can_pick = true
+	local tool_group = digger:get_wielded_item():get_tool_capabilities()
+	if not minetest.check_player_privs(name, {lockpick=true}) then
+		can_pick = false
+		minetest.chat_send_player(name, "You do not have the lockpick priv.")
+	end
+	if can_pick then
+		local wielditem = digger:get_wielded_item()
+		local wieldlevel = tool_group.max_drop_level
+		local rand = math.random(1,10)
+		if rand == 1 or car.owner == name then
+			car.locked = false
+			minetest.sound_play("lock", {
+				max_hear_distance = 32,
+				gain = 1,
+				object = obj
+			}, true)
+			minetest.chat_send_player(name, "You picked the lock!")
+			minetest.log("action", name.." picked "..car.name.." with "..digger:get_wielded_item():get_name().." at "..minetest.pos_to_string(pos))
+			if playercontrol_set_timer then
+				local privs = minetest.get_player_privs(name)
+				privs.lockpick = nil
+				minetest.set_player_privs(name, privs)
+				playercontrol_set_timer(name, "lockpick", 2*60)
+			end
+		elseif rand == 2 then
+			wielditem:clear()
+			digger:set_wielded_item(wieldeditem)
+			minetest.chat_send_player(name, "Your lockpick broke!")
+		else
+			minetest.chat_send_player(name, "You failed to pick the lock.")
+		end
+		return false
+	end
+end
+
+minetest.register_globalstep(function(dtime)
+	for name, tbl in pairs(carlockpicktbl) do
+		local player = minetest.get_player_by_name(name)
+		if (os.clock()-tbl.last) > .25 or not player then
+			carlockpicktbl[name] = nil
+		else
+			carlockpicktbl[name].timer = carlockpicktbl[name].timer + dtime
+			if carlockpicktbl[name].timer > 6 then
+				pick_car(player, carlockpicktbl[name].obj)
+				carlockpicktbl[name] = nil
+			end
+		end
+	end
+end)
+
 cars_registered_cars = {}
 function cars_register_car(def)
 	cars_registered_cars[def.name] = def
@@ -1753,8 +1852,8 @@ function cars_register_car(def)
 		end,
 		on_step = car_step,
 		on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+			local name = puncher:get_player_name()
 			if puncher ~= self.object and not tool_capabilities.damage_groups.vehicle then
-				local name = puncher:get_player_name()
 				if puncher == self.passengers[1].player then
 					minetest.sound_play(def.horn, {
 						max_hear_distance = 48,
@@ -1806,7 +1905,7 @@ function cars_register_car(def)
 							end
 						end
 					end
-				elseif punchitem == "default:key" then
+				elseif punchitem == "keys:key" then
 					local secret = puncher:get_wielded_item():get_meta():get_string("secret")
 					if self.secret == secret then
 						self.locked = not self.locked
@@ -1816,12 +1915,12 @@ function cars_register_car(def)
 							object = self.object
 						}, true)
 					end
-				elseif punchitem == "default:skeleton_key" and (self.owner == name or (jobs and jobs.permissionstring(name, self.owner))) then
+				elseif punchitem == "keys:skeleton_key" and (self.owner == name or (jobs and jobs.permissionstring(name, self.owner))) then
 					local inv = minetest.get_inventory({type="player", name=name})
 					-- update original itemstack
 					punchstack:take_item()
 					-- finish and return the new key
-					local new_stack = ItemStack("default:key")
+					local new_stack = ItemStack("keys:key")
 					local meta = new_stack:get_meta()
 					local description = def.description
 					if self.color then
@@ -1850,7 +1949,14 @@ function cars_register_car(def)
 						punchstack:take_item(def.dyecost or 5)
 						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
 					end
-				end--[[
+				elseif tool_capabilities.groupcaps and tool_capabilities.groupcaps.locked and tool_capabilities.groupcaps.locked.maxlevel and tool_capabilities.groupcaps.locked.maxlevel > 1 then
+					if not carlockpicktbl[name] or carlockpicktbl[name].obj ~= self.object then
+						carlockpicktbl[name] = {obj = self.object, last = os.clock(), timer = 0}
+					else
+						carlockpicktbl[name].last = os.clock()
+					end
+				end
+				--[[
 				elseif player_attached[name] ~= self then
 					--minetest.chat_send_all("ow")
 					return true
