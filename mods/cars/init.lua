@@ -40,7 +40,15 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
-local keydef = minetest.registered_items["keys:skeleton_key"]
+local skel_key = "default:skeleton_key"
+local made_key = "keys:key"
+
+if not minetest.get_modpath("keys") then
+	skel_key = "default:skeleton_key"
+	made_key = "default:key"
+end
+
+local keydef = minetest.registered_items[skel_key]
 local orig_func = keydef.on_use
 local new_func = function(itemstack, user, pointed_thing)
 	if pointed_thing.type == "object" then
@@ -50,7 +58,7 @@ local new_func = function(itemstack, user, pointed_thing)
 	end
 	return orig_func(itemstack, user, pointed_thing)
 end
-minetest.override_item("keys:skeleton_key", {on_use = new_func})
+minetest.override_item(skel_key, {on_use = new_func})
 
 function cars.get_database()
 	return minetest.deserialize(storage:get_string("database")) or {}
@@ -597,13 +605,13 @@ local function driver_rightclick(self, clicker)
 	local selfname = string.sub(tostring(self), 8)
 	local inventory = minetest.create_detached_inventory("cars"..selfname, {
 		on_put = function(inv, listname, index, stack, player)
-			self.key = inv:contains_item("key", "keys:key")
+			self.key = inv:contains_item("key", made_key)
 			if not self.key and not stack:is_empty() then
 				self.key = stack:to_string()
 			end
 		end,
 		on_take = function(inv, listname, index, stack, player)
-			self.key = inv:contains_item("key", "keys:key")
+			self.key = inv:contains_item("key", made_key)
 			if not self.key then turncaroff(self) end
 			if not self.key and not inv:is_empty("key") then
 				self.key = inv:get_stack("key", 1):to_string()
@@ -623,7 +631,7 @@ local function driver_rightclick(self, clicker)
 	})
 	inventory:set_size("key", 1)
 	if self.key == true then
-		local new_stack = ItemStack("keys:key")
+		local new_stack = ItemStack(made_key)
 		local meta = new_stack:get_meta()
 		local description = def.description
 		if self.color then
@@ -1905,7 +1913,7 @@ function cars_register_car(def)
 							end
 						end
 					end
-				elseif punchitem == "keys:key" then
+				elseif punchitem == made_key then
 					local secret = puncher:get_wielded_item():get_meta():get_string("secret")
 					if self.secret == secret then
 						self.locked = not self.locked
@@ -1915,12 +1923,12 @@ function cars_register_car(def)
 							object = self.object
 						}, true)
 					end
-				elseif punchitem == "keys:skeleton_key" and (self.owner == name or (jobs and jobs.permissionstring(name, self.owner))) then
+				elseif punchitem == skel_key and (self.owner == name or (jobs and jobs.permissionstring(name, self.owner))) then
 					local inv = minetest.get_inventory({type="player", name=name})
 					-- update original itemstack
 					punchstack:take_item()
 					-- finish and return the new key
-					local new_stack = ItemStack("keys:key")
+					local new_stack = ItemStack(made_key)
 					local meta = new_stack:get_meta()
 					local description = def.description
 					if self.color then
