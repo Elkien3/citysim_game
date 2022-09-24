@@ -240,7 +240,9 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
 	minetest.register_globalstep(function(dtime)
 		for name, val in pairs(policetools_handsup) do
 			if not can_handsup(name) then
-				if minetest.get_player_by_name(name) then
+				local player = minetest.get_player_by_name(name)
+				if player then
+					player:hud_set_flags({wielditem=true})
 					minetest.chat_send_player(name, "You put your hands down.")
 				end
 				policetools_handsup[name] = nil
@@ -253,10 +255,12 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
         func = function(name, param)
 			if policetools_handsup[name] then
 				policetools_handsup[name] = nil
+				player:hud_set_flags({wielditem=true})
 				return true, "You put your hands down."
 			else
 				if can_handsup(name) then
 					policetools_handsup[name] = true
+					player:hud_set_flags({wielditem=false})
 					return true, "You put your hands up."
 				else
 					return true, "You cannot put your hands up at this time."
@@ -275,10 +279,12 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
 				local name = player:get_player_name()
 				if policetools_handsup[name] then
 					policetools_handsup[name] = nil
+					player:hud_set_flags({wielditem=true})
 					minetest.chat_send_player(name, "You put your hands down.")
 				else
 					if can_handsup(name) then
 						policetools_handsup[name] = true
+						player:hud_set_flags({wielditem=false})
 						minetest.chat_send_player(name, "You put your hands up.")
 					else
 						minetest.chat_send_player(name, "You cannot put your hands up at this time.")
