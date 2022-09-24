@@ -259,10 +259,10 @@ function handle_player_animations(dtime, player)
 	end
 	local name = player:get_player_name()
 	if cuffedplayers and cuffedplayers[name] then
-		bones.Arm_Left.euler_rotation = {x=-20,y=0,z=-25}
-		bones.Arm_Right.euler_rotation = {x=-20,y=0,z=25}
-		bones.Arm_Left.position.x = bones.Arm_Left.position.x - .75
-		bones.Arm_Right.position.x = bones.Arm_Right.position.x + .75
+		bones.Arm_Left.euler_rotation = {x=-20,y=0,z=-20}
+		bones.Arm_Right.euler_rotation = {x=-20,y=0,z=20}
+		bones.Arm_Left.position.x = bones.Arm_Left.position.x - .7
+		bones.Arm_Right.position.x = bones.Arm_Right.position.x + .7
 	elseif policetools_handsup and policetools_handsup[name] then
 		bones.Arm_Left.euler_rotation = {x=180,y=0,z=0}
 		bones.Arm_Right.euler_rotation = {x=180,y=0,z=0}
