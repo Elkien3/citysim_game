@@ -4,3 +4,6 @@ jobs?
 cars?
 basic_materials?
 mesecons_pressureplates?
+character_anim?
+player_api?
+unified_inventory?

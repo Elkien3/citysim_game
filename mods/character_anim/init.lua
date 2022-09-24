@@ -257,8 +257,16 @@ function handle_player_animations(dtime, player)
 		Head.y = Head.y + lag_behind
 		if interacting then Arm_Right.y = Arm_Right.y + lag_behind end
 	end
-	
-	if spriteguns and spriteguns.is_wielding_gun(player:get_player_name()) then
+	local name = player:get_player_name()
+	if cuffedplayers and cuffedplayers[name] then
+		bones.Arm_Left.euler_rotation = {x=-20,y=0,z=-25}
+		bones.Arm_Right.euler_rotation = {x=-20,y=0,z=25}
+		bones.Arm_Left.position.x = bones.Arm_Left.position.x - .75
+		bones.Arm_Right.position.x = bones.Arm_Right.position.x + .75
+	elseif policetools_handsup and policetools_handsup[name] then
+		bones.Arm_Left.euler_rotation = {x=180,y=0,z=0}
+		bones.Arm_Right.euler_rotation = {x=180,y=0,z=0}
+	elseif spriteguns and spriteguns.is_wielding_gun(name) then
 		local tempvertlook = math.rad(look_vertical)
 		local Rightval = vector.multiply(vector.dir_to_rotation(vector.rotate({x=0,y=0,z=1}, {x=tempvertlook,y=0,z=0})), 180/math.pi)
 		Rightval.x = Rightval.x + 85
@@ -283,6 +291,24 @@ function handle_player_animations(dtime, player)
 			bones.Leg_Left.euler_rotation = vector.subtract(bones.Leg_Left.euler_rotation, bones.Body.euler_rotation)
 			bones.Leg_Right.euler_rotation = vector.subtract(bones.Leg_Right.euler_rotation, bones.Body.euler_rotation)
 		end
+	elseif swordfighting and swordfighting.swordoffsets[name] then
+		local swordloc = swordfighting.swordoffsets[name]
+		local armpos = table.copy(bones.Arm_Right.position)
+		armpos.y = armpos.y + 14.5/2
+		armpos.x = -armpos.x
+		local sworddir = vector.direction(armpos, swordloc)
+		local swordrot = vector.multiply(vector.dir_to_rotation(sworddir), 180/math.pi)
+		swordrot.x = swordrot.x + 90
+		swordrot.y = -swordrot.y
+		bones.Arm_Right.euler_rotation = swordrot
+		armpos = table.copy(bones.Arm_Left.position)
+		armpos.y = armpos.y + 14.5/2
+		armpos.x = -armpos.x
+		sworddir = vector.direction(armpos, swordloc)
+		swordrot = vector.multiply(vector.dir_to_rotation(sworddir), 180/math.pi)
+		swordrot.x = swordrot.x + 90
+		swordrot.y = -swordrot.y
+		bones.Arm_Left.euler_rotation = swordrot
 	else
 		-- HACK assumes that Body is root & parent bone of Head, only takes rotation around X-axis into consideration
 		Head.x = normalize_angle(Head.x + Body.x)
@@ -295,7 +321,7 @@ function handle_player_animations(dtime, player)
 		end
 		Arm_Right.y = clamp(Arm_Right.y, conf.arm_right.yaw)
 	end
-
+	
 	-- Replace animation with serverside bone animation
 	for bone, values in pairs(bones) do
 		local overridden_values = player_animation.bone_positions[bone]

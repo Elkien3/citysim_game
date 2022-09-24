@@ -223,6 +223,72 @@ if knockout then
 	})
 end
 
+if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api") then
+	policetools_handsup = {}
+	local function can_handsup(name)
+		local player = minetest.get_player_by_name(name)
+		local disallowed_anims = {["lay"] = true, ["recumbantleft"] = true, ["recumbantright"] = true}
+		local control = player:get_player_control()
+		if player
+			and player:get_wielded_item():get_name() == ""
+			and not disallowed_anims[player_api.get_animation(player).animation]
+			and not control.RMB and not control.LMB and not control.aux1
+		then return true
+		else return false
+		end
+	end
+	minetest.register_globalstep(function(dtime)
+		for name, val in pairs(policetools_handsup) do
+			if not can_handsup(name) then
+				if minetest.get_player_by_name(name) then
+					minetest.chat_send_player(name, "You put your hands down.")
+				end
+				policetools_handsup[name] = nil
+			end
+		end
+	end)
+	local chatcommand =  {
+        params = "",  -- Short parameter description
+        description = "Put your hands up. (hands must be empty)",  -- Full description
+        func = function(name, param)
+			if policetools_handsup[name] then
+				policetools_handsup[name] = nil
+				return true, "You put your hands down."
+			else
+				if can_handsup(name) then
+					policetools_handsup[name] = true
+					return true, "You put your hands up."
+				else
+					return true, "You cannot put your hands up at this time."
+				end
+			end
+        end
+    }
+	minetest.register_chatcommand("handsup", chatcommand)
+	minetest.register_chatcommand("hu", chatcommand)
+	if unified_inventory then
+		unified_inventory.register_button("policetools_handsup", {
+			type = "image",
+			image = "policetools_handsup.png",
+			tooltip = "Put your hands up (hands must be empty)",
+			action = function(player)
+				local name = player:get_player_name()
+				if policetools_handsup[name] then
+					policetools_handsup[name] = nil
+					minetest.chat_send_player(name, "You put your hands down.")
+				else
+					if can_handsup(name) then
+						policetools_handsup[name] = true
+						minetest.chat_send_player(name, "You put your hands up.")
+					else
+						minetest.chat_send_player(name, "You cannot put your hands up at this time.")
+					end
+				end
+			end,
+		})
+	end
+end
+
 if jobs then
 	dofile(minetest.get_modpath("policetools").."/computer.lua")
 end
