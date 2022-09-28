@@ -1,23 +1,3 @@
-local orig_cactus_func = default.grow_cactus
-default.grow_cactus = function(pos, node)
-	local factor = 1/get_growth_multiplier(pos, "default:cactus")
-	if math.random(4) <= factor then
-		return orig_cactus_func(pos, node)
-	else
-		return
-	end
-end
-
-local orig_papyrus_func = default.grow_papyrus
-default.grow_papyrus = function(pos, node)
-	local factor = 2/get_growth_multiplier(pos, "default:papyrus")
-	if math.random(4) <= factor then
-		return orig_papyrus_func(pos, node)
-	else
-		return
-	end
-end
-
 local function get_growth_multiplier(pos, name)
 	local id = minetest.get_biome_data(pos).biome
 	local biome_name = minetest.get_biome_name(id)
@@ -44,6 +24,26 @@ local function get_growth_multiplier(pos, name)
 		multiplier = multiplier*2
 	end
 	return multiplier
+end
+
+local orig_cactus_func = default.grow_cactus
+default.grow_cactus = function(pos, node)
+	local factor = 1/get_growth_multiplier(pos, "default:cactus")
+	if math.random(4) <= factor then
+		return orig_cactus_func(pos, node)
+	else
+		return
+	end
+end
+
+local orig_papyrus_func = default.grow_papyrus
+default.grow_papyrus = function(pos, node)
+	local factor = 2/get_growth_multiplier(pos, "default:papyrus")
+	if math.random(4) <= factor then
+		return orig_papyrus_func(pos, node)
+	else
+		return
+	end
 end
 
 local function overwrite_trees()
