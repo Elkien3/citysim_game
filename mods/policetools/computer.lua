@@ -790,6 +790,7 @@ minetest.register_node("policetools:computer", {--using homedecor television
 	light_source = default.LIGHT_MAX - 2,
 	groups = { snappy = 3 },
 	sounds = default.node_sound_wood_defaults(),
+	paramtype2 = "facedir",
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 		if clicker:is_player() then
 			show_police_formspec(clicker:get_player_name())
