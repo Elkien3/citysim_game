@@ -634,6 +634,7 @@ minetest.register_node("frisk:metal_detector", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
+	groups = { cracky = 1 },
 	node_box = {
 		type = "fixed",
 		fixed = {
