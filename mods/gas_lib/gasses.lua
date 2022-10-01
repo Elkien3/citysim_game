@@ -55,7 +55,36 @@ minetest.register_abm{
 	interval=4,
 	chance=1,
 	action=function(pos)
-		local newpos = minetest.find_node_near(pos, 1, "air")
+		--prefer to spawn smoke above the item
+		local newpos = vector.offset(pos, 0, 1, 0)
+		minetest.chat_send_all(minetest.pos_to_string(newpos))
+		if minetest.get_node(newpos).name ~= "air" then
+			newpos = nil
+		end
+		if newpos == nil then--prefer behind for things with a facedir
+			local node = minetest.get_node(pos)
+			local def = minetest.registered_nodes[node.name]
+			if def and def.paramtype2 and def.paramtype2 == "facedir" then
+				local dir = minetest.facedir_to_dir(node.param2)
+				newpos = vector.add(pos, dir)
+				if minetest.get_node(newpos).name ~= "air" then
+					newpos = nil
+				end
+			end
+		end
+		if newpos == nil then--small search
+			newpos = minetest.find_node_near(pos, 1, "air")
+		end
+		if newpos == nil then--larger search
+			local newpos = minetest.find_node_near(pos, 4, "air")
+		end
+		if newpos == nil and math.random(20) == 1 then--chance to start a fire
+			local newpos = minetest.find_node_near(pos, 5, "group:flammable")
+			if newpos then
+				minetest.add_node(newpos, {name = "fire:basic_flame"})
+			end
+			return
+		end
 		if newpos and math.random(1, minetest.get_item_group(minetest.get_node(pos).name, "smokey"))==1 then
 			minetest.add_node(newpos, {name = "gas_lib:smoke"})
 		end
