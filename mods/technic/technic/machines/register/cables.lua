@@ -117,6 +117,8 @@ local function clear_networks(pos)
 	end
 end
 
+technic.clear_networks = clear_networks
+
 local function item_place_override_node(itemstack, placer, pointed, node)
 	-- Call the default on_place function with a fake itemstack
 	local temp_itemstack = ItemStack(itemstack)

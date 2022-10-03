@@ -67,7 +67,7 @@ minetest.register_craft({
 		{'technic:stainless_steel_ingot', 'default:diamond', 'technic:stainless_steel_ingot'},
 	}
 })
---[[
+
 minetest.register_craft({
 	output = 'technic:green_energy_crystal',
 	recipe = {
@@ -85,7 +85,7 @@ minetest.register_craft({
 		{'dye:blue', 'technic:battery', 'moreores:mithril_ingot'},
 	}
 })
---]]
+
 minetest.register_craft({
 	output = 'technic:red_energy_crystal',
 	recipe = {
