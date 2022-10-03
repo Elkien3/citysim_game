@@ -179,6 +179,7 @@ local function normalize_rotation(euler_rotation)
 end
 
 function handle_player_animations(dtime, player)
+	if not player or not player:get_properties() then return end
 	local mesh = player:get_properties().mesh
 	local model = models[mesh]
 	if not model then
