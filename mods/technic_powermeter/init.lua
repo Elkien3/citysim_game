@@ -162,6 +162,9 @@ local run = function(pos1, node)
 	local network = network_hash and minetest.get_position_from_hash(network_hash)
 	local sw_pos = network and {x=network.x,y=network.y+1,z=network.z}
 	if not sw_pos or not minetest.get_node(sw_pos).name == "technic:switching_station" then
+		if to then
+			meta2:set_int(to.."_EU_supply", 0)
+		end
 		if from then
 			meta1:set_int(from.."_EU_demand", 0)
 		end
@@ -177,6 +180,9 @@ local run = function(pos1, node)
 	if not sw_pos2 or not minetest.get_node(sw_pos2).name == "technic:switching_station" then
 		if to then
 			meta2:set_int(to.."_EU_supply", 0)
+		end
+		if from then
+			meta1:set_int(from.."_EU_demand", 0)
 		end
 		return
 	end
