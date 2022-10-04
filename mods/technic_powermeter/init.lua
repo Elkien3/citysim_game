@@ -126,7 +126,7 @@ local run = function(pos1, node)
 	local dir = minetest.facedir_to_dir(node.param2)
 	local pos2 = vector.add(pos1, dir)
 	local node2 = minetest.get_node_or_nil(pos2)
-	if not node2 or node.name ~= "technic_powermeter:meter_bottom" or node.param2 ~= node2.param2 then
+	if not node2 or node.name ~= "technic_powermeter:meter_top" or node.param2 ~= node2.param2 then
 		return
 	end
 	--pos1 is bottom/recieving pos2 is top/producing
@@ -145,7 +145,7 @@ local run = function(pos1, node)
 	meta2:set_int("HV_EU_timeout", 2)
 	
 	if bought == 0 then
-		meta1:set_string("infotext", S("@1 (@2)", machine_name, technic.EU_string(bought)))
+		meta1:set_string("infotext", S("@1 (owned by @2) (@3)", machine_name, meta1:get_string("owner"), technic.EU_string(bought)))
 		if from then
 			meta1:set_int(from.."_EU_demand", 0)
 			meta1:set_int(from.."_EU_supply", 0)
@@ -196,14 +196,14 @@ local run = function(pos1, node)
 		else
 			bought = bought - input
 		end
-		meta1:set_int(from.."_EU_demand", demand)--perhaps i need to update the switching station here?
+		meta1:set_int(from.."_EU_demand", demand)
 		meta1:set_int(from.."_EU_supply", 0)
 		meta2:set_int(to.."_EU_demand", 0)
 		meta2:set_int(to.."_EU_supply", input)
 		meta1:set_int("bought", bought)
-		meta1:set_string("infotext", S("@1 (@2)", machine_name, technic.EU_string(bought)))
+		meta1:set_string("infotext", S("@1 (owned by @2) (@3)", machine_name, meta1:get_string("owner"), technic.EU_string(bought)))
 	else
-		meta1:set_string("infotext", S("%s Has Bad Cabling"):format(machine_name))
+		meta1:set_string("infotext", S("@1 (owned by @2) Has Bad Cabling (@3)", machine_name, meta1:get_string("owner"), technic.EU_string(bought)))
 		if to then
 			meta2:set_int(to.."_EU_supply", 0)
 		end
