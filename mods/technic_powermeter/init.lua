@@ -126,7 +126,7 @@ local run = function(pos1, node)
 	local dir = minetest.facedir_to_dir(node.param2)
 	local pos2 = vector.add(pos1, dir)
 	local node2 = minetest.get_node_or_nil(pos2)
-	if not node2 or node.name ~= "technic_powermeter:meter_top" or node.param2 ~= node2.param2 then
+	if not node2 or node2.name ~= "technic_powermeter:meter_top" or node.param2 ~= node2.param2 then
 		return
 	end
 	--pos1 is bottom/recieving pos2 is top/producing
