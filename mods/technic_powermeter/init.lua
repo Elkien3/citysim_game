@@ -95,7 +95,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				bought = bought+meta:get_int("bought")
 				meta:set_int("bought", bought)
 			else
-				minetest.chat_send_player(name, "Meter is full and cannot fit payment, contact pump owner.")
+				minetest.chat_send_player(name, "Meter is full and cannot fit payment, contact meter owner.")
 			end
 		end
 	end
@@ -161,7 +161,12 @@ local run = function(pos1, node)
 	local network_hash = technic.cables[minetest.hash_node_position(pos2)]
 	local network = network_hash and minetest.get_position_from_hash(network_hash)
 	local sw_pos = network and {x=network.x,y=network.y+1,z=network.z}
-	if not sw_pos or not minetest.get_node(sw_pos).name == "technic:switching_station" then return end
+	if not sw_pos or not minetest.get_node(sw_pos).name == "technic:switching_station" then
+		if from then
+			meta1:set_int(from.."_EU_demand", 0)
+		end
+		return
+	end
 	local sw_meta = minetest.get_meta(sw_pos)
 	local demand = sw_meta:get_int("demand")
 	local supply = sw_meta:get_int("supply")
@@ -169,7 +174,12 @@ local run = function(pos1, node)
 	network_hash = technic.cables[minetest.hash_node_position(pos1)]
 	network = network_hash and minetest.get_position_from_hash(network_hash)
 	local sw_pos2 = network and {x=network.x,y=network.y+1,z=network.z}
-	if not sw_pos2 or not minetest.get_node(sw_pos2).name == "technic:switching_station" then return end
+	if not sw_pos2 or not minetest.get_node(sw_pos2).name == "technic:switching_station" then
+		if to then
+			meta2:set_int(to.."_EU_supply", 0)
+		end
+		return
+	end
 
 	if from and to and from==to and not vector.equals(sw_pos, sw_pos2) then
 		local input = meta1:get_int(from.."_EU_input")
@@ -181,7 +191,7 @@ local run = function(pos1, node)
 		else
 			bought = bought - input
 		end
-		meta1:set_int(from.."_EU_demand", demand)
+		meta1:set_int(from.."_EU_demand", demand)--perhaps i need to update the switching station here?
 		meta1:set_int(from.."_EU_supply", 0)
 		meta2:set_int(to.."_EU_demand", 0)
 		meta2:set_int(to.."_EU_supply", input)
@@ -190,7 +200,7 @@ local run = function(pos1, node)
 	else
 		meta1:set_string("infotext", S("%s Has Bad Cabling"):format(machine_name))
 		if to then
-			meta1:set_int(to.."_EU_supply", 0)
+			meta2:set_int(to.."_EU_supply", 0)
 		end
 		if from then
 			meta1:set_int(from.."_EU_demand", 0)
