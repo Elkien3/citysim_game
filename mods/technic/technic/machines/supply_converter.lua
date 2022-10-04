@@ -14,7 +14,7 @@ local S = technic.getter
 local cable_entry = "^technic_cable_connection_overlay.png"
 
 local function set_supply_converter_formspec(meta)
-	local formspec = "size[5,2.25]"..
+	local formspec = "size[5,3]"..
 		"field[0.3,0.5;2,1;power;"..S("Input Power")..";"..meta:get_int("power").."]"
 	if digilines_path then
 		formspec = formspec..
@@ -34,6 +34,11 @@ local function set_supply_converter_formspec(meta)
 	else
 		formspec = formspec.."button[0,1.75;5,1;disable;"..S("%s Enabled"):format(S("Supply Converter")).."]"
 	end
+	if meta:get_int("autoenabled") == 0 then
+		formspec = formspec.."button[0,2.5;5,1;autoenable;"..S("%s Disabled"):format(S("Automatic mode")).."]"
+	else
+		formspec = formspec.."button[0,2.5;5,1;autodisable;"..S("%s Enabled"):format(S("Automatic mode")).."]"
+	end
 	meta:set_string("formspec", formspec)
 end
 
@@ -46,6 +51,7 @@ local supply_converter_receive_fields = function(pos, formname, fields, sender)
 		power = math.min(power, 10000)
 		power = 100 * math.floor(power / 100)
 		if power == meta:get_int("power") then power = nil end
+		meta:set_int("autoenabled", 0)
 	end
 	if power then meta:set_int("power", power) end
 	if fields.channel then meta:set_string("channel", fields.channel) end
@@ -53,6 +59,8 @@ local supply_converter_receive_fields = function(pos, formname, fields, sender)
 	if fields.disable then meta:set_int("enabled", 0) end
 	if fields.mesecon_mode_0 then meta:set_int("mesecon_mode", 0) end
 	if fields.mesecon_mode_1 then meta:set_int("mesecon_mode", 1) end
+	if fields.autoenable then meta:set_int("autoenabled", 1) end
+	if fields.autodisable then meta:set_int("autoenabled", 0) end
 	set_supply_converter_formspec(meta)
 end
 
@@ -104,8 +112,17 @@ local digiline_def = {
 				power = math.min(power, 10000)
 				power = 100 * math.floor(power / 100)
 				meta:set_int("power", power)
+				meta:set_int("autoenabled", 0)
 			elseif msg:sub(1, 12) == "mesecon_mode" then
 				meta:set_int("mesecon_mode", tonumber(msg:sub(14)))
+			elseif msg == "autoenable" then
+				meta:set_int("autoenabled", 1)
+			elseif msg == "autodisable" then
+				meta:set_int("autoenabled", 0)
+			elseif msg == "autotoggle" then
+				local onn = meta:get_int("autoenabled")
+				onn = 1-onn -- Mirror onn with pivot 0.5, so switch between 1 and 0.
+				meta:set_int("autoenabled", onn)
 			else
 				return
 			end
@@ -133,7 +150,6 @@ local run = function(pos, node, run_stage)
 		enabled = enabled == "1"
 	end
 	enabled = enabled and (meta:get_int("mesecon_mode") == 0 or meta:get_int("mesecon_effect") ~= 0)
-	local demand = enabled and meta:get_int("power") or 0
 
 	local pos_up        = {x=pos.x, y=pos.y+1, z=pos.z}
 	local pos_down      = {x=pos.x, y=pos.y-1, z=pos.z}
@@ -142,6 +158,25 @@ local run = function(pos, node, run_stage)
 
 	local from = technic.get_cable_tier(name_up)
 	local to   = technic.get_cable_tier(name_down)
+	
+	if enabled and meta:get_int("autoenabled") == 1 then
+		local lowdemand = 0
+		local lowsupply = 0
+		local network_hash = technic.cables[minetest.hash_node_position(pos_down)]
+		local network = network_hash and minetest.get_position_from_hash(network_hash)
+		local sw_pos = network and vector.offset(network, 0, 1, 0)
+		if sw_pos and minetest.get_node(sw_pos).name == "technic:switching_station" then
+			local sw_meta = minetest.get_meta(sw_pos)
+			lowdemand = sw_meta:get_int("demand")
+			lowsupply = sw_meta:get_int("supply")
+			if lowsupply > 0 then
+				lowdemand = math.max(lowdemand - (lowsupply-meta:get_int(to.."_EU_supply")), 0)
+			end
+		end
+		meta:set_int("power", math.ceil(lowdemand/remain))
+	end
+	
+	local demand = enabled and meta:get_int("power") or 0
 
 	if from and to then
 		local input = meta:get_int(from.."_EU_input")
