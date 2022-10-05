@@ -1,0 +1,7 @@
+controls
+playercontrol
+player_api
+interacthandler
+character_anim?
+3d_armor?
+default?

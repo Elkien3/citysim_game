@@ -1,2 +1,0 @@
-Sounds: Elkien3, CC0
-Texture: AndrejIT, CC BY-SA 3.0

@@ -1,0 +1,5 @@
+sounds:
+	human-heartbeat-daniel_simon: License: Attribution 3.0 Recorded by Daniel Simion
+	
+code: CC-BY-SA
+textures: CC-BY-SA
