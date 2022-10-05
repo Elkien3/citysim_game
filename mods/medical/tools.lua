@@ -85,7 +85,7 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 					player:hud_set_flags({wielditem=true})
 					--medical.feeling[cname] = nil
 				end
-			end, "RMB", cname
+			end, "RMB", cname, sname
 		)
 	else
 		local temptex = "temp_normal.png"
@@ -135,7 +135,7 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 					player:hud_set_flags({wielditem=true})
 					--medical.feeling[cname] = nil
 				end
-			end, "RMB", cname
+			end, "RMB", cname, sname
 		)
 	end
 	return true

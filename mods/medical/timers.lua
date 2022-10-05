@@ -1,6 +1,6 @@
 medical.timers = {}
 
-function medical.start_timer(name, length, loop, arg, func, stoparg, stopfunc, cancel_on_release, cancel_owner)
+function medical.start_timer(name, length, loop, arg, func, stoparg, stopfunc, cancel_on_release, cancel_owner, cancel_target)
 	local index
 	if name then
 		index = name
@@ -25,8 +25,16 @@ function medical.start_timer(name, length, loop, arg, func, stoparg, stopfunc, c
 	if cancel_owner and cancel_on_release then
 		medical.timers[index].cancel_on_release = cancel_on_release
 		medical.timers[index].cancel_owner = cancel_owner
+		medical.timers[index].cancel_target = cancel_target
 		local player = minetest.get_player_by_name(cancel_owner)
-		if player and not medical.lookingplayer[cancel_owner] then medical.lookingplayer[cancel_owner] = {dir = player:get_look_dir(), pos = player:get_pos()} end
+		local targetdir
+		local targetpos
+		local targetplayer = cancel_target and minetest.get_player_by_name(cancel_target)
+		if targetplayer then
+			targetdir = targetplayer:get_look_dir()
+			targetpos = targetplayer:get_pos()
+		end
+		if player and not medical.lookingplayer[cancel_owner] then medical.lookingplayer[cancel_owner] = {dir = player:get_look_dir(), pos = player:get_pos(), tdir = targetdir, tpos = targetpos, tplayer = cancel_target} end
 	end
 	return index
 end
@@ -60,7 +68,7 @@ minetest.register_globalstep(function(dtime)
 				timer.func(timer.arg)
 			end
 			if timer.loop then
-				medical.start_timer(index, timer.length, timer.loop, timer.arg, timer.func, timer.stoparg, timer.stopfunc, timer.cancel_on_release, timer.cancel_owner)
+				medical.start_timer(index, timer.length, timer.loop, timer.arg, timer.func, timer.stoparg, timer.stopfunc, timer.cancel_on_release, timer.cancel_owner, timer.cancel_target)
 			else
 				medical.stop_timer(index)
 			end

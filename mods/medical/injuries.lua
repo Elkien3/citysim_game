@@ -169,9 +169,9 @@ function medical.injury_handle(player, clicker, rightclick, tool, hitlimb, finis
 		key = "RMB"
 	end
 	if stepdef.time then
-		medical.start_timer(cname, stepdef.time, false, {player, clicker, rightclick, tool, hitlimb, true}, medical.injury_handle, stoparg, stopfunc, key, cname)
+		medical.start_timer(cname, stepdef.time, false, {player, clicker, rightclick, tool, hitlimb, true}, medical.injury_handle, stoparg, stopfunc, key, cname, name)
 	else
-		medical.start_timer(cname, 0, false, {player, clicker, rightclick, tool, hitlimb, true}, medical.injury_handle, stoparg, stopfunc, key, cname)
+		medical.start_timer(cname, 0, false, {player, clicker, rightclick, tool, hitlimb, true}, medical.injury_handle, stoparg, stopfunc, key, cname, name)
 	end
 end
 

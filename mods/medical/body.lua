@@ -66,6 +66,10 @@ end
 
 local dragging_tbl = {}--indexed by dragger name, draggee name is value
 
+function medical.is_dragging(name)
+	return dragging_tbl[name]
+end
+
 function medical.detach(name, cname)
 	if not cname then
 		for cname2, name2 in pairs(dragging_tbl) do
@@ -78,7 +82,7 @@ function medical.detach(name, cname)
 	local drag_player = minetest.get_player_by_name(name)
 	local dragging_player = minetest.get_player_by_name(cname)
 	if drag_player then
-		drag_player:set_detach()--todo put in car if nearby
+		drag_player:set_detach()
 		if not default.player_attached[name] then
 			local draggeryaw = dragging_player:get_look_horizontal()
 			draggeryaw = draggeryaw-math.pi
