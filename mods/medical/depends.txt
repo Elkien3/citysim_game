@@ -5,3 +5,4 @@ interacthandler
 character_anim?
 3d_armor?
 default?
+beds?

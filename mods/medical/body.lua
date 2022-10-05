@@ -94,6 +94,20 @@ function medical.detach(name, cname)
 	dragging_tbl[cname] = nil
 end
 
+if beds then
+	local original = beds.on_rightclick
+	beds.on_rightclick = function(pos, player)
+		local cname = player:get_player_name()
+		local name = dragging_tbl[cname]
+		local newplayer = player
+		if name and minetest.get_player_by_name(name) then
+			newplayer = minetest.get_player_by_name(name)
+			medical.detach(name, cname)
+		end
+		return original(pos, newplayer)
+	end
+end
+
 controls.register_on_release(function(player, key, time)
 	local name = player:get_player_name()
 	if dragging_tbl[name] and key == "sneak" then
