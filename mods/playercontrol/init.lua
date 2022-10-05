@@ -70,6 +70,10 @@ minetest.register_privilege("pvp", {
     description = "Can do full pvp damage",
     give_to_singleplayer = false
 })
+minetest.register_privilege("refer", {
+    description = "You can be referred by another player",
+    give_to_singleplayer = false
+})
 
 minetest.register_on_newplayer(function(player)
 	local name = player:get_player_name()
@@ -78,6 +82,7 @@ minetest.register_on_newplayer(function(player)
 	set_timer(name, "lockpick", 2*60)
 	set_timer(name, "griefing", 2*60)
 	set_timer(name, "voting", 2*60)
+	set_timer(name, "refer", 2*60)
 end)
 
 minetest.register_chatcommand("set_playercontrol_timer", {
@@ -123,6 +128,16 @@ timerfunctions["pvp"] = function(name)
 	privs.pvp = true
 	minetest.set_player_privs(name, privs)
 	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'pvp' privilege.")
+end
+timerfunctions["refer"] = function(name)
+	if not minetest.registered_privileges["refer"] then return end
+	local privs = minetest.get_player_privs(name)
+	if referral_complete then referral_complete(name) else
+		minetest.log("warning", "playercontrol: failed to complete refer of "..name)
+	end
+	if not privs.refer then return end
+	privs.refer = false
+	minetest.set_player_privs(name, privs)
 end
 timerfunctions["lockpick"] = function(name)
 	if not minetest.registered_privileges["lockpick"] then return end
@@ -194,7 +209,7 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 	end
 	effects[effect][modname] = value
 	if effect == "speed" then
-			finalval = 1
+			local finalval = 1
 			for i, val in pairs(effects[effect]) do
 				finalval = finalval*val
 			end
@@ -203,7 +218,7 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 			end
 			return finalval
 	elseif effect == "jump" then
-		finalval = 1
+		local finalval = 1
 		for i, val in pairs(effects[effect]) do
 			finalval = finalval*val
 		end
@@ -212,7 +227,7 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 		end
 		return finalval
 	elseif effect == "fov" then
-		finalval = 72--assuming client's default fov is 72, meh.
+		local finalval = 72--assuming client's default fov is 72, meh.
 		for i, val in pairs(effects[effect]) do
 			finalval = finalval*(val/72)
 		end
@@ -222,7 +237,7 @@ playercontrol.set_effect = function(name, effect, value, modname, apply)
 		end
 		return finalval
 	elseif effect == "gunwag" then
-		finalval = 0
+		local finalval = 0
 		for i, val in pairs(effects[effect]) do
 			finalval = finalval+val
 		end
