@@ -1558,6 +1558,15 @@ function car_rightclick(self, clicker, closeid)
 				return
 			end
 		end
+		--medical support
+		if medical then
+			local draggedname = medical.is_dragging(name)
+			if draggedname and minetest.get_player_by_name(draggedname) then
+				medical.detach(draggedname, name)
+				minetest.after(.1, function() car_rightclick(self, minetest.get_player_by_name(draggedname), closeid) end)
+				return
+			end
+		end
 		if DEBUG_TEXT then
 			minetest.chat_send_all(tostring(closeid))
 		end
