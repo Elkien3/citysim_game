@@ -1,92 +1,3 @@
-minetest.register_node("cars:engine", {
-	description = "Car Engine",
-	tiles = {"engine.png"}, 
-})
-minetest.register_node("cars:transmission", {
-	description = "Car Transmission",
-	tiles = {"transmission.png"}, 
-})
-minetest.register_node("cars:seat", {
-	description = "Car Seat",
-	tiles = {"seat.png"}, 
-})
-minetest.register_node("cars:wheel", {
-	description = "Car Wheel",
-	tiles = {"wheel.png"}, 
-})
-
-if minetest.get_modpath("assembler") and minetest.get_modpath("technic") and minetest.get_modpath("mesecons_pistons") then
-	minetest.register_craft({
-		output = "cars:engine",
-		recipe = {
-			{"", "moreores:mithril_block", "pipeworks:tube_1", "moreores:mithril_block", ""},
-			{"default:obsidian_shard", "mesecons_pistons:piston_normal_off", "pipeworks:tube_1", "", "default:obsidian_shard"},
-			{"default:mese_crystal", "", "pipeworks:tube_1", "mesecons_pistons:piston_normal_off", "default:mese_crystal"},
-			{"basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:motor"},
-			{"", "", "", "", "technic:lv_battery_box0"}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:transmission",
-		recipe = {
-			{"", "", "", "basic_materials:steel_bar", ""},
-			{"", "basic_materials:gear_steel", "basic_materials:steel_bar", "", "technic:control_logic_unit"},
-			{"basic_materials:gear_steel", "default:obsidian", "basic_materials:gear_steel", "", "technic:control_logic_unit"},
-			{"", "basic_materials:gear_steel", "", "", ""},
-			{"basic_materials:steel_bar", "basic_materials:gear_steel", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar"}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:seat",
-		recipe = {
-			{"", "group:wool"},
-			{"group:wool", "group:wool"},
-			{"basic_materials:steel_bar", "basic_materials:steel_bar"}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:wheel",
-		recipe = {
-			{"technic:rubber", "technic:rubber", "technic:rubber"},
-			{"technic:rubber", "default:steel_ingot", "technic:rubber"},
-			{"technic:rubber", "technic:rubber", "technic:rubber"}
-		}
-	})
-else
-	minetest.register_craft({
-		output = "cars:engine",
-		recipe = {
-			{"default:obsidian", "default:mese", "default:copper_ingot"},
-			{"", "default:obsidian_shard", "default:copper_ingot"},
-			{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:transmission",
-		recipe = {
-			{"", "default:obsidian_shard", ""},
-			{"default:obsidian_shard", "default:obsidian", "default:obsidian_shard"},
-			{"", "default:obsidian_shard", ""}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:seat",
-		recipe = {
-			{"", "group:wool"},
-			{"group:wool", "group:wool"},
-			{"default:steel_ingot", "default:steel_ingot"}
-		}
-	})
-	minetest.register_craft({
-		output = "cars:wheel",
-		recipe = {
-			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"},
-			{"default:obsidian_shard", "default:steel_ingot", "default:obsidian_shard"},
-			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"}
-		}
-	})
-end
-
 local sedandef = {
 		name = "cars:sedan",
 		description = "Sedan",
@@ -121,7 +32,7 @@ local sedandef = {
 			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
 			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
 		},--]]
-		craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+		craftschems = {"sedan1", "sedan2", "sedan3", "sedan4"},
 		inventory_image = "inv_car_grey.png",
 		initial_properties = {
 			hp_max = 20,
@@ -152,12 +63,12 @@ policecardef.horn = "uralhorn"
 policecardef.lights = "copcar"
 policecardef.acceleration = 5.5
 policecardef.max_speed = 26.8224
-policecardef.craftschems = {"police_sedan", "police_sedan1", "police_sedan2", "police_sedan3"}
 policecardef.max_force_offroad = 2
 policecardef.initial_properties.mesh = "copcar.b3d"
 policecardef.initial_properties.textures = {'copcaruv.png'}
 policecardef.inventory_image = "inv_car_grey.png"
 policecardef.policecomputer = true
+policecardef.craftschems = {"police_sedan1", "police_sedan2", "police_sedan3", "police_sedan4"}
 cars_register_car(policecardef)
 policecardef = nil
 
@@ -196,7 +107,7 @@ local vandef = {
 	rpmvalues = {{16, 16, .5}, {10, 10, .4}, {0, 5, .3}},
 	enginesound = "longerenginefaded",
 	ignitionsound = "ignition",
-	craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+	craftschems = {"van1", "van2", "van3", "van4"},
 	inventory_image = "inv_car_grey.png",
 	initial_properties = {
 		hp_max = 20,
@@ -337,7 +248,7 @@ local truckdef = {
 			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
 			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
 		},--]]
-		--craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+		craftschems = {"truck1", "truck2", "truck3", "truck4"},
 		inventory_image = "inv_car_grey.png",
 		initial_properties = {
 			hp_max = 20,
@@ -358,6 +269,7 @@ local truckdef = {
 cars_register_car(table.copy(truckdef))
 truckdef.mesh = "towtruck.b3d"
 truckdef.name = "cars:towtruck"
+truckdef.craftschems = {"towtruck1", "towtruck2", "towtruck3", "towtruck4"}
 truckdef.description = "Tow Truck"
 truckdef.trunksize = {x=0,y=0}
 truckdef.towloc = {x=0,y=25,z=-33.475}
@@ -406,7 +318,7 @@ local jackhammerdef = {
 			{"default:steel_ingot", "default:wood", "default:steel_ingot"},
 			{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"}
 		},--]]
-		--craftschems = {"sedan", "sedan1", "sedan2", "sedan3"},
+		craftschems = {"jackhammer1", "jackhammer2", "jackhammer3", "jackhammer4"},
 		inventory_image = "inv_car_grey.png",
 		drill = {
 			{},

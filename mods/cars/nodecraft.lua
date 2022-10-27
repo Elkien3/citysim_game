@@ -49,44 +49,118 @@ function schems_match(schem1, schem2)
 	return true
 end
 
-local search_radius = 1
-
-minetest.register_tool("cars:welding_torch", {
-    description = "Welding Torch",
-    inventory_image = "default_torch.png",
-	on_use = function(itemstack, user, pointed_thing)
-		if not pointed_thing.under then return end
-		local pos = pointed_thing.under
-		local node = minetest.get_node(pos)
-		local pos1 = vector.subtract(pos, search_radius)
-		local pos2 = vector.add(pos, search_radius)
-		local nodes = minetest.find_nodes_in_area(pos1, pos2, {"bones:bones"})
-		for nodeid, nodepos in pairs(nodes) do
-			node = minetest.get_node(nodepos)
-			for carname, def in pairs(cars_registered_cars) do
-				if not def.craftschems then goto next end
-				local schematics = {}
-				for i, schemname in pairs(def.craftschems) do
-					table.insert(schematics, read_schem(schemname) or nil)
-				end
-				for schemid, schem in pairs(schematics) do
-					for dataid, data in pairs(schem.data) do
-						if data.name == node.name then
-							local size = vector.subtract(schem.size, 1)
-							local area = VoxelArea:new{MinEdge = {x=0,y=0,z=0}, MaxEdge = size}
-							local offset = area:position(dataid)
-							local worldschem = make_luaschem(vector.subtract(nodepos, offset), vector.add(vector.subtract(nodepos, offset), size))
-							if schems_match(schem, worldschem) then
-								worldedit.set(vector.subtract(nodepos, offset), vector.add(vector.subtract(nodepos, offset), size), "air")
-								local ent = minetest.add_entity(vector.add(vector.subtract(nodepos, offset), vector.multiply(size, .5)), carname, user:get_player_name())
-								ent:setyaw(minetest.dir_to_yaw(minetest.facedir_to_dir(node.param2))-math.pi)
-								return
-							end
-						end
-					end
-				end
-				::next::
-			end
-		end
-	end,
+minetest.register_node("cars:engine", {
+	description = "Car Engine",
+	tiles = {"engine_top.png", "engine_top.png", "engine_side2.png", "engine_side.png", "engine_rear.png", "engine_front.png"},
+	paramtype = "light",
+	groups = {cracky = 2},
+	paramtype2 = "facedir",
 })
+minetest.register_node("cars:transmission", {
+	description = "Car Transmission",
+	tiles = {"transmission.png", "transmission.png", "transmission_side.png", "transmission_side.png", "transmission.png", "transmission.png"},
+	paramtype = "light",
+	groups = {cracky = 2},
+	paramtype2 = "facedir",
+})
+minetest.register_node("cars:seat", {
+	description = "Car Seat",
+	drawtype = "nodebox",
+	tiles = {"wool_black.png", "wool_black.png", "wool_black.png", "wool_black.png", "wool_black.png", "wool_black.png"},
+	paramtype = "light",
+	paramtype2 = "facedir",
+	groups = {snappy = 2, choppy = 2, oddly_breakable_by_hand = 3, wool = 1},
+	sounds = default.node_sound_defaults(),
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.375, -0.5, -0.5, 0.375, -0.3125, 0.5}, -- NodeBox1
+			{-0.375, -0.5, 0.3125, 0.375, 0.5, 0.5}, -- NodeBox2
+		}
+	}
+})
+
+minetest.register_node("cars:wheel", {
+	description = "Car Wheel",
+	tiles = {"wheel_top.png", "wheel_top.png", "wheel_side.png", "wheel_side.png", "wheel_side.png", "wheel_side.png"},
+	paramtype = "light",
+	paramtype2 = "facedir",
+	drawtype = "nodebox",
+	groups = {oddly_breakable_by_hand = 3},
+	node_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+	},
+})
+
+if minetest.get_modpath("assembler") and minetest.get_modpath("technic") and minetest.get_modpath("mesecons_pistons") then
+	minetest.register_craft({
+		output = "cars:engine",
+		recipe = {
+			{"", "moreores:mithril_block", "pipeworks:tube_1", "moreores:mithril_block", ""},
+			{"default:obsidian_shard", "mesecons_pistons:piston_normal_off", "pipeworks:tube_1", "", "default:obsidian_shard"},
+			{"default:mese_crystal", "", "pipeworks:tube_1", "mesecons_pistons:piston_normal_off", "default:mese_crystal"},
+			{"basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:motor"},
+			{"", "", "", "", "technic:lv_battery_box0"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:transmission",
+		recipe = {
+			{"", "", "", "basic_materials:steel_bar", ""},
+			{"", "basic_materials:gear_steel", "basic_materials:steel_bar", "", "technic:control_logic_unit"},
+			{"basic_materials:gear_steel", "default:obsidian", "basic_materials:gear_steel", "", "technic:control_logic_unit"},
+			{"", "basic_materials:gear_steel", "", "", ""},
+			{"basic_materials:steel_bar", "basic_materials:gear_steel", "basic_materials:steel_bar", "basic_materials:steel_bar", "basic_materials:steel_bar"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:seat",
+		recipe = {
+			{"", "group:wool"},
+			{"group:wool", "group:wool"},
+			{"basic_materials:steel_bar", "basic_materials:steel_bar"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:wheel",
+		recipe = {
+			{"technic:rubber", "technic:rubber", "technic:rubber"},
+			{"technic:rubber", "default:steel_ingot", "technic:rubber"},
+			{"technic:rubber", "technic:rubber", "technic:rubber"}
+		}
+	})
+else
+	minetest.register_craft({
+		output = "cars:engine",
+		recipe = {
+			{"default:obsidian", "default:mese", "default:copper_ingot"},
+			{"", "default:obsidian_shard", "default:copper_ingot"},
+			{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:transmission",
+		recipe = {
+			{"", "default:obsidian_shard", ""},
+			{"default:obsidian_shard", "default:obsidian", "default:obsidian_shard"},
+			{"", "default:obsidian_shard", ""}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:seat",
+		recipe = {
+			{"", "group:wool"},
+			{"group:wool", "group:wool"},
+			{"default:steel_ingot", "default:steel_ingot"}
+		}
+	})
+	minetest.register_craft({
+		output = "cars:wheel",
+		recipe = {
+			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"},
+			{"default:obsidian_shard", "default:steel_ingot", "default:obsidian_shard"},
+			{"default:obsidian_shard", "default:obsidian_shard", "default:obsidian_shard"}
+		}
+	})
+end
