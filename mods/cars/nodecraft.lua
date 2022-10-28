@@ -44,7 +44,7 @@ function schems_match(schem1, schem2)
 	if #schem1.data ~= #schem2.data then return false end
 	for i = 1, #schem1.data do
 		if schem1.data[i].name ~= schem2.data[i].name then return false end
-		if schem1.data[i].name ~= "air" and schem1.data[i].param2 ~= schem2.data[i].param2 and not vector.equals(minetest.facedir_to_dir(schem1.data[i].param2), minetest.facedir_to_dir(schem2.data[i].param2)) then minetest.chat_send_all(schem1.data[i].name.." "..schem1.data[i].param2.." "..schem2.data[i].param2) return false end
+		if schem1.data[i].name ~= "air" and schem1.data[i].param2 ~= schem2.data[i].param2 and not vector.equals(minetest.facedir_to_dir(schem1.data[i].param2), minetest.facedir_to_dir(schem2.data[i].param2)) then return false end
 	end
 	return true
 end

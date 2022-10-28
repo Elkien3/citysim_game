@@ -1,5 +1,6 @@
 local search_radius = 1
-
+local policejobname = minetest.settings:get("jobs.police_job_name")
+if not policejobname or policejobname == "" then policejobname = "Police" end
 local welder_max_load = 3
 local technic_charge_amount = 3000
 local cooldowntime = 1
@@ -48,6 +49,10 @@ local welderdef = {
 									local offset = area:position(dataid)
 									local worldschem = make_luaschem(vector.subtract(nodepos, offset), vector.add(vector.subtract(nodepos, offset), size))
 									if schems_match(schem, worldschem) then
+										if carname == "cars:police_sedan" and jobs and jobs.getrank(name, policejobname) ~= "ceo" and not minetest.check_player_privs(user, {give = true}) then--only allow the ceo of "Police" job to make police cars.
+											minetest.chat_send_player(name, "Only Police CEO and those with 'give' priv can make police cars.")
+											return
+										end
 										worldedit.set(vector.subtract(nodepos, offset), vector.add(vector.subtract(nodepos, offset), size), "air")
 										local ent = minetest.add_entity(vector.add(vector.subtract(nodepos, offset), vector.multiply(size, .5)), carname, user:get_player_name())
 										ent:setyaw(minetest.dir_to_yaw(minetest.facedir_to_dir(node.param2))-math.pi)

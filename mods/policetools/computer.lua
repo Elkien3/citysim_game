@@ -1,4 +1,5 @@
-local policejobname = "Police"
+local policejobname = minetest.settings:get("jobs.police_job_name")
+if not policejobname or policejobname == "" then policejobname = "Police" end
 local storage = minetest.get_mod_storage()
 local form_table = {}
 
@@ -788,7 +789,7 @@ minetest.register_node("policetools:computer", {--using homedecor television
 		  'homedecor_television_front.png',
 	},
 	light_source = default.LIGHT_MAX - 2,
-	groups = { snappy = 3 },
+	groups = { snappy = 1 },
 	sounds = default.node_sound_wood_defaults(),
 	paramtype2 = "facedir",
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
