@@ -233,8 +233,8 @@ end
 
 minetest.register_node('nolight:distributor', {
 	description = S("%s Distributor"):format("LV"),
-	tiles = {"technic_music_player_top.png", "technic_machine_bottom.png", "technic_music_player_side.png",
-	         "technic_music_player_side.png", "technic_music_player_side.png", "technic_music_player_side.png"},
+	tiles = {"distributor_side.png", "distributor_side.png", "distributor_side.png",
+	         "distributor_side.png", "distributor_side.png", "distributor_front.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 		technic_machine=1, technic_lv=1},
 	connect_sides = {"bottom"},
@@ -248,6 +248,7 @@ minetest.register_node('nolight:distributor', {
 	on_receive_fields = function(pos, formanme, fields, sender)
 		if fields.toggle then new_track = 0 end
 	end,
+	paramtype2 = "facedir",
 	on_destruct = function(pos) set_distributor(pos, false) end,
 	technic_run = run,
 	technic_on_disable = function(pos, node)
