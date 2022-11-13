@@ -15,24 +15,24 @@ end
 
 beds.register_bed("technic_powermeter:meter", {
 	description = "Power Meter",
-	inventory_image = "technic_powermeter_meter.png",
-	wield_image = "technic_powermeter_meter.png",
+	--inventory_image = "power_meter_lock.png",
+	--wield_image = "power_meter_lock.png",
 	tiles = {
 		bottom = {
-			"beds_bed_top_bottom.png^[transformR90",
-			"default_wood.png",
-			"beds_bed_side_bottom_r.png",
-			"beds_bed_side_bottom_r.png^[transformfx",
-			"beds_transparent.png",
-			"beds_bed_side_bottom.png"
+			"power_meter_top.png",
+			"power_meter_bottom.png",
+			"power_meter_lock.png",
+			"power_meter_plain.png",
+			"power_meter_plain.png",
+			"power_meter_plain.png"
 		},
 		top = {
-			"beds_bed_top_top.png^[transformR90",
-			"default_wood.png",
-			"beds_bed_side_top_r.png",
-			"beds_bed_side_top_r.png^[transformfx",
-			"beds_bed_side_top.png",
-			"beds_transparent.png",
+			"power_meter_top.png",
+			"power_meter_bottom.png",
+			"power_meter_plain.png",
+			"power_meter_plain.png",
+			"power_meter_plain.png",
+			"power_meter_plain.png",
 		}
 	},
 	nodebox = {
