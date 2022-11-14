@@ -788,7 +788,7 @@ minetest.register_node("policetools:computer", {--using homedecor television
 		  'homedecor_television_back.png',
 		  'homedecor_television_front.png',
 	},
-	light_source = default.LIGHT_MAX - 2,
+	light_source = 2,
 	groups = { snappy = 1 },
 	sounds = default.node_sound_wood_defaults(),
 	paramtype2 = "facedir",
