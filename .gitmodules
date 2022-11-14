@@ -1,9 +1,3 @@
-[submodule "mods/modlib"]
-	path = mods/modlib
-	url = https://github.com/appgurueu/modlib
-[submodule "mods/cmdlib"]
-	path = mods/cmdlib
-	url = https://github.com/appgurueu/cmdlib
 [submodule "mods/cooking"]
 	path = mods/cooking
 	url = https://github.com/Elkien3/cooking.git
