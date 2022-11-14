@@ -4,3 +4,9 @@
 [submodule "mods/cmdlib"]
 	path = mods/cmdlib
 	url = https://github.com/appgurueu/cmdlib
+[submodule "mods/cooking"]
+	path = mods/cooking
+	url = https://github.com/Elkien3/cooking.git
+[submodule "mods/cooking_fr"]
+	path = mods/cooking_fr
+	url = https://github.com/Elkien3/cooking_fr.git
