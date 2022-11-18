@@ -1302,6 +1302,9 @@ local function car_step(self, dtime, moveresult)
 			offset.x = x
 			offset.z = z
 			player:set_eye_offset(offset, {x=0,y=10,z=-5})
+			if not minetest.line_of_sight(pos, vector.add(pos, vector.multiply(vector.rotate(passengers.loc, {x=0,y=yaw,z=0}), .1))) then
+				detach(player)
+			end
 		end
 	end
 	
@@ -1573,6 +1576,12 @@ function car_rightclick(self, clicker, closeid)
 		if closeid then
 			if closeid == 0 then
 				if self.trunklock == nil or clicker:get_wielded_item():get_meta():get_string("secret") == self.secret then
+					local yaw = self.object:get_yaw()
+					local def = cars_registered_cars[self.name]
+					local pos = self.object:get_pos()
+					if not minetest.line_of_sight(pos, vector.add(pos, vector.multiply(vector.rotate(def.trunkloc, {x=0,y=yaw,z=0}), .1))) then
+						return
+					end
 					minetest.sound_play("opentrunk", {
 						max_hear_distance = 24,
 						gain = 1,
