@@ -120,7 +120,7 @@ local function detach(player)
 	player_attached[name] = nil
 	local i = 0
 	while i <= #attached.passengers do
-	i = i + 1
+		i = i + 1
 		if attached.passengers[i].player == player then
 			attached.passengers[i].player = nil
 			if i == 1 then player:hud_remove(attached.hud) end
@@ -131,6 +131,15 @@ local function detach(player)
 	player:set_eye_offset({x=0,y=0,z=0}, {x=0,y=0,z=0})
 	default.player_attached[name] = false
 	default.player_set_animation(player, "stand" , 30)
+	local yaw = attached.object:get_yaw()
+	local def = cars_registered_cars[attached.name]
+	local pos = attached.object:get_pos()
+	local pos2 = vector.add(pos, vector.multiply(vector.rotate(attached.passengers[i].loc, {x=0,y=yaw,z=0}), .1))
+	pos.y = pos.y + .25
+	pos2.y = pos.y
+	if i and not minetest.line_of_sight(pos, pos2) then
+		player:set_pos(pos)
+	end
 end
 
 local function get_yaw(yaw)
@@ -1302,9 +1311,9 @@ local function car_step(self, dtime, moveresult)
 			offset.x = x
 			offset.z = z
 			player:set_eye_offset(offset, {x=0,y=10,z=-5})
-			if not minetest.line_of_sight(pos, vector.add(pos, vector.multiply(vector.rotate(passengers.loc, {x=0,y=yaw,z=0}), .1))) then
+			--[[if not minetest.line_of_sight(pos, vector.add(pos, vector.multiply(vector.rotate(passengers.loc, {x=0,y=yaw,z=0}), .1))) then
 				detach(player)
-			end
+			end--]]
 		end
 	end
 	
@@ -1576,12 +1585,12 @@ function car_rightclick(self, clicker, closeid)
 		if closeid then
 			if closeid == 0 then
 				if self.trunklock == nil or clicker:get_wielded_item():get_meta():get_string("secret") == self.secret then
-					local yaw = self.object:get_yaw()
+					--[[local yaw = self.object:get_yaw()
 					local def = cars_registered_cars[self.name]
 					local pos = self.object:get_pos()
 					if not minetest.line_of_sight(pos, vector.add(pos, vector.multiply(vector.rotate(def.trunkloc, {x=0,y=yaw,z=0}), .1))) then
 						return
-					end
+					end--]]
 					minetest.sound_play("opentrunk", {
 						max_hear_distance = 24,
 						gain = 1,

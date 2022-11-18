@@ -11,10 +11,10 @@ local sedandef = {
 		trunkloc = {x = 0, y = 4, z = -8},
 		engineloc = {x = 0, y = .6, z = 2},
 		passengers = {
-			{loc = {x = -4.5, y = 4, z = 5.25}, offset = {x = -4.5, y = 5, z = 5.75} },
-			{loc = {x = 4.5, y = 4, z = 5.25}, offset = {x = 4.5, y = 5, z = 5.75} },
-			{loc = {x = -4.5, y = 4, z = -4.5}, offset = {x = -4.5, y = 5, z = -4} },
-			{loc = {x = 4.5, y = 4, z = -4.5}, offset = {x = 4.5, y = 5, z = -4} },
+			{loc = {x = -4.5, y = 4, z = 5.25}, offset = {x = -4.5, y = -2, z = 5.75} },
+			{loc = {x = 4.5, y = 4, z = 5.25}, offset = {x = 4.5, y = -2, z = 5.75} },
+			{loc = {x = -4.5, y = 4, z = -4.5}, offset = {x = -4.5, y = -2, z = -4} },
+			{loc = {x = 4.5, y = 4, z = -4.5}, offset = {x = 4.5, y = -2, z = -4} },
 		},
 		wheel = {
 			frontright = {x=-8.88126,y=3.19412,z=17.25},
@@ -85,14 +85,14 @@ local vandef = {
 	max_speed = 24.5872,
 	engineloc = {x = 0, y = 1, z = 1.5},
 	passengers = {
-		{loc = {x = -4.8, y = 10.2, z = 2}, offset = {x = -4.8, y = 11.2, z = 2.5} }, --offset is loc + 1y +.5z
-		{loc = {x = 4.8, y = 10.2, z = 2}, offset = {x = 4.8, y = 11.2, z = 2.5} },
-		{loc = {x = -4.8, y = 10.2, z = -7.6}, offset = {x = -4.8, y = 11.2, z = -6.1} },--each seat pair is 9.6 behind the last
-		{loc = {x = 4.8, y = 10.2, z = -7.6}, offset = {x = 4.8, y = 11.2, z = -6.1} },
-		{loc = {x = -4.8, y = 10.2, z = -17.2}, offset = {x = -4.8, y = 11.2, z = -16.7} },
-		{loc = {x = 4.8, y = 10.2, z = -17.2}, offset = {x = 4.8, y = 11.2, z = -16.7} },
-		{loc = {x = -4.8, y = 10.2, z = -26.8}, offset = {x = -4.8, y = 11.2, z = -25.3} },
-		{loc = {x = 4.8, y = 10.2, z = -26.8}, offset = {x = 4.8, y = 11.2, z = -25.3} },
+		{loc = {x = -4.8, y = 10.2, z = 2}, offset = {x = -4.8, y = 4.2, z = 2.5} }, --offset is loc - 6y +.5z
+		{loc = {x = 4.8, y = 10.2, z = 2}, offset = {x = 4.8, y = 4.2, z = 2.5} },
+		{loc = {x = -4.8, y = 10.2, z = -7.6}, offset = {x = -4.8, y = 4.2, z = -6.1} },--each seat pair is 9.6 behind the last
+		{loc = {x = 4.8, y = 10.2, z = -7.6}, offset = {x = 4.8, y = 4.2, z = -6.1} },
+		{loc = {x = -4.8, y = 10.2, z = -17.2}, offset = {x = -4.8, y = 4.2, z = -16.7} },
+		{loc = {x = 4.8, y = 10.2, z = -17.2}, offset = {x = 4.8, y = 4.2, z = -16.7} },
+		{loc = {x = -4.8, y = 10.2, z = -26.8}, offset = {x = -4.8, y = 4.2, z = -25.3} },
+		{loc = {x = 4.8, y = 10.2, z = -26.8}, offset = {x = 4.8, y = 4.2, z = -25.3} },
 	}, 
 	wheel = {
 		frontright = {x=-8.29681,y=3.9,z=9.7},
@@ -150,18 +150,18 @@ local uraldef = {
 		trunkloc = {x = 0, y = 9, z = -13},
 		passengers = {
 			-- 2 in Cab
-			{loc = {x = -6.29999, y = 16.5, z = 3.36667}, offset = {x = -6.29999, y = 17.5, z = 3.5} },
-			{loc = {x = 6.29999, y = 16.5, z = 3.36667}, offset = {x = 6.29999, y = 17.5, z = 3.5} },
+			{loc = {x = -6.29999, y = 16.5, z = 3.36667}, offset = {x = -6.29999, y = 12, z = 3.5} },
+			{loc = {x = 6.29999, y = 16.5, z = 3.36667}, offset = {x = 6.29999, y = 12, z = 3.5} },
 			-- 4 on back left
-			{loc = {x = -9.10001, y = 15.5, z = -42.425}, offset = {x = -9.10001, y = 16.5, z = -42.425}, rot = {x = 0, y = 90, z = 0} },
-			{loc = {x = -9.10001, y = 15.5, z = -33.675}, offset = {x = -9.10001, y = 16.5, z = -33.675}, rot = {x = 0, y = 90, z = 0} },
-			{loc = {x = -9.10001, y = 15.5, z = -24.925}, offset = {x = -9.10001, y = 16.5, z = -24.925}, rot = {x = 0, y = 90, z = 0} },
-			{loc = {x = -9.10001, y = 15.5, z = -16.175}, offset = {x = -9.10001, y = 16.5, z = -16.175}, rot = {x = 0, y = 90, z = 0} },
+			{loc = {x = -9.10001, y = 15.5, z = -42.425}, offset = {x = -9.10001, y = 11, z = -42.425}, rot = {x = 0, y = 90, z = 0} },
+			{loc = {x = -9.10001, y = 15.5, z = -33.675}, offset = {x = -9.10001, y = 11, z = -33.675}, rot = {x = 0, y = 90, z = 0} },
+			{loc = {x = -9.10001, y = 15.5, z = -24.925}, offset = {x = -9.10001, y = 11, z = -24.925}, rot = {x = 0, y = 90, z = 0} },
+			{loc = {x = -9.10001, y = 15.5, z = -16.175}, offset = {x = -9.10001, y = 11, z = -16.175}, rot = {x = 0, y = 90, z = 0} },
 			-- 4 on back right
-			{loc = {x = 9.10001, y = 15.5, z = -42.425}, offset = {x = 9.10001, y = 16.5, z = -42.425}, rot = {x = 0, y = -90, z = 0} },
-			{loc = {x = 9.10001, y = 15.5, z = -33.675}, offset = {x = 9.10001, y = 16.5, z = -33.675}, rot = {x = 0, y = -90, z = 0} },
-			{loc = {x = 9.10001, y = 15.5, z = -24.925}, offset = {x = 9.10001, y = 16.5, z = -24.925}, rot = {x = 0, y = -90, z = 0} },
-			{loc = {x = 9.10001, y = 15.5, z = -16.175}, offset = {x = 9.10001, y = 16.5, z = -16.175}, rot = {x = 0, y = -90, z = 0} },
+			{loc = {x = 9.10001, y = 15.5, z = -42.425}, offset = {x = 9.10001, y = 11, z = -42.425}, rot = {x = 0, y = -90, z = 0} },
+			{loc = {x = 9.10001, y = 15.5, z = -33.675}, offset = {x = 9.10001, y = 11, z = -33.675}, rot = {x = 0, y = -90, z = 0} },
+			{loc = {x = 9.10001, y = 15.5, z = -24.925}, offset = {x = 9.10001, y = 11, z = -24.925}, rot = {x = 0, y = -90, z = 0} },
+			{loc = {x = 9.10001, y = 15.5, z = -16.175}, offset = {x = 9.10001, y = 11, z = -16.175}, rot = {x = 0, y = -90, z = 0} },
 		},
 		wheel = {
 			frontright = {x=-9.80003,y=5.95,z=.450006},
@@ -219,11 +219,11 @@ local truckdef = {
 		gas_offset = {x=-1,y=.88,z=-1.9766},
 		max_speed = 24.5872,
 		trunksize = {x=8,y=4},
-		trunkloc = {x = 0, y = 5.2, z = -20},
+		trunkloc = {x = 0, y = 5.2, z = -15},
 		engineloc = {x = 0, y = 1.4, z = .825},
 		passengers = {
-			{loc = {x = -5.0625, y = 10.8, z = -4.3625}, offset = {x = -5.0625, y = 11.8, z = -3.8625} },
-			{loc = {x = 5.0625, y = 10.8, z = -4.3625}, offset = {x = 5.0625, y = 11.8, z = -3.8625} },
+			{loc = {x = -5.0625, y = 10.8, z = -4.3625}, offset = {x = -5.0625, y = 4.8, z = -3.8625} },--offset is loc - 6y +.5z
+			{loc = {x = 5.0625, y = 10.8, z = -4.3625}, offset = {x = 5.0625, y = 4.8, z = -3.8625} },
 		},
 		max_force_offroad = 6,
 		max_offroad_speed = 20,
@@ -296,7 +296,7 @@ local jackhammerdef = {
 		--trunkloc = {x = 0, y = 5.2, z = -7},
 		engineloc = {x = 0, y = .75, z = -1},
 		passengers = {
-			{loc = {x = 0, y = 7, z = -2.5}, offset = {x = 0, y = 8, z = -3} },
+			{loc = {x = 0, y = 7, z = -2.5}, offset = {x = 0, y = 1, z = -3} },--offset is loc - 6y +.5z
 		},
 		max_force_offroad = 8,
 		max_offroad_speed = 6.7056,
