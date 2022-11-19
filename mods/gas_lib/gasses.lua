@@ -57,7 +57,7 @@ minetest.register_abm{
 	action=function(pos)
 		--prefer to spawn smoke above the item
 		local newpos = vector.offset(pos, 0, 1, 0)
-		minetest.chat_send_all(minetest.pos_to_string(newpos))
+		--minetest.chat_send_all(minetest.pos_to_string(newpos))
 		if minetest.get_node(newpos).name ~= "air" then
 			newpos = nil
 		end
