@@ -116,7 +116,7 @@ minetest.register_globalstep(function(dtime)
 		local h = tonumber(hbhunger.hunger[name])
 		local hp = player:get_hp()
 		if timer > 15 then
-			-- heal player by 1 hp if not dead and satiation is > 15 (of 30)
+			-- heal player by 1 hp if not dead and satiation is > 5 (of 30)
 			if not medical and h > 5 and hp > 0 and player:get_breath() > 0 then
 				player:set_hp(hp+1)
 				-- or damage player by 1 hp if satiation is < 2 (of 30)
