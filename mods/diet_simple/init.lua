@@ -1,5 +1,5 @@
 local storage = minetest.get_mod_storage()
-local diet_tbl = {}--minetest.deserialize(storage:get_string("data")) or {}
+local diet_tbl = minetest.deserialize(storage:get_string("data")) or {}
 local orig_func = minetest.do_item_eat
 minetest.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
 	if hp_change > 0 then --only care about food
