@@ -292,6 +292,13 @@ minetest.register_craftitem("medical:blanket", {
 		damage_groups = {fleshy=0},
 	},
 })
+minetest.register_craft({
+	output = "medical:blanket",
+	recipe = {
+		{"farming:cotton","farming:cotton","farming:cotton"},
+		{"farming:cotton","farming:cotton","farming:cotton"},
+	},
+})
 
 medical.attachedtools["medical:blanket"] = function(player, clicker, wielditem, hitloc, local_hitloc)
 	local loctbl, anim = medical.get_limb_locations(player)

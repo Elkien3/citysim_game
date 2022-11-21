@@ -238,6 +238,12 @@ minetest.register_craftitem("medical:bandage", {
 	},
 	groups = {medical_dressing = 2}
 })
+minetest.register_craft({
+	output = "medical:bandage",
+	recipe = {
+		{"farming:cotton","farming:cotton","farming:cotton"},
+	},
+})
 
 minetest.register_craftitem("medical:bandage_cold", {
 	description = "Cold Compress",
@@ -247,6 +253,14 @@ minetest.register_craftitem("medical:bandage_cold", {
 		damage_groups = {fleshy=0},
 	},
 	--groups = {medical_dressing = 2}
+})
+minetest.register_craft({
+	output = "medical:bandage_cold 8",
+	recipe = {
+		{"medical:bandage","medical:bandage","medical:bandage"},
+		{"medical:bandage","default:ice","medical:bandage"},
+		{"medical:bandage","medical:bandage","medical:bandage"},
+	},
 })
 
 minetest.register_craftitem("medical:bandage_moist", {
@@ -258,6 +272,15 @@ minetest.register_craftitem("medical:bandage_moist", {
 	},
 	--groups = {medical_dressing = 2}
 })
+minetest.register_craft({
+	output = "medical:bandage_moist 8",
+	replacements = {{"bucket:bucket_water", "bucket:bucket_empty"}},
+	recipe = {
+		{"medical:bandage","medical:bandage","medical:bandage"},
+		{"medical:bandage","bucket:bucket_water","medical:bandage"},
+		{"medical:bandage","medical:bandage","medical:bandage"},
+	},
+})
 
 minetest.register_craftitem("medical:tourniquet", {
 	description = "Tourniquet",
@@ -267,6 +290,13 @@ minetest.register_craftitem("medical:tourniquet", {
 		damage_groups = {fleshy=0},
 	},
 	--groups = {medical_dressing = 2}
+})
+minetest.register_craft({
+	output = "medical:tourniquet",
+	recipe = {
+		{"default:stick"},
+		{"medical:bandage"},
+	},
 })
 
 local bandagehud = {text = "bandageanimated.png", frame_amount = 8, frame_duration = .25, keep_at_end = true}
