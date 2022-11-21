@@ -47,7 +47,7 @@ minetest.register_globalstep(function(dtime)
 							local fuelitem = ItemStack(meta:get_string("stack"))
 							local afterfuel
 							fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = {fuelitem}})
-							fuel.time = fuel.time*10
+							fuel.time = fuel.time*50
 							if fuel.time == 0 then
 								-- No valid fuel in fuel list
 								fuel_totaltime = 0
