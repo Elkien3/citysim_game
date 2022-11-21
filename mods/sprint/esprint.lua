@@ -47,7 +47,7 @@ local function setSprinting(playerName, sprinting) --Sets the state of a player 
 				newPhy.jump = newPhy.jump - SPRINT_JUMP
 			end
 			minetest.after(0.2, function()
-					if players[playerName]["sprinting"] == false then
+					if players[playerName] and players[playerName]["sprinting"] == false then
 						if interacthandler then
 							interacthandler.grant(playerName)
 						else
