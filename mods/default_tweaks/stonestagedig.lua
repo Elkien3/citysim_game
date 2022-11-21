@@ -38,6 +38,7 @@ updatestonestage()
 local stonedef = table.copy(minetest.registered_nodes["default:stone"])
 local stone_after_dig = function(pos, oldnode, oldmetadata, digger)
 	local newnodename
+	if not digger then return end
 	local name = digger:get_player_name()
 	if not name then return end
 	--minetest.chat_send_all((stonestagetbl[name] or 0))
