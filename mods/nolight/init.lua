@@ -48,11 +48,22 @@ minetest.register_on_mods_loaded(function()
 			end
 			if minetest.get_node(pos).name == torch then
 				minetest.remove_node(pos)
-				minetest.add_item(pos, "default:stick")
+				if math.random(4) == 1 then
+					minetest.add_item(pos, "default:stick")
+				end
 			end
 			return funcval
 		end
-		minetest.override_item(torch, {drops = "default:stick", on_timer = torchtimer, on_construct = torchconstruct})
+		minetest.override_item(torch, {
+			drop = {
+				max_items = 1,
+				items = {
+					{items = {"default:stick"}, rarity = 4},
+				}
+			},
+			on_timer = torchtimer,
+			on_construct = torchconstruct
+		})
 	end
 	minetest.register_alias_force("fire:permanent_flame","fire:basic_flame")--no permanent_flame allowed
 	for name, node_on in pairs(electric_light_list) do
