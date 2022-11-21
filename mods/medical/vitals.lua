@@ -138,6 +138,9 @@ minetest.register_globalstep(function(dtime)
 				local injuryloss = 0
 				for index, injury in pairs (md.injuries) do
 					injury.healtime = (injury.healtime or 60) - 1
+					if beds and beds.player[name] then--heal injuries twice as fast in a bed
+						injury.healtime = (injury.healtime or 60) - 1
+					end
 					if injury.healtime < 1 then
 						local ent = medical.entities[name]
 						if ent then
