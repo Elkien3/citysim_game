@@ -116,7 +116,7 @@ end)
 end)--]]
 
 minetest.register_node("beamlight:light_1", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"beamlight.png"},
 	 --tile_images = {"beamlight_debug.png"},
 	inventory_image = minetest.inventorycube("beamlight.png"),
@@ -146,7 +146,7 @@ minetest.register_node("beamlight:light_1", {
 })
 
 minetest.register_node("beamlight:light_2", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"beamlight.png"},
 	 --tile_images = {"beamlight_debug.png"},
 	inventory_image = minetest.inventorycube("beamlight.png"),
@@ -176,7 +176,7 @@ minetest.register_node("beamlight:light_2", {
 })
 
 minetest.register_node("beamlight:light_3", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"beamlight.png"},
 	 --tile_images = {"beamlight_debug.png"},
 	inventory_image = minetest.inventorycube("beamlight.png"),
@@ -206,7 +206,7 @@ minetest.register_node("beamlight:light_3", {
 })
 
 minetest.register_node("beamlight:light_4", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"beamlight.png"},
 	 --tile_images = {"beamlight_debug.png"},
 	inventory_image = minetest.inventorycube("beamlight.png"),
