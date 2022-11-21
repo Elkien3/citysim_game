@@ -74,7 +74,7 @@ minetest.add_item = function(pos, item)
 	local name = item:get_name()
 	local def = minetest.registered_items[name]
 	local meta = item:get_meta()
-	if def.expiration and meta:get_int("ed") == 0 then
+	if def and def.expiration and meta:get_int("ed") == 0 then
 		local expiredef = def.expiration
 		local newexpiration = minetest.get_day_count() + expiredef
 		meta:set_int("ed", newexpiration)
