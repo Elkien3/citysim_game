@@ -1,7 +1,7 @@
 local max_light = 3
 local whitelist = {}
 local blacklist = {}
-local torchtime = 10*60
+local torchtime = 30*60
 
 local torchlist = {"default:torch_ceiling", "default:torch_wall", "default:torch"}
 local mp = minetest.get_modpath("nolight")
