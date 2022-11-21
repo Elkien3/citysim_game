@@ -237,7 +237,7 @@ local function get_circlepoint(radius)
 --end
 
 minetest.register_node("spriteguns:flash", {
-	drawtype = "glasslike",
+	drawtype = "airlike",
 	tile_images = {"invis.png"},
 	-- tile_images = {"walking_light_debug.png"},
 	inventory_image = minetest.inventorycube("walking_light.png"),
