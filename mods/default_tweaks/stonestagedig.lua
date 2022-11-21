@@ -44,19 +44,19 @@ local stone_after_dig = function(pos, oldnode, oldmetadata, digger)
 	--minetest.chat_send_all((stonestagetbl[name] or 0))
 	if not stonestagetbl[name] or stonestagetbl[name] <= twostage then
 		local stagetbl = {
-			["default_tweaks:stone"] = "default_tweaks:stone_3",
+			["default:stone"] = "default_tweaks:stone_3",
 			["default_tweaks:stone_1"] = "default_tweaks:stone_3",
 		}
 		newnodename = stagetbl[oldnode.name]
 	elseif stonestagetbl[name] <= threestage then
 		local stagetbl = {
-			["default_tweaks:stone"] = "default_tweaks:stone_1",
+			["default:stone"] = "default_tweaks:stone_1",
 			["default_tweaks:stone_1"] = "default_tweaks:stone_3",
 		}
 		newnodename = stagetbl[oldnode.name]
 	else
 		local stagetbl = {
-			["default_tweaks:stone"] = "default_tweaks:stone_1",
+			["default:stone"] = "default_tweaks:stone_1",
 			["default_tweaks:stone_1"] = "default_tweaks:stone_2",
 			["default_tweaks:stone_2"] = "default_tweaks:stone_3",
 		}
@@ -74,14 +74,12 @@ local stone_after_dig = function(pos, oldnode, oldmetadata, digger)
 	end
 end
 
-stonedef.node_dig_prediction = "default_tweaks:stone_1"
-stonedef.after_dig_node = stone_after_dig
-stonedef.drop = ""
+stonedef.drop = "default:cobble"
 minetest.register_node("default_tweaks:stone", table.copy(stonedef))
 
-minetest.register_alias_force("mapgen_stone", "default_tweaks:stone")
-
+stonedef.after_dig_node = stone_after_dig
 stonedef.tiles[1] = "default_stone.png^[crack:1:1"
+stonedef.drop = ""
 stonedef.node_dig_prediction = "default_tweaks:stone_2"
 minetest.register_node("default_tweaks:stone_1", table.copy(stonedef))
 
@@ -93,3 +91,14 @@ stonedef.node_dig_prediction = "air"
 stonedef.tiles[1] = "default_stone.png^[crack:1:3"
 stonedef.drop = "default:cobble"
 minetest.register_node("default_tweaks:stone_3", table.copy(stonedef))
+
+minetest.override_item("default:stone", {
+	node_placement_prediction = "default_tweaks:stone",
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack:set_name("default_tweaks:stone")
+		return minetest.item_place(itemstack, placer, pointed_thing)
+	end,
+	node_dig_prediction = "default_tweaks:stone_1",
+	after_dig_node = stone_after_dig,
+	drop = ""
+})
