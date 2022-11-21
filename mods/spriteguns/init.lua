@@ -7,7 +7,8 @@ local gun_huds = {}
 local max_wear = 65534
 local max_speed = (minetest.settings:get("movement_speed_walk") or 4) + 1
 
-shootable_entities = {["creatures:zombie"] = true, ["creatures:ghost"] = true, ["creatures:oerrki"] = true}
+shootable_entities = {["creatures:zombie"] = true, ["creatures:ghost"] = true, ["creatures:oerrki"] = true,
+["mobs_farm:wolf"] = true, ["mobs_farm:cow"] = true, ["mobs_farm:chicken"] = true, ["mobs_farm:bunny"] = true, ["mobs_farm:kitten"] = true}
 
 minetest.register_chatcommand("spritegunscale",{
 	params = "<scale>",  -- Short parameter description
