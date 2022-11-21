@@ -344,7 +344,7 @@ minetest.register_entity("medical:blanket", {
 orig_func = player_api.set_animation
 player_api.set_animation = function(player, anim_name, speed)
 	for i, obj in pairs(player:get_children()) do
-		if obj:get_luaentity().name == "medical:blanket" then
+		if obj:get_luaentity() and obj:get_luaentity().name == "medical:blanket" then
 			minetest.add_item(obj:get_pos(), "medical:blanket")
 			obj:remove()
 		end
