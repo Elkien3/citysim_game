@@ -924,7 +924,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_water_top = "default:ice",
 		depth_water_top = 10,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -936,7 +936,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "icesheet_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1006,7 +1006,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:gravel",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1019,7 +1019,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "tundra_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1058,7 +1058,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1071,7 +1071,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "taiga_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1110,7 +1110,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1123,7 +1123,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "snowy_grassland_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1178,7 +1178,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1190,7 +1190,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "grassland_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1245,7 +1245,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1257,7 +1257,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "coniferous_forest_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1311,7 +1311,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1324,7 +1324,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "deciduous_forest_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1362,7 +1362,7 @@ function default.register_biomes()
 		node_stone = "default:desert_stone",
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:desert_stone",
 		node_dungeon_stair = "stairs:stair_desert_stone",
 		vertical_blend = 1,
@@ -1374,7 +1374,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "desert_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1412,7 +1412,7 @@ function default.register_biomes()
 		node_stone = "default:sandstone",
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:sandstonebrick",
 		node_dungeon_stair = "stairs:stair_sandstone_block",
 		y_max = 3,
@@ -1423,7 +1423,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "sandstone_desert_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1460,7 +1460,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1473,7 +1473,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "cold_desert_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1527,7 +1527,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1540,7 +1540,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "savanna_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1594,7 +1594,7 @@ function default.register_biomes()
 		depth_filler = 3,
 		node_riverbed = "default:sand",
 		depth_riverbed = 2,
-		node_cave_liquid = "default:water_source",
+		node_cave_liquid = "mapgen_water_source",
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1607,7 +1607,7 @@ function default.register_biomes()
 
 	minetest.register_biome({
 		name = "rainforest_under",
-		node_cave_liquid = {"default:water_source", "default:lava_source"},
+		node_cave_liquid = {"mapgen_water_source", "default:lava_source"},
 		node_dungeon = "default:cobble",
 		node_dungeon_alt = "default:mossycobble",
 		node_dungeon_stair = "stairs:stair_cobble",
@@ -1647,7 +1647,7 @@ function default.register_mgv6_decorations()
 		decoration = "default:papyrus",
 		height = 2,
 		height_max = 4,
-		spawn_by = "default:water_source",
+		spawn_by = "mapgen_water_source",
 		num_spawn_by = 1,
 	})
 
