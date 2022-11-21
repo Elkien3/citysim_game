@@ -24,7 +24,7 @@ local function updatestonestage()
 		else
 			stonestagetbl[name] = amount
 		end
-		minetest.chat_send_all(stonestagetbl[name] or 0)
+		--minetest.chat_send_all(stonestagetbl[name] or 0)
 	end
 	if update then
 		storage:set_string("stonestagetbl", minetest.serialize(stonestagetbl))
@@ -40,7 +40,7 @@ local stone_after_dig = function(pos, oldnode, oldmetadata, digger)
 	local newnodename
 	local name = digger:get_player_name()
 	if not name then return end
-	minetest.chat_send_all((stonestagetbl[name] or 0))
+	--minetest.chat_send_all((stonestagetbl[name] or 0))
 	if not stonestagetbl[name] or stonestagetbl[name] <= twostage then
 		local stagetbl = {
 			["default_tweaks:stone"] = "default_tweaks:stone_3",
