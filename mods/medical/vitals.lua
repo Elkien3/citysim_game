@@ -204,6 +204,7 @@ minetest.register_on_respawnplayer(function(player)
 	end
 	medical.save()
 end)
+minetest.register_on_shutdown(medical.save)
 
 minetest.register_on_leaveplayer(function(player, timed_out)
 	local name = player:get_player_name()
