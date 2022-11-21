@@ -54,16 +54,29 @@ minetest.register_entity("medical:body", {
     end
 })
 --]]
-player_api.registered_models["character.b3d"].animations.recumbantright = {x = 223,  y = 224}
+if minetest.get_modpath("3d_armor") then
+	local modeldef = table.copy(player_api.registered_models["3d_armor_character.b3d"])
+	modeldef.animations.recumbantright = {x = 223,  y = 224}
+	modeldef.animations.recumbantleft =  {x = 225,  y = 226}
+	player_api.register_model("3d_armor_medical_character.b3d", modeldef)
+	minetest.register_on_joinplayer(function(player)
+		default.player_set_model(player, "3d_armor_medical_character.b3d")
+	end)
+else
+	local modeldef = table.copy(player_api.registered_models["character.b3d"])
+	modeldef.animations.recumbantright = {x = 223,  y = 224}
+	modeldef.animations.recumbantleft =  {x = 225,  y = 226}
+	player_api.register_model("medical_character.b3d", modeldef)
+	minetest.register_on_joinplayer(function(player)
+		default.player_set_model(player, "medical_character.b3d")
+	end)
+end
+--[[player_api.registered_models["character.b3d"].animations.recumbantright = {x = 223,  y = 224}
 player_api.registered_models["character.b3d"].animations.recumbantleft =  {x = 225,  y = 226}
 if player_api.registered_models["3d_armor_character.b3d"] then
 	player_api.registered_models["3d_armor_character.b3d"].animations.recumbantright = {x = 223,  y = 224}
 	player_api.registered_models["3d_armor_character.b3d"].animations.recumbantleft =  {x = 225,  y = 226}
-end
---player_api.register_model("medical_character.b3d", player_api.registered_models["character.b3d"])
---player_api.registered_models["medical_character.b3d"].animations.recumbantright = {x = 223,  y = 224}
---player_api.registered_models["medical_character.b3d"].animations.recumbantleft =  {x = 225,  y = 226}
-
+end--]]
 local dragging_tbl = {}--indexed by dragger name, draggee name is value
 
 function medical.is_dragging(name)
