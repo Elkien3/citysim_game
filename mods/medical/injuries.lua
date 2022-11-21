@@ -311,7 +311,7 @@ medical.injuries["bruise"] = {
 		{tool = "medical:bandage_cold", take_item = true, rightclick = false, time = 2, hud = bandagehud, mesh = "bandagetest.b3d", textures = {"wool_white.png", "invis.png"}, startsound = "bandagestart", finishsound = "bandagefinish"},
 	},
 	hploss = 2,
-	healtime = 1200,
+	healtime = 600,
 	medical_step = nil,
 }
 
@@ -322,7 +322,7 @@ medical.injuries["abrasion"] = {
 		{tool = "medical:bandage", take_item = true, rightclick = false, time = 2, hud = bandagehud, mesh = "bandagetest.b3d", textures = {"wool_white.png", "invis.png"}, startsound = "bandagestart", finishsound = "bandagefinish"},
 	},
 	hploss = 2.5,
-	healtime = 1200,
+	healtime = 600,
 	medical_step = nil,
 }
 
@@ -333,7 +333,7 @@ medical.injuries["burn"] = {
 		{tool = "medical:bandage_moist", take_item = true, rightclick = false, time = 2, hud = bandagehud, mesh = "bandagetest.b3d", textures = {"wool_white.png", "invis.png"}, startsound = "bandagestart", finishsound = "bandagefinish"},
 	},
 	hploss = 3,
-	healtime = 1800,
+	healtime = 720,
 	medical_step = nil,
 }
 
@@ -345,7 +345,7 @@ medical.injuries["wound"] = {
 		{tool = "", rightclick = true, time = 5, hud = "applypressure.png", textures = {"wool_white.png", "invis.png"}}
 	},
 	hploss = 5,
-	healtime = 3600,
+	healtime = 1200,
 	medical_step = nil,
 }
 
@@ -360,7 +360,7 @@ medical.injuries["wound_arterial"] = {
 		{tool = "", rightclick = true, time = 5, hud = "applypressure.png", textures = {"invis.png", "wool_black.png", "wool_white.png"}}
 	},
 	hploss = 6,
-	healtime = 3600,
+	healtime = 1200,
 	medical_step = nil,
 }
 --for animated huds do: hud = {text = "default_lava_flowing_animated.png", frame_amount = 16, frame_duration = .25, keep_at_end = true}
@@ -373,7 +373,7 @@ medical.injuries["fracture"] = {
 		{tool = "medical:bandage", take_item = true, rightclick = false, time = 2, hud = bandagehud, textures = {"invis.png", "default_stick.png", "wool_white.png"}, startsound = "bandagestart", finishsound = "bandagefinish"}
 	},
 	hploss = 6,
-	healtime = 3600,
+	healtime = 1200,
 	medical_step = nil,
 	effects = {Limb_Specific = true, Arm_Left = {gunwag = 4}, Arm_Right = {gunwag = 4}, Leg_Left = {speed = .5}, Leg_Left = {speed = .5}}
 }
@@ -548,8 +548,9 @@ function medical.add_injury(player, injurytype, hp, limb)--injurytypes are sharp
 	if not limb then return end
 	local newseverity = ((severity or 0) - (hp*severitymulti))--hp is always negative, so use double negative to make severity be positive
 	if newseverity > 1 then newseverity = 1 end
+	injurydef = medical.injuries[injurytype]
 	if not medical.data[name].injuries then medical.data[name].injuries = {} end
-	medical.data[name].injuries[limb] = {name = injurytype, severity = newseverity}
+	medical.data[name].injuries[limb] = {name = injurytype, severity = newseverity, healtime = injurydef.healtime}
 	medical.add_injury_ent(player, limb, {name = injurytype, severity = newseverity})
 	medical.effect_handle(player)
 	medical.save()

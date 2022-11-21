@@ -137,10 +137,23 @@ minetest.register_globalstep(function(dtime)
 			if md.injuries then
 				local injuryloss = 0
 				for index, injury in pairs (md.injuries) do
-					if not injury.severity then injury.severity = 1 end
-					local injurydef = medical.injuries[injury.name]
-					local severity = math.max(injury.severity, .1)--treated wounds still are a detriment until they time out
-					injuryloss = injuryloss + (injurydef.hploss*severity)
+					injury.healtime = (injury.healtime or 60) - 1
+					if injury.healtime < 1 then
+						local ent = medical.entities[name]
+						if ent then
+							ent = ent[index]
+						end
+						if ent then
+							ent:remove()
+						end
+						medical.data[name].injuries[index] = nil
+						medical.save()
+					else
+						if not injury.severity then injury.severity = 1 end
+						local injurydef = medical.injuries[injury.name]
+						local severity = math.max(injury.severity, .1)--treated wounds still are a detriment until they time out
+						injuryloss = injuryloss + (injurydef.hploss*severity)
+					end
 				end
 				totalhpgain = totalhpgain - injuryloss
 				if math.random(5) == 1 then
