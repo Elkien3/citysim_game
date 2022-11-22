@@ -227,6 +227,7 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
 	policetools_handsup = {}
 	local function can_handsup(name)
 		local player = minetest.get_player_by_name(name)
+		if not player then return false end
 		local disallowed_anims = {["lay"] = true, ["recumbantleft"] = true, ["recumbantright"] = true}
 		local control = player:get_player_control()
 		if player
