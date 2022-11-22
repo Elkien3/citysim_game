@@ -239,7 +239,7 @@ minetest.register_craftitem("medical:bandage", {
 	groups = {medical_dressing = 2}
 })
 minetest.register_craft({
-	output = "medical:bandage",
+	output = "medical:bandage 6",
 	recipe = {
 		{"farming:cotton","farming:cotton","farming:cotton"},
 	},
