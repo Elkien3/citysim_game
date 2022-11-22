@@ -42,7 +42,7 @@ function medical.get_limb_locations(player, tbl)
 		return tbl["standing"] or {}, "standing"
 	end
 end
-local DEBUG_WAYPOINT = true
+local DEBUG_WAYPOINT = false
 local DEBUG_CHAT = false
 
 local function rotateVector(x, y, a)

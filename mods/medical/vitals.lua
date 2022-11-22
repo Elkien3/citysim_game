@@ -154,7 +154,7 @@ minetest.register_globalstep(function(dtime)
 					else
 						if not injury.severity then injury.severity = 1 end
 						local injurydef = medical.injuries[injury.name]
-						local severity = math.max(injury.severity, .1)--treated wounds still are a detriment until they time out
+						local severity = math.max(injury.severity, .05)--treated wounds still are a detriment until they time out
 						injuryloss = injuryloss + (injurydef.hploss*severity)
 					end
 				end
@@ -227,7 +227,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	if md.hp and reason.source and reason.source == "medical" then
 		md.hp = md.hp + hp_change
 		--minetest.chat_send_all(md.hp)
-		if md.hp < -100 then
+		if md.hp < -50 then
 			return -hp, true
 		end
 		if md.hp >= 1 then
