@@ -261,7 +261,6 @@ local function handle_griefing(pos, name, placing, nodename)
 				}, true)
 			end
 		end
-		grieftbl[posstring] = nil
 		return true
 	end
 end
