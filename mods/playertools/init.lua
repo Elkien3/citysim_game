@@ -118,22 +118,27 @@ minetest.register_chatcommand("sethealth", {
 	end,
 })
 
---[[
 minetest.register_chatcommand("killme", {
 	params = "",
 	description = "Kills yourself.",
 	func = function(name, param)
-		if(minetest.setting_getbool("enable_damage")==true) then
-			local player = minetest.get_player_by_name(name)
-			if not player then
-				return
-			end
-			player:set_hp(0)
+		if medical and medical.data[name] and medical.data[name].hp < -20 then
+			medical.data[name].hp = -50
+			minetest:get_player_by_name(name):set_hp(0, "medical")
 		else
-			minetest.chat_send_player(name, "Damage is disabled on this server. This command does not work when damage is disabled.")
+			minetest.chat_send_player(name, "/killme is disabled")
 		end
 	end,
-})--]]
+})
+
+minetest.register_chatcommand("getbiome", {
+	params = "",
+	description = "Tells you the biome you are in",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		return true, minetest.get_biome_name(minetest.get_biome_data(player:get_pos()).biome)
+	end,
+})
 
 --[[ Player physics commands ]]
 
