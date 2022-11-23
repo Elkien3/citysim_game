@@ -155,7 +155,9 @@ function jobs.remove(name, jobname)
 			jobs.players[employee][jobname] = nil
 		end
 	end
-	money3.transfer(":"..jobname, name, money3.get(":"..jobname))
+	if money3.get(":"..jobname) and money3.get(":"..jobname) > 0 then
+		money3.transfer(":"..jobname, name, money3.get(":"..jobname))
+	end
 	jobs.list[jobname] = nil
 	jobs.purge_unread()
 	return true, "Job '"..jobname.."' succesfully removed."
