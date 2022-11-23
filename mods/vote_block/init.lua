@@ -7,13 +7,6 @@ vote_block.percent = function(n, t)
 	return math.floor((((n/t)*100)*100)+0.5)/100
 end
 
-vote_block.receive=function(pos,player)
-	local pressed={}
-	vote_block.user[player:get_player_name()]=pos
-	vote_block.receive_fields(player,pressed)
-	vote_block.user[player:get_player_name()]=nil
-end
-
 vote_block.receive_fields=function(player,fields)
 	-- If unconfigured, and owner is submiting, then set as configured, and finalize
 	-- If configured, check to see if votes are changeable, and if player has already voted.
@@ -44,7 +37,8 @@ vote_block.receive_fields=function(player,fields)
 			elseif fields.vote==meta:get_string("option5") then meta:set_int("r5", meta:get_int("r5")+1) end
 			meta:set_string("log", meta:get_string("log")..player:get_player_name()..", ")
 		end
-	else 
+	end
+	if fields.quit then
 		vote_block.user[player:get_player_name()]=nil
 	end
 end
