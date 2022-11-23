@@ -44,9 +44,9 @@ end
 local function setting_bool(name, default)
 	local value
 	if minetest.settings then
-		value = minetest.settings:get_bool("money3" .. name)
+		value = minetest.settings:get_bool("money3." .. name)
 	else
-		value = minetest.setting_getbool("money3" .. name)
+		value = minetest.setting_getbool("money3." .. name)
 	end
 
 	if value == nil then
