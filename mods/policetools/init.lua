@@ -254,6 +254,7 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
         params = "",  -- Short parameter description
         description = "Put your hands up. (hands must be empty)",  -- Full description
         func = function(name, param)
+			local player = minetest.get_player_by_name(name)
 			if policetools_handsup[name] then
 				policetools_handsup[name] = nil
 				player:hud_set_flags({wielditem=true})
