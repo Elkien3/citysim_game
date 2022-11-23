@@ -33,7 +33,7 @@ vote_block.receive_fields=function(player,fields)
 			meta:set_int("ready", 1);
 			meta:set_string("infotext", meta:get_string("question").." (owned by "..meta:get_string("owner")..")");
 		end
-	elseif fields.vote then
+	elseif fields.vote and fields.exitvote then
 		if string.find(meta:get_string("log"), string.gsub(player:get_player_name()..", ", "%-", "%%%-")) then 
 			return
 		else
@@ -97,7 +97,7 @@ vote_block.showform=function(pos,player)
 			if not (meta:get_string("option"..i) == "") then gui=gui..meta:get_string("option"..i)..","  end
 		end
 		gui = gui:sub(1, -2) -- Remove last comma
-		gui=gui..";0]button_exit[5.6,2;2,1;exit;Vote]"
+		gui=gui..";0]button_exit[5.6,2;2,1;exitvote;Vote]"
 	else
 		gui=""
 		.."size[8,3]"
