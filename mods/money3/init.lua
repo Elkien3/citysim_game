@@ -68,3 +68,4 @@ rawset(_G, "money", money3)
 if minetest.get_modpath("locked_sign") then
 	dofile(modpath .. "/lockedsign.lua")
 end
+dofile(modpath .. "/adminshop.lua")
