@@ -4,7 +4,15 @@ local function start_unconscious(player)
 	local name = player:get_player_name()
 	if not medical.data[name] then medical.data[name] = {} end
 	if not medical.data[name].unconscious then
-		medical.data[name].unconscious = {yaw = player:get_look_horizontal()}
+		medical.data[name].unconscious = {yaw = player:get_look_horizontal(), hud = player:hud_add({
+			 hud_elem_type = "text",
+			 position      = {x = 0.5, y = 0.7},
+			 offset        = {x = 0,   y = 0},
+			 text          = tostring(medical.data[name].hp or "nil").." hp",
+			 alignment     = {x = 0, y = 0},
+			 scale         = {x = 100, y = 100},
+			 number    = 0xFFFFFF,
+		})}
 	elseif medical.data[name].unconscious.spawner then
 		minetest.delete_particlespawner(medical.data[name].unconscious.spawner)
 	end
@@ -42,6 +50,9 @@ local function end_unconscious(player)
 		minetest.delete_particlespawner(medical.data[name].unconscious.spawner)
 	end
 	interacthandler.grant(name)
+	if medical.data[name].unconscious and medical.data[name].unconscious.hud then
+		player:hud_remove(medical.data[name].unconscious.hud)
+	end
 	medical.data[name].unconscious = nil
 	medical.data[name].hp = nil
 	if player:get_attach() and player:get_attach():get_luaentity().name == "medical:unconsciousattach" then
@@ -226,8 +237,21 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 	if md.hp and reason.source and reason.source == "medical" then
 		md.hp = md.hp + hp_change
+		if medical.data[name].unconscious and medical.data[name].unconscious.hud then
+			player:hud_change(medical.data[name].unconscious.hud, "text", tostring(md.hp or "nil").." hp")
+		elseif medical.data[name].unconscious and not medical.data[name].unconscious.hud then
+			medical.data[name].unconscious.hud = player:hud_add({
+				 hud_elem_type = "text",
+				 position      = {x = 0.5, y = 0.7},
+				 offset        = {x = 0,   y = 0},
+				 text          = tostring(medical.data[name].hp or "nil").." hp",
+				 alignment     = {x = 0, y = 0},
+				 scale         = {x = 100, y = 100},
+				 number    = 0xFFFFFF,
+			})
+		end
 		--minetest.chat_send_all(md.hp)
-		if md.hp < -50 then
+		if md.hp < -40 then--actual death
 			return -hp, true
 		end
 		if md.hp >= 1 then
