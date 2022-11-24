@@ -41,6 +41,7 @@ function xdecor.sit(pos, node, clicker, pointed_thing)
 end
 
 function xdecor.sit_dig(pos, player)
+	if not player then return end
 	local pname = player:get_player_name()
 	local objs = minetest.get_objects_inside_radius(pos, 0.1)
 
