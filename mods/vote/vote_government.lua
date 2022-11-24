@@ -213,7 +213,7 @@ if money3 then
 			end
 			
 			return vote.new_vote(name, {
-				description = "Change tax rate from "..tostring(minetest.settings:get("property_tax") or 0).." sq km/mo to " ..param.. " sq km/mo",
+				description = "Change tax rate from "..tostring(minetest.settings:get("property_tax") or 0).." 1000 blocks/mo to " ..param.. " 1000m/mo",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
 				duration = 20,
@@ -228,9 +228,9 @@ if money3 then
 					local oldval = minetest.settings:get("property_tax") or 0
 					if #yes >= votesneeded then
 						minetest.settings:set("property_tax", tonumber(param))
-						minetest.chat_send_all(S("The property tax rate has been changed from @1 sq km/mo to @2 sq km/mo. (@3/@4)", oldval, param, #yes, votesneeded))
+						minetest.chat_send_all(S("The property tax rate has been changed from @1 1000 blocks/mo to @2 1000 blocks/mo. (@3/@4)", oldval, param, #yes, votesneeded))
 					else
-						minetest.chat_send_all(S("Failed to change property tax rate from @1 sq km/mo to @2 sq km/mo. (@3/@4)", oldval, param, #yes, votesneeded))
+						minetest.chat_send_all(S("Failed to change property tax rate from @1 1000 blocks/mo to @2 1000 blocks/mo. (@3/@4)", oldval, param, #yes, votesneeded))
 					end
 				end,
 
