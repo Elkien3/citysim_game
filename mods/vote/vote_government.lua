@@ -203,7 +203,7 @@ end
 if money3 then
 	minetest.register_chatcommand("vote_property_tax", {
 		params = "<name>",
-		description = "Start a vote to change property tax rate, in terms of how much mg is to be paid per square kilometer, per month.",
+		description = "Start a vote to change property tax rate, in terms of how much mg is to be paid 1000 blocks (in 2d space), per month.",
 		privs = {
 			vote_government = true,
 		},
@@ -336,6 +336,16 @@ if areas and money3 then
 	local autopay = minetest.deserialize(storage:get_string("autopay")) or {}
 	tax_account = storage:get_float("tax_account")
 	local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
+	taxes = {}
+	
+	taxes.add = function(amount)
+		tax_account = tax_account + amount
+		storage:set_string("tax_account", tax_account)
+	end
+	taxes.remove = function(amount)
+		tax_account = tax_account - amount
+		storage:set_string("tax_account", tax_account)
+	end
 	
 	areas:registerOnAdd(function(id, area)
 		if tax_rate <= 0 then return end
