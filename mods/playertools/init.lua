@@ -124,7 +124,7 @@ minetest.register_chatcommand("killme", {
 	func = function(name, param)
 		if medical and medical.data[name] and medical.data[name].hp and medical.data[name].hp < -20 then
 			medical.data[name].hp = -50
-			minetest:get_player_by_name(name):set_hp(0, "medical")
+			minetest.get_player_by_name(name):set_hp(0, "medical")
 		else
 			minetest.chat_send_player(name, "/killme is disabled")
 		end
