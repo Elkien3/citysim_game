@@ -396,7 +396,7 @@ fishing_setting.func.on_show_admin_menu = function(player_name)
 	minetest.show_formspec(player_name, "fishing:admin_conf", formspec)
 end
 
-
+--[[
 if (minetest.get_modpath("unified_inventory")) then
 	unified_inventory.register_button("menu_fishing", {
 		type = "image",
@@ -414,7 +414,7 @@ if (minetest.get_modpath("unified_inventory")) then
 		end,
 	})
 end
-
+--]]
 
 --function save settings
 function fishing_setting.func.save_contest()
