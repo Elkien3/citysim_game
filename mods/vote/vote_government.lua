@@ -1,4 +1,22 @@
 local S = minetest.get_translator("vote")
+local storage = minetest.get_mod_storage()
+local settings = minetest.deserialize(storage:get_string("settings")) or {}
+for setting, val in pairs(settings) do
+	if type(val) == "bool" then
+		minetest.settings:set_bool(setting, val)
+	else
+		minetest.settings:set(setting, val)
+	end
+end
+local function save_setting(setting, val)
+	if type(val) == "bool" then
+		minetest.settings:set_bool(setting, val)
+	else
+		minetest.settings:set(setting, val)
+	end
+	settings[setting] = val
+	storage:set_string("settings", minetest.serialize(settings))
+end
 local votesneeded = tonumber(minetest.settings:get("vote_government_needed")) or 1
 minetest.register_privilege("vote_government", {
 	description = "Can vote on government matters."
@@ -227,7 +245,7 @@ if money3 then
 					local yes = results.yes or {}
 					local oldval = minetest.settings:get("property_tax") or 0
 					if #yes >= votesneeded then
-						minetest.settings:set("property_tax", tonumber(param))
+						save_setting("property_tax", tonumber(param))
 						minetest.chat_send_all(S("The property tax rate has been changed from @1 1000 blocks/mo to @2 1000 blocks/mo. (@3/@4)", oldval, param, #yes, votesneeded))
 					else
 						minetest.chat_send_all(S("Failed to change property tax rate from @1 1000 blocks/mo to @2 1000 blocks/mo. (@3/@4)", oldval, param, #yes, votesneeded))
@@ -271,7 +289,7 @@ if money3 then
 					local yes = results.yes or {}
 					local oldval = minetest.settings:get("money3.income_amount") or 0
 					if #yes >= votesneeded then
-						minetest.settings:set("money3.income_amount", tonumber(param))
+						save_setting("money3.income_amount", tonumber(param))
 						minetest.chat_send_all(S("The money gen rate has been changed from @1/hr to @2/hr. (@3/@4)", oldval, param, #yes, votesneeded))
 					else
 						minetest.chat_send_all(S("Failed to change the money gen rate from @1/hr to @2/hr. (@3/@4)", oldval, param, #yes, votesneeded))
@@ -314,7 +332,7 @@ if money3 then
 					local yes = results.yes or {}
 					local oldval = minetest.settings:get("money3.initial_amount") or 0
 					if #yes >= votesneeded then
-						minetest.settings:set("money3.initial_amount", tonumber(param))
+						save_setting("money3.initial_amount", tonumber(param))
 						minetest.chat_send_all(S("The starting money has been changed from @1 to @2. (@3/@4)", oldval, param, #yes, votesneeded))
 					else
 						minetest.chat_send_all(S("Failed to change the starting money from @1 to @2. (@3/@4)", oldval, param, #yes, votesneeded))
@@ -330,7 +348,6 @@ if money3 then
 	})
 end
 
-local storage = minetest.get_mod_storage()
 if areas and money3 then
 	taxes = minetest.deserialize(storage:get_string("taxes")) or {}
 	local autopay = minetest.deserialize(storage:get_string("autopay")) or {}
@@ -608,7 +625,7 @@ if areas and money3 then
 			params = "",
 			description = "See the list of all jobs that are tax exempt",
 			func = function(name, param)
-				local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
+				local tax_exempt = minetest.deserialize(minetest.settings:get("tax_exemptions")) or {}
 				local str = "Tax exempt jobs: "
 				for jobname, val in pairs(tax_exempt) do
 					if str == "Tax exempt jobs: " then
@@ -633,7 +650,7 @@ if areas and money3 then
 				local desc = "Make "..param.." job tax exempt"
 				local success = "$@1 has been made tax exempt. (@2/@3)"
 				local fail = "Failed to make $@1 tax exempt. (@2/@3)"
-				local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
+				local tax_exempt = minetest.deserialize(minetest.settings:get("tax_exemptions")) or {}
 				if tax_exempt[param] then
 					desc = "Make "..param.." job no longer tax exempt"
 					success = "$@1 has been removed from tax exempt status. (@2/@3)"
@@ -658,7 +675,7 @@ if areas and money3 then
 							else
 								tax_exempt[param] = true
 							end
-							minetest.settings:set_string("tax_exemptions", minetest.serialize(tax_exempt))
+							save_setting_string("tax_exemptions", minetest.serialize(tax_exempt))
 							minetest.chat_send_all(S(success, param, #yes, votesneeded))
 						else
 							minetest.chat_send_all(S(fail, param, #yes, votesneeded))
