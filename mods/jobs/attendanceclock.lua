@@ -213,7 +213,7 @@ if minetest.get_modpath("mesecons_button") and minetest.get_modpath("mesecons_lu
 			{"ontime_clocks:green_digital", "mesecons_luacontroller:luacontroller0000"},
 			{"mesecons_button:button_off", "mesecons_button:button_off"},
 		},
-		output = "jobs:clock"
+		output = "jobs:clock 3"
 	})
 else
 	minetest.register_craft({
