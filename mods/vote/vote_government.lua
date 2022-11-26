@@ -621,7 +621,7 @@ if areas and money3 then
 		end
 	})
 	if jobs then
-		minetest.register_chatcommand("/tax_exempt", {
+		minetest.register_chatcommand("tax_exempt", {
 			params = "",
 			description = "See the list of all jobs that are tax exempt",
 			func = function(name, param)
