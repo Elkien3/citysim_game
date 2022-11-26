@@ -16,7 +16,7 @@ for name, def in pairs(farming.registered_plants) do
 	for index, tile in pairs(node.tiles) do
 		node.tiles[index] = node.tiles[index].."^[colorize:#642700:120"
 	end
-	node.drop = ""--def.seed
+	node.drop = def.seed
 	node.groups.growing = 0
 	node.minlight = 0
 	node.maxlight = 15

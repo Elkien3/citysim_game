@@ -239,7 +239,7 @@ end
 
 function areas:get_player_total_area(playername, arealist)
 	local areatbl = {}
-	local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
+	local tax_exempt = minetest.deserialize(minetest.settings:get("tax_exemptions")) or {}
 	--local t1 = minetest.get_us_time()
 	for id, area in pairs(arealist or self.areas) do--area finding loop
 		if not area.parent
