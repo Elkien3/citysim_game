@@ -675,7 +675,7 @@ if areas and money3 then
 							else
 								tax_exempt[param] = true
 							end
-							save_setting_string("tax_exemptions", minetest.serialize(tax_exempt))
+							save_setting("tax_exemptions", minetest.serialize(tax_exempt))
 							minetest.chat_send_all(S(success, param, #yes, votesneeded))
 						else
 							minetest.chat_send_all(S(fail, param, #yes, votesneeded))
