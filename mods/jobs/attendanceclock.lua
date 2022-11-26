@@ -221,6 +221,6 @@ else
 			{"default:glass", "default:sign_wall_steel"},
 			{"default:mese_crystal_fragment", "default:mese_crystal_fragment"},
 		},
-		output = "jobs:clock"
+		output = "jobs:clock 3"
 	})
 end

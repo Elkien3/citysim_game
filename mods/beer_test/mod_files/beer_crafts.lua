@@ -137,6 +137,7 @@ minetest.register_craft({
 	recipe = {
 		{"default:stick","", "default:stick"},
 		{"default:stick","", "default:stick"},
+		{"default:stick","", "default:stick"},
 	}
 })
 
