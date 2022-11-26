@@ -334,7 +334,7 @@ local storage = minetest.get_mod_storage()
 if areas and money3 then
 	taxes = minetest.deserialize(storage:get_string("taxes")) or {}
 	local autopay = minetest.deserialize(storage:get_string("autopay")) or {}
-	tax_account = storage:get_float("tax_account")
+	tax_account = storage:get_float("tax_account") or 0
 	local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
 	taxes = {}
 	
@@ -603,6 +603,76 @@ if areas and money3 then
 			})
 		end
 	})
+	if jobs then
+		minetest.register_chatcommand("/tax_exempt", {
+			params = "",
+			description = "See the list of all jobs that are tax exempt",
+			func = function(name, param)
+				local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
+				local str = "Tax exempt jobs: "
+				for jobname, val in pairs(tax_exempt) do
+					if str == "Tax exempt jobs: " then
+						str = str..jobname
+					else
+						str = str..", "..jobname
+					end
+				end
+				return true, str
+			end
+		})
+		minetest.register_chatcommand("vote_tax_exempt", {
+			params = "<jobname>",
+			description = "Make a job tax exempt if it isn't, or make it not tax exempt if it is.",
+			privs = {
+				vote_government = true,
+			},
+			func = function(name, param)
+				if not jobs.list[param] then
+					return false, "No such job as '"..param.."'"
+				end
+				local desc = "Make "..param.." job tax exempt"
+				local success = "$@1 has been made tax exempt. (@2/@3)"
+				local fail = "Failed to make $@1 tax exempt. (@2/@3)"
+				local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
+				if tax_exempt[param] then
+					desc = "Make "..param.." job no longer tax exempt"
+					success = "$@1 has been removed from tax exempt status. (@2/@3)"
+					fail = "Failed to remove $@1 from tax exempt status. (@2/@3)"
+				end
+				return vote.new_vote(name, {
+					description = desc,
+					help = "/yes,  /no  or  /abstain",
+					name = name,
+					duration = 20,
+					perc_needed = 0,
+
+					can_vote = function(self, pname)
+						return minetest.check_player_privs(pname,{vote_government = true})
+					end,
+
+					on_result = function(self, result, results)
+						local yes = results.yes or {}
+						if #yes >= votesneeded then
+							if tax_exempt[param] then
+								tax_exempt[param] = nil
+							else
+								tax_exempt[param] = true
+							end
+							minetest.settings:set_string("tax_exemptions", minetest.serialize(tax_exempt))
+							minetest.chat_send_all(S(success, param, #yes, votesneeded))
+						else
+							minetest.chat_send_all(S(fail, param, #yes, votesneeded))
+						end
+					end,
+
+					on_vote = function(self, voter, value)
+						minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+								self.description .. "'")
+					end
+				})
+			end
+		})
+	end
 end
 
 laws = minetest.deserialize(storage:get_string("laws")) or {}

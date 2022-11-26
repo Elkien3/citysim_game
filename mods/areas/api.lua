@@ -239,10 +239,12 @@ end
 
 function areas:get_player_total_area(playername, arealist)
 	local areatbl = {}
+	local tax_exempt = minetest.deserialize(minetest.settings:get_string("tax_exemptions")) or {}
 	--local t1 = minetest.get_us_time()
 	for id, area in pairs(arealist or self.areas) do--area finding loop
 		if not area.parent
-		and (area.owner == playername or (jobs and (jobs.list[jobs.split(area.owner, ":")[1]] or {ceo = ""}).ceo == playername))
+		and (area.owner == playername or
+			(jobs and (jobs.list[jobs.split(area.owner, ":")[1]] or {ceo = ""}).ceo == playername and not tax_exempt[jobs.split(area.owner, ":")[1]]))
 		then
 			for id2, area2 in pairs(areas:getAreasIntersectingArea(area.pos1, area.pos2)) do
 				if id2 ~= id and self:isSubarea(area.pos1, area.pos2, id2) and (area2.parent and area2.parent~=id) then
