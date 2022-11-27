@@ -161,6 +161,7 @@ minetest.register_globalstep(function(dtime)
 							ent:remove()
 						end
 						medical.data[name].injuries[index] = nil
+						medical.effect_handle(player)
 						medical.save()
 					else
 						if not injury.severity then injury.severity = 1 end

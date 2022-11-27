@@ -60,7 +60,8 @@ if minetest.get_modpath("3d_armor") then
 	modeldef.animations.recumbantleft =  {x = 225,  y = 226}
 	player_api.register_model("3d_armor_medical_character.b3d", modeldef)
 	minetest.register_on_joinplayer(function(player)
-		default.player_set_model(player, "3d_armor_medical_character.b3d")
+		player_api.set_model(player, "3d_armor_medical_character.b3d")
+		--default.player_set_model(player, "3d_armor_medical_character.b3d")
 	end)
 else
 	local modeldef = table.copy(player_api.registered_models["character.b3d"])
@@ -68,7 +69,8 @@ else
 	modeldef.animations.recumbantleft =  {x = 225,  y = 226}
 	player_api.register_model("medical_character.b3d", modeldef)
 	minetest.register_on_joinplayer(function(player)
-		default.player_set_model(player, "medical_character.b3d")
+		player_api.set_model(player, "medical_character.b3d")
+		--default.player_set_model(player, "medical_character.b3d")
 	end)
 end
 --[[player_api.registered_models["character.b3d"].animations.recumbantright = {x = 223,  y = 224}
@@ -252,8 +254,11 @@ player_api.set_animation = function(player, anim_name, speed)
 			parent:set_properties({collisionbox = {-.3, 0, -.3, .3, 1.7, .3}})
 		end
 	end
+	if speed == 0 then speed = 1 end--fix bug with character_anim not liking speed to be 0
 	return set_animation(player, anim_name, speed)
 end
+
+default.player_set_animation = player_api.set_animation
 
 local injuryrot = {Arm_Right = {x=180,y=0,z=0}, Arm_Left = {x=180,y=0,z=0}, Leg_Right = {x=180,y=0,z=0}, Leg_Left = {x=180,y=0,z=0},
 	Back = {x=0,y=180,z=0}}
