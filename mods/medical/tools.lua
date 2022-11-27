@@ -41,7 +41,7 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 		clicker:hud_set_flags({wielditem=false})
 		local respiratory = 48-((hp+100)/3.333)--12 to 48 from a 20 to -100
 		--minetest.chat_send_all(respiratory)
-		medical.start_timer(sname.."breathcheck", 60/respiratory, true, sname,
+		medical.start_timer(cname.."breathcheck", 60/respiratory, true, sname,
 			function(arg)
 				if medical.data[sname].obstructed then
 					return
@@ -104,7 +104,7 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 		clicker:hud_set_flags({wielditem=false})
 		local pulse = 140-((hp+100)/2)--80 to 140 from a 20 to -100
 		--minetest.chat_send_all(pulse)
-		medical.start_timer(sname.."pulsecheck", 60/pulse, true, sname,
+		medical.start_timer(cname.."pulsecheck", 60/pulse, true, sname,
 			function(arg)
 				minetest.sound_play("human-heartbeat-daniel_simon", {
 					pos = hitloc,
