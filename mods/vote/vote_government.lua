@@ -349,11 +349,11 @@ if money3 then
 end
 
 if areas and money3 then
-	taxes = minetest.deserialize(storage:get_string("taxes")) or {}
+	taxes = {}
+	taxes.tbl = minetest.deserialize(storage:get_string("taxes")) or {}
 	local autopay = minetest.deserialize(storage:get_string("autopay")) or {}
 	tax_account = storage:get_float("tax_account") or 0
 	local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
-	taxes = {}
 	
 	taxes.add = function(amount)
 		tax_account = tax_account + amount
@@ -376,10 +376,10 @@ if areas and money3 then
 		if perc <= 0 then return end
 		local tax = math.ceil((diff/1000)*tax_rate*perc)
 		minetest.chat_send_player(name, "You have been charged a tax of $"..tax.." for protecting this area.")
-		taxes[name] = math.ceil((taxes[name] or 0)) + tax
-		if autopay[name] and not money3.dec(name, taxes[name]) then
-			tax_account = tax_account + taxes[name]
-			taxes[name] = nil
+		taxes.tbl[name] = math.ceil((taxes.tbl[name] or 0)) + tax
+		if autopay[name] and not money3.dec(name, taxes.tbl[name]) then
+			tax_account = tax_account + taxes.tbl[name]
+			taxes.tbl[name] = nil
 			storage:set_string("tax_account", tax_account)
 		end
 		storage:set_string("taxes", minetest.serialize(taxes))
@@ -393,10 +393,10 @@ if areas and money3 then
 				for id, area in pairs(areas.areas) do
 					local owner = (jobs and (jobs.list[jobs.split(area.owner, ":")[1]] or {}).ceo) or area.owner
 					if not calcnames[owner] then
-						taxes[owner] = math.ceil((taxes[owner] or 0) + (areas:get_player_total_area(owner)/1000)*tax_rate)
-						if autopay[owner] and not money3.dec(owner, taxes[owner]) then
-							tax_account = tax_account + taxes[owner]
-							taxes[owner] = nil
+						taxes.tbl[owner] = math.ceil((taxes.tbl[owner] or 0) + (areas:get_player_total_area(owner)/1000)*tax_rate)
+						if autopay[owner] and not money3.dec(owner, taxes.tbl[owner]) then
+							tax_account = tax_account + taxes.tbl[owner]
+							taxes.tbl[owner] = nil
 						end
 						calcnames[owner] = true
 					end
@@ -418,11 +418,11 @@ if areas and money3 then
 			if param == "" then
 				param = name
 			end
-			if not taxes[param] then
+			if not taxes.tbl[param] then
 				return false, S("That player does have a tax balance to pay.")
 			end
 			
-			return true, S("Player @1 has $@2 of taxes to pay.", param, taxes[param])
+			return true, S("Player @1 has $@2 of taxes to pay.", param, taxes.tbl[param])
 		end
 	})
 	
@@ -457,22 +457,22 @@ if areas and money3 then
 		description = S("Pay your tax balance."),
 		func = function(name, param)
 			local val = tonumber(param)
-			if not taxes[name] then
+			if not taxes.tbl[name] then
 				return false, "You have no tax balance to pay."
 			end
-			if not val or val > taxes[name] then val = taxes[name] end
+			if not val or val > taxes.tbl[name] then val = taxes.tbl[name] end
 			if money3.dec(name, val) then
 				return false, "You do not have enough money in your account."
 			end
 			tax_account = tax_account + val
-			taxes[name] = taxes[name]-val
+			taxes.tbl[name] = taxes.tbl[name]-val
 			
-			if taxes[name] == 0 then
-				taxes[name] = nil
+			if taxes.tbl[name] == 0 then
+				taxes.tbl[name] = nil
 			end
 			storage:set_string("tax_account", tax_account)
 			storage:set_string("taxes", minetest.serialize(taxes))
-			return true, S("Your payment of $@1 has been recieved, your balance is now $@2", val, (taxes[name] or 0))
+			return true, S("Your payment of $@1 has been recieved, your balance is now $@2", val, (taxes.tbl[name] or 0))
 		end
 	})
 	minetest.register_chatcommand("taxes_list", {
