@@ -267,7 +267,7 @@ medical.attachedtools[""] = function(player, clicker, wielditem, hitloc, local_h
 	end
 	local all_objects = minetest.get_objects_inside_radius(hitloc, 10)
 	local cname = clicker:get_player_name()
-	for _,obj in ipairs(all_objects) do
+	--[[for _,obj in ipairs(all_objects) do
 		local pos = obj:get_pos()
 		local marker = clicker:hud_add({
 			hud_elem_type = "waypoint",
@@ -281,7 +281,7 @@ medical.attachedtools[""] = function(player, clicker, wielditem, hitloc, local_h
 					hitter:hud_remove(marker)
 				end
 			end)
-	end
+	end--]]
 end
 
 minetest.register_craftitem("medical:blanket", {
