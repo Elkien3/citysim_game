@@ -7,18 +7,18 @@ local stonestagetbl = minetest.deserialize(storage:get_string("stonestagetbl")) 
 local lastupdated = storage:get_int("stonestagelastupdated")
 if lastupdated == 0 then lastupdated = os.time() end
 
-local twostage = 240--at or below this you dig in two stages
-local threestage = 360--at or below this you dig in three stages
-local capstage = 480--you dont wear your arm out past this
-local ticktime = 180--you recover from digging one block every ticktime seconds
+local twostage = 600--at or below this you dig in two stages (in seconds of dig time)
+local threestage = 800--at or below this you dig in three stages
+local capstage = 1000--you dont wear your arm out past this
+local ticktime = 86.4--you recover from digging one second every ticktime seconds
 
 local function updatestonestage()
 	local currenttime = os.time()
-	local addblocks = math.floor((currenttime-lastupdated)/ticktime)
+	local addtime = math.floor((currenttime-lastupdated)/ticktime)
 	local update = false
 	for name, amount in pairs(stonestagetbl) do
 		update = true
-		amount = amount - addblocks
+		amount = amount - addtime
 		if amount <= 0 then
 			stonestagetbl[name] = nil
 		else
@@ -65,7 +65,14 @@ local stone_after_dig = function(pos, oldnode, oldmetadata, digger)
 	if newnodename then
 		minetest.set_node(pos, {name = newnodename})
 	else--node was dug
-		stonestagetbl[name] = (stonestagetbl[name] or 0) + 1
+		local wielditem = digger:get_wielded_item()
+		local nodedef = minetest.registered_nodes[oldnode.name]
+		local digtime
+		if wielditem and nodedef then
+			digtime = minetest.get_dig_params(nodedef.groups, wielditem:get_tool_capabilities()).time
+		end
+		--minetest.chat_send_all(dump(digtime))
+		stonestagetbl[name] = (stonestagetbl[name] or 0) + (digtime or 1)
 		if stonestagetbl[name] > capstage then
 			stonestagetbl[name] = capstage
 		else
