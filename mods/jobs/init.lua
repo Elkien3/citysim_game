@@ -532,6 +532,7 @@ function jobs.money(name, jobname, action, amount)
 	if not jobs.list[jobname] then return false, "The job '"..jobname.."' does not exist." end
 	if jobs.list[jobname].ceo ~= name then return false, "You are not the CEO of '"..jobname.."'." end
 	if not action then action = "" end
+	if not money3.get(":"..jobname) then money3.set(":"..jobname, 0) end
 	if action == "add" then
 		if not amount or not tonumber(amount) then return false, "Invalid Amount" end
 		local val = money3.transfer(name, ":"..jobname, tonumber(amount))
