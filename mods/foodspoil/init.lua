@@ -71,6 +71,7 @@ minetest.add_item = function(pos, item)
 	if type(item) == "string" then
 		item = ItemStack(item)
 	end
+	if not item then return end
 	local name = item:get_name()
 	local def = minetest.registered_items[name]
 	local meta = item:get_meta()
