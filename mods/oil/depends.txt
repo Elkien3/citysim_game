@@ -7,3 +7,5 @@ waterworks?
 mesecons_button?
 currency?
 basic_materials?
+technic?
+streets?

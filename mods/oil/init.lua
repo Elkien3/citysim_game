@@ -198,9 +198,28 @@ if waterworks then
 end
 
 minetest.register_node("oil:tar", {
-	description = "Tar",
+	description = "Tar Block",
 	tiles = {"cars_oil_source.png"},
+	groups = {oddly_breakable_by_hand = 1},
+	drop = "oil:tar_item 9"
 })
+minetest.register_craftitem("oil:tar_item", {
+	description = "Tar",
+	inventory_image = "cars_oil_source.png",
+})
+minetest.register_craft({
+	recipe = {
+		{"oil:tar_item", "oil:tar_item", "oil:tar_item"},
+		{"oil:tar_item", "oil:tar_item", "oil:tar_item"},
+		{"oil:tar_item", "oil:tar_item", "oil:tar_item"},
+	},
+	output = "oil:tar"
+})
+--replace asphalt craft if able
+if minetest.get_modpath("technic") and minetest.get_modpath("streets") then
+	minetest.clear_craft({output = "streets:asphalt"})
+	technic.register_alloy_recipe({input = {"oil:tar_item", "default:gravel 32"}, output = "streets:asphalt 32"})
+end
 
 minetest.register_ore({
 	ore_type = "blob",
