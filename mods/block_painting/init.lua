@@ -634,6 +634,20 @@ minetest.register_craft({
 	}
 })
 
+local orig_func = minetest.handle_node_drops
+minetest.handle_node_drops = function(pos, drops, digger)
+	for i, itemstring in pairs(drops) do
+		local itemstack = ItemStack(itemstring)
+		local metatbl = itemstack:to_table()
+		if metatbl.meta and metatbl.meta.palette_index and metatbl.meta.palette_index == "0" then
+			metatbl.meta.palette_index = nil
+			itemstack:get_meta():from_table(metatbl)
+		end
+		drops[i] = itemstack:to_string()
+	end
+	return orig_func(pos, drops, digger)
+end
+
 function OverrideDyeableNodes()
 	for _, paintable_node in pairs(minetest.registered_nodes) do
 		local def = minetest.registered_nodes[paintable_node.name]
