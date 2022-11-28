@@ -48,17 +48,17 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 				elseif respiratory < 20 then
 					minetest.sound_play("breathsoft", {
 						pos = hitloc,
-						to_player = arg,
+						to_player = cname,
 					})
 				elseif  respiratory < 35 then
 					minetest.sound_play("breathdeep", {
 						pos = hitloc,
-						to_player = arg,
+						to_player = cname,
 					})
 				else
 					minetest.sound_play("breathrapid", {
 						pos = hitloc,
-						to_player = arg,
+						to_player = cname,
 					})
 				end
 				local circle = clicker:hud_add({
@@ -108,7 +108,7 @@ medical.usedtools[""] = function(player, clicker, wielditem, hitloc, local_hitlo
 			function(arg)
 				minetest.sound_play("human-heartbeat-daniel_simon", {
 					pos = hitloc,
-					to_player = arg,
+					to_player = cname,
 					gain = (hp+100)/120
 				})
 				local circle = clicker:hud_add({
