@@ -70,6 +70,7 @@ end
 
 -- Check if a user exists
 function money3.user_exists(name)
+	if jobs and string.find(name, ":") and jobs.list[string.gsub(name, ":", "")] then return true end
 	local privs = minetest.get_player_privs(name)
 	if not privs or not privs.money or not money3.get(name) then
 		return false
