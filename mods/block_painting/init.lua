@@ -635,20 +635,23 @@ minetest.register_craft({
 })
 
 function OverrideDyeableNodes()
-for _, paintable_node in pairs(minetest.registered_nodes) do
-if minetest.registered_nodes[paintable_node.name].paramtype2 == "none" then
-minetest.override_item(paintable_node.name, {
-	paramtype2 = "color",
-	palette = "block_painting_pallete.png",
-})
-end end
-for _, f_paintable_node in pairs(force_paintable_nodes) do
-if minetest.registered_nodes[f_paintable_node] ~= nil then
-minetest.override_item(f_paintable_node, {
-	paramtype2 = "color",
-	palette = "block_painting_pallete.png",
-})
-end end
+	for _, paintable_node in pairs(minetest.registered_nodes) do
+		local def = minetest.registered_nodes[paintable_node.name]
+		if def.paramtype2 == "none" and (not def.drawtype or def.drawtype == "normal") then
+			minetest.override_item(paintable_node.name, {
+				paramtype2 = "color",
+				palette = "block_painting_pallete.png",
+			})
+		end
+	end
+	for _, f_paintable_node in pairs(force_paintable_nodes) do
+		if minetest.registered_nodes[f_paintable_node] ~= nil then
+		minetest.override_item(f_paintable_node, {
+			paramtype2 = "color",
+			palette = "block_painting_pallete.png",
+		})
+		end
+	end
 end
 
 minetest.register_on_mods_loaded(OverrideDyeableNodes)
