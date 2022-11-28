@@ -157,6 +157,14 @@ for index, abm in pairs (minetest.registered_abms) do
 	end
 end
 
+minetest.register_on_mods_loaded(function()
+	for nodename, def in pairs(minetest.registered_nodes) do
+		if def.liquidtype and (def.liquidtype == "source" or def.liquidtype == "flowing") then
+			minetest.override_item(nodename, {liquid_range = 1})
+		end
+	end
+end)
+
 dofile(modpath.."/plantrot.lua")
 dofile(modpath.."/protection.lua")
 dofile(modpath.."/plantgrowspeeds.lua")
