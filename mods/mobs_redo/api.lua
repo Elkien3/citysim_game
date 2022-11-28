@@ -735,8 +735,8 @@ if time_speed < 1 then
 	time_speed = 1
 end
 local HORNY_TIME = 2
-local HORNY_AGAIN_TIME = 3*time_speed
-local CHILD_GROW_TIME = 8*time_speed
+local HORNY_AGAIN_TIME = 2*time_speed
+local CHILD_GROW_TIME = 4*time_speed
 
 
 -- update nametag colour
