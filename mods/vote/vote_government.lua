@@ -382,7 +382,7 @@ if areas and money3 then
 			taxes.tbl[name] = nil
 			storage:set_string("tax_account", tax_account)
 		end
-		storage:set_string("taxes", minetest.serialize(taxes))
+		storage:set_string("taxes", minetest.serialize(taxes.tbl))
 	end)
 
 	local function do_taxes()
@@ -401,7 +401,7 @@ if areas and money3 then
 						calcnames[owner] = true
 					end
 				end
-				storage:set_string("taxes", minetest.serialize(taxes))
+				storage:set_string("taxes", minetest.serialize(taxes.tbl))
 				storage:set_string("tax_account", tax_account)
 			end
 			storage:set_int("last_tax_month", dateinfo.month)
@@ -471,7 +471,7 @@ if areas and money3 then
 				taxes.tbl[name] = nil
 			end
 			storage:set_string("tax_account", tax_account)
-			storage:set_string("taxes", minetest.serialize(taxes))
+			storage:set_string("taxes", minetest.serialize(taxes.tbl))
 			return true, S("Your payment of $@1 has been recieved, your balance is now $@2", val, (taxes.tbl[name] or 0))
 		end
 	})
@@ -481,7 +481,7 @@ if areas and money3 then
 		func = function(name, param)
 			param = tonumber(param) or 1
 			local str = "List of players with tax balances at or above $"..param..":"
-			for name, balance in pairs(taxes) do
+			for name, balance in pairs(taxes.tbl) do
 				if balance >= param then
 					str = str.." "..name
 				end
