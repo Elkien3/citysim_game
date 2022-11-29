@@ -268,7 +268,7 @@ gas_lib.register_gas("oil:gasoline_vapor", {
 	drowning = 1,
 	interval = 3,
 	weight = -8,
-	deathchance = 3,
+	deathchance = 2,
 	liquid = "oil:gasoline_source"
 })
 

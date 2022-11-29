@@ -45,7 +45,7 @@ gas_lib.register_gas("gas_lib:steam", {
 	interval = 3,
 	weight = -7,
 	liquid = "default:water_source",
-	deathchance = 5,
+	deathchance = 2,
 })
 
 minetest.register_abm{
