@@ -140,7 +140,7 @@ minetest.register_node("oil:oil_source", {
 	sounds = default.node_sound_water_defaults(),
 	gas = "oil:gasoline_vapor",
 	gas_byproduct = "oil:tar",
-	gas_byproduct_chance = 6
+	gas_byproduct_chance = 1
 })
 
 minetest.register_node("oil:oil_flowing", {
