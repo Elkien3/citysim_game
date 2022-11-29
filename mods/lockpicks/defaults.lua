@@ -47,6 +47,8 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 				minetest.chat_send_player(name, "You failed to pick the lock.")
 			end
 			return false
+		else
+			return true
 		end
 	end
 	})
