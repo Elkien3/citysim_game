@@ -287,6 +287,7 @@ function mesecon.mvps_move_objects(pos, dir, nodestack, movefactor)
 	dir = vector.multiply(dir, movefactor)
 	for id, obj in pairs(minetest.object_refs) do
 		local obj_pos = obj:get_pos()
+if not obj_pos or not obj:get_properties() then return end
 		local cbox = obj:get_properties().collisionbox
 		local min_pos = vector.add(obj_pos, vector.new(cbox[1], cbox[2], cbox[3]))
 		local max_pos = vector.add(obj_pos, vector.new(cbox[4], cbox[5], cbox[6]))
