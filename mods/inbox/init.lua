@@ -69,6 +69,7 @@ minetest.register_node("inbox:empty", {
     end
   end,
   can_dig = function(pos,player)
+	local meta = minetest.get_meta(pos)
     local inv = meta:get_inventory()
     return default.can_interact_with_node(player, pos) and inv:is_empty("main")
   end,
