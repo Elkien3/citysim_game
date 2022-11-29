@@ -21,7 +21,7 @@ local votesneeded = tonumber(minetest.settings:get("vote_government_needed")) or
 minetest.register_privilege("vote_government", {
 	description = "Can vote on government matters."
 })
-
+local taxfree_protect = {}
 if areas then
 	minetest.register_chatcommand("vote_recursive_remove_areas", {
 		params = "<name>",
@@ -148,6 +148,7 @@ if areas then
 				on_result = function(self, result, results)
 					local yes = results.yes or {}
 					if #yes >= votesneeded then
+						taxfree_protect[name] = true
 						local id = areas:add(name, param, pos1, pos2, nil)
 						areas:save()
 						minetest.chat_send_all(S("Area protected. ID: @1. (@2/@3)", id, #yes, votesneeded))
@@ -367,6 +368,10 @@ if areas and money3 then
 	areas:registerOnAdd(function(id, area)
 		if tax_rate <= 0 then return end
 		local name = area.owner
+		if taxfree_protect[name] then
+			taxfree_protect[name] = nil
+			return
+		end
 		local temparealist = table.copy(areas.areas)
 		temparealist[id] = nil
 		local diff = areas:get_player_total_area(name)-areas:get_player_total_area(name, temparealist)
