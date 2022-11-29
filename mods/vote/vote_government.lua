@@ -44,7 +44,7 @@ if areas then
 				description = "Recursively remove area " .. param .. " "..areas.areas[id].name..".",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -90,7 +90,7 @@ if areas then
 				description = "Remove area " .. param .. " "..areas.areas[id].name,
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -138,7 +138,7 @@ if areas then
 					" "  ..minetest.pos_to_string(pos2),
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -191,7 +191,7 @@ if areas then
 					" to "..newOwner,
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -234,7 +234,7 @@ if money3 then
 				description = "Change tax rate from "..tostring(minetest.settings:get("property_tax") or 0).." 1000 blocks/mo to " ..param.. " 1000m/mo",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -278,7 +278,7 @@ if money3 then
 				description = "Change money gen rate from "..tostring(minetest.settings:get("money3.income_amount") or 0).."/hr to " ..param.. "/hr",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -321,7 +321,7 @@ if money3 then
 				description = "Change starting money from "..tostring(minetest.settings:get("money3.initial_amount") or 0).." to " ..param,
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -522,7 +522,7 @@ if areas and money3 then
 				description = "Transfer $"..params[1].." out of Tax Account into " ..params[2].."'s account",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -581,7 +581,7 @@ if areas and money3 then
 				description = "Transfer $"..params[1].." out of " ..params[2].."'s account into the Tax Account",
 				help = "/yes,  /no  or  /abstain",
 				name = name,
-				duration = 20,
+				duration = 15,
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
@@ -660,7 +660,7 @@ if areas and money3 then
 					description = desc,
 					help = "/yes,  /no  or  /abstain",
 					name = name,
-					duration = 20,
+					duration = 15,
 					perc_needed = 0,
 
 					can_vote = function(self, pname)
@@ -732,7 +732,7 @@ minetest.register_chatcommand("vote_law_add", {
 			description = "Add law "..param,
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -777,7 +777,7 @@ minetest.register_chatcommand("vote_law_remove", {
 			description = "Remove law "..param,
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -823,7 +823,7 @@ minetest.register_chatcommand("vote_law_change", {
 			description = "Change law '"..params[1].."' to '"..params[2].."'",
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -993,7 +993,7 @@ minetest.register_chatcommand("vote_license_add", {
 			description = "Add license "..param,
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -1037,7 +1037,7 @@ minetest.register_chatcommand("vote_license_remove", {
 			description = "Remove license "..param,
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -1102,7 +1102,7 @@ minetest.register_chatcommand("vote_license_permission", {
 			description = (text[1]).." license permissions to "..param,
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -1162,7 +1162,7 @@ minetest.register_chatcommand("vote_license_grant", {
 			description = S("Grant @1 a @2 license", params[1], params[2]),
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
@@ -1258,7 +1258,7 @@ minetest.register_chatcommand("vote_license_revoke", {
 			description = S("Revoke @1 license from @2", params[2], params[1]),
 			help = "/yes,  /no  or  /abstain",
 			name = name,
-			duration = 20,
+			duration = 15,
 			perc_needed = 0,
 
 			can_vote = function(self, pname)
