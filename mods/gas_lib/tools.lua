@@ -261,7 +261,7 @@ minetest.register_node("gas_lib:furnace_active", {
 	paramtype2 = "facedir",
 	light_source = 8,
 	drop = "gas_lib:furnace",
-	groups = {cracky=2, not_in_creative_inventory=1, smokey = 2},
+	groups = {cracky=2, not_in_creative_inventory=1, smokey = 3},
 	legacy_facedir_simple = true,
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
