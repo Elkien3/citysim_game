@@ -95,6 +95,13 @@ minetest.register_node("thirsty:fountain", {
 		end
 	end
 })
+minetest.register_craft({
+	recipe = {
+		{"waterworks:outlet"},
+		{"waterworks:pipe"},
+	}
+	output = "thirsty:fountain 2"
+})
 
 minetest.override_item("gas_lib:steam", { liquid = "thirsty:water_clean_source"})
 
