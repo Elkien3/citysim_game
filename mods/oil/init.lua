@@ -34,6 +34,7 @@ minetest.register_node("oil:gasoline_source", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	lifetime = 30,
 	is_ground_content = false,
 	drop = "",
 	drowning = 1,

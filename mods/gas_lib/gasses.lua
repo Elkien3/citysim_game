@@ -44,6 +44,7 @@ gas_lib.register_gas("gas_lib:steam", {
 	damage_per_second = 3,
 	interval = 3,
 	weight = -7,
+	lifetime = 20,
 	liquid = "default:water_source",
 	deathchance = 2,
 })
