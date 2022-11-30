@@ -112,7 +112,7 @@ end
 
 minetest.check_single_for_falling = function(p)
     local n = core.get_node(p)
-	if not n then return end
+	if not n then return false end
     local meta = minetest.get_meta(p);
 
     local falling_node_group = core.get_item_group(n.name, "falling_node")
