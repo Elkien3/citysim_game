@@ -21,8 +21,10 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 			end
 		end
 		if not minetest.check_player_privs(name, {lockpick=true}) then
+			if can_pick then
+				minetest.chat_send_player(name, "Your do not have the lockpick priv.")
+			end
 			can_pick = false
-			minetest.chat_send_player(name, "Your do not have the lockpick priv.")
 		end
 		if can_pick then
 			local wielditem = digger:get_wielded_item()
@@ -48,6 +50,7 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 			end
 			return false
 		else
+			minetest.node_dig(pos, node, digger)
 			return true
 		end
 	end
