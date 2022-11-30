@@ -99,7 +99,7 @@ minetest.register_craft({
 	recipe = {
 		{"waterworks:outlet"},
 		{"waterworks:pipe"},
-	}
+	},
 	output = "thirsty:fountain 2"
 })
 
