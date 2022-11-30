@@ -57,11 +57,11 @@ for name, def in pairs(orelist) do
 	if biomelist[def.ore] then
 		local scarcity = def.clust_scarcity
 		local clust_num_ores = def.clust_num_ores
-		--def.clust_scarcity = scarcity*4
-		--def.clust_num_ores = clust_num_ores*.5
-		--minetest.register_ore(def)
-		def.clust_scarcity = scarcity*.5
-		def.clust_num_ores = clust_num_ores*2
+		--[[def.clust_scarcity = scarcity*4
+		def.clust_num_ores = clust_num_ores*.5
+		minetest.register_ore(def)--]]
+		def.clust_scarcity = scarcity*.75
+		def.clust_num_ores = clust_num_ores*1.5
 		def.biomes = biomelist[def.ore]
 		minetest.register_ore(def)
 	else
@@ -71,3 +71,18 @@ end
 
 orelist = nil
 biomelist = nil
+--[[
+minetest.register_tool("default_tweaks:biome_tester", {
+	description = "Biome Tester",
+	inventory_image = "default_stick.png",
+	groups = {stick = 1, flammable = 2},
+})
+minetest.register_craft({
+	output = "default_tweaks:biome_tester",
+	recipe = {
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
+		{"", "group:stick", ""},
+	}
+})
+--]]
