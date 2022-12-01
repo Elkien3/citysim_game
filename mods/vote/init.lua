@@ -357,9 +357,9 @@ minetest.register_chatcommand("vote_mute", {
 							privs.shout = true
 						end
 						minetest.set_player_privs(param, privs)
-						minetest.chat_send_all(S(success, param, #results.yes, #results.no))
+						minetest.chat_send_all(success, param, #results.yes, #results.no)
 					else
-						minetest.chat_send_all(S(fail, param, #results.yes, #results.no))
+						minetest.chat_send_all(fail, param, #results.yes, #results.no)
 					end
 				end,
 
