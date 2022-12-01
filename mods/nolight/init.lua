@@ -79,7 +79,7 @@ minetest.register_on_mods_loaded(function()
 		if string.find(name, "furnace") then goto skip end
 		if string.find(name, "fire:") then goto skip end
 		if string.find(name, "technic:") then goto skip end
-		if string.find(name, "lava") or string.find(name, "fireflies") or string.find(name, "mesecon_torch") or string.find(name, "mesecons_powerplant") or string.find(name, "candle") or string.find(name, "streets:roadwork") then
+		if string.find(name, "lava") or string.find(name, "fireflies") or string.find(name, "candle") or string.find(name, "streets:roadwork") or string.find(name, "digiline") or name == "streets:matrix_screen_base" or (string.find(name, "mesecon") and not (string.find(name, "lamp") or string.find(name, "lightstone"))) then
 			minetest.override_item(name, {light_source = max_light})
 			goto skip
 		end
