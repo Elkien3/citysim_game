@@ -349,7 +349,7 @@ minetest.register_chatcommand("vote_mute", {
 				end,
 
 				on_result = function(self, result, results)
-					if result == "yes" then
+					if #results.yes > 1 and result == "yes" then
 						local privs = minetest.get_player_privs(param)
 						if hasshout then
 							privs.shout = nil
