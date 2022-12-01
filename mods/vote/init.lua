@@ -337,7 +337,7 @@ minetest.register_chatcommand("vote_mute", {
 			end
 
 			return vote.new_vote(name, {
-				description = desc
+				description = desc,
 				help = "/yes,  /no  or  /abstain",
 				name = name,
 				duration = 15,
