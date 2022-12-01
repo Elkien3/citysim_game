@@ -317,5 +317,58 @@ minetest.register_chatcommand("abstain", {
 		vote.check_vote(voteset)
 	end
 })
+minetest.register_chatcommand("vote_mute", {
+		params = "<name>",
+		description = "Start a vote to mute/unmute a player.",
+		privs = {
+			vote = true,
+			shout = true,
+		},
+		func = function(name, param)
+			if not minetest.player_exists(param) then return false, "Player does not exist" end
+			local hasshout = minetest.check_player_privs(param, {shout = true})
+			local desc = "Mute "..param.."."
+			local success = "@1 has been muted. (@2/@3)"
+			local fail = "Failed to mute @1. (@2/@3)"
+			if not hasshout then
+				desc = "Unmute "..param.."."
+				success = "@1 has been unmuted. (@2/@3)"
+				fail = "Failed to unmute @1. (@2/@3)"
+			end
+
+			return vote.new_vote(name, {
+				description = desc
+				help = "/yes,  /no  or  /abstain",
+				name = name,
+				duration = 15,
+				perc_needed = .75,
+
+				can_vote = function(self, pname)
+					if pname == param then return false end
+					return minetest.check_player_privs(pname,{shout = true, vote = true})
+				end,
+
+				on_result = function(self, result, results)
+					if result == "yes" then
+						local privs = minetest.get_player_privs(param)
+						if hasshout then
+							privs.shout = nil
+						else
+							privs.shout = true
+						end
+						minetest.set_player_privs(param, privs)
+						minetest.chat_send_all(S(success, param, #results.yes, #results.no))
+					else
+						minetest.chat_send_all(S(fail, param, #results.yes, #results.no))
+					end
+				end,
+
+				on_vote = function(self, voter, value)
+					minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+							self.description .. "'")
+				end
+			})
+		end
+	})
 
 dofile(minetest.get_modpath("vote") .. "/vote_government.lua")
