@@ -19,7 +19,7 @@ minetest.do_item_eat = function(hp_change, replace_with_item, itemstack, user, p
 		diet_tbl[name] = playertbl
 		storage:set_string("data", minetest.serialize(diet_tbl))--todo maybe save less than every single item_eat
 		if eaten_num > 8 then--makes you a bit poisoned
-			hp_change = -eaten_num+8
+			hp_change = -1
 			minetest.chat_send_player(name, "Your stomach hates "..itemstack:get_description())
 		elseif eaten_num > 3 then
 			local multi = eaten_num-3
