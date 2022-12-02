@@ -151,7 +151,7 @@ end
 --MUSHROOMS
 for index, abm in pairs (minetest.registered_abms) do
 	if abm.label == "Mushroom spread" then
-		abm.interval = 60
+		abm.interval = 600
 		abm.chance = 150
 		break
 	end
