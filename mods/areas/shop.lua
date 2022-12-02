@@ -4,7 +4,9 @@ local show_shop_formspec = function(pos, node, clicker, itemstack, pointed_thing
 	local name = clicker:get_player_name()
 	form_players[name] = pos
 	local meta = minetest.get_meta(pos)
-	if name == meta:get_string("owner") then
+	local owner = meta:get_string("owner")
+	local isowner = owner == name or (jobs and jobs.permissionstring(name, owner))
+	if isowner then
 		local form = "size[3,3.5]" ..
 		"field[0.5,0.7;1,1;area;Area ID;"..minetest.formspec_escape(meta:get_int("area")).."]" ..
 		"field[2,0.7;1,1;price;Price;"..minetest.formspec_escape(meta:get_int("price")).."]" ..
@@ -17,7 +19,7 @@ local show_shop_formspec = function(pos, node, clicker, itemstack, pointed_thing
 		"label[2,0.1;"..minetest.formspec_escape("Price: "..meta:get_int("price")).."]" ..
 		"textarea[0.5,1;2.5,2;notes;Notes;"..minetest.formspec_escape(meta:get_string("notes")).."]"
 		
-		if not areas:isAreaOwner(meta:get_int("area"),  meta:get_string("owner")) then
+		if not areas:isAreaOwner(meta:get_int("area"), owner) then
 			form = form.."button_exit[0.7,2.6;1.8,1;nobuy;Shop Invalid]"
 		else
 			form = form.."button_exit[0.7,2.6;1.8,1;buy;Buy]"
@@ -34,7 +36,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not pos then return end
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
-	local isowner = owner == name
+	local isowner = owner == name or (jobs and jobs.permissionstring(name, owner))
 	local area = meta:get_int("area")
 	if fields.buy then
 		if isowner then

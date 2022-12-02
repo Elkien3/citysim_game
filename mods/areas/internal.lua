@@ -307,8 +307,19 @@ function areas:isAreaOwner(id, name)
 			cur = self.areas[cur.parent]
 		elseif cur.owner == name then
 			return true
-		elseif (jobs and (jobs.list[jobs.split(cur.owner, ":")[1]] or {ceo = ""}).ceo == name) then
-			return true
+		elseif jobs then
+			local splitname = jobs.split(cur.owner, ":")
+			if not splitname or #splitname ~= 2 then return false end
+			local jobname = splitname[1]
+			local rank = splitname[2]
+			if not jobs.list[jobname] then return false end
+			if jobs.list[jobname].ceo == name then
+				return true
+			elseif rank == "supervisor" and jobs.getrank(name, jobname) == 3 then
+				return true
+			else
+				return false
+			end
 		else
 			return false
 		end
