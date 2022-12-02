@@ -157,6 +157,7 @@ end)
 
 local foodtable = {
 	["default:apple"] = 24,
+	["default:blueberries"] = 14,
 	["ethereal:banana"] = 24,
 	["ethereal:orange"] = 24,
 	["ethereal:strawberry"] = 24,
