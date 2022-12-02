@@ -31,3 +31,4 @@ seaplants?
 pizza?
 nssm?
 thirsty?
+diet_simple?
