@@ -242,6 +242,7 @@ local foodtable = {
 	["mobs:butter"] = 24,
 	["mobs:bucket_milk"] = 7,
 	["mobs:cheese"] = 30,
+	["mobs:egg"] = 24,
 	["fishing:fish_raw"] = 24,
 	["fishing:fish_baked"] = 24,
 }
