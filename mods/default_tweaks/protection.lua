@@ -202,7 +202,7 @@ minetest.register_on_mods_loaded(function()
 	["inbox:empty"] = 30, ["inbox:full"] = 30, ["mesecons_random:ghoststone"] = 60, ["streets:steel_support"] = 60,
 	["technic:steel_strut_with_insulator_clip"] = 60, ["technic:granite"] = 60, ["streets:concrete_wall"] = 60,
 	["streets:roadwork_traffic_barrier"] = 60, ["streets:bigpole"] = 30, ["streets:bigpole_corner"] = 30, ["streets:bigpole_cross"] = 30,
-	["streets:bigpole_edge"] = 30, ["streets:bigpole_short"] = 30, ["streets:bigpole_tjunction"] = 30}
+	["streets:bigpole_edge"] = 30, ["streets:bigpole_short"] = 30, ["streets:bigpole_tjunction"] = 30, ["policetools:computer"] = 30, ["jobs:clock"] = 30}
 	
 	local strongdoorlist = {["doors:door_steel"] = 60*1,["doors:trapdoor_steel"] = 60*1, ["xpanes:door_steel_bar"] = 60*1,
 	["xpanes:trapdoor_steel_bar"] = 60*1, ["doors:prison_door"] = 60*1, ["doors:rusty_prison_door"] = 60*1}
