@@ -91,8 +91,12 @@ function jobs.punch(name, pos)
 		punches[name].jobname = jobname
 		punches[name].amount = 0
 		punches[name].pos = pos
+		local maxshift = tonumber(meta:get_string("maxshift"))
+		if maxshift and maxshift > 0 then
+			punches[name].shifttime = maxshift*60*60
+		end
 		local radius = tonumber(meta:get_string("radius"))
-		if radius > 0 then
+		if radius and radius > 0 then
 			punches[name].dist = radius
 		end
 		minetest.chat_send_player(name, "Punched into '"..jobname.."'")
@@ -119,6 +123,13 @@ local function update_punches()
 		if player then--todo check if player is inactive/afk
 			if data.inactivetime then data.inactivetime = nil end
 			data.amount = data.amount + (punch_tick*(pay/60/60))
+			if data.shifttime then
+				data.shifttime = data.shifttime - punch_tick
+				if data.shifttime <= 0 then
+					jobs.punch(name, pos)
+					return
+				end
+			end
 		else
 			if not data.inactivetime then data.inactivetime = 0 end
 			data.inactivetime = data.inactivetime + punch_tick
@@ -139,7 +150,7 @@ local setup_form =
     "field_close_on_enter[jobname;false]" ..
     "field[0.5,2.5;4.5,1;radius;Auto punch out distance. (0 to disable);0]" ..
     "field_close_on_enter[radius;false]" ..
-    "field[0.5,3.5;4.5,1;maxshift;Maximum shift length (in hours);4]" ..
+    "field[0.5,3.5;4.5,1;maxshift;Maximum shift length (in hours, 0 to disable);4]" ..
     "field_close_on_enter[maxshift;false]" ..
     "button_exit[3,4;2,1;accept;Accept]"
 
@@ -179,14 +190,11 @@ minetest.register_node("jobs:clock", {
 			meta:set_string("formspec", setup_form)
 		end
 		if not jobs.players[name] or not jobs.players[name][jobname] then return end
-		local radius = meta:get_string("radius")
-		local maxshift = meta:get_string("maxshift")
-		if radius == "" or maxshift == "" then return end
 		
 		context[name] = pos
 		local punchedin = false
 		if punches[name] and punches[name].jobname and punches[name].jobname == jobname then punchedin = true end
-		minetest.show_formspec(name, "jobs_attendanceclock", employee_form(punchedin, name, jobname, radius, maxshift))
+		minetest.show_formspec(name, "jobs_attendanceclock", employee_form(punchedin, name, jobname, meta:get_string("radius"), meta:get_string("maxshift")))
 	end,
 	on_construct = function(pos, placer, itemstack, pointed_thing)	--Initialize some variables (local per instance)
 		local meta = minetest.env:get_meta(pos)
@@ -197,7 +205,7 @@ minetest.register_node("jobs:clock", {
         local meta = minetest.env:get_meta(pos)
 		local name = player:get_player_name()
 		if not name or not meta then return end
-		if fields.jobname and jobs.list[fields.jobname] and fields.radius and fields.radius ~= "" and fields.maxshift and fields.maxshift ~= "" then
+		if fields.jobname and jobs.list[fields.jobname] and fields.radius and tonumber(fields.radius) and fields.maxshift and tonumber(fields.maxshift) then
 			meta:set_string("jobname", fields.jobname)
 			meta:set_string("radius", fields.radius)
 			meta:set_string("maxshift", fields.maxshift)
