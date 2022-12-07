@@ -191,6 +191,7 @@ minetest.register_on_dieplayer(function(player)
 	local bones_position_message = minetest.settings:get_bool("bones_position_message") == true
 	local player_name = player:get_player_name()
 	local pos = vector.round(player:get_pos())
+	pos.y = pos.y + 1
 	local pos_string = minetest.pos_to_string(pos)
 
 	-- return if keep inventory set or in creative mode
