@@ -127,7 +127,11 @@ minetest.register_globalstep(function(dtime)
 			-- lower satiation by 1 point after xx seconds
 			if timer2 > hbhunger.HUNGER_TICK then
 				if h > 0 then
-					h = h-1
+					if class_get and class_get(name, "unclassed") then
+						h = h-.75
+					else
+						h = h-1
+					end
 					hbhunger.hunger[name] = h
 					hbhunger.set_hunger_raw(player)
 				end

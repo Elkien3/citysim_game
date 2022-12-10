@@ -466,7 +466,13 @@ function hbhunger.handle_node_actions(pos, oldnode, player, ext)
 		new = hbhunger.EXHAUST_MOVE
 	end
 	exhaus = exhaus + new
-	if exhaus > hbhunger.EXHAUST_LVL then
+	local exhaus_lvl
+	if class_get and class_get(name, "unclassed") then
+		exhaus_lvl = hbhunger.EXHAUST_LVL*1.5
+	else
+		exhaus_lvl = hbhunger.EXHAUST_LVL
+	end
+	if exhaus > exhaus_lvl then
 		exhaus = 0
 		local h = tonumber(hbhunger.hunger[name])
 		h = h - 1

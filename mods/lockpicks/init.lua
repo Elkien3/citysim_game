@@ -98,6 +98,9 @@ local newchestrightclick = function(pos, node, clicker, itemstack, pointed_thing
 	and not (def and def.tool_capabilities and def.tool_capabilities.groupcaps and def.tool_capabilities.groupcaps.locked) then
 		return itemstack
 	end
+	if class_get and not default.can_interact_with_node(clicker, pos) and not class_get(clicker:get_player_name(), "snooper") then
+		return itemstack
+	end
 	name = "default:chest_locked"
 	sound_open = "default_chest_open"
 	sound_close = "default_chest_close"

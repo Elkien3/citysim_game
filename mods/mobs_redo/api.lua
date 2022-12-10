@@ -4755,7 +4755,7 @@ function mobs:feed_tame(self, clicker, feed_count, breed, tame)
 
 			self._breed_countdown = nil
 
-			if breed and self.hornytimer == 0 then
+			if breed and self.hornytimer == 0 and (not class_get or class_get(clicker:get_player_name(), "farmer")) then
 				self.horny = true
 				self.food = 4
 			end

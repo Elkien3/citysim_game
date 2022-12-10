@@ -240,6 +240,9 @@ minetest.register_chatcommand("grief_check", {
 		if not minetest.setting_getbool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
+		if class_get and not class_get(clicker:get_player_name(), "snooper") then
+			return false, "Only snooper class can grief check"
+		end
 		local range, hours, limit =
 			param:match("(%d+) *(%d*) *(%d*)")
 		range = tonumber(range) or 0

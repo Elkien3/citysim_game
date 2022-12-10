@@ -53,6 +53,10 @@ local welderdef = {
 											minetest.chat_send_player(name, "Only Police CEO and those with 'give' priv can make police cars.")
 											return
 										end
+										if class_get and not class_get(name, "machinist") and carname ~= "cars:police_sedan" then
+											minetest.chat_send_player(name, "Only machinists can craft cars")
+											return
+										end
 										worldedit.set(vector.subtract(nodepos, offset), vector.add(vector.subtract(nodepos, offset), size), "air")
 										local ent = minetest.add_entity(vector.add(vector.subtract(nodepos, offset), vector.multiply(size, .5)), carname, user:get_player_name())
 										ent:setyaw(minetest.dir_to_yaw(minetest.facedir_to_dir(node.param2))-math.pi)
@@ -68,6 +72,10 @@ local welderdef = {
 				local obj = pointed_thing.ref
 				if not obj or not obj:get_armor_groups().vehicle then return itemstack end
 				if obj:get_hp() >= obj:get_properties().hp_max then return itemstack end--todo add reassembling repair and only allow welding for hp above 50%
+				if class_get and not class_get(name, "machinist") and obj:get_hp() >= obj:get_properties().hp_max/2 then--only allow machinist to completly repair cars.
+					minetest.chat_send_player(name, "Only machinists can repair cars above 50%")
+					return
+				end
 				if default.player_attached[name] then return itemstack end
 				if cooldowns[name] then return itemstack end
 				

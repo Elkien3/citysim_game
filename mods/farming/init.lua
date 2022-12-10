@@ -79,7 +79,7 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 72000
+local STAGE_LENGTH_AVG = 57600
 local STAGE_LENGTH_AVG_ORIGINAL = STAGE_LENGTH_AVG
 local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
 function farming_setspeed(factor)
@@ -468,7 +468,7 @@ end
 
 -- Place Seeds on Soil
 function farming.place_seed(itemstack, placer, pointed_thing, plantname)
-
+	if class_get and placer and player:get_player_name() and not class_get(player:get_player_name(), "farmer") then return end
 	local pt = pointed_thing
 
 	-- check if pointing at a node
