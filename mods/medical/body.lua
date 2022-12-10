@@ -240,21 +240,22 @@ local set_animation = player_api.set_animation
 player_api.set_animation = function(player, anim_name, speed)
 	local collisionboxes = {lay = {-.3, 0, -0.3, 0.3, .2, 0.3}, sit = {-.3, 0, -.3, .3, 1.2, .3}}
 	local selectionboxes = {lay = {-0.7, 0, -0.7, 0.7, .2, 0.7}, sit = {-.3, 0, -.3, .3, 1.2, .3}}
+	local defaultbox = {-.3, 0, -.3, .3, 1.7, .3}
 	collisionboxes.recumbantleft = collisionboxes.lay
 	collisionboxes.recumbantright = collisionboxes.lay
 	selectionboxes.recumbantleft = selectionboxes.lay
 	selectionboxes.recumbantright = selectionboxes.lay
 	if collisionboxes[anim_name] then
-		player:set_properties({collisionbox = collisionboxes[anim_name], selectionboxes = selectionboxes[anim_name]})
+		player:set_properties({collisionbox = collisionboxes[anim_name], selectionbox = selectionboxes[anim_name]})
 		local parent = player:get_attach()
 		if parent and parent:get_luaentity() and parent:get_luaentity().name == "medical:unconsciousattach" then
-			parent:set_properties({collisionbox = collisionboxes[anim_name]})
+			parent:set_properties({collisionbox = collisionboxes[anim_name], selectionbox = selectionboxes[anim_name]})
 		end
-	elseif table.concat(player:get_properties().collisionbox) ~= table.concat({-.3, 0, -.3, .3, 1.7, .3}) then
-		player:set_properties({collisionbox = {-.3, 0, -.3, .3, 1.7, .3}})
+	elseif table.concat(player:get_properties().collisionbox) ~= table.concat(defaultbox) then
+		player:set_properties({collisionbox = defaultbox, selectionbox = defaultbox})
 		local parent = player:get_attach()
 		if parent and parent:get_luaentity() and parent:get_luaentity().name == "medical:unconsciousattach" then
-			parent:set_properties({collisionbox = {-.3, 0, -.3, .3, 1.7, .3}})
+			parent:set_properties({collisionbox = defaultbox, selectionbox = defaultbox})
 		end
 	end
 	if speed == 0 then speed = 1 end--fix bug with character_anim not liking speed to be 0
