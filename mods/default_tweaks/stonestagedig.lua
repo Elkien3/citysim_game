@@ -103,7 +103,11 @@ minetest.override_item("default:stone", {
 	node_placement_prediction = "default_tweaks:stone",
 	on_place = function(itemstack, placer, pointed_thing)
 		itemstack:set_name("default_tweaks:stone")
-		return minetest.item_place(itemstack, placer, pointed_thing)
+		itemstack = minetest.item_place(itemstack, placer, pointed_thing)
+		if itemstack:get_count() > 0 then
+			itemstack:set_name("default:stone")
+		end
+		return itemstack
 	end,
 	node_dig_prediction = "default_tweaks:stone_1",
 	after_dig_node = stone_after_dig,
