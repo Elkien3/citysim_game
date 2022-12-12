@@ -129,14 +129,20 @@ function grenades.register_grenade(name, def)
 	newdef.inventory_image = def.image
 	newdef.on_use = function(itemstack, user, pointed_thing)
 		local player_name = user:get_player_name()
-
 		if pointed_thing.type ~= "node" then
-			local grenade = throw_grenade(name, user)
-			grenade.timer = 0
-			grenade.thrower_name = player_name
-
+			local index = user:get_wield_index()
+			minetest.sound_play("grenade_throw_start", {object = user, max_hear_distance = 16}, true)
+			minetest.after(.75, function()
+				if user and user:get_player_name() and index == user:get_wield_index() and user:get_wielded_item():to_string() == itemstack:to_string() and user:get_player_control().dig then
+					minetest.sound_play("grenade_throw_end", {object = user, max_hear_distance = 16}, true)
+					user:set_wielded_item(ItemStack(""))
+					local grenade = throw_grenade(name, user)
+					grenade.timer = 0
+					grenade.thrower_name = player_name
+				end
+			end)
 			if not minetest.settings:get_bool("creative_mode") then
-				itemstack = ""
+				--itemstack = ""
 			end
 		end
 
