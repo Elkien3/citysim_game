@@ -8,6 +8,8 @@ minetest.register_globalstep(function(lag)
         times = times + 1
         if times >= min_times then
             minetest.request_shutdown("Server shutting down due to high latency (lag).")
-        end
+        elseif lag > 10 then
+			 minetest.request_shutdown("Server shutting down due to high latency (lag).")
+		end
     end
 end)
