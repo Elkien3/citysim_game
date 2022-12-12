@@ -5,6 +5,10 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 	groups = groupies,
 	on_dig = function(pos, node, digger)		
 		local meta = minetest.get_meta(pos)
+		if not digger then 
+			minetest.node_dig(pos, node, digger)
+			return true
+		end
 		local name = digger:get_player_name()
 		local can_pick = false
 		local tool_group = digger:get_wielded_item():get_tool_capabilities()
