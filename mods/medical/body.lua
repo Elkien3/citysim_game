@@ -99,12 +99,12 @@ function medical.detach(name, cname)
 	if drag_player then
 		drag_player:set_detach()
 		if not default.player_attached[name] then
-			local draggeryaw = dragging_player:get_look_horizontal()
-			draggeryaw = draggeryaw-math.pi
-			if draggeryaw < -math.pi then dragger = draggeryaw+(2*math.pi) end
-			drag_player:set_look_horizontal(draggeryaw)
 			minetest.add_entity(drag_player:get_pos(), "medical:unconsciousattach", name)
 		end
+		local draggeryaw = dragging_player:get_look_horizontal()
+		draggeryaw = draggeryaw-math.pi
+		if draggeryaw < -math.pi then dragger = draggeryaw+(2*math.pi) end
+		drag_player:set_look_horizontal(draggeryaw)
 	end
 	dragging_tbl[cname] = nil
 end
@@ -117,15 +117,17 @@ if beds then
 		local newplayer = player
 		if name and minetest.get_player_by_name(name) then
 			newplayer = minetest.get_player_by_name(name)
+			default.player_attached[name] = true
 			medical.detach(name, cname)
 		end
 		return original(pos, newplayer)
 	end
 end
 
-controls.register_on_release(function(player, key, time)
+controls.register_on_press(function(player, key)
 	local name = player:get_player_name()
-	if dragging_tbl[name] and key == "sneak" then
+	if dragging_tbl[name] and key == "jump" then
+		default.player_attached[dragging_tbl[name]] = nil
 		medical.detach(dragging_tbl[name], name)
 	end
 end)
@@ -157,43 +159,6 @@ minetest.register_on_punchplayer(function(player, clicker, time_from_last_punch,
 	local hitloc, local_hitloc = medical.gethitloc(player, clicker, tool_capabilities, dir)
 	local hitlimb = medical.getlimb(player, clicker, tool_capabilities, dir, hitloc)
 	--minetest.chat_send_all(hitlimb)
-	if wieldname == "" and medical.data[name].unconscious and clicker:get_player_control().sneak then--inventory access
-		local allowfunc = function(inv, listname, index, stack, player2, count)
-			if not minetest.get_player_by_name(name) or vector.distance(player:get_pos(), clicker:get_pos()) > 10 then return 0 end
-			if count then
-				return count
-			else
-				return stack:get_count()
-			end
-		end
-		local player_inv = minetest.get_inventory({type='player', name = name}) --InvRef
-		local detached_inv = minetest.create_detached_inventory(name, {
-			on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
-			end,
-			on_put = function(inv, listname, index, stack, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
-			end,
-			on_take = function(inv, listname, index, stack, player)
-				player_inv:set_list('main', inv:get_list('main'))
-				player_inv:set_list('craft', inv:get_list('craft'))
-			end,
-			allow_move = allowfunc,
-			allow_put = allowfunc,
-			allow_take = allowfunc,
-		}) --InvRef
-		detached_inv:set_list('main', player_inv:get_list('main'))
-		detached_inv:set_list('craft', player_inv:get_list('craft'))
-		local formspec =
-			'size[8,12]' ..
-			'label[0,0;' .. name.."'s inventory]"..
-			'list[detached:'.. name..';craft;3,0;3,3;]'..
-			'list[detached:'.. name..';main;0,4;8,4;]'..
-			"list[current_player;main;0,8;8,4;]"
-		minetest.show_formspec(cname, 'medical:inventory', formspec)
-	end
 	if not clicker:get_player_control(clicker).sneak and medical.attachedtools[wieldname] and medical.attachedtools[wieldname](player, clicker, wielditem, hitloc, local_hitloc) then
 	elseif medical.data[name].injuries and medical.data[name].injuries[hitlimb] then
 		return medical.injury_handle(player, clicker, false, wieldname, hitlimb)
@@ -231,8 +196,46 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 	local hitlimb = medical.getlimb(player, clicker, tool_capabilities, dir, hitloc)
 	if not clicker:get_player_control(clicker).sneak and medical.usedtools[wieldname] and medical.usedtools[wieldname](player, clicker, wielditem, hitloc, local_hitloc) then
 	
-	elseif medical.data[name].injuries and medical.data[name].injuries[hitlimb] then
-		medical.injury_handle(player, clicker, true, wieldname, hitlimb)
+	elseif medical.data[name].injuries and medical.data[name].injuries[hitlimb] and medical.injury_handle(player, clicker, true, wieldname, hitlimb) then
+		--lol nothin
+	else
+		if wieldname == "" and medical.data[name].unconscious then--inventory access
+			local allowfunc = function(inv, listname, index, stack, player2, count)
+				if not minetest.get_player_by_name(name) or vector.distance(player:get_pos(), clicker:get_pos()) > 10 then return 0 end
+				if count then
+					return count
+				else
+					return stack:get_count()
+				end
+			end
+			local player_inv = minetest.get_inventory({type='player', name = name}) --InvRef
+			local detached_inv = minetest.create_detached_inventory(name, {
+				on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+					player_inv:set_list('main', inv:get_list('main'))
+					player_inv:set_list('craft', inv:get_list('craft'))
+				end,
+				on_put = function(inv, listname, index, stack, player)
+					player_inv:set_list('main', inv:get_list('main'))
+					player_inv:set_list('craft', inv:get_list('craft'))
+				end,
+				on_take = function(inv, listname, index, stack, player)
+					player_inv:set_list('main', inv:get_list('main'))
+					player_inv:set_list('craft', inv:get_list('craft'))
+				end,
+				allow_move = allowfunc,
+				allow_put = allowfunc,
+				allow_take = allowfunc,
+			}) --InvRef
+			detached_inv:set_list('main', player_inv:get_list('main'))
+			detached_inv:set_list('craft', player_inv:get_list('craft'))
+			local formspec =
+				'size[8,12]' ..
+				'label[0,0;' .. name.."'s inventory]"..
+				'list[detached:'.. name..';craft;3,0;3,3;]'..
+				'list[detached:'.. name..';main;0,4;8,4;]'..
+				"list[current_player;main;0,8;8,4;]"
+			minetest.show_formspec(cname, 'medical:inventory', formspec)
+		end
 	end
 end)
 

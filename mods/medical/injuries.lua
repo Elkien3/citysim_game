@@ -52,7 +52,7 @@ function medical.injury_handle(player, clicker, rightclick, tool, hitlimb, finis
 	local name = player:get_player_name()
 	local cname = clicker:get_player_name()
 	local wielditem = clicker:get_wielded_item()
-	if not medical.data[name].injuries then return end
+	if not medical.data[name].injuries then return false end
 	local injury = medical.data[name].injuries[hitlimb]
 	local ent = medical.entities[name]
 	if ent then
@@ -61,7 +61,7 @@ function medical.injury_handle(player, clicker, rightclick, tool, hitlimb, finis
 	local injurydef = medical.injuries[injury.name]
 	if not injury.step then injury.step = 1 end
 	local stepdef = injurydef.steps[injury.step]
-	if not stepdef then return end
+	if not stepdef then return false end
 	if (tool ~= stepdef.tool and minetest.get_item_group(tool, stepdef.tool) == 0) or rightclick ~= stepdef.rightclick then
 		return false
 	end
@@ -173,6 +173,7 @@ function medical.injury_handle(player, clicker, rightclick, tool, hitlimb, finis
 	else
 		medical.start_timer(cname, 0, false, {player, clicker, rightclick, tool, hitlimb, true}, medical.injury_handle, stoparg, stopfunc, key, cname, name)
 	end
+	return true
 end
 
 minetest.register_entity("medical:injury", {

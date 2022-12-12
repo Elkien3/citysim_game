@@ -369,7 +369,7 @@ minetest.register_entity("medical:unconsciousattach", {
 		local player = minetest.get_player_by_name(staticdata)
 		if not player then self.object:remove() return end
 		player:set_attach(self.object)
-		default.player_attached[staticdata] = true
+		default.player_attached[staticdata] = self.object
 		self.object:set_yaw(player:get_look_horizontal())
 		self.object:set_properties({collisionbox = player:get_properties().collisionbox})
 	end,
