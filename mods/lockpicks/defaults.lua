@@ -6,8 +6,7 @@ function make_pickable(nodename, itemname, lockedgroup, newinfotext)
 	on_dig = function(pos, node, digger)		
 		local meta = minetest.get_meta(pos)
 		if not digger then 
-			minetest.node_dig(pos, node, digger)
-			return true
+			return false
 		end
 		local name = digger:get_player_name()
 		local can_pick = false
