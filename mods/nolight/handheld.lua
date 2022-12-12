@@ -33,7 +33,7 @@ minetest.register_globalstep(function(dtime)
 			local wielded_item = player:get_wielded_item()
 			if check_for_flashlight(player) then
 				beamlight.beams[player:get_player_name()] = {player = player, length = 3}
-			elseif wielded_item:get_name() == "nolight:lantern_active" then
+			elseif wielded_item:get_name() == "nolight:lantern_active" or wielded_item:get_name() == "nolight:oil_lamp_active" then
 				beamlight.beams[player:get_player_name()] = {player = player}
 				local meta = wielded_item:get_meta()
 				local fuel_time = meta:get_float("fuel_time")
@@ -47,7 +47,11 @@ minetest.register_globalstep(function(dtime)
 							local fuelitem = ItemStack(meta:get_string("stack"))
 							local afterfuel
 							fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = {fuelitem}})
-							fuel.time = fuel.time*50
+							if wielded_item:get_name() == "nolight:oil_lamp_active" then
+								fuel.time = fuel.time*40
+							else
+								fuel.time = fuel.time*50
+							end
 							if fuel.time == 0 then
 								-- No valid fuel in fuel list
 								fuel_totaltime = 0
