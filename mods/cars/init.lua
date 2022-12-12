@@ -96,7 +96,7 @@ function cars.setlight(obj, light, val)
 		minetest.sound_play("lighton", {
 			max_hear_distance = 6,
 			gain = 1,
-			object = light.object
+			object = obj.object
 		}, true)
 	end
 	if beamlight and light == "headlights" then
