@@ -148,8 +148,8 @@ minetest.register_craft({
     type = "shaped",
     output = "package:package",
     recipe = {
-        {"", "", ""},
         {"default:paper", "default:paper", "default:paper"},
+        {"default:paper", "", "default:paper"},
         {"default:paper", "default:paper", "default:paper"}
     }
 })
