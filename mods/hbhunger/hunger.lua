@@ -41,10 +41,15 @@ function hbhunger.eat(hp_change, replace_with_item, itemstack, user, pointed_thi
 			hp_change = 1
 			core.log("error", "Wrong on_use() definition for item '" .. item .. "'")
 		end
-		def.saturation = hp_change * 1.3
+		def.saturation = hp_change * 1.5
 		def.replace = replace_with_item
 	end
-	local func = hbhunger.item_eat(def.saturation, def.replace, def.poisen, def.healing, def.sound)
+	local poisen = def.poisen
+	if hp_change < 0 then
+		poisen = hp_change
+		hp_change = 0
+	end
+	local func = hbhunger.item_eat(hp_change*1.5, def.replace, poisen, def.healing, def.sound)
 	return func(itemstack, user, pointed_thing)
 end
 

@@ -116,43 +116,6 @@ minetest.register_on_mods_loaded(function()
 		end
 		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
 	end
-	
-	if hbhunger then
-		local food = hbhunger.food
-		hbhunger.eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
-			local item = itemstack:get_name()
-			local def = food[item]			
-			if not def then
-				def = {}
-				if type(hp_change) ~= "number" then
-					hp_change = 1
-					core.log("error", "Wrong on_use() definition for item '" .. item .. "'")
-				end
-				def.saturation = hp_change * 1.3
-				def.replace = replace_with_item
-			end
-			
-			local saturation = def.saturation
-			local poisen = def.poisen or 0
-			local expire = itemstack:get_meta():get_int("ed")
-			if expire ~= 0 then
-				local usedexpiredef = minetest.registered_items[item].expiration
-				local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
-				expirefactor = expirefactor + 1
-				if expirefactor < -1 then expirefactor = -1 end
-				if expirefactor > 1 then expirefactor = 1 end
-				if expirefactor > 0 then
-					saturation = saturation*expirefactor
-				else
-					poisen = poisen + saturation*expirefactor*2
-					saturation = 0
-				end
-			end
-			if poisen == 0 then poisen = nil end
-			local func = hbhunger.item_eat(saturation, def.replace, poisen, def.healing, def.sound)
-			return func(itemstack, user, pointed_thing)
-		end
-	end
 end)
 
 local foodtable = {
