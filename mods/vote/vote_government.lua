@@ -389,7 +389,7 @@ if areas and money3 then
 				local tax = math.ceil((diff/1000)*tax_rate*perc)
 				if tax > 0 then
 					warning[name] = minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2)
-					minetest.after(60, function() if warning[name] and warning[name] == minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2) then warning[name] = nil end)
+					minetest.after(60, function() if warning[name] and warning[name] == minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2) then warning[name] = nil end end)
 					return false, "WARNING: The area you are trying to protect may charge you a tax of $"..tonumber(tax)..", repeat the command to proceed."
 				else
 					return val, errormsg
