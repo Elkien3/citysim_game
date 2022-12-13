@@ -400,7 +400,7 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		local meta = minetest.get_meta(pos)
 		local characteristics = get_biome_characteristic(pos)
 		local boost = 2
-		if characteristics and minetest.get_node_group(node_name, characteristics) > 0 then
+		if characteristics and minetest.get_item_group(node_name, characteristics) > 0 then
 			boost = 1
 		end
 		local t = meta:get_int("t")
