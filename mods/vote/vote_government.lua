@@ -364,7 +364,41 @@ if areas and money3 then
 		tax_account = tax_account - amount
 		storage:set_string("tax_account", tax_account)
 	end
-	
+	local warning = {}
+	local orig_add = areas.canPlayerAddArea
+	function areas.canPlayerAddArea(areas, pos1, pos2, name)
+		local val, errormsg = orig_add(areas, pos1, pos2, name)
+		if minetest.get_player_privs(name).areas then
+			return val, errormsg
+		end
+		if val and val == true then
+			if warning[name] ~= nil and warning[name] == minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2) then
+				warning[name] = nil
+				return val, errormsg
+			else
+				local temparealist = table.copy(areas.areas)
+				table.insert(temparealist, {
+					name = "temp",
+					pos1 = pos1,
+					pos2 = pos2,
+					owner = name,
+				})
+				local dateinfo = os.date("*t", os.time())
+				local perc = (30-dateinfo.day)/30
+				local diff = areas:get_player_total_area(name, temparealist)-areas:get_player_total_area(name)
+				local tax = math.ceil((diff/1000)*tax_rate*perc)
+				if tax > 0 then
+					warning[name] = minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2)
+					minetest.after(60, function() if warning[name] and warning[name] == minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2) then warning[name] = nil end)
+					return false, "WARNING: The area you are trying to protect may charge you a tax of $"..tonumber(tax)..", repeat the command to proceed."
+				else
+					return val, errormsg
+				end
+			end
+		else
+			return val, errormsg
+		end
+	end
 	areas:registerOnAdd(function(id, area)
 		if tax_rate <= 0 then return end
 		local name = area.owner
@@ -376,7 +410,7 @@ if areas and money3 then
 		temparealist[id] = nil
 		local diff = areas:get_player_total_area(name)-areas:get_player_total_area(name, temparealist)
 		if diff < 0 then return end
-		dateinfo = os.date("*t", os.time())
+		local dateinfo = os.date("*t", os.time())
 		local perc = (30-dateinfo.day)/30--I know, it won't be correct if there are more or less than 30 days in the current month, but whatever.
 		if perc <= 0 then return end
 		local tax = math.ceil((diff/1000)*tax_rate*perc)
