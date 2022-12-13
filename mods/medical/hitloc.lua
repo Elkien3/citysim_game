@@ -97,7 +97,7 @@ function medical.gethitloc(player, hitter, tool_capabilities, dir)
 	if player:is_player() then
 		local parent, bone, attachpos, attachrot =  player:get_attach()
 		if parent and not parent:is_player() then
-			playeryaw = parent:get_yaw()
+			playeryaw = math.rad(parent:get_yaw())
 			playeryaw = playeryaw+math.rad(attachrot.y)
 		else
 			playeryaw = player:get_look_horizontal()

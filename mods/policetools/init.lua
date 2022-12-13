@@ -61,9 +61,13 @@ minetest.register_craft({
 	}
 })
 
-if knockout then
+if knockout or medical then
 	local tasertbl = {}
-
+	local is_tased = {}
+	function is_player_tased(name)
+		if not name then return end
+		return is_tased[name] ~= nil
+	end
 	local probe = {
 		initial_properties = {
 			physical = true,
@@ -84,7 +88,34 @@ if knockout then
 								if math.random(math.ceil(vector.distance(target:get_pos(), minetest.get_player_by_name(self.owner):get_pos()))) ~= 1 then
 									local droppedstack = minetest.item_drop(target:get_wielded_item(), target, target:get_pos())
 									target:set_wielded_item(droppedstack or ItemStack())
-									knockout.knockout(target:get_player_name(), 7)
+									if knockout then
+										knockout.knockout(target:get_player_name(), 7)
+									else
+										local tname = target:get_player_name()
+										interacthandler.revoke(tname)
+										is_tased[tname] = self.owner
+										player_api.set_animation(target, "lay")
+										target:set_eye_offset({x=0, y=-13, z=0}, {x=0, y=0, z=0})
+										if not default.player_attached[tname] then
+											minetest.add_entity(target:get_pos(), "medical:unconsciousattach", tname)
+										end
+										minetest.after(7, function()
+											if is_tased[tname] and is_tased[tname] == self.owner then
+												target:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
+												is_tased[tname] = nil
+												interacthandler.grant(tname)
+												if target and target:get_player_name() then
+													local parent = target:get_attach()
+													if parent and parent:get_luaentity() and parent:get_luaentity().name == "medical:unconsciousattach" then
+														parent:remove()
+													else
+														medical.detach(tname)
+													end
+												end
+												player_api.set_animation(target, "stand")
+											end
+										end)
+									end
 								end
 							end
 						else
@@ -295,6 +326,39 @@ if minetest.get_modpath("character_anim") and minetest.get_modpath("player_api")
 			end,
 		})
 	end
+end
+
+minetest.register_tool("policetools:baton", {
+	description = "Baton",
+	inventory_image = "policetools_baton.png",--https://www.tynker.com/minecraft/items/view/wood_sword/police-baton/5870bc8c1c36d1c7578b4569/
+	tool_capabilities = {
+		full_punch_interval = 1.2,
+		max_drop_level=0,
+		groupcaps={
+			snappy={times={[2]=1.4, [3]=0.40}, uses=20, maxlevel=1},
+		},
+		damage_groups = {fleshy=4},
+	},
+	sound = {breaks = "default_tool_breaks"},
+})
+if minetest.get_modpath("basic_materials") then
+	minetest.register_craft({
+		output = 'policetools:baton',
+		recipe = {
+			{'', '', 'basic_materials:steel_bar'},
+			{'', 'basic_materials:steel_bar', ''},
+			{'basic_materials:steel_bar', 'dye_black','default:steel_ingot'},
+		}
+	})
+else
+	minetest.register_craft({
+		output = 'policetools:baton',
+		recipe = {
+			{'', '', 'default:steel_ingot'},
+			{'', 'default:steel_ingot', ''},
+			{'default:steel_ingot', 'dye:black','default:steel_ingot'},
+		}
+	})
 end
 
 if jobs then

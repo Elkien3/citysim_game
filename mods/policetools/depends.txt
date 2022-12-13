@@ -7,3 +7,5 @@ mesecons_pressureplates?
 character_anim?
 player_api?
 unified_inventory?
+interacthandler
+medical?

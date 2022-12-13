@@ -175,7 +175,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 	local wielditem = clicker:get_wielded_item()
 	local wieldname = wielditem:get_name()
 	
-	if wieldname == "" and medical.data[name].unconscious and clicker:get_player_control().sneak then--use sneak to drag
+	if wieldname == "" and (medical.data[name].unconscious or (is_player_tased and is_player_tased(name))) and clicker:get_player_control().sneak then--use sneak to drag
 		local isdragged = false
 		for cname2, name2 in pairs(dragging_tbl) do
 			if name == name2 then
@@ -199,7 +199,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 	elseif medical.data[name].injuries and medical.data[name].injuries[hitlimb] and medical.injury_handle(player, clicker, true, wieldname, hitlimb) then
 		--lol nothin
 	else
-		if wieldname == "" and medical.data[name].unconscious then--inventory access
+		if wieldname == "" and (medical.data[name].unconscious or (is_player_tased and is_player_tased(name))) then--inventory access
 			local allowfunc = function(inv, listname, index, stack, player2, count)
 				if not minetest.get_player_by_name(name) or vector.distance(player:get_pos(), clicker:get_pos()) > 10 then return 0 end
 				if count then
