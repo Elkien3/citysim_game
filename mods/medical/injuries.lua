@@ -311,7 +311,7 @@ medical.injuries["bruise"] = {
 	steps = {
 		{tool = "medical:bandage_cold", take_item = true, rightclick = false, time = 2, hud = bandagehud, mesh = "bandagetest.b3d", textures = {"wool_white.png", "invis.png"}, startsound = "bandagestart", finishsound = "bandagefinish"},
 	},
-	hploss = 2,
+	hploss = 1,
 	healtime = 600,
 	medical_step = nil,
 }
