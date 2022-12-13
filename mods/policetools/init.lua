@@ -335,7 +335,7 @@ minetest.register_tool("policetools:baton", {
 		full_punch_interval = 1.2,
 		max_drop_level=0,
 		groupcaps={
-			snappy={times={[2]=1.4, [3]=0.40}, uses=20, maxlevel=1},
+			snappy={times={[2]=1.4, [3]=0.40}, uses=200, maxlevel=1},
 		},
 		damage_groups = {fleshy=4},
 	},
