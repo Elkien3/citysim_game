@@ -347,7 +347,7 @@ if minetest.get_modpath("basic_materials") then
 		recipe = {
 			{'', '', 'basic_materials:steel_bar'},
 			{'', 'basic_materials:steel_bar', ''},
-			{'basic_materials:steel_bar', 'dye_black','default:steel_ingot'},
+			{'basic_materials:steel_bar', 'dye:black','default:steel_ingot'},
 		}
 	})
 else
