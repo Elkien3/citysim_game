@@ -323,6 +323,10 @@ minetest.register_entity("cars:towline", {
 				else
 					rot = self.startobj:get_rotation()
 				end
+				if not rot then
+					remove_towline(self.startobj)
+					return
+				end
 				offset = vector.rotate(offset, rot)
 				self.start = vector.add(self.start,offset)
 			end
