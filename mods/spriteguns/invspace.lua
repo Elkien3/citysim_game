@@ -22,6 +22,8 @@ minetest.register_entity("spriteguns:gunitem",{
 local function get_weapons(player)
 	local name = player:get_player_name()
 	local inv = player:get_inventory()
+	assert(name, "invalid player")
+	assert(inv, "invalid inventory")
 	local lists = inv:get_lists()
 	local weapons = {}
 	for list, data in pairs(lists) do

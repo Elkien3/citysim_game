@@ -63,7 +63,7 @@ grenades.register_grenade("grenades_basic:frag", {
 		remove_flora(pos, radius/2)
 
 		for _, v in ipairs(minetest.get_objects_inside_radius(pos, radius)) do
-			local hit = minetest.raycast(pos, v:get_pos(), true, true):next()
+			local hit = v:get_pos() and minetest.raycast(pos, v:get_pos(), true, true):next()
 
 			if hit and v:is_player() and v:get_hp() > 0 and hit.type == "object" and hit.ref:is_player() and
 			hit.ref:get_player_name() == v:get_player_name() then
@@ -303,7 +303,7 @@ minetest.register_globalstep(function(dtime)
 					playercontrol.set_effect(player:get_player_name(), "speed", nil, "teargas", true)
 				else
 					player:set_fov(0, false, 1)
-					player:set_physics_override({speed = .9})
+					player:set_physics_override({speed = 1})
 				end
 				gaseffecttbl[name] = nil
 				return
