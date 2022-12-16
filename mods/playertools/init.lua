@@ -240,7 +240,7 @@ minetest.register_chatcommand("grief_check", {
 		if not minetest.setting_getbool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
-		if class_get and not class_get(clicker:get_player_name(), "snooper") then
+		if class_get and not class_get(name, "snooper") then
 			return false, "Only snooper class can grief check"
 		end
 		local range, hours, limit =
@@ -248,8 +248,8 @@ minetest.register_chatcommand("grief_check", {
 		range = tonumber(range) or 0
 		hours = tonumber(hours) or 24
 		limit = tonumber(limit) or 5
-		if range > 10 then
-			return false, "That range is too high! (max 10)"
+		if range > 2 then
+			return false, "That range is too high! (max 2)"
 		end
 		if hours > 168 then
 			return false, "That time limit is too high! (max 168: 7 days)"
