@@ -329,6 +329,7 @@ minetest.register_chatcommand("vote_mute", {
 		if not minetest.player_exists(param) then return false, "Player does not exist" end
 		local hasshout = minetest.check_player_privs(param, {shout = true})
 		if not hasshout then return false, "Player is already muted. do /vote_unmute to unmute." end
+		minetest.chat_send_all(name.." has started a vote to Mute "..param)
 		return vote.new_vote(name, {
 			description = "Mute "..param..".",
 			help = "/yes,  /no  or  /abstain",
@@ -370,6 +371,7 @@ minetest.register_chatcommand("vote_unmute", {
 		if not minetest.player_exists(param) then return false, "Player does not exist" end
 		local hasshout = minetest.check_player_privs(param, {shout = true})
 		if hasshout then return false, "Player is not muted. do /vote_mute to mute." end
+		minetest.chat_send_all(name.." has started a vote to Unmute "..param)
 		return vote.new_vote(name, {
 			description = "Unmute "..param..".",
 			help = "/yes,  /no  or  /abstain",
