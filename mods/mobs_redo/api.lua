@@ -785,7 +785,7 @@ function mob_class:update_tag()
 
 	-- set changes
 	self.object:set_properties({
-		--nametag = self.nametag,
+		nametag = "",
 		--nametag_color = col,
 		infotext = self.infotext
 	})

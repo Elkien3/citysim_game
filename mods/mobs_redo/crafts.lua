@@ -286,7 +286,7 @@ minetest.register_tool(":mobs:mob_reset_stick", {
 					obj2:set_velocity({x = 0, y = self.jump_height, z = 0})
 				end
 
-				--obj2:set_properties({nametag = self.nametag})
+				obj2:set_properties({nametag = ""})
 
 				obj:remove()
 			end
