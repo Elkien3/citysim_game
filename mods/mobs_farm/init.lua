@@ -66,7 +66,7 @@ minetest.register_node("mobs_farm:bones", {
 		if meta:get_string("infotext") == "" then
 			return true
 		else
-			return minetest.is_protected(pos, name)
+			return not minetest.is_protected(pos, name)
 		end
 	end,
 	--sounds = default.node_sound_gravel_defaults(),
