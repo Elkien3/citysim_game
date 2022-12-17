@@ -468,7 +468,7 @@ end
 
 -- Place Seeds on Soil
 function farming.place_seed(itemstack, placer, pointed_thing, plantname)
-	if class_get and placer and player:get_player_name() and not class_get(player:get_player_name(), "farmer") then return end
+	if class_get and placer and placer:get_player_name() and not class_get(placer:get_player_name(), "farmer") then return end
 	local pt = pointed_thing
 
 	-- check if pointing at a node
