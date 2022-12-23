@@ -639,7 +639,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 	for i, itemstring in pairs(drops) do
 		local itemstack = ItemStack(itemstring)
 		local metatbl = itemstack:to_table()
-		if metatbl.meta and metatbl.meta.palette_index and metatbl.meta.palette_index == "0" then
+		if metatbl and metatbl.meta and metatbl.meta.palette_index and metatbl.meta.palette_index == "0" then
 			metatbl.meta.palette_index = nil
 			itemstack:get_meta():from_table(metatbl)
 		end
