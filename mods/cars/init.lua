@@ -597,7 +597,8 @@ local function trunk_rightclick(self, clicker)
 	local formspec =
            "size["..formx..","..5+y.."]"..
            "list[detached:cars"..selfname..";trunk;0,.5;"..x..","..def.trunksize.y..";]"..
-           "list[current_player;main;0,"..1+y..";8,4;]"
+           "list[current_player;main;0,"..1+y..";8,4;]"..
+	   "listring[]"
 	if def.towloc then
 		if self.towline then
 			if self.towline.finishobj == self.object then
