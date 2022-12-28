@@ -4,7 +4,7 @@ local function start_unconscious(player)
 	local name = player:get_player_name()
 	if not medical.data[name] then medical.data[name] = {} end
 	if not medical.data[name].unconscious then
-		medical.data[name].unconscious = {yaw = player:get_look_horizontal(), hud = player:hud_add({
+		--[[medical.data[name].unconscious = {yaw = player:get_look_horizontal(), hud = player:hud_add({
 			 hud_elem_type = "text",
 			 position      = {x = 0.5, y = 0.7},
 			 offset        = {x = 0,   y = 0},
@@ -12,7 +12,7 @@ local function start_unconscious(player)
 			 alignment     = {x = 0, y = 0},
 			 scale         = {x = 100, y = 100},
 			 number    = 0xFFFFFF,
-		})}
+		})}--]]
 	elseif medical.data[name].unconscious.spawner then
 		minetest.delete_particlespawner(medical.data[name].unconscious.spawner)
 	end
@@ -238,7 +238,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 	if md.hp and reason.source and reason.source == "medical" then
 		md.hp = md.hp + hp_change
-		if medical.data[name].unconscious and medical.data[name].unconscious.hud then
+		--[[if medical.data[name].unconscious and medical.data[name].unconscious.hud then
 			player:hud_change(medical.data[name].unconscious.hud, "text", tostring(md.hp or "nil").." hp")
 		elseif medical.data[name].unconscious and not medical.data[name].unconscious.hud then
 			medical.data[name].unconscious.hud = player:hud_add({
@@ -250,7 +250,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 				 scale         = {x = 100, y = 100},
 				 number    = 0xFFFFFF,
 			})
-		end
+		end--]]
 		--minetest.chat_send_all(md.hp)
 		if md.hp < -40 then--actual death
 			return -hp, true

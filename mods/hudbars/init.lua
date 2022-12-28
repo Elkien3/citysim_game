@@ -494,7 +494,12 @@ local function custom_hud(player)
 end
 
 local function update_health(player)
-	hb.change_hudbar(player, "health", player:get_hp())
+	local hp = player:get_hp()
+	local name = player:get_player_name()
+	if medical and medical.data[name] and medical.data[name].hp then
+		hp = medical.data[name].hp
+	end
+	hb.change_hudbar(player, "health", hp)
 end
 
 -- update built-in HUD bars
