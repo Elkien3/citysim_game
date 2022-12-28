@@ -4,8 +4,9 @@ local function start_unconscious(player)
 	local name = player:get_player_name()
 	if not medical.data[name] then medical.data[name] = {} end
 	if not medical.data[name].unconscious then
+		medical.data[name].unconscious = {yaw = player:get_look_horizontal()}
 		if not minetest.get_modpath("hudbars") then
-			medical.data[name].unconscious = {yaw = player:get_look_horizontal(), hud = player:hud_add({
+			medical.data[name].unconscious.hud = player:hud_add({
 				 hud_elem_type = "text",
 				 position      = {x = 0.5, y = 0.7},
 				 offset        = {x = 0,   y = 0},
@@ -13,7 +14,7 @@ local function start_unconscious(player)
 				 alignment     = {x = 0, y = 0},
 				 scale         = {x = 100, y = 100},
 				 number    = 0xFFFFFF,
-			})}
+			})
 		end
 	elseif medical.data[name].unconscious.spawner then
 		minetest.delete_particlespawner(medical.data[name].unconscious.spawner)
