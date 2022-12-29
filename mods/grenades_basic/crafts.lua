@@ -1,54 +1,110 @@
 if not minetest.get_modpath("ctf_crafting") then
-	-- Regular Grenade
 	local coal = "default:coal_lump"
 	local fragmentation = "default:steel_ingot"
 	if minetest.get_modpath("technic") then
 		coal = "technic:coal_dust"
 		fragmentation = "technic:lead_dust"
 	end
-	minetest.register_craft({
-		type = "shaped",
-		output = "grenades_basic:frag",
-		recipe = {
-			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
-			{"technic:lead_dust", "tnt:gunpowder", "technic:lead_dust"},
-			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
-		},
-	})
+	if minetest.get_modpath("assembler") then
+		-- Regular Grenade
+		
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:frag",
+			recipe = {
+				{"", "default:steel_ingot", ""},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
+				{"technic:lead_dust", "tnt:gunpowder", "technic:lead_dust"},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			},
+		})
 
-	-- Smoke Grenade
+		-- Smoke Grenade
 
-	minetest.register_craft({
-		type = "shaped",
-		output = "grenades_basic:smoke",
-		recipe = {
-			{"dye:white", "dye:white", "dye:white"},
-			{"default:steel_ingot", coal, "default:steel_ingot"},
-			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
-		}
-	})
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:smoke",
+			recipe = {
+				{"", "dye:white", ""},
+				{"dye:white", "dye:white", "dye:white"},
+				{"default:steel_ingot", coal, "default:steel_ingot"},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			}
+		})
 
-	--Flashbang Grenade
+		--Flashbang Grenade
 
-	minetest.register_craft({
-		type = "shaped",
-		output = "grenades_basic:flashbang",
-		recipe = {
-			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
-			{coal, "tnt:gunpowder", coal},
-			{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
-		},
-	})
-	
-	minetest.register_craft({
-		type = "shaped",
-		output = "grenades_basic:tear_gas",
-		recipe = {
-			{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"},
-			{"farming:peppercorn", "grenades_basic:smoke", "farming:peppercorn"},
-			{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"}
-		}
-	})
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:flashbang",
+			recipe = {
+				{"", "default:steel_ingot", ""},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
+				{coal, "tnt:gunpowder", coal},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			},
+		})
+		
+		--Tear Gas Grenade
+		
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:tear_gas",
+			recipe = {
+				{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"},
+				{"farming:peppercorn", "grenades_basic:smoke", "farming:peppercorn"},
+				{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"}
+			}
+		})
+	else
+		-- Regular Grenade
+		
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:frag",
+			recipe = {
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
+				{"technic:lead_dust", "tnt:gunpowder", "technic:lead_dust"},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			},
+		})
+
+		-- Smoke Grenade
+
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:smoke",
+			recipe = {
+				{"dye:white", "dye:white", "dye:white"},
+				{"default:steel_ingot", coal, "default:steel_ingot"},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			}
+		})
+
+		--Flashbang Grenade
+
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:flashbang",
+			recipe = {
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"},
+				{coal, "tnt:gunpowder", coal},
+				{"default:steel_ingot", "tnt:gunpowder", "default:steel_ingot"}
+			},
+		})
+		
+		--Tear Gas Grenade
+		
+		minetest.register_craft({
+			type = "shaped",
+			output = "grenades_basic:tear_gas",
+			recipe = {
+				{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"},
+				{"farming:peppercorn", "grenades_basic:smoke", "farming:peppercorn"},
+				{"farming:chili_pepper", "technic:sulfur_dust", "farming:chili_pepper"}
+			}
+		})
+	end
 
 	-- Other
 
