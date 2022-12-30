@@ -201,7 +201,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 	else
 		if wieldname == "" and (medical.data[name].unconscious or (is_player_tased and is_player_tased(name))) then--inventory access
 			local allowfunc = function(inv, listname, index, stack, player2, count)
-				if not minetest.get_player_by_name(name) or vector.distance(player:get_pos(), clicker:get_pos()) > 10 then return 0 end
+				if not minetest.get_player_by_name(name) or (not medical.data[name] or not medical.data[name].unconscious) or vector.distance(player:get_pos(), clicker:get_pos()) > 10 then return 0 end
 				if count then
 					return count
 				else
@@ -234,6 +234,9 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 				'list[detached:'.. name..';craft;3,0;3,3;]'..
 				'list[detached:'.. name..';main;0,4;8,4;]'..
 				"list[current_player;main;0,8;8,4;]"
+			if minetest.get_inventory({type="detached", name=name.."_armor"}) then
+				formspec = formspec.."list[detached:"..name.."_armor;armor;0,0.5;2,3;]"
+			end
 			minetest.show_formspec(cname, 'medical:inventory', formspec)
 		end
 	end

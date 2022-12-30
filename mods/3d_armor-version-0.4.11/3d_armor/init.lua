@@ -116,21 +116,27 @@ local function init_player_armor(player)
 		return false
 	end
 	local armor_inv = minetest.create_detached_inventory(name.."_armor", {
-		on_put = function(inv, listname, index, stack, player)
+		on_put = function(inv, listname, index, stack, player2)
 			armor:save_armor_inventory(player)
 			armor:run_callbacks("on_equip", player, index, stack)
 			armor:set_player_armor(player)
 		end,
-		on_take = function(inv, listname, index, stack, player)
+		on_take = function(inv, listname, index, stack, player2)
 			armor:save_armor_inventory(player)
 			armor:run_callbacks("on_unequip", player, index, stack)
 			armor:set_player_armor(player)
 		end,
-		on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+		on_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
 			armor:save_armor_inventory(player)
 			armor:set_player_armor(player)
 		end,
 		allow_put = function(inv, listname, index, stack, player)
+			local player2 = minetest.get_player_by_name(name)
+			if not player2 or player2 ~= player then
+				if not player2 or not medical or not medical.data[name] or not medical.data[name].unconscious or vector.distance(player:get_pos(), player2:get_pos()) > 6 then
+					return 0
+				end
+			end
 			local def = stack:get_definition() or {}
 			local element = armor:get_element(stack:get_name())
 			if not element then
@@ -146,12 +152,24 @@ local function init_player_armor(player)
 			return 1
 		end,
 		allow_take = function(inv, listname, index, stack, player)
+			local player2 = minetest.get_player_by_name(name)
+			if not player2 or player2 ~= player then
+				if not player2 or not medical or not medical.data[name] or not medical.data[name].unconscious or vector.distance(player:get_pos(), player2:get_pos()) > 6 then
+					return 0
+				end
+			end
 			return stack:get_count()
 		end,
 		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			local player2 = minetest.get_player_by_name(name)
+			if not player2 or player2 ~= player then
+				if not player or not medical or not medical.data[name] or not medical.data[name].unconscious or vector.distance(player:get_pos(), player2:get_pos()) > 6 then
+					return 0
+				end
+			end
 			return count
 		end,
-	}, name)
+	})
 	armor_inv:set_size("armor", 6)
 	if not armor:load_armor_inventory(player) and armor.migrate_old_inventory then
 		local player_inv = player:get_inventory()
