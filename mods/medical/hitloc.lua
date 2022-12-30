@@ -99,6 +99,8 @@ function medical.gethitloc(player, hitter, tool_capabilities, dir)
 		if parent and not parent:is_player() then
 			playeryaw = math.rad(parent:get_yaw())
 			playeryaw = playeryaw+math.rad(attachrot.y)
+		elseif parent then--parent is player
+			playeryaw = parent:get_look_horizontal()
 		else
 			playeryaw = player:get_look_horizontal()
 		end
@@ -106,7 +108,7 @@ function medical.gethitloc(player, hitter, tool_capabilities, dir)
 		playeryaw = player:get_yaw()
 	end
 	local loc = vector.subtract(hitpos, playerpos)
-	local x, z = rotateVector(loc.x, loc.z, -playeryaw)
+	local x, z = rotateVector(loc.x, loc.z, playeryaw)
 	local local_hitpos = {x=x,y=loc.y,z=z}
 	if DEBUG_WAYPOINT then
 		local marker = hitter:hud_add({
