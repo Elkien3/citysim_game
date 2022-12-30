@@ -597,8 +597,8 @@ local function trunk_rightclick(self, clicker)
 	local formspec =
            "size["..formx..","..5+y.."]"..
            "list[detached:cars"..selfname..";trunk;0,.5;"..x..","..def.trunksize.y..";]"..
-           "list[current_player;main;0,"..1+y..";8,4;]"..
-	   "listring[]"
+			"list[current_player;main;0,"..1+y..";8,4;]"..
+			"listring[]"
 	if def.towloc then
 		if self.towline then
 			if self.towline.finishobj == self.object then
@@ -1850,6 +1850,7 @@ function cars_register_car(def)
 			if self.extension then
 				self.extension:set_attach(self.object, "", def.extension, {x=0,y=0,z=0})
 			end
+			if self.hp < 1 then self.hp = 1 end
 			self.object:set_hp(self.hp)
 			local halfmax = (def.initial_properties.hp_max or 20)/2
 			if self.hp <= halfmax then
@@ -2036,7 +2037,8 @@ function cars_register_car(def)
 					self.deathtime = os.time()
 				end
 				if hp < 1 then
-					self.object:set_hp(1)
+					self.hp = 1
+					self.object:set_hp(self.hp)
 					return true
 				end
 			end
