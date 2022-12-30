@@ -233,7 +233,8 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 				'label[0,0;' .. name.."'s inventory]"..
 				'list[detached:'.. name..';craft;3,0;3,3;]'..
 				'list[detached:'.. name..';main;0,4;8,4;]'..
-				"list[current_player;main;0,8;8,4;]"
+				"list[current_player;main;0,8;8,4;]"..
+				"listring[]"
 			if minetest.get_inventory({type="detached", name=name.."_armor"}) then
 				formspec = formspec.."list[detached:"..name.."_armor;armor;0,0.5;2,3;]"
 			end

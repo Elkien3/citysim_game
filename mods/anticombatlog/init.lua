@@ -216,7 +216,8 @@ minetest.register_entity("anticombatlog:entity", {
 				   "size[8,12]"..
 				   "list[detached:bones_"..selfname..";main;0,3.5;8,4;]"..
 				   "list[detached:bones_"..selfname..";craft;2.5,0;3,3;]"..
-				   "list[current_player;main;0,8;8,4;]"
+				   "list[current_player;main;0,8;8,4;]"..
+				   "listring[]"
 			minetest.show_formspec(name, "bones_inv", formspec)
 		end
     end,
