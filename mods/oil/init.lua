@@ -490,9 +490,9 @@ minetest.register_node("oil:pump", {
 			if gas >= bucket_liters then
 				meta:set_string("gas", gas-bucket_liters)
 				if puncher:get_wielded_item():get_count() > 1 then
-					local inv = player:get_inventory()
+					local inv = puncher:get_inventory()
 					puncher:set_wielded_item(puncher:get_wielded_item():take_item(1))
-					minetest.add_item(player:get_pos(), inv:add_item("main", {name = "oil:bucket_gasoline"}))
+					minetest.add_item(puncher:get_pos(), inv:add_item("main", {name = "oil:bucket_gasoline"}))
 				else
 					puncher:set_wielded_item("oil:bucket_gasoline")
 				end
