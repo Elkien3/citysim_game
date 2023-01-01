@@ -183,6 +183,17 @@ minetest.register_on_mods_loaded(function()
 	end
 end)
 
+if minetest.registered_items["xpanes:door_steel_bar"] and minetest.registered_items["doors:prison_door"] then
+	minetest.clear_craft({output = "xpanes:door_steel_bar"})
+	minetest.register_craft({
+		output = "xpanes:door_steel_bar",
+		type = "shapeless",
+		recipe = {
+			{"doors:prison_door"},
+		}
+	})
+end
+
 dofile(modpath.."/plantrot.lua")
 dofile(modpath.."/protection.lua")
 dofile(modpath.."/plantgrowspeeds.lua")

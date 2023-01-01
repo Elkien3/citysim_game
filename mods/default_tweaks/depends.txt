@@ -9,3 +9,5 @@ seasons?
 moreores?
 oil?
 bedrock2?
+xpanes?
+doors?
