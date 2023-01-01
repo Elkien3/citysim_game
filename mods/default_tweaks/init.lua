@@ -188,9 +188,7 @@ if minetest.registered_items["xpanes:door_steel_bar"] and minetest.registered_it
 	minetest.register_craft({
 		type = "shapeless",
 		output = "xpanes:door_steel_bar",
-		recipe = {
-			{"doors:prison_door"},
-		}
+		recipe = {"doors:prison_door"}
 	})
 end
 
