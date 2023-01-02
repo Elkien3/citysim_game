@@ -289,6 +289,11 @@ if flow_through then
 		add_flow_through("carts:powerrail")
 		add_flow_through("carts:brakerail")
 	end
+	
+	if minetest.get_modpath("streets") then
+		add_flow_through("streets:asphalt_manhole")
+		add_flow_through("streets:asphalt_stormdrain")
+	end
 end
 
 
