@@ -93,7 +93,8 @@ minetest.register_node("package:package", {
 		end
 	end,
 	on_dig = function(pos, node, digger)
-		if not digger then return end
+		minetest.remove_node(pos)
+		if not digger then minetest.add_item(pos, item) return end
 		local item = ItemStack("package:package")
 		local meta = item:get_meta()
 		local nodemeta = minetest.get_meta(pos)
@@ -102,11 +103,8 @@ minetest.register_node("package:package", {
 		meta:set_string("inventory", serializeContents(inv:get_list("main")))
 		meta:set_string("formspec", "")
 		local player_inv = digger:get_inventory()
-		if not player_inv then return end
+		if not player_inv then minetest.add_item(pos, item) return end
 		minetest.add_item(pos, player_inv:add_item("main", item))
-		if not minetest.dig_node(pos) then
-			minetest.remove_node(pos)
-		end
 	end,
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local meta = itemstack:get_meta()
