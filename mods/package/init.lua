@@ -102,7 +102,7 @@ minetest.register_node("package:package", {
 		meta:set_string("formspec", "")
 		local player_inv = digger:get_inventory()
 		minetest.add_item(pos, player_inv:add_item("main", item))
-		minetest.node_dig(pos, node, digger)
+		minetest.node_dig(pos, node)
 	end,
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local meta = itemstack:get_meta()
@@ -148,8 +148,8 @@ minetest.register_craft({
     type = "shaped",
     output = "package:package",
     recipe = {
+        {"", "", ""},
         {"default:paper", "default:paper", "default:paper"},
-        {"default:paper", "", "default:paper"},
         {"default:paper", "default:paper", "default:paper"}
     }
 })
