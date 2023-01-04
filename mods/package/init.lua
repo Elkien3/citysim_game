@@ -93,6 +93,7 @@ minetest.register_node("package:package", {
 		end
 	end,
 	on_dig = function(pos, node, digger)
+		if not digger then return end
 		local item = ItemStack("package:package")
 		local meta = item:get_meta()
 		local nodemeta = minetest.get_meta(pos)
