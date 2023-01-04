@@ -102,6 +102,7 @@ minetest.register_node("package:package", {
 		meta:set_string("inventory", serializeContents(inv:get_list("main")))
 		meta:set_string("formspec", "")
 		local player_inv = digger:get_inventory()
+		if not player_inv then return end
 		minetest.add_item(pos, player_inv:add_item("main", item))
 		if not minetest.dig_node(pos) then
 			minetest.remove_node(pos)
