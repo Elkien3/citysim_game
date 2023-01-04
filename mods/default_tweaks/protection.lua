@@ -9,7 +9,7 @@ end
 
 local list = {
 	"beds:bed_bottom", "beds:fancy_bed_bottom", "xdecor:baricade", "streets:roadwork_delineator_bottom", "streets:roadwork_delineator_light_bottom",
-	"streets:roadwork_blinking_light_on", "streets:roadwork_blinking_light_off", "streets:roadwork_pylon", "realchess:chessboard", "default:water_source", "default_tweaks:protect"
+	"streets:roadwork_blinking_light_on", "streets:roadwork_blinking_light_off", "streets:roadwork_pylon", "realchess:chessboard", "default:water_source", "default_tweaks:protect", "package:package"
 }
 --"default:glass","xpanes:glass_pane", "xpanes:glass_pane_flat", "xpanes:pane", "xpanes:pane_flat", "doors:door_glass_a", "doors:door_glass_b", 
 local blacklist = {}
