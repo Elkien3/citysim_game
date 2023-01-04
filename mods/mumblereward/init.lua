@@ -75,7 +75,7 @@ local function checkfile()
 					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You have deafened yourself.")
 				elseif mumblereward_players[name] ~= true then
 					mumblereward_players[name] = true
-					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
+					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio! Remember, Max range should be 30 and min volume 0. If you hear someone that's more than 30 blocks away your settings are incorrect!")
 					removetag(name)
 				end
 			end
