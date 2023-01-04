@@ -71,7 +71,7 @@ minetest.register_entity("doorram:ram", {
 			if not player then self[side] = nil goto skip end
 			local ppos = player:get_pos()
 			local distance = vector.distance(ppos, pos)
-			if distance > 1.5 then
+			if distance > 2 then
 				self[side] = nil
 				goto skip
 			elseif distance > 1 then
@@ -90,7 +90,7 @@ minetest.register_entity("doorram:ram", {
 				if not player then self[side] = nil goto skip end
 				local ppos = player:get_pos()
 				local distance = vector.distance(ppos, pos)
-				if distance > 1.5 then
+				if distance > 2 then
 					self[side] = nil
 					goto skip
 				end
@@ -149,6 +149,18 @@ minetest.register_entity("doorram:ram", {
 		end
 		velocity = vector.multiply(velocity, slowdown)
 		obj:set_velocity(velocity)
+		--collisionbox changes
+		local col = obj:get_properties().collisionbox
+		local newcol
+		local yaw = math.deg(obj:get_yaw())
+		if math.abs(yaw) < 45 or math.abs(yaw) > 135 then--pointing north-south
+			newcol = {-size, -.2, -size*3, size, .175, size*3}
+		else--pointing east-west
+			newcol = {-size*3, -.2, -size, size*3, .175, size}
+		end
+		if table.concat(col) ~= table.concat(newcol) then--use concat
+			obj:set_properties({collisionbox = newcol})
+		end
 	end,
 	on_rightclick = function(self, clicker)
 		local name = clicker:get_player_name()
