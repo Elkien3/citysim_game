@@ -152,8 +152,8 @@ minetest.register_entity("doorram:ram", {
 		--collisionbox changes
 		local col = obj:get_properties().collisionbox
 		local newcol
-		local yaw = math.deg(obj:get_yaw())
-		if math.abs(yaw) < 45 or math.abs(yaw) > 135 then--pointing north-south
+		local absyaw = math.abs(math.deg(obj:get_yaw()))
+		if absyaw < 45 or absyaw > 135 then--pointing north-south
 			newcol = {-size, -.2, -size*3, size, .175, size*3}
 		else--pointing east-west
 			newcol = {-size*3, -.2, -size, size*3, .175, size}
