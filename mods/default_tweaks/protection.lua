@@ -217,6 +217,8 @@ minetest.register_on_mods_loaded(function()
 			make_strong_block(nodename, 60)
 		elseif string.find(nodename, "streets:sign_") and nodename ~= "streets:sign_blank" and nodename ~= "streets:sign_blank_polemount" and nodename ~= "streets:sign_workshop" then
 			make_strong_block(nodename, 3)
+		elseif ((def.mesecons and (def.mesecons.receptor or def.mesecons.conductor)) or (def.digiline and (def.digiline.receptor or def.digiline.conductor))) and not string.find(nodename, "light") then
+			make_strong_block(nodename, 3)
 		end
 	end
 end)
