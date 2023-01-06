@@ -354,7 +354,6 @@ if areas and money3 then
 	taxes.tbl = minetest.deserialize(storage:get_string("taxes")) or {}
 	local autopay = minetest.deserialize(storage:get_string("autopay")) or {}
 	tax_account = storage:get_float("tax_account") or 0
-	local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
 	
 	taxes.add = function(amount)
 		tax_account = tax_account + amount
@@ -367,6 +366,7 @@ if areas and money3 then
 	local warning = {}
 	local orig_add = areas.canPlayerAddArea
 	function areas.canPlayerAddArea(areas, pos1, pos2, name)
+		local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
 		local val, errormsg = orig_add(areas, pos1, pos2, name)
 		if minetest.get_player_privs(name).areas then
 			return val, errormsg
@@ -400,6 +400,7 @@ if areas and money3 then
 		end
 	end
 	areas:registerOnAdd(function(id, area)
+		local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
 		if tax_rate <= 0 then return end
 		local name = area.owner
 		if taxfree_protect[name] then
@@ -426,6 +427,7 @@ if areas and money3 then
 
 	local function do_taxes()
 		local dateinfo = os.date("*t", os.time())
+		local tax_rate = tonumber(minetest.settings:get("property_tax") or 0)
 		if storage:get_int("last_tax_month") ~= dateinfo.month then
 			if tax_rate > 0 then
 				local calcnames = {}
