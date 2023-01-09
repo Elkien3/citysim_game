@@ -1,5 +1,4 @@
 digistuff = {}
-
 local http = minetest.request_http_api()
 if not http then
 	minetest.log("error","digistuff is not allowed to use the HTTP API - digilines NIC will not be available!")
