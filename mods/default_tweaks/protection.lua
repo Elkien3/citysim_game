@@ -176,6 +176,9 @@ local function make_strong_block(nodename, strength)
 		make_strong_block("stairs:stair_outer_"..nomodname, math.floor(strength*.666))
 		make_strong_block("stairs:stair_inner_"..nomodname, math.floor(strength*.857))
 	end
+	if mesecon and mesecon.register_mvps_stopper then
+		mesecon.register_mvps_stopper(nodename)
+	end
 end
 
 function make_strong_door(doorname, strength)
