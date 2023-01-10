@@ -180,7 +180,7 @@ local function is_all_empty(player_inv)
 	end
 	return true
 end
-
+--[[
 minetest.register_on_dieplayer(function(player)
 
 	local bones_mode = minetest.settings:get("bones_mode") or "bones"
@@ -283,3 +283,4 @@ minetest.register_on_dieplayer(function(player)
 		meta:set_string("infotext", S("@1's bones", player_name))
 	end
 end)
+--]]
