@@ -181,7 +181,7 @@ minetest.register_entity("anticombatlog:entity", {
 		self.time = os.time() + ghost_time
 		bodytable[self.owner]["time"] = self.time
 		if self.hp <= 0 then
-			if minetest.settings:get("bones_steal_one") == "true" then--disable all this if players are only allowed to steal one item
+			if minetest.settings:get_bool("bones_steal_one", false) then--disable all this if players are only allowed to steal one item
 				self.hp = 1
 				self.object:set_hp(1)
 				return true

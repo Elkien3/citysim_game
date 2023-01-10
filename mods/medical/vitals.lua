@@ -58,6 +58,7 @@ local function end_unconscious(player)
 	end
 	medical.data[name].unconscious = nil
 	medical.data[name].hp = nil
+	medical.data[name].steallist = nil
 	if player:get_attach() and player:get_attach():get_luaentity() and player:get_attach():get_luaentity().name == "medical:unconsciousattach" then
 		player:set_detach()
 	else
