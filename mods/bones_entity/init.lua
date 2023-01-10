@@ -197,6 +197,26 @@ bones_entity.place_bones = function(player)
 			drop(pos, stack)
 		end
 	end
+	--armor support
+	if armor then
+		local name, armor_inv = armor:get_valid_player(player, "[on_dieplayer]")
+		if name then
+			local drop = {}
+			for i=1, armor_inv:get_size("armor") do
+				local stack = armor_inv:get_stack("armor", i)
+				if stack:get_count() > 0 then
+					if inv:room_for_item("main", stack) then
+						inv:add_item("main", stack)
+					else
+						--drop if no space left
+						drop(pos, stack)
+					end
+					armor:set_inventory_stack(player, i, nil)
+					armor:run_callbacks("on_unequip", player, i, stack)
+				end
+			end
+		end
+	end
 	pos.y = pos.y + .1
 	local props = player:get_properties()
 	local yaw = player:get_look_horizontal()
