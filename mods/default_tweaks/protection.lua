@@ -230,7 +230,7 @@ end)
 local old_is_protected = minetest.is_protected
 local function handle_griefing(pos, name, placing, nodename)
 	if placing == nil then return true end
-	if minetest.get_node_group(nodename, "strong") > 0 then return true end
+	if minetest.get_item_group(nodename, "strong") > 0 then return true end
 	if not minetest.check_player_privs(name, {griefing=true}) then return true end
 	local posstring = minetest.pos_to_string(pos)
 	local tbl = grieftbl[posstring]
