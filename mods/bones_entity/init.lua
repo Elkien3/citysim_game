@@ -34,7 +34,7 @@ function bones_take_one(self, player, stack)
 	if not self.steallist then self.steallist = {} end
 	if self.steallist[name] then return false end
 	self.steallist[name] = true
-	return true end
+	return true
 end
 
 minetest.register_entity("bones_entity:entity", {
