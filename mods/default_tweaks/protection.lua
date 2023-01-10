@@ -165,6 +165,7 @@ end)
 local function make_strong_block(nodename, strength)
 	if not strength then strength = 60 end-- 1 minute default drill time
 	local def = minetest.registered_nodes[nodename]
+	list[nodename] = nil
 	if not def then return end
 	local groups = table.copy(def.groups or {})
 	groups.strong = strength
