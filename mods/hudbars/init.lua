@@ -372,7 +372,7 @@ function hb.change_hudbar(player, identifier, new_value, new_max_value, new_icon
 		minetest.log("error", main_error_text.."new_max_value ("..new_max_value..") is smaller than 0!")
 	end
 	if new_value < 0 then
-		minetest.log("error", main_error_text.."new_value ("..new_value..") is smaller than 0!")
+		--minetest.log("error", main_error_text.."new_value ("..new_value..") is smaller than 0!")
 	end
 
 	if hudtable.hudstate[name].hidden == false then
