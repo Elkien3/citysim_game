@@ -230,6 +230,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 					if not bones_take_one or bones_take_one(medical.data[name], player2, stack) then
 						return returnval
 					end
+					return 0
 				end,
 			}) --InvRef
 			detached_inv:set_list('main', player_inv:get_list('main'))

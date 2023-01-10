@@ -150,6 +150,7 @@ minetest.register_entity("anticombatlog:entity", {
 				if not bones_take_one or bones_take_one(self, player2, stack) then
 					return returnval
 				end
+				return 0
 			end,
 			on_take = onfunc,
 			on_move = onfunc,
