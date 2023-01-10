@@ -1,6 +1,5 @@
 local share_bones_time = tonumber(minetest.settings:get("share_bones_time")) or 3600
 local remove_bones_time = tonumber(minetest.settings:get("remove_bones_time")) or 0
-local steal_one = tonumber(minetest.settings:get("steal_one")) or 0) ~= 0
 bones_entity = {}
 
 local function serializeContents(contents)
@@ -28,7 +27,7 @@ local function deserializeContents(data)
 end
 
 local function player_take_one(self, player)
-	if not steal_one then return false end
+	if minetest.settings:get("bones_steal_one") ~= "true" then return false end
 	local name = player:get_player_name()
 	if not name then return false end
 	if not self.steallist then self.steallist = {} end
@@ -168,13 +167,18 @@ minetest.register_entity("bones_entity:entity", {
 })
 
 bones_entity.place_bones = function(player)
+	local name = player:get_player_name()
 	local pos = player:get_pos()
 	local player_inv = player:get_inventory()
 	if player_inv:is_empty("main") and
 		player_inv:is_empty("craft") then
 		return
 	end
-	local inv = minetest.create_detached_inventory("bones_"..player:get_player_name(), {})
+	local steallist
+	if medical and medical.data[name] then
+		steallist = medical.data[name].steallist
+	end
+	local inv = minetest.create_detached_inventory("bones_"..name, {})
 	--The MIT License (MIT) (Following 14 lines)
 	--Copyright (C) 2012-2016 PilzAdam
 	--Copyright (C) 2012-2016 Various Minetest developers and contributors
@@ -193,8 +197,8 @@ bones_entity.place_bones = function(player)
 	pos.y = pos.y + .1
 	local props = player:get_properties()
 	local yaw = player:get_look_horizontal()
-	local e = minetest.add_entity(pos, "bones_entity:entity", minetest.serialize({owner = player:get_player_name(), expiretime = os.time() + share_bones_time, removetime = (remove_bones_time ~= 0 and os.time() + remove_bones_time), mesh = props.mesh, textures = props.textures, yaw = yaw, inv = serializeContents(inv:get_list("main"))}))
-	minetest.remove_detached_inventory("bones_"..player:get_player_name())
+	local e = minetest.add_entity(pos, "bones_entity:entity", minetest.serialize({owner = name, expiretime = os.time() + share_bones_time, removetime = (remove_bones_time ~= 0 and os.time() + remove_bones_time), mesh = props.mesh, textures = props.textures, yaw = yaw, inv = serializeContents(inv:get_list("main")), steallist = steallist}))
+	minetest.remove_detached_inventory("bones_"..name)
 	player_inv:set_list("main", {})
 	player_inv:set_list("craft", {})
 end
