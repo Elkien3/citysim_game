@@ -143,8 +143,10 @@ minetest.register_entity("bones_entity:entity", {
 				return 0
 			end,
 			allow_take = function(inv, listname, index, stack, player)
+				if not self or not self.object or not self.object:get_pos() then return 0 end
 				local name = player:get_player_name()
-				if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or bones_take_one(self, player) then
+				if not name or vector.distance(player:get_pos(), self.object:get_pos()) > 10 then return 0 end
+				if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or bones_take_one(self, player, stack) then
 					return stack:get_count()
 				end
 				return 0

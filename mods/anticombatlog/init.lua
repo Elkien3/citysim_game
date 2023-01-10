@@ -145,10 +145,10 @@ minetest.register_entity("anticombatlog:entity", {
 			allow_move = allowfunc,
 			allow_put = allowfunc,
 			allow_take = function(inv, listname, index, stack, player2)
-				local val = allowfunc(inv, listname, index, stack, player2, count)
-				if val == 0 then return val end
+				local returnval = allowfunc(inv, listname, index, stack, player2, count)
+				if returnval == 0 then return returnval end
 				if not bones_take_one or bones_take_one(self, player2, stack) then
-					return val
+					return returnval
 				end
 			end,
 			on_take = onfunc,
