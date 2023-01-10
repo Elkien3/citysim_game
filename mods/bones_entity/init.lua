@@ -26,7 +26,8 @@ local function deserializeContents(data)
    return contents
 end
 
-local function player_take_one(self, player)
+function bones_take_one(self, player, stack)
+	if stack and string.find(stack:get_name(), "currency:minegeld") then return true end
 	if minetest.settings:get("bones_steal_one") ~= "true" then return false end
 	local name = player:get_player_name()
 	if not name then return false end
@@ -143,7 +144,7 @@ minetest.register_entity("bones_entity:entity", {
 			end,
 			allow_take = function(inv, listname, index, stack, player)
 				local name = player:get_player_name()
-				if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or string.find(stack:get_name()), "currency:minegeld") or player_take_one(self, player) then
+				if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or bones_take_one(self, player) then
 					return stack:get_count()
 				end
 				return 0

@@ -103,6 +103,7 @@ minetest.register_entity("anticombatlog:entity", {
 		self.sleeping = deserialized.sleeping
 		self.time = deserialized.expiretime
 		self.hp = deserialized.hp
+		self.steallist = deserialized.steallist
 		self.armor_groups = deserialized.armor_groups
 		self.object:set_armor_groups(self.armor_groups)
 		if self.hp then
@@ -143,7 +144,13 @@ minetest.register_entity("anticombatlog:entity", {
 		local inv = minetest.create_detached_inventory("bones_"..selfname, {
 			allow_move = allowfunc,
 			allow_put = allowfunc,
-			allow_take = allowfunc,
+			allow_take = function(inv, listname, index, stack, player2)
+				local val = allowfunc(inv, listname, index, stack, player2, count)
+				if val == 0 then return val end
+				if not bones_take_one or bones_take_one(self, player2, stack) then
+					return val
+				end
+			end,
 			on_take = onfunc,
 			on_move = onfunc,
 			on_put = onfunc,
@@ -164,7 +171,7 @@ minetest.register_entity("anticombatlog:entity", {
 		end
     end,
 	get_staticdata = function(self)
-		return minetest.serialize({owner = self.owner, sleeping = self.sleeping, expiretime = self.time, mesh = self.mesh, textures = self.textures, yaw = self.yaw, inv = self.inv, hp = self.hp, armor_groups = self.armor_groups})
+		return minetest.serialize({owner = self.owner, sleeping = self.sleeping, expiretime = self.time, mesh = self.mesh, textures = self.textures, yaw = self.yaw, inv = self.inv, hp = self.hp, armor_groups = self.armor_groups, steallist = self.steallist})
 	end,
     on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)
 		if not self.owner or not bodytable[self.owner] then return end
@@ -173,6 +180,11 @@ minetest.register_entity("anticombatlog:entity", {
 		self.time = os.time() + ghost_time
 		bodytable[self.owner]["time"] = self.time
 		if self.hp <= 0 then
+			if minetest.settings:get("bones_steal_one") == "true" then--disable all this if players are only allowed to steal one item
+				self.hp = 1
+				self.object:set_hp(1)
+				return true
+			end
 			local drop = function(pos, itemstack)
 				local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
 				if obj then

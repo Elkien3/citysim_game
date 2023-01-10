@@ -168,16 +168,6 @@ minetest.register_on_punchplayer(function(player, clicker, time_from_last_punch,
 	return true
 end)
 
-local function player_take_one(self, player)
-	if minetest.settings:get("bones_steal_one") ~= "true" then return false end
-	local name = player:get_player_name()
-	if not name then return false end
-	if not self.steallist then self.steallist = {} end
-	if self.steallist[name] then return false end
-	self.steallist[name] = true
-	return true end
-end
-
 minetest.register_on_rightclickplayer(function(player, clicker)
 	local name = player:get_player_name()
 	local cname = clicker:get_player_name()
@@ -237,7 +227,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 				allow_take = function(inv, listname, index, stack, player2)
 					local val = allowfunc(inv, listname, index, stack, player2, count)
 					if val == 0 then return val end
-					if player_take_one(medical.data[name], player2) then
+					if not bones_take_one or bones_take_one(medical.data[name], player2, stack) then
 						return val
 					end
 				end,
