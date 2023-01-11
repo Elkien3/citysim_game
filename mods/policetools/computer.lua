@@ -564,6 +564,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			id = tonumber(splittbl[2])
 			if button ~= "approve" and button ~= "reject" and button ~= "escalate" then goto next end
 			local apptbl = approvals[id]
+			if not apptbl then tbl.error = "No active approvals" show_police_formspec(name) return end
 			if rank < apptbl.minrank then tbl.error = "Rank too low" show_police_formspec(name) return end
 			if (rank ~= 4 and button ~= "escalate") and (apptbl.issuer == name or apptbl.subject == name) then tbl.error = "Self approve/reject" show_police_formspec(name) return end--only allow chief to self approve/reject, allow people to escalate their own approval requests.
 			if button == "approve" then
