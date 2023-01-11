@@ -471,6 +471,28 @@ function pages.playerwarrants(name)
 	return form
 end
 
+function pages.playercitations(name)
+	local plcitations = citations[form_table[name].name]
+	if not plcitations then return "" end
+	local form = "scrollbaroptions[max="..((#plcitations-8)*12 ).."]"..
+	"scrollbar[9.5,0.125;0.3,7;vertical;scroll;0"..
+	"]scroll_container[3.5,.5;8.5,8;scroll;vertical;.1]"
+	local y = 0
+	for id, tbl in pairs(plcitations) do--active
+		if not tbl.clearer then
+			local infostring = string.format("Citation: %s, issued by %s, fine amount: %s, approved by %s %s ago", tbl.law, tbl.issuer, tbl.fine, tbl.approver, get_time_string(tbl.issuetime))
+			form = form.."field[0,"..tostring(y+0.3)..";6,1;citationinfo:"..id..";;"..minetest.formspec_escape(infostring).."]" ..
+			"field_close_on_enter[citationinfo:"..id..";false]"
+			if is_police(name) then
+				form = form.."button[5.5,"..tostring(y)..";1,1;clear:"..id..";Clear]"
+			end
+			y = y + 1
+		end
+	end
+	form = form.."scroll_container_end[]"
+	return form
+end
+
 function show_police_formspec(name)
 	if not form_table[name] then form_table[name] = {["page"] = "warrants"} end
 	form_table[name].quit = nil
