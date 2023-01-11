@@ -143,7 +143,6 @@ local run = function(pos1, node)
 	meta2:set_int("LV_EU_timeout", 2)
 	meta2:set_int("MV_EU_timeout", 2)
 	meta2:set_int("HV_EU_timeout", 2)
-	
 	if bought == 0 then
 		meta1:set_string("infotext", S("@1 (owned by @2) (@3)", machine_name, meta1:get_string("owner"), technic.EU_string(bought)))
 		if from then
@@ -172,7 +171,12 @@ local run = function(pos1, node)
 	local sw_meta = minetest.get_meta(sw_pos)
 	local demand = sw_meta:get_int("demand")
 	local supply = sw_meta:get_int("supply")
-	
+	if technic.sw_pos2network then
+		local network_id = technic.sw_pos2network(sw_pos)
+		local network2 = network_id and technic.networks[network_id]
+		demand = network2.demand
+		supply = network2.supply
+	end
 	network_hash = technic.cables[minetest.hash_node_position(pos1)]
 	network = network_hash and minetest.get_position_from_hash(network_hash)
 	local sw_pos2 = network and {x=network.x,y=network.y+1,z=network.z}
@@ -258,7 +262,9 @@ minetest.override_item("technic_powermeter:meter_bottom",{
 			--meta:set_int("LV_EU_timeout", 2)
 			--meta:set_int("MV_EU_timeout", 2)
 			--meta:set_int("HV_EU_timeout", 2)
-			technic.clear_networks(pos)
+			if technic.clear_networks then
+				technic.clear_networks(pos)
+			end
 		end	
 		return itemstack
 	end,
