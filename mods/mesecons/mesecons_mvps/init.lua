@@ -168,7 +168,7 @@ local function are_protected(positions, player_name)
 		local node = minetest.get_node(pos)
 		if node and minetest.registered_nodes[node.name] and minetest.registered_nodes[node.name].strong then
 			if areas then
-				return areas:canInteract(pos, player_name)
+				return not areas:canInteract(pos, player_name)
 			else
 				return minetest.is_protected(pos, player_name)
 			end
