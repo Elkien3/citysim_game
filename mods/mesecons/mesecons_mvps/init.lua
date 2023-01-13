@@ -164,6 +164,16 @@ end
 
 local function are_protected(positions, player_name)
 	local mode = mesecon.setting("mvps_protection_mode", "compat")
+	for _, pos in pairs(positions) do
+		local node = minetest.get_node(pos)
+		if node and minetest.registered_nodes[node.name] and minetest.registered_nodes[node.name].strong then
+			if areas then
+				return areas:canInteract(pos, player_name)
+			else
+				return minetest.is_protected(pos, player_name)
+			end
+		end
+	end
 	if mode == "ignore" then
 		return false
 	end
@@ -287,7 +297,6 @@ function mesecon.mvps_move_objects(pos, dir, nodestack, movefactor)
 	dir = vector.multiply(dir, movefactor)
 	for id, obj in pairs(minetest.object_refs) do
 		local obj_pos = obj:get_pos()
-if not obj_pos or not obj:get_properties() then return end
 		local cbox = obj:get_properties().collisionbox
 		local min_pos = vector.add(obj_pos, vector.new(cbox[1], cbox[2], cbox[3]))
 		local max_pos = vector.add(obj_pos, vector.new(cbox[4], cbox[5], cbox[6]))
