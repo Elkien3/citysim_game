@@ -315,6 +315,9 @@ minetest.register_node("mesecons_pistons:piston_normal_on", {
 	is_ground_content = false,
 	drop = "mesecons_pistons:piston_normal_off",
 	after_dig_node = piston_after_dig,
+	on_destruct = function(pos)
+		piston_after_dig(pos, minetest.get_node(pos))
+	end,
 	node_box = piston_on_box,
 	selection_box = piston_on_box,
 	sounds = default.node_sound_wood_defaults(),
