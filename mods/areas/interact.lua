@@ -9,7 +9,7 @@ function minetest.is_protected(pos, name)
 end
 
 minetest.register_on_protection_violation(function(pos, name)
-	if not areas:canInteract(pos, name) then
+	if not areas:canInteract(pos, name) and not minetest.check_privs(name, {griefing = true}) then
 		local owners = areas:getNodeOwners(pos)
 		minetest.chat_send_player(name,
 			S("@1 is protected by @2.",
