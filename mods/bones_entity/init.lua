@@ -28,6 +28,7 @@ end
 
 function bones_take_one(self, player, stack)
 	if stack and string.find(stack:get_name(), "currency:minegeld") then return true end
+	if stack and string.find(stack:get_name(), "medical:") then return true end
 	if not minetest.settings:get_bool("bones_steal_one", false) then return false end
 	local name = player:get_player_name()
 	if not name then return false end
