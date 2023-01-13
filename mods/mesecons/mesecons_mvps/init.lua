@@ -166,7 +166,7 @@ local function are_protected(positions, player_name)
 	local mode = mesecon.setting("mvps_protection_mode", "compat")
 	for _, pos in pairs(positions) do
 		local node = minetest.get_node(pos)
-		if node and minetest.registered_nodes[node.name] and minetest.registered_nodes[node.name].strong then
+		if node and minetest.registered_nodes[node.name] and minetest.registered_nodes[node.name].groups and minetest.registered_nodes[node.name].groups.strong then
 			if areas then
 				return not areas:canInteract(pos, player_name)
 			else
@@ -297,40 +297,42 @@ function mesecon.mvps_move_objects(pos, dir, nodestack, movefactor)
 	dir = vector.multiply(dir, movefactor)
 	for id, obj in pairs(minetest.object_refs) do
 		local obj_pos = obj:get_pos()
-		local cbox = obj:get_properties().collisionbox
-		local min_pos = vector.add(obj_pos, vector.new(cbox[1], cbox[2], cbox[3]))
-		local max_pos = vector.add(obj_pos, vector.new(cbox[4], cbox[5], cbox[6]))
-		local ok = true
-		for k, v in pairs(pos) do
-			local edge1, edge2
-			if k ~= dir_k then
-				edge1 = v - 0.51 -- More than 0.5 to move objects near to the stack.
-				edge2 = v + 0.51
-			else
-				edge1 = v - 0.5 * dir_l
-				edge2 = v + (#nodestack + 0.5 * movefactor) * dir_l
-				-- Make sure, edge1 is bigger than edge2:
-				if edge1 > edge2 then
-					edge1, edge2 = edge2, edge1
+		if obj and obj_pos and obj:get_properties() then
+			local cbox = obj:get_properties().collisionbox
+			local min_pos = vector.add(obj_pos, vector.new(cbox[1], cbox[2], cbox[3]))
+			local max_pos = vector.add(obj_pos, vector.new(cbox[4], cbox[5], cbox[6]))
+			local ok = true
+			for k, v in pairs(pos) do
+				local edge1, edge2
+				if k ~= dir_k then
+					edge1 = v - 0.51 -- More than 0.5 to move objects near to the stack.
+					edge2 = v + 0.51
+				else
+					edge1 = v - 0.5 * dir_l
+					edge2 = v + (#nodestack + 0.5 * movefactor) * dir_l
+					-- Make sure, edge1 is bigger than edge2:
+					if edge1 > edge2 then
+						edge1, edge2 = edge2, edge1
+					end
+				end
+				if min_pos[k] > edge2 or max_pos[k] < edge1 then
+					ok = false
+					break
 				end
 			end
-			if min_pos[k] > edge2 or max_pos[k] < edge1 then
-				ok = false
-				break
-			end
-		end
-		if ok then
-			local ent = obj:get_luaentity()
-			if obj:is_player() or (ent and not mesecon.is_mvps_unmov(ent.name)) then
-				local np = vector.add(obj_pos, dir)
-				-- Move only if destination is not solid or object is inside stack:
-				local nn = minetest.get_node(np)
-				local node_def = minetest.registered_nodes[nn.name]
-				local obj_offset = dir_l * (obj_pos[dir_k] - pos[dir_k])
-				if (node_def and not node_def.walkable) or
-						(obj_offset >= 0 and
-						obj_offset <= #nodestack - 0.5) then
-					obj:move_to(np)
+			if ok then
+				local ent = obj:get_luaentity()
+				if obj:is_player() or (ent and not mesecon.is_mvps_unmov(ent.name)) then
+					local np = vector.add(obj_pos, dir)
+					-- Move only if destination is not solid or object is inside stack:
+					local nn = minetest.get_node(np)
+					local node_def = minetest.registered_nodes[nn.name]
+					local obj_offset = dir_l * (obj_pos[dir_k] - pos[dir_k])
+					if (node_def and not node_def.walkable) or
+							(obj_offset >= 0 and
+							obj_offset <= #nodestack - 0.5) then
+						obj:move_to(np)
+					end
 				end
 			end
 		end
