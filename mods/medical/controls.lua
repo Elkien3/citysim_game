@@ -19,7 +19,7 @@ minetest.register_globalstep(function(dtime)
 			if not targetplayer then targetlookaway = true else
 				local newtdir = targetplayer:get_look_dir()
 				local newtpos = targetplayer:get_pos()
-				if vector.distance(tbl.tpos, newtpos) > .1 or ((not medical.data[tbl.tplayer] or not medical.data[tbl.tplayer].unconscious) and vector.distance(tbl.tdir, newtdir)) > .05 then
+				if vector.distance(tbl.tpos, newtpos) > .1 or ((not medical.data[tbl.tplayer] or not medical.data[tbl.tplayer].unconscious) and vector.distance(tbl.tdir, newtdir) > .05) then
 					targetlookaway = true
 				end
 			end
