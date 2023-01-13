@@ -57,7 +57,7 @@ minetest.clear_craft({
 })
 
 if minetest.get_modpath("farming") then
-	table.insert(recipes, {"farming:seed_wheat",   "farming:flour 1"})
+	--table.insert(recipes, {"farming:seed_wheat",   "farming:flour 1"})
 end
 
 if minetest.get_modpath("moreores") then
