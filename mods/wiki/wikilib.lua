@@ -236,10 +236,10 @@ minetest.register_privilege("wiki_admin", {
 })
 
 local BS = "default:bookshelf"
-local BSL = { BS, BS, BS }
+local BSL = { BS, BS }
 minetest.register_craft({
 	output = "wiki:wiki",
-	recipe = { BSL, BSL, BSL },
+	recipe = { BSL, BSL },
 })
 
 function wikilib.handle_formspec(player, formname, fields)
