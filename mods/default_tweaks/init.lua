@@ -192,6 +192,16 @@ if minetest.registered_items["xpanes:door_steel_bar"] and minetest.registered_it
 	})
 end
 
+minetest.clear_craft({output = "default:bookshelf"})
+minetest.register_craft({
+	output = "default:bookshelf 6",
+	recipe = {
+		{"group:wood", "group:wood", "group:wood"},
+		{"default:book", "default:book", "default:book"},
+		{"group:wood", "group:wood", "group:wood"},
+	}
+})
+
 dofile(modpath.."/plantrot.lua")
 dofile(modpath.."/protection.lua")
 dofile(modpath.."/plantgrowspeeds.lua")
