@@ -11,7 +11,7 @@ for surface_name, surface_data in pairs(streets.surfaces.surfacetypes) do
 		drawtype = "nodebox",
 		paramtype = "light",
 		paramtype2 = "facedir",
-		groups = { cracky = 3 },
+		groups = { cracky = 3, flow_through = 1},
 		on_rightclick = function(pos, node, name)
 			local name = name:get_player_name()
 			if minetest.is_protected(pos, name) and not minetest.check_player_privs(name, { protection_bypass = true }) then
@@ -43,7 +43,7 @@ for surface_name, surface_data in pairs(streets.surfaces.surfacetypes) do
 		paramtype2 = "facedir",
 		climbable = true,
 		drop = "streets:" .. surface_name:sub(2, -1):split(":")[2] .. "_manhole",
-		groups = { cracky = 3, not_in_creative_inventory = 1 },
+		groups = { cracky = 3, not_in_creative_inventory = 1, flow_through = 1},
 		on_rightclick = function(pos, node, name)
 			local name = name:get_player_name()
 			if minetest.is_protected(pos, name) and not minetest.check_player_privs(name, { protection_bypass = true }) then
@@ -82,7 +82,7 @@ for surface_name, surface_data in pairs(streets.surfaces.surfacetypes) do
 		drawtype = "nodebox",
 		paramtype = "light",
 		paramtype2 = "facedir",
-		groups = { cracky = 3 },
+		groups = { cracky = 3, flow_through = 1 },
 		sunlight_propagates = true,
 		node_box = {
 			type = "fixed",
