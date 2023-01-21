@@ -425,7 +425,7 @@ function car_formspec(clickername, car, keyinvname, def)
 	if def.trunkloc then
 		form = form.."checkbox[2.175,1.5;trunklock;Lock Trunk;"..tostring(car.trunklock).."]"
 	end
-    if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) then
+    if clickername == car.owner or (jobs and jobs.permissionstring(clickername, car.owner)) or minetest.check_player_privs(clickername, {protection_bypass = true}) then
 		local textcolor_item_str = ""
 		local current_textcolor_idx = 1
 		local i = 0
@@ -885,7 +885,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				prop.mesh = string.gsub(def.initial_properties.mesh, ".b3d", "")..(car.drill or "")..".b3d"
 				car.object:set_properties(prop)
 			end
-			if car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner)) then
+			if car.owner == name or car.owner == "" or (jobs and jobs.permissionstring(name, car.owner)) or minetest.check_player_privs(name, {protection_bypass = true}) then
 				if fields.changeowner and fields.owner then
 					if minetest.player_exists(fields.owner) or (jobs and jobs.is_job_string(fields.owner)) then
 						car.owner = fields.owner
