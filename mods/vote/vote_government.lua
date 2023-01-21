@@ -688,7 +688,7 @@ if areas and money3 then
 				perc_needed = 0,
 
 				can_vote = function(self, pname)
-					if pname == params[1] then minetest.chat_send_player(pname, "You cannot vote to change your own tax balance.") return false end
+					if pname == params[1] then return false end
 					return minetest.check_player_privs(pname,{vote_government = true})
 				end,
 
