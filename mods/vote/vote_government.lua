@@ -661,6 +661,59 @@ if areas and money3 then
 			})
 		end
 	})
+	minetest.register_chatcommand("vote_tax_balance", {
+		params = "<name> <amount>",
+		description = "Set the tax balance of a player",
+		privs = {
+			vote_government = true,
+		},
+		func = function(name, param)
+			local params = param:split(" ")
+			if not params or #params ~= 2 then
+				return false, "Invalid input. do /vote_tax_balance <name> <amount>"
+			end
+			params[2] = tonumber(params[2])
+			if not params[2] or (tonumber(params[2]) ~= math.floor(tonumber(params[2]))) or params[2] < 0 then
+				return false, "Amount must be an non-negative integer."
+			end
+			if not minetest.player_exists(params[1]) then
+				return false, "The player '"..params[1].."' does not exist."
+			end
+			local oldtax = taxes.tbl[params[1]] or 0
+			return vote.new_vote(name, {
+				description = "Change "..params[1].."'s tax balance from "..oldtax.." to "..params[2],
+				help = "/yes,  /no  or  /abstain",
+				name = name,
+				duration = 15,
+				perc_needed = 0,
+
+				can_vote = function(self, pname)
+					if pname == params[1] then minetest.chat_send_player(pname, "You cannot vote to change your own tax balance.") return false end
+					return minetest.check_player_privs(pname,{vote_government = true})
+				end,
+
+				on_result = function(self, result, results)
+					local yes = results.yes or {}
+					if #yes >= votesneeded then
+						if params[2] == 0 then
+							taxes.tbl[params[1]] = nil
+						else
+							taxes.tbl[params[1]] = params[2]
+						end
+						storage:set_string("taxes", minetest.serialize(taxes.tbl))
+						minetest.chat_send_all(S("@1's tax balance was changed from @2 to @3 (@4/@5)", params[1], oldtax, params[2], #yes, votesneeded))
+					else
+						minetest.chat_send_all(S("Failed to change @1's tax balance from @2 to @3 (@4/@5)", params[1], oldtax, params[2], #yes, votesneeded))
+					end
+				end,
+
+				on_vote = function(self, voter, value)
+					minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+							self.description .. "'")
+				end
+			})
+		end
+	})
 	if jobs then
 		minetest.register_chatcommand("tax_exempt", {
 			params = "",
