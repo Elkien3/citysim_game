@@ -303,7 +303,7 @@ minetest.register_craft({
 minetest.register_globalstep(function(dtime)
 	for name in pairs(cuffedplayers) do
 		local player = minetest.get_player_by_name(name)
-		if player then
+		if player and (not medical or not medical.data[name] or not medical.data[name].unconscious) then
 			if player:get_player_control().sneak then
 				if wassneaking[name] == nil then
 					wassneaking[name] = true
