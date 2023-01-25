@@ -72,6 +72,8 @@ shared_nodes["locksmith:mesecon_switch_off"] = true
 shared_nodes["oil:pump"] = true
 shared_nodes["technic_powermeter:meter_bottom"] = true
 shared_nodes["foodspoil:icebox_locked"] = true
+shared_nodes["itemframes:pedestal"] = true
+shared_nodes["itemframes:frame"] = true
 
 local locksmith_forms = {}
 

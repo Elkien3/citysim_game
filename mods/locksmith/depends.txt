@@ -4,3 +4,4 @@ screwdriver?
 lockpicks?
 basic_materials?
 foodspoil?
+itemframes?

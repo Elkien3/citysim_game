@@ -118,8 +118,7 @@ minetest.register_node("itemframes:frame",{
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if not itemstack then return end
 		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		if clicker:get_player_name() == owner or owner == "" then
+		if default.can_interact_with_node(clicker, pos) then
 			drop_item(pos,node)
 			local s = itemstack:take_item()
 			meta:set_string("item",s:to_string())
@@ -128,17 +127,12 @@ minetest.register_node("itemframes:frame",{
 		return itemstack
 	end,
 	on_punch = function(pos,node,puncher)
-		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		if puncher:get_player_name() == owner or owner == "" then
+		if default.can_interact_with_node(puncher, pos) then
 			drop_item(pos, node)
 		end
 	end,
 	can_dig = function(pos,player)
-		
-		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		return player:get_player_name() == owner or owner == ""
+		return default.can_interact_with_node(player, pos)
 	end,
 })
 
@@ -165,8 +159,7 @@ minetest.register_node("itemframes:pedestal",{
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if not itemstack then return end
 		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		if clicker:get_player_name() == owner or owner == "" then
+		if default.can_interact_with_node(clicker, pos) then
 			drop_item(pos,node)
 			local s = itemstack:take_item()
 			meta:set_string("item",s:to_string())
@@ -175,17 +168,12 @@ minetest.register_node("itemframes:pedestal",{
 		return itemstack
 	end,
 	on_punch = function(pos,node,puncher)
-		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		if puncher:get_player_name() == owner or owner == "" then
+		if default.can_interact_with_node(puncher, pos) then
 			drop_item(pos,node)
 		end
 	end,
 	can_dig = function(pos,player)
-		
-		local meta = minetest.env:get_meta(pos)
-		local owner = meta:get_string("owner")
-		return player:get_player_name() == owner or owner == ""
+		return default.can_interact_with_node(player, pos)
 	end,
 })
 
