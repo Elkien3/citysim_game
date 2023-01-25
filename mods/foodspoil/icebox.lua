@@ -42,6 +42,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	return true
 end)
 
+local function update_infotext(infotext)
+	local newlinepos = string.find(infotext, "\n")
+	if newlinepos then
+		return string.sub(infotext, 1, newlinepos-1)
+	end
+	return infotext
+end
+
+local S = default.get_translator
 local function icebox_register_chest(prefixed_name, d)
 	local name = prefixed_name
 	local def = table.copy(d)
@@ -51,38 +60,137 @@ local function icebox_register_chest(prefixed_name, d)
 	def.paramtype2 = "facedir"
 	def.legacy_facedir_simple = true
 	def.is_ground_content = false
-	def.on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Icebox \n(0 ice)")
-		meta:set_int("day", minetest.get_day_count())
-		local inv = meta:get_inventory()
-		inv:set_size("main", 8*2)
-	end
-	def.can_dig = function(pos,player)
-		local meta = minetest.get_meta(pos);
-		local inv = meta:get_inventory()
-		return inv:is_empty("main")
-	end
-	def.on_rightclick = function(pos, node, clicker)
-		minetest.sound_play(def.sound_open, {gain = 0.3, pos = pos,
-				max_hear_distance = 10}, true)
-		if not default.chest.chest_lid_obstructed(pos) then
-			minetest.swap_node(pos, {
-					name = name .. "_open",
-					param2 = node.param2 })
+	if def.protected then
+		def.on_construct = function(pos)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", S("Locked Icebox"))
+			meta:set_string("owner", "")
+			local inv = meta:get_inventory()
+			inv:set_size("main", 8*2)
 		end
-		minetest.after(0.2, minetest.show_formspec,
-				clicker:get_player_name(),
-				"icebox:chest", default.chest.get_chest_formspec(pos))
-		icebox_open_chests[clicker:get_player_name()] = { pos = pos,
-				sound = def.sound_close, swap = name }
-	end
-	def.on_blast = function(pos)
-		local drops = {}
-		default.get_inventory_drops(pos, "main", drops)
-		drops[#drops+1] = name
-		minetest.remove_node(pos)
-		return drops
+		def.after_place_node = function(pos, placer)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("owner", placer:get_player_name() or "")
+			meta:set_string("infotext", S("Locked Icebox (owned by @1)", meta:get_string("owner")))
+		end
+		def.can_dig = function(pos,player)
+			local meta = minetest.get_meta(pos);
+			local inv = meta:get_inventory()
+			return inv:is_empty("main") and
+					default.can_interact_with_node(player, pos)
+		end
+		def.allow_metadata_inventory_move = function(pos, from_list, from_index,
+				to_list, to_index, count, player)
+			if not default.can_interact_with_node(player, pos) then
+				return 0
+			end
+			return count
+		end
+		def.allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+			if not default.can_interact_with_node(player, pos) then
+				return 0
+			end
+			return stack:get_count()
+		end
+		def.allow_metadata_inventory_take = function(pos, listname, index, stack, player)
+			if not default.can_interact_with_node(player, pos) then
+				return 0
+			end
+			return stack:get_count()
+		end
+		def.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+			if not default.can_interact_with_node(clicker, pos) then
+				return itemstack
+			end
+
+			minetest.sound_play(def.sound_open, {gain = 0.3,
+					pos = pos, max_hear_distance = 10}, true)
+			if not default.chest.chest_lid_obstructed(pos) then
+				minetest.swap_node(pos,
+						{ name = name .. "_open",
+						param2 = node.param2 })
+			end
+			minetest.after(0.2, minetest.show_formspec,
+					clicker:get_player_name(),
+					"icebox:chest", default.chest.get_chest_formspec(pos))
+			icebox_open_chests[clicker:get_player_name()] = { pos = pos,
+					sound = def.sound_close, swap = name }
+		end
+		def.on_blast = function() end
+		def.on_key_use = function(pos, player)
+			local secret = minetest.get_meta(pos):get_string("key_lock_secret")
+			local itemstack = player:get_wielded_item()
+			local key_meta = itemstack:get_meta()
+
+			if itemstack:get_metadata() == "" then
+				return
+			end
+
+			if key_meta:get_string("secret") == "" then
+				key_meta:set_string("secret", minetest.parse_json(itemstack:get_metadata()).secret)
+				itemstack:set_metadata("")
+			end
+
+			if secret ~= key_meta:get_string("secret") then
+				return
+			end
+
+			minetest.show_formspec(clicker:get_player_name(), "icebox:chest", default.chest.get_chest_formspec(pos))
+		end
+		def.on_skeleton_key_use = function(pos, player, newsecret)
+			local meta = minetest.get_meta(pos)
+			local owner = meta:get_string("owner")
+			local pn = player:get_player_name()
+
+			-- verify placer is owner of lockable chest
+			if owner ~= pn then
+				minetest.record_protection_violation(pos, pn)
+				minetest.chat_send_player(pn, S("You do not own this icebox."))
+				return nil
+			end
+
+			local secret = meta:get_string("key_lock_secret")
+			if secret == "" then
+				secret = newsecret
+				meta:set_string("key_lock_secret", secret)
+			end
+
+			return secret, S("a locked icebox"), owner
+		end
+	else
+		def.on_construct = function(pos)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", "Icebox \n(0 ice)")
+			meta:set_int("day", minetest.get_day_count())
+			local inv = meta:get_inventory()
+			inv:set_size("main", 8*2)
+		end
+		def.can_dig = function(pos,player)
+			local meta = minetest.get_meta(pos);
+			local inv = meta:get_inventory()
+			return inv:is_empty("main")
+		end
+		def.on_rightclick = function(pos, node, clicker)
+			minetest.sound_play(def.sound_open, {gain = 0.3, pos = pos,
+					max_hear_distance = 10}, true)
+			if not default.chest.chest_lid_obstructed(pos) then
+				minetest.swap_node(pos, {
+						name = name .. "_open",
+						param2 = node.param2 })
+			end
+			minetest.after(0.2, minetest.show_formspec,
+					clicker:get_player_name(),
+					"icebox:chest", default.chest.get_chest_formspec(pos))
+			icebox_open_chests[clicker:get_player_name()] = { pos = pos,
+					sound = def.sound_close, swap = name }
+		end
+		def.on_blast = function(pos)
+			local drops = {}
+			default.get_inventory_drops(pos, "main", drops)
+			drops[#drops+1] = name
+			minetest.remove_node(pos)
+			return drops
+		end
 	end
 
 	def.on_metadata_inventory_move = function(pos, from_list, from_index,
@@ -101,7 +209,8 @@ local function icebox_register_chest(prefixed_name, d)
 					icecount = icecount + loopstack:get_count()
 				end
 			end
-			meta:set_string("infotext", "Icebox \n("..tostring(icecount).." ice)")
+			local infotext = update_infotext(meta:get_string("infotext"))
+			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == stack:get_count() then--if the only ice in the inv is what you jut put in start the "timer"
 				meta:set_int("day", minetest.get_day_count())
 			end
@@ -121,7 +230,8 @@ local function icebox_register_chest(prefixed_name, d)
 					icecount = icecount + loopstack:get_count()
 				end
 			end
-			meta:set_string("infotext", "Icebox \n("..tostring(icecount).." ice)")
+			local infotext = update_infotext(meta:get_string("infotext"))
+			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == 0 then--all out of ice :(
 				meta:set_int("day", minetest.get_day_count())
 			end
@@ -186,6 +296,30 @@ icebox_register_chest("foodspoil:icebox", {
 	end,
 })
 
+icebox_register_chest("foodspoil:icebox_locked", {
+	description = "Locked Icebox",
+	tiles = {
+		"technic_silver_chest_top.png",
+		"technic_silver_chest_top.png",
+		"technic_silver_chest_side.png",
+		"technic_silver_chest_side.png",
+		"technic_silver_chest_front.png^protector_logo.png",--from protector mod
+		"technic_silver_chest_inside.png"
+	},
+	sounds = default.node_sound_wood_defaults(),
+	sound_open = "default_chest_open",
+	sound_close = "default_chest_close",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2},
+	after_place_node = function(pos, placer, itemstack, pointed_thing)
+		--local timer = minetest.get_node_timer(pos)
+		--timer:start(ice_consume_time)
+	end,
+	protected = true,
+	on_timer = function(pos, elapsed)
+		
+	end,
+})
+
 local function handle_icebox(pos, node)
 	local meta = minetest.get_meta(pos)
 	local day = minetest.get_day_count()
@@ -197,7 +331,12 @@ local function handle_icebox(pos, node)
 	if not inv or inv.type == "undefined" then return end
 	for i = 1, math.floor((day-metaday)/2) do
 		if inv:contains_item("main", "default:ice") then
-			inv:remove_item("main", "default:ice")
+			local iceprogress = meta:get_int("iceprogress") + 1
+			if iceprogress >= 4 then
+				iceprogress = iceprogress - 4
+				inv:remove_item("main", "default:ice")
+			end
+			meta:set_int("iceprogress", iceprogress)
 			for index = 1, inv:get_size("main") do
 				local stack = inv:get_stack("main", index)
 				local name = stack:get_name()
@@ -217,22 +356,35 @@ local function handle_icebox(pos, node)
 		end
 	end
 	meta:set_int("day", day)
-	meta:set_string("infotext", "Icebox \n("..tostring(icecount).." ice)")
+	local infotext = update_infotext(meta:get_string("infotext"))
+	meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 end
 
 minetest.register_craft{
-        output = 'foodspoil:icebox',
-        recipe = {
-            {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
-            {'default:steel_ingot', 'group:wool', 'default:steel_ingot'},
-            {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},  -- Also groups; e.g. 'group:crumbly'
-        },
-    }
+	output = 'foodspoil:icebox',
+	recipe = {
+		{'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
+		{'default:steel_ingot', 'group:wool', 'default:steel_ingot'},
+		{'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},  -- Also groups; e.g. 'group:crumbly'
+	},
+}
+
+local lockitem = 'default:steel_ingot'
+if minetest.get_modpath("basic_materials") then
+	lockitem = 'basic_materials:padlock'
+end
+minetest.register_craft{
+	output = 'foodspoil:icebox_locked',
+	recipe = {
+		{lockitem},
+		{'foodspoil:icebox'},
+	},
+}
 
 
 minetest.register_abm({
 	label = "Icebox ABM",
-	nodenames = {"foodspoil:icebox", "foodspoil:icebox_open"},
+	nodenames = {"foodspoil:icebox", "foodspoil:icebox_open", "foodspoil:icebox_locked", "foodspoil:icebox_locked_open"},
 	interval = DAY_LENGTH/4,
 	chance = 1,
 	catch_up = false,
@@ -242,7 +394,7 @@ minetest.register_abm({
 minetest.register_lbm({
 	label = "Icebox LBM",
 	name = "foodspoil:icehandler",
-	nodenames = {"foodspoil:icebox", "foodspoil:icebox_open"},
+	nodenames = {"foodspoil:icebox", "foodspoil:icebox_open", "foodspoil:icebox_locked", "foodspoil:icebox_locked_open"},
 	run_at_every_load = true,
 	action = handle_icebox
 })
