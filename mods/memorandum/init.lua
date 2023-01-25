@@ -70,7 +70,7 @@ minetest.register_node("memorandum:letter_empty", {
         end
     end,
     on_dig = function(pos, node, digger)
-        if digger:is_player() and digger:get_inventory() then
+        if digger and digger:is_player() and digger:get_inventory() then
             digger:get_inventory():add_item("main", {name="default:paper", count=1, wear=0, metadata=""})
         end
         minetest.remove_node(pos)
@@ -172,7 +172,7 @@ minetest.register_node("memorandum:letter_written", {
         end
     end,
     on_dig = function(pos, node, digger)
-        if digger:is_player() and digger:get_inventory() then
+        if digger and digger:is_player() and digger:get_inventory() then
             local meta = minetest.get_meta(pos)
             local text = meta:get_string("text")
             local signed = meta:get_string("signed")
@@ -302,7 +302,7 @@ minetest.register_node("memorandum:message", {
 		end
 	end,
 	on_dig = function(pos, node, digger)
-		if digger:is_player() and digger:get_inventory() then
+		if digger and digger:is_player() and digger:get_inventory() then
 			local meta = minetest.get_meta(pos)
 			local text = meta:get_string("text")
 			local signed = meta:get_string("signed")
