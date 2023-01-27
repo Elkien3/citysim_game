@@ -154,7 +154,17 @@ mobs:register_mob("mobs_farm:cow", {
 			clicker:set_wielded_item(tool)
 
 			if inv:room_for_item("main", {name = "mobs:bucket_milk"}) then
-				clicker:get_inventory():add_item("main", "mobs:bucket_milk")
+				local item = ItemStack("mobs:bucket_milk")
+				local name = item:get_name()
+				local def = minetest.registered_items[name]
+				local meta = item:get_meta()
+				if def.expiration and meta:get_int("ed") == 0 then
+					local expiredef = def.expiration
+					local newexpiration = minetest.get_day_count() + expiredef
+					meta:set_int("ed", newexpiration)
+					meta:set_string("description", minetest.registered_items[name].description.." ed: "..newexpiration)
+				end
+				clicker:get_inventory():add_item("main", item)
 			else
 				local pos = self.object:get_pos()
 				pos.y = pos.y + 0.5
@@ -310,7 +320,7 @@ minetest.register_craftitem(":mobs:bucket_milk", {
 	description = S("Bucket of Milk"),
 	inventory_image = "mobs_bucket_milk.png",
 	stack_max = 1,
-	on_use = minetest.item_eat(8, "bucket:bucket_empty"),
+	on_use = minetest.item_eat(6, "bucket:bucket_empty"),
 	groups = {food_milk = 1, flammable = 3, drink = 1},
 })
 
@@ -318,7 +328,7 @@ minetest.register_craftitem(":mobs:bucket_milk", {
 minetest.register_craftitem(":mobs:glass_milk", {
 	description = S("Glass of Milk"),
 	inventory_image = "mobs_glass_milk.png",
-	on_use = minetest.item_eat(2, "vessels:drinking_glass"),
+	on_use = minetest.item_eat(1.5, "vessels:drinking_glass"),
 	groups = {food_milk_glass = 1, flammable = 3, vessel = 1, drink = 1},
 })
 
