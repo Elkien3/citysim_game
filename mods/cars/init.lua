@@ -849,7 +849,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				cars.setlight(obj, "flashers", "toggle")
 			elseif fields.siren and def.siren then
 				if car.siren ~= nil then
-					minetest.sound_fade(car.siren, 10, 0)
+					if type(car.siren) == "number" then
+						minetest.sound_fade(car.siren, 10, 0)
+					end
 					car.siren = nil
 					car.timer3 = nil
 				else
