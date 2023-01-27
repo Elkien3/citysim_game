@@ -21,7 +21,9 @@ dofile(mp.."/technic.lua")
 dofile(mp.."/handheld.lua")
 
 local electric_light_list = {}
-electric_light_list["mesecons_lightstone:lightstone_white_off"] = "mesecons_lightstone:lightstone_white_on"
+for i, color in pairs({"blue", "cyan", "darkgray", "gray", "green", "magenta", "orange", "pink", "red", "violet", "white", "yellow"}) do
+	electric_light_list["mesecons_lightstone:lightstone_"..color.."_off"] = "mesecons_lightstone:lightstone_"..color.."_on"
+end
 electric_light_list["mesecons_lamp:lamp_off"] = "mesecons_lamp:lamp_on"
 electric_light_list["streets:light_vertical_off"] = "streets:light_vertical_on"
 electric_light_list["streets:light_horizontal_off"] = "streets:light_horizontal_on"
