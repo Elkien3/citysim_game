@@ -275,7 +275,7 @@ function thirsty.drink_handler(player, itemstack, under)
 	if thirsty.config.node_source[node_name] and thirsty.config.container_capacity[item_name] then
 		local meta = minetest.get_meta(under)
 		local water = meta:get_float("water")
-		minetest.chat_send_all(dump(water))
+		--minetest.chat_send_all(dump(water))
 		local wear = itemstack:get_wear()
 		local capacity = thirsty.config.container_capacity[item_name]
 		consumed = (wear/65535) * capacity
