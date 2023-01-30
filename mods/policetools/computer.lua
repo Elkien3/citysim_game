@@ -1,4 +1,6 @@
 local policejobname = minetest.settings:get("jobs.police_job_name")
+local alarm_discord_channel = minetest.settings:get("alarm_discord_channel")
+local alarm_discord_role = minetest.settings:get("alarm_discord_role")
 if not policejobname or policejobname == "" then policejobname = "Police" end
 local storage = minetest.get_mod_storage()
 local form_table = {}
@@ -853,7 +855,36 @@ function police_add_alarm(pos)
 			return
 		end
 	end
+	for _, player in pairs(minetest.connected_players) do
+		local name = player:get_player_name()
+		if is_police(name) then
+			minetest.chat_send_player(name, "[policetools] An alarm has gone off!")
+		end
+	end
+	if minetest.get_modpath("discordmt") then
+		local id = alarm_discord_channel
+		local role = alarm_discord_role
+		if id == "" then id = nil end
+		if role == "" then
+			discord.send("[policetools] An alarm has gone off!", id)
+		else
+			discord.send("[policetools] An alarm has gone off! <@&"..role..">", id)
+		end
+	end
 	table.insert(alarms, {owner = owner, time = os.time(), loc = pos, desc = desc})
+end
+minetest.register_on_joinplayer(function(player, last_login))
+	local name = player:get_player_name()
+	local have_alarms = false
+	for id, tbl in pairs(alarms) do--active
+		if not tbl.clearer then
+			have_alarms = true
+			break
+		end
+	end
+	if have_alarms and is_police(name) then
+		minetest.chat_send_player(name, "[policetools] There are active alarms in police computer!")
+	end
 end
 if minetest.get_modpath("mesecons_pressureplates") then
 	minetest.register_node("policetools:alarm", {
