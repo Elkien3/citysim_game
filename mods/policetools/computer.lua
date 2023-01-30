@@ -873,7 +873,7 @@ function police_add_alarm(pos)
 	end
 	table.insert(alarms, {owner = owner, time = os.time(), loc = pos, desc = desc})
 end
-minetest.register_on_joinplayer(function(player, last_login))
+minetest.register_on_joinplayer(function(player, last_login)
 	local name = player:get_player_name()
 	local have_alarms = false
 	for id, tbl in pairs(alarms) do--active
@@ -885,7 +885,7 @@ minetest.register_on_joinplayer(function(player, last_login))
 	if have_alarms and is_police(name) then
 		minetest.chat_send_player(name, "[policetools] There are active alarms in police computer!")
 	end
-end
+end)
 if minetest.get_modpath("mesecons_pressureplates") then
 	minetest.register_node("policetools:alarm", {
 		description = "Alarm Block",
