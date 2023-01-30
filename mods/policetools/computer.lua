@@ -814,7 +814,7 @@ minetest.register_node("policetools:computer", {--using homedecor television
 		  'homedecor_television_front.png',
 	},
 	light_source = 2,
-	groups = { snappy = 1 },
+	groups = { snappy = 3 },
 	sounds = default.node_sound_wood_defaults(),
 	paramtype2 = "facedir",
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
