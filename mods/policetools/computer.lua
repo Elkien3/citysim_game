@@ -855,7 +855,7 @@ function police_add_alarm(pos)
 			return
 		end
 	end
-	for _, player in pairs(minetest.connected_players) do
+	for _, player in pairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if is_police(name) then
 			minetest.chat_send_player(name, "[policetools] An alarm has gone off!")
