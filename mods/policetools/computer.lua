@@ -861,7 +861,7 @@ function police_add_alarm(pos)
 			minetest.chat_send_player(name, "[policetools] An alarm has gone off!")
 		end
 	end
-	if minetest.get_modpath("discordmt") then
+	if discord and discord.send then
 		local id = alarm_discord_channel
 		local role = alarm_discord_role
 		if id == "" then id = nil end
