@@ -460,7 +460,7 @@ if areas and money3 then
 				param = name
 			end
 			if not taxes.tbl[param] then
-				return false, S("That player does have a tax balance to pay.")
+				return false, S("That player does not have a tax balance to pay.")
 			end
 			
 			return true, S("Player @1 has $@2 of taxes to pay.", param, taxes.tbl[param])
