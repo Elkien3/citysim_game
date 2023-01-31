@@ -386,11 +386,12 @@ if areas and money3 then
 				local dateinfo = os.date("*t", os.time())
 				local perc = (30-dateinfo.day)/30
 				local diff = areas:get_player_total_area(name, temparealist)-areas:get_player_total_area(name)
-				local tax = math.ceil((diff/1000)*tax_rate*perc)
+				local tax = math.ceil((diff/1000)*tax_rate)
+				local tax_now = math.ceil((diff/1000)*tax_rate*perc)
 				if tax > 0 then
 					warning[name] = minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2)
 					minetest.after(60, function() if warning[name] and warning[name] == minetest.pos_to_string(pos1)..minetest.pos_to_string(pos2) then warning[name] = nil end end)
-					return false, "WARNING: The area you are trying to protect may charge you a tax of $"..tonumber(tax)..", repeat the command to proceed."
+					return false, "WARNING: The area you are trying to protect will charge you a tax of $"..tonumber(tax_now)..", and also have a monthly tax of $"..tax..". repeat the command to proceed."
 				else
 					return val, errormsg
 				end
