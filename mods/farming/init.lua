@@ -468,7 +468,7 @@ end
 
 -- Place Seeds on Soil
 function farming.place_seed(itemstack, placer, pointed_thing, plantname)
-	if class_get and placer and placer:get_player_name() and not class_get(placer:get_player_name(), "farmer") then return end
+	
 	local pt = pointed_thing
 
 	-- check if pointing at a node
@@ -477,6 +477,7 @@ function farming.place_seed(itemstack, placer, pointed_thing, plantname)
 	end
 
 	local under = minetest.get_node(pt.under)
+	if (class_get and placer and placer:get_player_name() and not class_get(placer:get_player_name(), "farmer")) and minetest.get_item_group(under.name, "soil") > 1 then return end
 
 	-- am I right-clicking on something that has a custom on_place set?
 	-- thanks to Krock for helping with this issue :)
