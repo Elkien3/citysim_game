@@ -79,7 +79,7 @@ end
 
 
 -- Growth Logic
-local STAGE_LENGTH_AVG = 57600
+local STAGE_LENGTH_AVG = 48000
 local STAGE_LENGTH_AVG_ORIGINAL = STAGE_LENGTH_AVG
 local STAGE_LENGTH_DEV = STAGE_LENGTH_AVG*.8
 function farming_setspeed(factor)
@@ -417,6 +417,9 @@ function farming.plant_growth_timer(pos, elapsed, node_name)
 		if t ~= 0 then
 			while true do
 				local rand = math.random(STAGE_LENGTH_DEV*boost, STAGE_LENGTH_AVG*boost)
+				if minetest.get_modpath("default_tweaks") and growth >= max_growth-2 then
+					rand = math.random(STAGE_LENGTH_DEV*boost*2, STAGE_LENGTH_AVG*boost*2)
+				end
 				if timepassed > rand then
 					growth = growth + 1
 					timepassed = timepassed - rand

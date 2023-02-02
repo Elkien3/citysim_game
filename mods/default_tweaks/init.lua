@@ -147,33 +147,6 @@ if binoculars then
 
 	minetest.after(.5, cyclic_update)
 end
-local dayseconds = 86400
---MUSHROOMS
-for index, abm in pairs (minetest.registered_abms) do
-	if abm.label == "Mushroom spread" then
-		abm.interval = 930
-		abm.chance = 930
-	end
-end
-
---BERRIES
-minetest.override_item("default:blueberry_bush_leaves_with_berries", {
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		minetest.set_node(pos, {name = "default:blueberry_bush_leaves"})
-		minetest.get_node_timer(pos):start(math.random(dayseconds*8, dayseconds*10))
-	end,
-})
-
---APPLES
-minetest.override_item("default:apple", {
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		if oldnode.param2 == 0 then
-			minetest.set_node(pos, {name = "default:apple_mark"})
-			minetest.get_node_timer(pos):start(math.random(dayseconds*8, dayseconds*10))
-		end
-	end
-})
-
 
 minetest.register_on_mods_loaded(function()
 	for nodename, def in pairs(minetest.registered_nodes) do
