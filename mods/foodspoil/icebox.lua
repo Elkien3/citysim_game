@@ -326,10 +326,10 @@ local function handle_icebox(pos, node)
 	local metaday = meta:get_int("day")
 	local icecount = 0
 	if metaday == 0 then meta:set_int("day", day) return end--todo change behavior when there is no ice
-	if day-metaday < 2 then return end--two days have not passed
+	if day-metaday < 3 then return end--three days have not passed
 	local inv = minetest.get_inventory({type="node", pos=pos})
 	if not inv or inv.type == "undefined" then return end
-	for i = 1, math.floor((day-metaday)/2) do
+	for i = 1, math.floor((day-metaday)/1.5) do
 		if inv:contains_item("main", "default:ice") then
 			local iceprogress = meta:get_int("iceprogress") + 1
 			if iceprogress >= 4 then
