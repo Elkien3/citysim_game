@@ -25,7 +25,7 @@ minetest.register_node("digiboard:keyboard", {
     effector = {
       action = function(pos, node, channel, msg)
         local meta = minetest.get_meta(pos)
-        if channel == meta:get_string("channel") then
+        if channel == meta:get_string("channel") and type(msg) == "string" then
           meta:set_string("formspec", "field[text;"..msg..";]")
         end
       end
