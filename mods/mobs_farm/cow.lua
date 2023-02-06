@@ -42,7 +42,7 @@ end
 
 -- Cow by sirrobzeroone (edited by Elkien3)
 
-local cow_max_yield = 5
+local cow_max_yield = 10
 
 local function clamp(num, min, max)
 	if not num then return end
@@ -80,7 +80,7 @@ mobs:register_mob("mobs_farm:cow", {
 	jump_height = 6,
 	pushable = true,
 	drops = {
-		{name = "mobs:meat_raw", chance = 1, min = cow_max_yield - 1, max = cow_max_yield},
+		{name = "mobs:meat_raw", chance = 1, min = math.floor(cow_max_yield/2.2), max = math.floor(cow_max_yield/2)},
 	},
 	water_damage = 0,
 	lava_damage = 5,

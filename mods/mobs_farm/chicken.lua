@@ -39,7 +39,7 @@ end
 local hungerrate = 5/time_speed
 local thirstrate = 5/time_speed
 
-local chicken_max_yield = 3
+local chicken_max_yield = 6
 
 mobs:register_mob("mobs_farm:chicken", {
 	stepheight = .5,
@@ -65,7 +65,7 @@ mobs:register_mob("mobs_farm:chicken", {
 	runaway = true,
 	runaway_from = {"player", "mobs_farm:pumba"},
 	drops = {
-		{name = "mobs:chicken_raw", chance = 1, min = chicken_max_yield-1, max = chicken_max_yield},
+		{name = "mobs:chicken_raw", chance = 1, min = math.floor(chicken_max_yield/2.2), max = math.floor(chicken_max_yield/2)},
 		--{name = "mobs:chicken_feather", chance = 1, min = 0, max = 2},
 	},
 	water_damage = 0,
