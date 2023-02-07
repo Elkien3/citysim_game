@@ -210,6 +210,10 @@ local foodtable = {
 	["fishing:fish_baked"] = 32,
 }
 
+for i, stairtype in pairs({"slab", "stair_inner", "stair_outer", "stair"}) do
+	foodtable["stairs:"..stairtype.."_straw"] = 120
+end
+
 minetest.register_on_mods_loaded(function()
 	for name, days in pairs(foodtable) do
 		foodspoil_register(name, days or 60)
