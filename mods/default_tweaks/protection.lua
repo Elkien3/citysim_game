@@ -140,7 +140,7 @@ local function is_tempprotected(pos, range)
 	for posstring, _ in pairs(tempprotect) do
 		local pos2 = minetest.string_to_pos(posstring)
 		local diff = vector.subtract(pos, pos2)
-		if diff.x <= range and diff.y <= range and diff.z <= range then
+		if math.abs(diff.x) <= range and math.abs(diff.y) <= range and math.abs(diff.z) <= range then
 			return true
 		end
 	end
