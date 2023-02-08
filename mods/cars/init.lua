@@ -986,28 +986,29 @@ local function car_step(self, dtime, moveresult)
 		if math.abs(self.lastv.y) > 10 and newv.y == 0 then crash = true end
 		if math.abs(self.lastv.z) > 5 and newv.z == 0 then crash = true end
 		--[[if crash then
-		local start = {x=pos.x, y=pos.y+self.stepheight, z=pos.z}
-		local finish = vector.add(start, vector.multiply(vector.normalize(self.lastv), 1))
-		if minetest.raycast then
-			local ray = minetest.raycast(start, finish)
-			if ray then
-				local pointed = ray:next()
-				if pointed == self then
-					pointed = ray:next()
+			local crashconfirm = false
+			local abovecol = false
+			local collisions = moveresult.collisions or {}
+			for i, col in pairs(collisions) do
+				if col.type == "node" then
+					if col.axis == "y" then
+						--minetest.chat_send_all(col.node_pos.y)
+					else
+						local props = self.object:get_properties()
+						local cbox = props.collisionbox
+						local stepheight = (col.node_pos.y - pos.y)-cbox[2]+.5 --last +.5 is assuming block has a full collisionbox
+						if stepheight > props.stepheight then
+							crashconfirm = true
+							break
+						end
+					end
 				end
-				--minetest.chat_send_all(dump(pointed.ref))
-							minetest.add_particle({
-				pos = finish,
-				expirationtime = 10,
-				size = 2,
-				texture = "gunslinger_decal.png",
-				vertical = true
-			})
-				if not pointed then crash = false end
 			end
-		else
-			if minetest.get_node(finish).name == "air" then crash = false end
-		end
+			if not crashconfirm then
+				crash = false
+				self.object:set_velocity(self.lastv)
+				self.v = get_v(velocity) * get_sign(self.v)
+			end
 		end--]]
 		if crash and not self.crash then
 			self.crash = true
