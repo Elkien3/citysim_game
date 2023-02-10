@@ -136,7 +136,8 @@ minetest.register_entity("bones_entity:entity", {
     end,
     on_rightclick = function(self, clicker)
 		local name = clicker:get_player_name()
-		local inventory = minetest.create_detached_inventory("bones_"..name, {
+		if not self.owner then return end
+		local inventory = minetest.create_detached_inventory("bones_"..self.owner, {
 			allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
 				return 0
 			end,
