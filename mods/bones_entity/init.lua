@@ -165,7 +165,7 @@ minetest.register_entity("bones_entity:entity", {
 		inventory:set_list("main", templist)
 		local formspec =
 			   "size[12,9]"..
-			   "list[detached:bones_"..name..";main;0,0;12,4;]"..
+			   "list[detached:bones_"..(self.owner)..";main;0,0;12,4;]"..
 			   "list[current_player;main;2,5;8,4;]"
 		minetest.show_formspec(name, "bones_inv", formspec)
     end
