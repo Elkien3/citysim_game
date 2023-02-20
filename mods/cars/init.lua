@@ -1250,7 +1250,10 @@ local function car_step(self, dtime, moveresult)
 		else
 			local sign = get_sign(self.wheelpos)
 			local wheelreturnspeed = 50
-			if self.cruise then wheelreturnspeed = 15 end
+			if self.cruise then
+				wheelreturnspeed = math.abs(self.v)
+				if wheelreturnspeed > 15 then wheelreturnspeed = 15 end
+			end
 				self.wheelpos = self.wheelpos - wheelreturnspeed*get_sign(self.wheelpos)*dtime
 			if math.abs(self.wheelpos) < 2 or sign ~= get_sign(self.wheelpos) then
 				self.wheelpos = 0
