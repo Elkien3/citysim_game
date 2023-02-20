@@ -111,6 +111,7 @@ function vote.get_next_vote(name)
 end
 
 function vote.check_vote(voteset)
+	if true then return end--disable this since people can vote from discord/irc
 	local all_players_voted = true
 	local players = minetest.get_connected_players()
 	for _, player in pairs(players) do
