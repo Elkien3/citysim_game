@@ -344,6 +344,24 @@ farming.registered_plants["spood:spood"] = {
 	steps = 8
 }
 
+minetest.register_decoration({
+	deco_type = "simple",
+	place_on = {"default:dirt_with_rainforest_litter"},
+	sidelen = 16,
+	noise_params = {
+		offset = 0,
+		scale = 0.05,
+		spread = {x = 100, y = 100, z = 100},
+		seed = 933,
+		octaves = 3,
+		persist = 0.6
+	},
+	y_min = 5,
+	y_max = 100,
+	decoration = {"farming:spood_8},
+	num_spawn_by = 1,
+})
+
 bucket.register_liquid(
 	"spood:spood_source",
 	"spood:spood_flowing",
