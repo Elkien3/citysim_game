@@ -38,6 +38,8 @@ function bones_take_one(self, player, stack)
 	return true
 end
 
+local boneid = 0--goes up every time a bone is activated, reboot to reset. used for seperating bone inventories from the same player from each other
+
 minetest.register_entity("bones_entity:entity", {
 	hp_max = 1,
 	physical = true,
@@ -57,6 +59,8 @@ minetest.register_entity("bones_entity:entity", {
 				if deserialized.owner then
 					self.owner = deserialized.owner
 				end
+				boneid = boneid + 1
+				self.boneid = boneid
 				if deserialized.expiretime then
 					self.time = deserialized.expiretime
 					if self.time < os.time() then
@@ -83,7 +87,29 @@ minetest.register_entity("bones_entity:entity", {
 				if deserialized.steallist then
 					self.steallist = deserialized.steallist
 				end
-				local inv = minetest.create_detached_inventory("bones_"..self.owner, {})
+				local inv = minetest.create_detached_inventory("bones_"..self.owner..self.boneid, {
+					allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+						return 0
+					end,
+					allow_put = function(inv, listname, index, stack, player)
+						return 0
+					end,
+					allow_take = function(inv, listname, index, stack, player)
+						if not self or not self.object or not self.object:get_pos() then return 0 end
+						local name = player:get_player_name()
+						if not name or vector.distance(player:get_pos(), self.object:get_pos()) > 10 then return 0 end
+						if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or bones_take_one(self, player, stack) then
+							return stack:get_count()
+						end
+						return 0
+					end,
+					on_take = function(inv, listname, index, stack, player)
+						self.inv = inv:get_list("main")
+						if inv:is_empty("main") then
+							self.object:remove()
+						end
+					end,
+				})
 				inv:set_size("main", 8 * 6)
 				inv:set_list("main",self.inv)
 				if inv:is_empty("main") then
@@ -111,9 +137,7 @@ minetest.register_entity("bones_entity:entity", {
 		
 		local player_inv = puncher:get_inventory()
 		local has_space = true
-		local inv = minetest.create_detached_inventory("bones_"..self.owner, {})
-		inv:set_size("main", 8 * 6)
-		inv:set_list("main",self.inv)
+		local inv = minetest.get_inventory({type="detached", name="bones_"..self.owner..self.boneid})
 		--The MIT License (MIT) (Following 12 lines)
 		--Copyright (C) 2012-2016 PilzAdam
 		--Copyright (C) 2012-2016 Various Minetest developers and contributors
@@ -134,38 +158,16 @@ minetest.register_entity("bones_entity:entity", {
 			self.inv = inv:get_list("main")
 		end
     end,
+	on_deactivate = function(self, removal)
+		minetest.remove_detached_inventory("bones_"..self.owner..self.boneid)
+	end,
     on_rightclick = function(self, clicker)
 		local name = clicker:get_player_name()
 		if not self.owner then return end
-		local inventory = minetest.create_detached_inventory("bones_"..self.owner, {
-			allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-				return 0
-			end,
-			allow_put = function(inv, listname, index, stack, player)
-				return 0
-			end,
-			allow_take = function(inv, listname, index, stack, player)
-				if not self or not self.object or not self.object:get_pos() then return 0 end
-				local name = player:get_player_name()
-				if not name or vector.distance(player:get_pos(), self.object:get_pos()) > 10 then return 0 end
-				if name == self.owner or self.time < os.time() or minetest.check_player_privs(name, "protection_bypass") or bones_take_one(self, player, stack) then
-					return stack:get_count()
-				end
-				return 0
-			end,
-			on_take = function(inv, listname, index, stack, player)
-				self.inv = inv:get_list("main")
-				if inv:is_empty("main") then
-					self.object:remove()
-				end
-			end,
-		})
-		inventory:set_size("main", 48)
-		local templist = table.copy(self.inv)
-		inventory:set_list("main", templist)
+		local invname = "bones_"..self.owner..self.boneid
 		local formspec =
 			   "size[12,9]"..
-			   "list[detached:bones_"..(self.owner)..";main;0,0;12,4;]"..
+			   "list[detached:"..invname..";main;0,0;12,4;]"..
 			   "list[current_player;main;2,5;8,4;]"
 		minetest.show_formspec(name, "bones_inv", formspec)
     end
@@ -187,9 +189,6 @@ bones_entity.place_bones = function(player)
 	--The MIT License (MIT) (Following 14 lines)
 	--Copyright (C) 2012-2016 PilzAdam
 	--Copyright (C) 2012-2016 Various Minetest developers and contributors
-	inv:set_size("main", 8 * 6)
-	inv:set_list("main", player_inv:get_list("main"))
-
 	for i = 1, player_inv:get_size("craft") do
 		local stack = player_inv:get_stack("craft", i)
 		if inv:room_for_item("main", stack) then
