@@ -141,7 +141,7 @@ minetest.register_entity("anticombatlog:entity", {
 			storage:set_string("bodytable", minetest.serialize(bodytable))
 		end
 		local selfname = string.sub(tostring(self), 8)
-		local inv = minetest.create_detached_inventory("bones_"..selfname, {
+		local inv = minetest.create_detached_inventory("sleeping_"..selfname, {
 			allow_move = allowfunc,
 			allow_put = allowfunc,
 			allow_take = function(inv, listname, index, stack, player2)
@@ -227,8 +227,8 @@ minetest.register_entity("anticombatlog:entity", {
 			local selfname = string.sub(tostring(self), 8)
 			local formspec =
 			   "size[8,12]"..
-			   "list[detached:bones_"..selfname..";craft;2.5,0;3,3;]"..
-			   "list[detached:bones_"..selfname..";main;0,3.5;8,4;]"..
+			   "list[detached:sleeping_"..selfname..";craft;2.5,0;3,3;]"..
+			   "list[detached:sleeping_"..selfname..";main;0,3.5;8,4;]"..
 			   "list[current_player;main;0,8;8,4;]"..
 			   "listring[]"
 			minetest.show_formspec(name, "bones_inv", formspec)
