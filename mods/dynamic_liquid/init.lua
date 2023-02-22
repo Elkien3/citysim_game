@@ -576,7 +576,7 @@ local isday = nil
 minetest.register_abm({
 	label = "Dry up stray water sources",
 	nodenames = {"default:water_source"},
-	neighbors = {"default:water_flowing", "air"},
+	neighbors = {"default:water_flowing"},
 	interval = 900,
 	chance = 8,
 	catch_up = true,
@@ -594,6 +594,14 @@ minetest.register_abm({
 		end
 		if isday then
 			if minetest.get_natural_light(vector.offset(pos, 0, 1, 0)) >= 15 then
+				if node.name ~= "default:water_source" then--for some reason abms seem to be behind whatever makes the water move around, so gotta chase it.
+					for i, perm in pairs{{0, 1}, {0, -1}, {1, 0}, {-1, 0}} do
+						local newpos = vector.offset(pos, perm[1], 0, perm[2])
+						if minetest.get_node(newpos).name == "default:water_source" then
+							pos = newpos
+						end
+					end
+				end
 				minetest.add_node(pos, {name = "air"})
 			end
 		end
