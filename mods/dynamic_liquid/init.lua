@@ -576,7 +576,7 @@ local isday = nil
 minetest.register_abm({
 	label = "Dry up stray water sources",
 	nodenames = {"default:water_source"},
-	neighbors = {"default:water_flowing"},
+	neighbors = {"default:water_flowing", "air"},
 	interval = 900,
 	chance = 8,
 	catch_up = true,
@@ -593,7 +593,7 @@ minetest.register_abm({
 			minetest.after(60, function() isday = nil end)
 		end
 		if isday then
-			if minetest.get_natural_light(pos) >= 15 then
+			if minetest.get_natural_light(vector.offset(pos, 0, 1, 0)) >= 15 then
 				minetest.add_node(pos, {name = "air"})
 			end
 		end
