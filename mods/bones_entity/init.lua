@@ -177,6 +177,17 @@ bones_entity.place_bones = function(player)
 	local name = player:get_player_name()
 	local pos = player:get_pos()
 	local player_inv = player:get_inventory()
+	local drop = function(pos, itemstack)
+		local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
+			if obj then
+				obj:set_velocity({
+					x = math.random(-10, 10) / 9,
+					y = 5,
+					z = math.random(-10, 10) / 9,
+				})
+			end
+		end
+	end
 	if player_inv:is_empty("main") and
 		player_inv:is_empty("craft") then
 		return
@@ -185,7 +196,8 @@ bones_entity.place_bones = function(player)
 	if medical and medical.data[name] then
 		steallist = medical.data[name].steallist
 	end
-	local inv = minetest.create_detached_inventory("bones_"..name, {})
+	local inv = minetest.create_detached_inventory("bones_"..name, {})--temporary inventory in order to serialize to bones object
+	inv:set_size("main", 8 * 6)
 	--The MIT License (MIT) (Following 14 lines)
 	--Copyright (C) 2012-2016 PilzAdam
 	--Copyright (C) 2012-2016 Various Minetest developers and contributors
@@ -225,6 +237,7 @@ bones_entity.place_bones = function(player)
 	minetest.remove_detached_inventory("bones_"..name)
 	player_inv:set_list("main", {})
 	player_inv:set_list("craft", {})
+	minetest.remove_detached_inventory("bones_"..name)
 end
 
 minetest.register_on_dieplayer(bones_entity.place_bones)
