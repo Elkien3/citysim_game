@@ -179,13 +179,12 @@ bones_entity.place_bones = function(player)
 	local player_inv = player:get_inventory()
 	local drop = function(pos, itemstack)
 		local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
-			if obj then
-				obj:set_velocity({
-					x = math.random(-10, 10) / 9,
-					y = 5,
-					z = math.random(-10, 10) / 9,
-				})
-			end
+		if obj then
+			obj:set_velocity({
+				x = math.random(-10, 10) / 9,
+				y = 5,
+				z = math.random(-10, 10) / 9,
+			})
 		end
 	end
 	if player_inv:is_empty("main") and
