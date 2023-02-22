@@ -570,3 +570,32 @@ if displace_liquid then
 	end)
 
 end
+
+--abm to dry up stray water sources in order to reduce server load
+local isday = nil
+minetest.register_abm({
+	label = "Dry up stray water sources",
+	nodenames = {"default:water_source"},
+	neighbors = {"default:water_flowing"},
+	interval = 900,
+	chance = 8,
+	catch_up = true,
+	min_y = 0,
+	max_y = 32767,
+	action = function(pos, node, _, _)
+		if isday == nil then--only bother during the day (any only check if its day once per interval)
+			local tod = minetest.get_timeofday()
+			if tod >= 0.24 and tod <= 0.76 then
+				isday = true
+			else
+				isday = false
+			end
+			minetest.after(60, function() isday = nil end)
+		end
+		if isday then
+			if minetest.get_natural_light(pos) >= 15 then
+				minetest.add_node(pos, {name = "air"})
+			end
+		end
+	end,
+})
