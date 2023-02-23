@@ -380,19 +380,19 @@ if unified_inventory then
 		height = 0,
 	})
 end
-local function register_craft_guides(crafttype, result, items)
+local function register_craft_guides(crafttype, result, item)
 	if craftguide then
 		craftguide.register_craft({
 			type   = crafttype,
 			result = result,
-			items  = items,
+			items  = {item},
 		})
 	end
 	if unified_inventory then
 		unified_inventory.register_craft({
 			type = crafttype,
 			output = result,
-			items = items,
+			items = {item},
 		})
 	end
 end
