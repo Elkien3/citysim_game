@@ -363,6 +363,10 @@ if craftguide then
 		description = "Vaporize",
 		icon = "gas_lib_vaporizer_front.png",
 	})
+	craftguide.register_craft_type("vaporizebyproduct", {
+		description = "Vaporize Byproduct",
+		icon = "gas_lib_vaporizer_front.png",
+	})
 	craftguide.register_craft_type("condense", {
 		description = "Condense",
 		icon = "gas_lib_exchanger_front.png",
@@ -371,6 +375,11 @@ end
 if unified_inventory then
 	unified_inventory.register_craft_type("vaporize", {
 		description = "Vaporize",
+		width = 1,
+		height = 0,
+	})
+	unified_inventory.register_craft_type("vaporizebyproduct", {
+		description = "Vaporize Byproduct",
 		width = 1,
 		height = 0,
 	})
@@ -385,25 +394,25 @@ local function register_craft_guides(crafttype, result, item)
 		craftguide.register_craft({
 			type   = crafttype,
 			result = result,
-			items  = {item},
+			items  = {{item}},
 		})
 	end
 	if unified_inventory then
 		unified_inventory.register_craft({
 			type = crafttype,
 			output = result,
-			items = {item},
+			items = {{item}},
 		})
 	end
 end
 minetest.register_on_mods_loaded(function()
 	for name, def in pairs(minetest.registered_nodes) do
 		if def.gas_byproduct then
-			register_craft_guides("vaporize", def.gas_byproduct, name)
+			register_craft_guides("vaporizebyproduct", def.gas_byproduct, name)
 		elseif def.gas then
 			register_craft_guides("vaporize", def.gas, name)
 		elseif def.liquid then
-			register_craft_guides("condense", name, def.liquid)
+			register_craft_guides("condense", def.liquid, name)
 		end
 	end
 end)
