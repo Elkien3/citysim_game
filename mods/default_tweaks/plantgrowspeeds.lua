@@ -83,7 +83,7 @@ end
 minetest.override_item("default:blueberry_bush_leaves_with_berries", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		minetest.set_node(pos, {name = "default:blueberry_bush_leaves"})
-		local growth_time = dayseconds*32*get_growth_multiplier(pos, "default:blueberry_bush_leaves_with_berries")
+		local growth_time = dayseconds*10*get_growth_multiplier(pos, "default:blueberry_bush_leaves_with_berries")
 		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
 	end,
 })
@@ -93,7 +93,7 @@ minetest.override_item("default:apple", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		if oldnode.param2 == 0 then
 			minetest.set_node(pos, {name = "default:apple_mark"})
-			minetest.get_node_timer(pos):start(math.random(dayseconds*28, dayseconds*32))
+			minetest.get_node_timer(pos):start(math.random(dayseconds*10, dayseconds*12))
 		end
 	end
 })
