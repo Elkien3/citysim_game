@@ -394,14 +394,14 @@ local function register_craft_guides(crafttype, result, item)
 		craftguide.register_craft({
 			type   = crafttype,
 			result = result,
-			items  = {{item}},
+			items  = {item},
 		})
 	end
 	if unified_inventory then
 		unified_inventory.register_craft({
 			type = crafttype,
 			output = result,
-			items = {{item}},
+			items = {item},
 		})
 	end
 end
