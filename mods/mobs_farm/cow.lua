@@ -29,8 +29,10 @@ local function make_sword_harvestable(name, is_numbered)
 		mainname = string.sub(name, 1, -2).."1"
 	end
 	for i2, droptbl in pairs(drops.items) do
-		if droptbl.items and droptbl.items[1] and droptbl.items[1] == name or droptbl.items[1] == mainname then
-			drops.items[i2].tools = {"~sword"}
+		for i3, itemstring in pairs(droptbl.items) do
+			if itemstring == name or itemstring == mainname then
+				drops.items[i2].tools = {"~sword"}
+			end
 		end
 	end
 	minetest.override_item(name, {drop = drops})
