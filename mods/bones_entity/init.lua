@@ -197,6 +197,7 @@ bones_entity.place_bones = function(player)
 	end
 	local inv = minetest.create_detached_inventory("bones_"..name, {})--temporary inventory in order to serialize to bones object
 	inv:set_size("main", 8 * 6)
+        inv:set_list("main", player_inv:get_list("main"))
 	--The MIT License (MIT) (Following 14 lines)
 	--Copyright (C) 2012-2016 PilzAdam
 	--Copyright (C) 2012-2016 Various Minetest developers and contributors
