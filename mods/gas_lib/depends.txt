@@ -2,3 +2,5 @@ default
 fire
 technic?
 basic_materials?
+craftguide?
+unified_inventory?
