@@ -10,22 +10,38 @@ end
 local hungerrate = 5/time_speed
 local thirstrate = 5/time_speed
 
-for i, name in pairs({"default:grass_", "default:dry_grass_", "default:marram_grass_", "default:fern_"}) do
-	for i = 1, 5 do
-		if minetest.registered_nodes[name.. i] then
-				local groups = minetest.registered_nodes[name.. i].groups
-				groups.level = 1
-				local newdrop = {items = {{tools = {"~sword"}, items = {name.."1"}}}}
-				if name == "default:grass_" then
-					table.insert(newdrop.items, {items = {"farming:seed_wheat"}, rarity = 5})
-				end
-				minetest.override_item(name..i, {groups = groups, drop = newdrop})
+local function make_sword_harvestable(name, is_numbered)
+	local def = minetest.registered_nodes[name]
+	if not def then return end
+	local drops
+	local mainname
+	if not def.drop or type(def.drop) == "string" then
+		drops = {
+			items = {
+				{items = {def.drop or name}}
+			}
+		}
+	else
+		drops = table.copy(def.drop)
+	end
+	local mainname
+	if is_numbered then
+		mainname = string.sub(name, 1, -2).."1"
+	end
+	for i2, droptbl in pairs(drops.items) do
+		if droptbl.items and droptbl.items[1] and droptbl.items[1] == name or droptbl.items[1] == mainname then
+			drops.items[i2].tools = {"~sword"}
 		end
 	end
+	minetest.override_item(name, {drop = drops})
 end
-if minetest.registered_nodes["default:junglegrass"] then
-	minetest.override_item("default:junglegrass", {drop = {items = {{items = {"farming:seed_cotton"}, rarity = 8}, {tools = {"~sword"}, items = {"default:junglegrass"}}}}})
+
+for i, name in pairs({"default:grass_", "default:dry_grass_", "default:marram_grass_", "default:fern_"}) do
+	for i = 1, 5 do
+		make_sword_harvestable(name..i, true)
+	end
 end
+make_sword_harvestable("default:junglegrass")
 
 if flowers then
 	minetest.register_abm({
