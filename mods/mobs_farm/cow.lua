@@ -97,9 +97,6 @@ mobs:register_mob("mobs_farm:cow", {
 	jump = true,
 	jump_height = 6,
 	pushable = true,
-	drops = {
-		{name = "mobs:meat_raw", chance = 1, min = math.floor(cow_max_yield/2.2), max = math.floor(cow_max_yield/2)},
-	},
 	water_damage = 0,
 	lava_damage = 5,
 	light_damage = 0,
@@ -133,6 +130,11 @@ mobs:register_mob("mobs_farm:cow", {
 		end
 		if not self.water then
 			self.water = 0
+		end
+		if not self.drops or #self.drops == 0 then
+			self.drops = {
+				{name = "mobs:meat_raw", chance = 1, min = math.floor(cow_max_yield/2.2), max = math.floor(cow_max_yield/2)},
+			}
 		end
 		self.stay_near = mobs_farm.get_stay_near(self, {"farming:straw", "group:grass"})
 		self.cowtimer = 30

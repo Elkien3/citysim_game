@@ -64,10 +64,6 @@ mobs:register_mob("mobs_farm:chicken", {
 	run_velocity = 3,
 	runaway = true,
 	runaway_from = {"player", "mobs_farm:pumba"},
-	drops = {
-		{name = "mobs:chicken_raw", chance = 1, min = math.floor(chicken_max_yield/2.2), max = math.floor(chicken_max_yield/2)},
-		--{name = "mobs:chicken_feather", chance = 1, min = 0, max = 2},
-	},
 	water_damage = 0,
 	lava_damage = 5,
 	light_damage = 0,
@@ -102,6 +98,12 @@ mobs:register_mob("mobs_farm:chicken", {
 		end
 		if not self.water then
 			self.water = 0
+		end
+		if not self.drops or #self.drops == 0 then
+			self.drops = {
+				{name = "mobs:chicken_raw", chance = 1, min = math.floor(chicken_max_yield/2.2), max = math.floor(chicken_max_yield/2)},
+				--{name = "mobs:chicken_feather", chance = 1, min = 0, max = 2},
+			}
 		end
 		self.stay_near = mobs_farm.get_stay_near(self, {"group:seed"})
 		self.chickentimer = 30
