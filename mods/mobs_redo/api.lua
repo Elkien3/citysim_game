@@ -772,7 +772,10 @@ function mob_class:update_tag()
 		text = "\nBreeding: " .. self._breed_countdown
 
 	end
-
+	local yield
+	if self.drops and self.drops[1] and self.drops[1].max then
+		yield = self.drops[1].max
+	end
 	self.infotext = ""
 		if self.nametag and self.nametag ~= "" then
 			self.infotext = self.infotext..self.nametag.."\n"
@@ -782,7 +785,8 @@ function mob_class:update_tag()
 		.. text
 		.. "\nFood: "..math.floor((self.food or 0)+.5)
 		.. " Water: "..math.floor((self.water or 0)+.5)
-
+		.. " MaxYield: "..tostring(yield or 0)
+	
 	-- set changes
 	self.object:set_properties({
 		nametag = "",
