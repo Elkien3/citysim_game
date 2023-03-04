@@ -3,18 +3,28 @@ minetest.register_privilege("minimap", {
 	give_to_singleplayer = false,
 })
 
-local time = 0
-minetest.register_globalstep(function(dtime)
-	time = time + dtime
-	if time > 20 then
-		for _,player in pairs(minetest.get_connected_players()) do
-			local name = player:get_player_name()
-			local privs = minetest.get_player_privs(name)
-			if not privs.minimap then
-				player:hud_set_flags({minimap = false})
-			elseif privs.minimap == true then
-				player:hud_set_flags({minimap = true})
-			end
+minetest.register_on_joinplayer(function(player, last_login)
+	if minetest.check_player_privs(player, {minimap = true}) then
+		player:hud_set_flags({minimap = true})
+	else
+		player:hud_set_flags({minimap = false})
+	end
+end)
+
+minetest.register_on_priv_grant(function(name, granter, priv)
+	if granter == nil and priv == "minimap" then
+		local player = minetest.get_player_by_name(name)
+		if player then
+			player:hud_set_flags({minimap = true})
+		end
+	end
+end)
+
+minetest.register_on_priv_revoke(function(name, revoker, priv)
+	if revoker == nil and priv == "minimap" then
+		local player = minetest.get_player_by_name(name)
+		if player then
+			player:hud_set_flags({minimap = false})
 		end
 	end
 end)
