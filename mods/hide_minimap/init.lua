@@ -12,7 +12,7 @@ minetest.register_on_joinplayer(function(player, last_login)
 end)
 
 minetest.register_on_priv_grant(function(name, granter, priv)
-	if granter == nil and priv == "minimap" then
+	if priv == "minimap" then
 		local player = minetest.get_player_by_name(name)
 		if player then
 			player:hud_set_flags({minimap = true})
@@ -21,7 +21,7 @@ minetest.register_on_priv_grant(function(name, granter, priv)
 end)
 
 minetest.register_on_priv_revoke(function(name, revoker, priv)
-	if revoker == nil and priv == "minimap" then
+	if priv == "minimap" then
 		local player = minetest.get_player_by_name(name)
 		if player then
 			player:hud_set_flags({minimap = false})

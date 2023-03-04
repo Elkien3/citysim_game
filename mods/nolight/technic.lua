@@ -45,8 +45,20 @@ local function update_light(pos)
 	return on
 end
 
-local function set_distributor(pos, val)
+local function set_distributor(pos, val, force)
 	if pos == nil then return 0 end
+	local meta = minetest.get_meta(pos)
+	if not force then
+		local last_set = meta:get_int("last_set") == 1
+		if last_set == val then
+			return 0
+		end
+	end
+	if val == true then
+		meta:set_int("last_set", 1)
+	else
+		meta:set_int("last_set", 0)
+	end
 	local radius = distributor_square_radius
 	local serialpos = minetest.serialize({x=pos.x,y=pos.y,z=pos.z})
 	local pos1 = vector.add(pos, radius)
@@ -100,7 +112,7 @@ function register_electrical_light(name, node_on)
 				update_light(pos)
 				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 				if dist_pos then
-					set_distributor(dist_pos, true)
+					set_distributor(dist_pos, true, true)
 				end
 			end,
 			action_off = function(pos, node)
@@ -109,7 +121,7 @@ function register_electrical_light(name, node_on)
 				update_light(pos)
 				local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 				if dist_pos then
-					set_distributor(dist_pos, true)
+					set_distributor(dist_pos, true, true)
 				end
 			end,}}
 		newdef.mesecons = switch_mesecon
@@ -133,6 +145,7 @@ function register_electrical_light(name, node_on)
 		end
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", light_channel_form())
+		update_light(pos)
 		if old_construct then return val end
 	end
 	local old_destruct = def.on_destruct
@@ -143,7 +156,7 @@ function register_electrical_light(name, node_on)
 		if meta:get_string("distributor") ~= "" then
 			local dist_pos = minetest.deserialize(meta:get_string("distributor"))
 			if dist_pos then
-				minetest.after(0, set_distributor, dist_pos, true)
+				minetest.after(0, set_distributor, dist_pos, true, true)
 			end
 		end
 		if old_destruct then return val end
@@ -249,10 +262,10 @@ minetest.register_node('nolight:distributor', {
 		if fields.toggle then new_track = 0 end
 	end,
 	paramtype2 = "facedir",
-	on_destruct = function(pos) set_distributor(pos, false) end,
+	on_destruct = function(pos) set_distributor(pos, false, true) end,
 	technic_run = run,
 	technic_on_disable = function(pos, node)
-		set_distributor(pos, false)
+		set_distributor(pos, false, true)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("update", 1)
 	end,
@@ -286,7 +299,7 @@ local function light_switch(pos, node, val)
 		end
 	end
 	for hash, val in pairs(distlist) do
-		set_distributor(minetest.get_position_from_hash(hash), true)
+		set_distributor(minetest.get_position_from_hash(hash), true, true)
 	end
 end
 
@@ -405,6 +418,7 @@ minetest.register_lbm({
 		if meta:get_string("formspec") == "" then
 			meta:set_string("formspec", light_channel_form())
 		end
+		update_light(pos)
 	end,
 })
 technic.register_machine("LV", 'nolight:distributor', technic.receiver)
