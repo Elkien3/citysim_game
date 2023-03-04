@@ -136,16 +136,17 @@ function register_electrical_light(name, node_on)
 		local pos2 = vector.subtract(pos, radius)
 		minetest.get_meta(pos):set_string("infotext", "no distributor")
 		local distributors = minetest.find_nodes_in_area(pos1, pos2, {'nolight:distributor'})
-		if not distributors or #distributors == 0 then
-			update_light(pos)
-		else
-			for i, p in pairs(distributors) do
-				local meta = minetest.get_meta(p)
-				if meta:get_int("active") ~= 0 then
-					meta:set_int("update", 1)
-					break
-				end
+		local founddist = false
+		for i, p in pairs(distributors) do
+			local meta = minetest.get_meta(p)
+			if meta:get_int("active") ~= 0 then
+				meta:set_int("update", 1)
+				founddist = true
+				break
 			end
+		end
+		if founddist == false then
+			update_light(pos)
 		end
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", light_channel_form())
