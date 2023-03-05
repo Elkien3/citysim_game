@@ -175,7 +175,7 @@ minetest.register_globalstep(function(dtime)
 					end
 				end
 				totalhpgain = totalhpgain - injuryloss
-				if math.random(5) == 1 then
+				if injuryloss > 0 and math.random(5) == 1 then
 					add_puddle(player, "medical:puddle_blood", injuryloss)
 				end
 			end
@@ -295,6 +295,10 @@ minetest.register_entity("medical:puddle_blood", {
 		if not staticdata then return end
 		self.volume = staticdata.volume
 		self.update = staticdata.update
+		if self.volume <= 0 then
+			self.object:remove()
+			return
+		end
 		bloodsize = math.sqrt(self.volume or 0)/16
 		self.object:set_properties({visual_size = {x=bloodsize, y = bloodsize}})
 		self.object:set_acceleration({x=0, y=-10, z=0})
