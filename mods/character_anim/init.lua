@@ -32,7 +32,7 @@ minetest.register_on_leaveplayer(function(player, last_login)
 	players_with_interact[player:get_player_name()] = nil
 end)
 minetest.register_on_priv_grant(function(name, granter, priv)
-	if priv == "interact" then
+	if priv == "interact" and minetest.get_player_by_name(name) then
 		players_with_interact[name] = true
 	end
 end)
