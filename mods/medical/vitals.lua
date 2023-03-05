@@ -300,17 +300,21 @@ minetest.register_entity("medical:puddle_blood", {
 		self.object:set_acceleration({x=0, y=-10, z=0})
 	end,
 	on_step = function(self, dtime)
-		if os.time() - self.update > 300 then--5 minutes
-			for i = 1, math.floor((os.time() - self.update)/300) do
-				self.volume = (self.volume*.9) - 10
+		self.timer = (self.timer or (math.random(100)/10)) + dtime
+		if self.timer > 10 then
+			self.timer = 0
+			if os.time() - self.update > 300 then--5 minutes
+				for i = 1, math.floor((os.time() - self.update)/300) do
+					self.volume = (self.volume*.9) - 10
+				end
+				if self.volume <= 0 then
+					self.object:remove()
+					return
+				end
+				bloodsize = math.sqrt(self.volume or 0)/16
+				self.object:set_properties({visual_size = {x=bloodsize, y = bloodsize}})
+				self.update = os.time()
 			end
-			if self.volume <= 0 then
-				self.object:remove()
-				return
-			end
-			bloodsize = math.sqrt(self.volume or 0)/16
-			self.object:set_properties({visual_size = {x=bloodsize, y = bloodsize}})
-			self.update = os.time()
 		end
 	end,
 	get_staticdata = function(self)
