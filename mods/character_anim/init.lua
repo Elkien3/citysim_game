@@ -22,9 +22,29 @@ local models = setmetatable({}, {__index = function(self, filename)
 	return model
 end})
 
+local players_with_interact = {}
+minetest.register_on_joinplayer(function(player, last_login)
+	if minetest.check_player_privs(player, "interact") then
+		players_with_interact[player:get_player_name()] = true
+	end
+)
+minetest.register_on_leaveplayer(function(player, last_login)
+	players_with_interact[player:get_player_name()] = nil
+)
+minetest.register_on_priv_grant(function(name, granter, priv)
+	if priv == "interact" then
+		players_with_interact[name] = true
+	end
+end)
+minetest.register_on_priv_revoke(function(name, revoker, priv)
+	if priv == "interact" then
+		players_with_interact[name] = nil
+	end
+end)
+
 function character_anim.is_interacting(player)
 	local control = player:get_player_control()
-	return minetest.check_player_privs(player, "interact") and (control.RMB or control.LMB)
+	return players_with_interact[player:get_player_name()] and (control.RMB or control.LMB)
 end
 
 local function get_look_horizontal(player)
