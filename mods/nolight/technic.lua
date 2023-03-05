@@ -238,7 +238,7 @@ local run = function(pos, node)
 	elseif eu_input >= demand then
 		meta:set_string("infotext", S("%s Working"):format(machine_name))
 		if meta:get_int("update") == 1 then
-			set_distributor(pos, true)
+			set_distributor(pos, true, true)
 			meta:set_int("update", 0)
 		end
 	end
