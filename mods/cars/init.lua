@@ -1921,9 +1921,13 @@ function cars_register_car(def)
 					meta:set_string("name", name)
 					if obj then
 						local ent = obj:get_luaentity()
-						ent.finishobj = self.object
-						if def.gas_offset then
-							ent.finishoffset = def.gas_offset
+						if ent then
+							ent.finishobj = self.object
+							if def.gas_offset then
+								ent.finishoffset = def.gas_offset
+							end
+						else
+							oil.stopfuel(name)
 						end
 					end
 				elseif holdingtowlines[name] and not self.towline then
