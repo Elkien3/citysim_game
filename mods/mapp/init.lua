@@ -77,7 +77,7 @@ function map_handler (itemstack, user, pointed_thing)
 				  tile=tile["name"]
 				end
 				mapar[i+17][j+17].y = k
-				mapar[i+17][j+17].im = tile
+				mapar[i+17][j+17].im = tile or ""
 			end
 		end
 
