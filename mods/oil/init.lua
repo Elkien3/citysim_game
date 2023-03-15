@@ -340,7 +340,7 @@ minetest.register_entity("oil:line", {
 		if self.startobj then
 			self.start = self.startobj:get_pos()
 		end
-		if self.finishobj then
+		if self.finishobj and self.finishobj:get_pos() then
 			self.finish = self.finishobj:get_pos()
 			if self.finishoffset then
 				local offset = table.copy(self.finishoffset)
