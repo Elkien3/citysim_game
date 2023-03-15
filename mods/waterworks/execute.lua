@@ -126,7 +126,7 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 	local inlets
 	local outlets
 	
-	if net.cache_valid then
+	if net.cache_valid and pipe_cache[net_index] then
 		-- We don't need to recalculate, nothing about the pipe network has changed since last time
 		inlets = pipe_cache[net_index].inlets
 		outlets = pipe_cache[net_index].outlets
