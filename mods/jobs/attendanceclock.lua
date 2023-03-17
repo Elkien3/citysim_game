@@ -1,4 +1,4 @@
-local punches = minetest.deserialize(jobs.storage:get_string("punches")) or {}
+local jobs.punches = minetest.deserialize(jobs.storage:get_string("punches")) or {}
 local context = {}
 local punch_tick = 5 -- in seconds
 local grace_period = 5 -- in minutes
@@ -37,7 +37,7 @@ local function employee_form(punchedin, name, jobname, radius, maxshift)
 		"label[.5,2;max shift: "..maxshift.." hr]" ..
 		"label[.5,2.5;radius: "..radius.."]"
 		if punchedin then
-			local amount = jobs.round(punches[name].amount, 2)
+			local amount = jobs.round(jobs.punches[name].amount, 2)
 			form = form.."button_exit[.5,1;1.5,1;punch;Punch Out]" ..
 				"label[2.5,1.2;current shift: "..amount.."]"
 		else
@@ -64,8 +64,8 @@ function jobs.punch(name, pos)
 	local jobname = meta:get_string("jobname")
 	if jobname == "" or not jobs.list[jobname] then return end
 	if not jobs.list[jobname].pay then return end
-	if punches[name] and punches[name].jobname == jobname then
-		local amount = jobs.round(punches[name].amount, 2)
+	if jobs.punches[name] and jobs.punches[name].jobname == jobname then
+		local amount = jobs.round(jobs.punches[name].amount, 2)
 		local result = money3.transfer(":"..jobname, name, amount)
 		if not result then --transferred without an error
 			local message = name.." ("..jobs.players[name][jobname]..") was payed "..amount
@@ -82,32 +82,32 @@ function jobs.punch(name, pos)
 			jobs.storage:set_string("punchlogs", minetest.serialize(jobs.punchlogs))
 		end
 		minetest.chat_send_player(name, result or "You got payed "..amount)
-		punches[name] = nil
+		jobs.punches[name] = nil
 	--elseif jobs.list[jobname].ceo == name then
 	--	minetest.chat_send_player(name, "You cannot punch into a job you own.")
 	--	punches[name] = nil
 	else
-		punches[name] = {}
-		punches[name].jobname = jobname
-		punches[name].amount = 0
-		punches[name].pos = pos
+		jobs.punches[name] = {}
+		jobs.punches[name].jobname = jobname
+		jobs.punches[name].amount = 0
+		jobs.punches[name].pos = pos
 		local maxshift = tonumber(meta:get_string("maxshift"))
 		if maxshift and maxshift > 0 then
-			punches[name].shifttime = maxshift*60*60
+			jobs.punches[name].shifttime = maxshift*60*60
 		end
 		local radius = tonumber(meta:get_string("radius"))
 		if radius and radius > 0 then
-			punches[name].dist = radius
+			jobs.punches[name].dist = radius
 		end
 		minetest.chat_send_player(name, "Punched into '"..jobname.."'")
 	end
-	jobs.storage:set_string("punches", minetest.serialize(punches))
+	jobs.storage:set_string("punches", minetest.serialize(jobs.punches))
 end
 
 local function update_punches()
-	for name, data in pairs(punches) do
+	for name, data in pairs(jobs.punches) do
 		local jobname = data.jobname
-		if not jobname or not jobs.list[jobname] then punches[name] = nil return end
+		if not jobname or not jobs.list[jobname] then jobs.punches[name] = nil return end
 		local pos = data.pos
 		local player = minetest.get_player_by_name(name)
 		if data.dist then
@@ -116,9 +116,9 @@ local function update_punches()
 				return
 			end
 		end
-		if not jobs.players[name][jobname] then punches[name] = nil return end
-		if not jobs.list[jobname].pay then punches[name] = nil return end
-		if not jobs.list[jobname].pay[jobs.players[name][jobname]] then punches[name] = nil return end
+		if not jobs.players[name][jobname] then jobs.punches[name] = nil return end
+		if not jobs.list[jobname].pay then jobs.punches[name] = nil return end
+		if not jobs.list[jobname].pay[jobs.players[name][jobname]] then jobs.punches[name] = nil return end
 		local pay = jobs.list[jobname].pay[jobs.players[name][jobname]]
 		if player then--todo check if player is inactive/afk
 			if data.inactivetime then data.inactivetime = nil end
@@ -138,7 +138,7 @@ local function update_punches()
 			end
 		end
 	end
-	jobs.storage:set_string("punches", minetest.serialize(punches))
+	jobs.storage:set_string("punches", minetest.serialize(jobs.punches))
 	minetest.after(punch_tick, update_punches)
 end
 update_punches()
@@ -193,7 +193,7 @@ minetest.register_node("jobs:clock", {
 		
 		context[name] = pos
 		local punchedin = false
-		if punches[name] and punches[name].jobname and punches[name].jobname == jobname then punchedin = true end
+		if jobs.punches[name] and jobs.punches[name].jobname and jobs.punches[name].jobname == jobname then punchedin = true end
 		minetest.show_formspec(name, "jobs_attendanceclock", employee_form(punchedin, name, jobname, meta:get_string("radius"), meta:get_string("maxshift")))
 	end,
 	on_construct = function(pos, placer, itemstack, pointed_thing)	--Initialize some variables (local per instance)
