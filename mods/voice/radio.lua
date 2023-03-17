@@ -21,6 +21,7 @@ minetest.register_chatcommand("r", {
 	description = "Send text to send over radio.",
 	privs = {shout = true},
 	func = function(name, param)
+		if not minetest.get_player_by_name(name) then return false, "You are not ingame" end
 		if playerchannel[name] then
 			voice.speak(minetest.get_player_by_name(name), param, voice.whisper_parameters)
 			radio_message(playerchannel[name], "<"..name.."> ("..playerchannel[name].."): "..param)
@@ -35,6 +36,7 @@ minetest.register_chatcommand("radio", {
 	description = "Usage: /radio join [channel], /radio who, /radio leave",
 	privs = {shout = true},
 	func = function(name, param)
+		if not minetest.get_player_by_name(name) then return false, "You are not ingame" end
 		local param2 = string.match(param, "^join ([%a%d_-]+)")
 		if param == "" then
 			if playerchannel[name] then

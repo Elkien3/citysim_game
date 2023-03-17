@@ -253,6 +253,7 @@ function voice.register_chatcommand(short, long, description, parameters)
 		description = description,
 		params = "<message>",
 		func = function(player_name, message)
+			if not minetest.get_player_by_name(player_name) then return false, "You are not ingame" end
 			local player = minetest.get_player_by_name(player_name)
 			
 			voice.speak(player, message, parameters)
