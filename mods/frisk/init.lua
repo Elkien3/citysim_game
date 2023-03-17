@@ -22,12 +22,14 @@ end
 local function finishfrisk(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	local pos = pPlayer:getpos()
-	if pPlayer:get_attach() then
+	local pos = pPlayer and pPlayer:getpos()
+	if pPlayer and pPlayer:get_attach() then
 		pos = pPlayer:get_attach():getpos()
 	end
-	if vector.distance(pos, oldpos) > .1 then
-		minetest.chat_send_player(pName, "You moved, frisk canceled.")
+	if not pPlayer or vector.distance(pos, oldpos) > .5 then
+		if pPlayer then
+			minetest.chat_send_player(pName, "You moved, frisk canceled.")
+		end
 		minetest.chat_send_player(name, pName.." moved, frisk canceled.")
 		return
 	end
@@ -126,12 +128,14 @@ end)
 local function finishcuff(player, pName, oldpos)
 	local pPlayer = minetest.get_player_by_name(pName)
 	local name = player:get_player_name()
-	local pos = pPlayer:getpos()
-	if pPlayer:get_attach() then
+	local pos = pPlayer and pPlayer:getpos()
+	if pPlayer and pPlayer:get_attach() then
 		pos = pPlayer:get_attach():getpos()
 	end
-	if vector.distance(pos, oldpos) > .1 then
-		minetest.chat_send_player(pName, "You moved, cuff canceled.")
+	if not pPlayer or vector.distance(pos, oldpos) > .5 then
+		if pPlayer then
+			minetest.chat_send_player(pName, "You moved, cuff canceled.")
+		end
 		minetest.chat_send_player(name, pName.." moved, cuff canceled.")
 		local wearcalc
 		if cuffdamage[pName] then
@@ -139,7 +143,7 @@ local function finishcuff(player, pName, oldpos)
 		else
 			wearcalc = 0
 		end
-		minetest.add_item(pPlayer:getpos(), {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
+		minetest.add_item(pos or oldpos, {name="frisk:handcuffs", count=1, wear=wearcalc, metadata=""})
 		cuffdamage[pName] = nil
 		modstorage:set_string("cuffdamage", minetest.serialize(cuffdamage))
 		return
