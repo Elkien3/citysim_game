@@ -408,7 +408,7 @@ function jobs.getplayerinfo(name, newname, jobname)
 		else return false, "'"..newname.."' is not in '"..jobname.."'." end
 	end
 	local string = newname..": "
-	for jobname, rank in pairs(jobs.players[newname]) do
+	for jobname, rank in pairs(jobs.players[newname] or {}) do
 		if string ~= newname..": " then
 			string = string..", "
 		end
