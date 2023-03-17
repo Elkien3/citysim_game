@@ -943,7 +943,9 @@ end
 function spriteguns.register_magazine(magazine, ammunition, size)
 	minetest.override_item(magazine, {
     groups = {spriteguns_magazine=1},
-	wear_represents = "ammunition"
+	wear_represents = "ammunition",
+	_ammunition_item = ammunition,
+	_ammunition_capacity = size
 	})
 	minetest.register_craft({
 		type = "shapeless",
@@ -997,7 +999,84 @@ function spriteguns.register_magazine(magazine, ammunition, size)
 		end
 	end)
 end
-
+local oldfunc3 = minetest.get_craft_result
+minetest.get_craft_result = function(input)
+	local output, decremented_input = oldfunc3(input)
+	if input and input.items then
+		for i, item in pairs(input.items) do
+			local def = minetest.registered_items[item:get_name()]
+			if def and def.groups and def.groups.spriteguns_magazine then
+				return {item = ItemStack(), time = 0, replacements = {}}
+			end
+		end
+	end
+	return output, decremented_input
+end
+--[[--failed attempt to allow autocrafters and such load magazines, i might come back to it.
+local oldfunc3 = minetest.get_craft_result
+minetest.get_craft_result = function(input)
+	local output, decremented_input = oldfunc3(input)
+	local items = input.items
+	local magazine
+	local ammunitiontype
+	local ammunition
+	local ammoin = false
+	local size
+	for i, item in pairs(output) do
+		item = ItemStack(item)
+		local def = minetest.registered_items[item:get_name()]
+		if def and def.groups and def.groups.spriteguns_magazine and def._ammunition_item then
+			magazine = item
+			ammunitiontype = def._ammunition_item
+			size = def._ammunition_capacity
+			break
+		end
+	end
+	if magazine and ammunitiontype then
+		for i, item in pairs(items) do
+			if item:get_name() == ammunitiontype then
+				ammunition = item
+				ammoin = true
+				break
+			end
+		end		
+	end
+	if ammunition then
+		minetest.chat_send_all("bubb")
+		local magwear = magazine:get_wear()
+		local magazineindex
+		for i, item in pairs(output) do
+			item = ItemStack(item)
+			if item:get_name() == magazine:get_name() then
+				magazineindex = i
+				break
+			end
+		end
+		if ammoin == false then
+			local bullets = math.floor((size+.5) - ((magwear/max_wear)*size))
+			table.insert(decremented_input, ItemStack({name = ammunitiontype, count = bullets}))
+		end
+		if ammoin == true then
+			local needbullets = math.floor((magwear/max_wear)*size+.5)
+			local hasbullet = ammunition:get_count()
+			if needbullets == 0 then
+				return
+			end
+			if hasbullet >= needbullets then
+				magazine:set_wear(1)
+				ammunition:set_count(hasbullet-needbullets)
+				table.insert(output, ammunition:to_string())
+			else
+				local wear = magwear-(hasbullet*(max_wear/size))
+				if wear < 1 then wear = 1 end
+				magazine:set_wear(wear)
+			end
+		end
+		output[magazineindex] = magazine
+	end
+	return output, decremented_input
+end
+--]]
 local mp = minetest.get_modpath("spriteguns")
 dofile(mp.."/guns.lua")
 dofile(mp.."/invspace.lua")
