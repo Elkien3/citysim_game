@@ -201,7 +201,7 @@ minetest.register_on_mods_loaded(function()
 	["elevator:elevator_on"] = 30, ["elevator:motor"] = 60*4, ["frisk:metal_detector"] = 60*4, ["locksmith:mesecon_switch_off"] = 30,
 	["locksmith:mesecon_switch_on"] = 30, ["mesecons_switch:mesecon_switch_off"] = 30, ["mesecons_switch:mesecon_switch_on"] = 30,
 	["inbox:empty"] = 30, ["inbox:full"] = 30, ["mesecons_random:ghoststone"] = 60, ["streets:steel_support"] = 60,
-	["technic:steel_strut_with_insulator_clip"] = 60, ["technic:granite"] = 60, ["streets:concrete_wall"] = 60,
+	["technic:steel_strut_with_insulator_clip"] = 60, ["technic:granite"] = 60, ["streets:concrete_wall"] = 60, ["technic:concrete_post"] = 60, ["technic:concrete_post_platform"] = 60, ["technic:concrete_post_with_platform"] = 60,
 	["streets:roadwork_traffic_barrier"] = 60, ["streets:bigpole"] = 30, ["streets:bigpole_corner"] = 30, ["streets:bigpole_cross"] = 30,
 	["streets:bigpole_edge"] = 30, ["streets:bigpole_short"] = 30, ["streets:bigpole_tjunction"] = 30, ["policetools:computer"] = 30, ["jobs:clock"] = 30, ["xpanes:bar_flat"] = 30, ["xpanes:bar"] = 30}
 	
