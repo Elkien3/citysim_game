@@ -1,4 +1,4 @@
-local jobs.punches = minetest.deserialize(jobs.storage:get_string("punches")) or {}
+jobs.punches = minetest.deserialize(jobs.storage:get_string("punches")) or {}
 local context = {}
 local punch_tick = 5 -- in seconds
 local grace_period = 5 -- in minutes
