@@ -240,7 +240,7 @@ minetest.register_chatcommand("rules",{
 	func = function (name,params)
 	if (interacthandler and interacthandler.player[name]) then return false, "You are not allowed to use this command at this time." end
 	local player = minetest.get_player_by_name(name)
-	if not player than return false, "You must be ingame to use this command." end
+	if not player then return false, "You must be ingame to use this command." end
 	local language = rule_language[name] or interact.default_language
 	if params ~= "" and rule_table[params:lower()] then
 		language = params:lower()
