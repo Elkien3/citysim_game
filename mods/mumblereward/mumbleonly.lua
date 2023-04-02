@@ -24,7 +24,7 @@ local function readable_minutes(minutes)
 	end
 end
 
-local mumbleonly_periods = {{14*60, 30}, {2*60, 30}}
+--local mumbleonly_periods = {{14*60, 30}, {2*60, 30}}
 local manual_mumbleonly = false
 
 function is_mumbleonly()
@@ -116,9 +116,13 @@ minetest.register_chatcommand("mumbleonly", {func = function(name, param)
 		end
 	end
 	local val, timetil, length = is_mumbleonly()
-	if val then
-		return true, "*!Mumblerewards!* Currently in mumble only period, over in "..readable_minutes(-timetil)
+	if timetil and length then
+		if val then
+			return true, "*!Mumblerewards!* Currently in mumble only period, over in "..readable_minutes(-timetil)
+		else
+			return true, "*!Mumblerewards!* Next mumble only period is in "..readable_minutes(timetil)
+		end
 	else
-		return true, "*!Mumblerewards!* Next mumble only period is in "..readable_minutes(timetil)
+		return true, "*!Mumblerewards!* Currently in a manual mumble only period"
 	end
 end})
