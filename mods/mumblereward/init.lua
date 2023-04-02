@@ -119,7 +119,7 @@ local function checkplayer(name, kick)
 			local val, timetil, length = is_mumbleonly()
 			local kickmsg = "Server is in a mumble-only period, set up minetest with mumble PA or come back later."
 			local warnmsg = "*!Mumblerewards!* The server is in a mumble-only period currently, you will be kicked in 30 seconds."
-			if timetil and length then
+			if timetil ~= nil and length ~= nil then
 				kickmsg = "Server is in a mumble-only period, set up minetest with mumble PA or come back in ".. -timetil .." minutes."
 				warnmsg = "*!Mumblerewards!* The server is in a mumble-only period for "..-timetil.." more minutes, you will be kicked in 30 seconds."
 			end
