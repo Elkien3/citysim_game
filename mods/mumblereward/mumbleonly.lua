@@ -31,27 +31,29 @@ function is_mumbleonly()
 	local timetil
 	local minutes = minute_timeofday()
 	local length
-	for k, period in pairs(mumbleonly_periods) do
-		local til = period[1]-minutes
-		local sign = 0
-		if til ~= 0 then sign = til/math.abs(til) end
-		if til == 0 or (sign == -1 and til + period[2] > 0) then -- youre within the period
-			return true, -1*(til + period[2]), period[2] -- return time remaining as negative
-		end
-		if (not timetil or timetil > til) and sign ~= -1 then
-			timetil = til
-			length = period[2]
-		end
-	end
-	if not timetil then -- none left today, look at earliest one tomorrow
+	if mumbleonly_periods then
 		for k, period in pairs(mumbleonly_periods) do
-			local til = period[1]
-			if not timetil or timetil > til then
+			local til = period[1]-minutes
+			local sign = 0
+			if til ~= 0 then sign = til/math.abs(til) end
+			if til == 0 or (sign == -1 and til + period[2] > 0) then -- youre within the period
+				return true, -1*(til + period[2]), period[2] -- return time remaining as negative
+			end
+			if (not timetil or timetil > til) and sign ~= -1 then
 				timetil = til
 				length = period[2]
 			end
 		end
-		timetil = timetil + (24*60-minutes)
+		if not timetil then -- none left today, look at earliest one tomorrow
+			for k, period in pairs(mumbleonly_periods) do
+				local til = period[1]
+				if not timetil or timetil > til then
+					timetil = til
+					length = period[2]
+				end
+			end
+			timetil = timetil + (24*60-minutes)
+		end
 	end
 	if manual_mumbleonly then
 		return true
@@ -123,6 +125,10 @@ minetest.register_chatcommand("mumbleonly", {func = function(name, param)
 			return true, "*!Mumblerewards!* Next mumble only period is in "..readable_minutes(timetil)
 		end
 	else
-		return true, "*!Mumblerewards!* Currently in a manual mumble only period"
+		if val then
+			return true, "*!Mumblerewards!* Currently in a manual mumble only period"
+		else
+			return true, "*!Mumblerewards!* No defined mumbleonly periods"
+		end
 	end
 end})
