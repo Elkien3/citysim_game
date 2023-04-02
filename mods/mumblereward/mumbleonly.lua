@@ -76,7 +76,7 @@ end
 
 local function do_chats()
 	local val, timetil, length = is_mumbleonly()
-	if not timetil or not length then return end
+	if timetil == nil or length == nil then return end
 	local minutes, sec = minute_timeofday()
 	if val then --currently in a period
 		send_chat_all("*!Mumblerewards!* Mumble only period going on, ending in "..readable_minutes(math.abs(timetil)))
@@ -118,7 +118,7 @@ minetest.register_chatcommand("mumbleonly", {func = function(name, param)
 		end
 	end
 	local val, timetil, length = is_mumbleonly()
-	if timetil and length then
+	if timetil ~= nil and length ~= nil then
 		if val then
 			return true, "*!Mumblerewards!* Currently in mumble only period, over in "..readable_minutes(-timetil)
 		else
