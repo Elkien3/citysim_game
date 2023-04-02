@@ -219,14 +219,15 @@ xdecor.register("cobweb", {
 	groups = {dig_immediate=3, liquid=3, flammable=3},
 	sounds = default.node_sound_leaves_defaults()
 })
-minetest.register_lbm( {
-        label = "yeet cobwebs",
-        name = "xdecor:cobwebyeet",
-        nodenames = {"xdecor:cobweb"},
-        run_at_every_load = false,
-        action = function(pos, node, dtime_s)
-			minetest.remove_node(pos)
-		end,
+minetest.register_lbm({
+	label = "yeetcobwebs",
+	name = "xdecor:cobwebyeet",
+	nodenames = {"xdecor:cobweb"},
+	run_at_every_load = false,
+	action = function(pos, node, dtime_s)
+		minetest.remove_node(pos)
+	end,
+})
 --[[
 for _, c in pairs({"red"}) do  -- Add more curtains colors simply here.
 	xdecor.register("curtain_"..c, {
