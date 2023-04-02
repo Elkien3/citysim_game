@@ -25,6 +25,7 @@ local function readable_minutes(minutes)
 end
 
 local mumbleonly_periods = {{14*60, 30}, {2*60, 30}}
+local manual_mumbleonly = false
 
 function is_mumbleonly()
 	local timetil
@@ -52,6 +53,9 @@ function is_mumbleonly()
 		end
 		timetil = timetil + (24*60-minutes)
 	end
+	if manual_mumbleonly then
+		return true
+	end
 	return false, timetil, length
 end
 
@@ -59,13 +63,18 @@ local function kick_nonmumble(length)
 	for _, player in pairs (minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if not mumblereward_players[name] and not minetest.get_player_privs(name).ban then
-			minetest.kick_player(name, "Server is in a mumble-only period, set up minetest with mumble PA or come back in ".. length .." minutes.")
+			if length then
+				minetest.kick_player(name, "Server is in a mumble-only period, set up minetest with mumble PA or come back in ".. length .." minutes.")
+			else
+				minetest.kick_player(name, "Server is in a mumble-only period, set up minetest with mumble PA or come back later.")
+			end
 		end
 	end
 end
 
 local function do_chats()
 	local val, timetil, length = is_mumbleonly()
+	if not timetil or not length then return end
 	local minutes, sec = minute_timeofday()
 	if val then --currently in a period
 		send_chat_all("*!Mumblerewards!* Mumble only period going on, ending in "..readable_minutes(math.abs(timetil)))
@@ -89,6 +98,23 @@ end
 minetest.after(10, do_chats)
 
 minetest.register_chatcommand("mumbleonly", {func = function(name, param)
+	if param ~= "" then
+		if not minetest.check_player_privs(name, {server = true}) then
+			return false, "You do not have the privs to change the mumbleonly mode."
+		end
+		if param == "true" then
+			manual_mumbleonly = true
+			kick_nonmumble()
+			send_chat_all("A manual mumbleonly period has been started!")
+			return true, "manual mumble only period enabled"
+		elseif param == "false" then
+			manual_mumbleonly = false
+			send_chat_all("A manual mumbleonly period has been ended.")
+			return true, "manual mumble only period disabled"
+		else
+			return false, "must be true of false"
+		end
+	end
 	local val, timetil, length = is_mumbleonly()
 	if val then
 		return true, "*!Mumblerewards!* Currently in mumble only period, over in "..readable_minutes(-timetil)
