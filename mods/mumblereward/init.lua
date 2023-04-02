@@ -75,7 +75,7 @@ local function checkfile()
 					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You have deafened yourself.")
 				elseif mumblereward_players[name] ~= true then
 					mumblereward_players[name] = true
-					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio! Remember, Max range should be 30 and min volume 0. If you hear someone that's more than 30 blocks away your settings are incorrect!")
+					minetest.chat_send_player(name, "*!Mumblerewards!* Connected with Positional Audio!")
 					removetag(name)
 				end
 			end
@@ -117,10 +117,16 @@ local function checkplayer(name, kick)
 		minetest.chat_send_player(name, "*!Mumblerewards!* Not connected to Positional Audio.")
 		if mumbleonly then
 			local val, timetil, length = is_mumbleonly()
+			local kickmsg = "Server is in a mumble-only period, set up minetest with mumble PA or come back later."
+			local warnmsg = "*!Mumblerewards!* The server is in a mumble-only period currently, you will be kicked in 30 seconds."
+			if timetil and length then
+				kickmsg = "Server is in a mumble-only period, set up minetest with mumble PA or come back in ".. -timetil .." minutes."
+				warnmsg = "*!Mumblerewards!* The server is in a mumble-only period for "..-timetil.." more minutes, you will be kicked in 30 seconds."
+			end
 			if kick then
-				minetest.kick_player(name, "Server is in a mumble-only period, set up minetest with mumble PA or come back in ".. -timetil .." minutes.")
+				minetest.kick_player(name, kickmsg)
 			elseif val then
-				minetest.chat_send_player(name, "*!Mumblerewards!* The server is in a mumble-only period for "..-timetil.." more minutes, you will be kicked in 30 seconds.")
+				minetest.chat_send_player(name, warnmsg)
 				minetest.after(30, checkplayer, name, true)
 			end
 		end
