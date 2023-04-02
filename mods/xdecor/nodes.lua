@@ -223,10 +223,10 @@ minetest.register_lbm({
 	label = "yeetcobwebs",
 	name = "xdecor:cobwebyeet",
 	nodenames = {"xdecor:cobweb"},
-	run_at_every_load = false,
+	run_at_every_load = true,
 	action = function(pos, node, dtime_s)
 		minetest.remove_node(pos)
-	end,
+	end
 })
 --[[
 for _, c in pairs({"red"}) do  -- Add more curtains colors simply here.
