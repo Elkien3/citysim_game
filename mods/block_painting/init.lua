@@ -90,7 +90,7 @@ tool_capabilities = {
 	groupcaps={
 		dig_immediate = {times={[3]=2.0,[2]=2.0,[1]=2.0}, uses=0, maxlevel=1},
 		},
-	damage_groups = {fleshy=2},
+	damage_groups = {fleshy=0},
 },
 })
 
@@ -105,7 +105,7 @@ tool_capabilities = {
 	groupcaps={
 		dig_immediate = {times={[3]=2.0,[2]=2.0,[1]=2.0}, uses=0, maxlevel=1},
 		},
-	damage_groups = {fleshy=2},
+	damage_groups = {fleshy=0},
 },
 })
 
