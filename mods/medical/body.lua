@@ -252,7 +252,7 @@ end)
 
 local set_animation = player_api.set_animation
 player_api.set_animation = function(player, anim_name, speed)
-	local collisionboxes = {lay = {-.3, 0, -0.3, 0.3, .2, 0.3}, sit = {-.3, 0, -.3, .3, 1.2, .3}}
+	local collisionboxes = {lay = {-.3, 0, -0.3, 0.3, 1.2, 0.3}, sit = {-.3, 0, -.3, .3, 1.2, .3}}
 	local selectionboxes = {lay = {-0.7, 0, -0.7, 0.7, .2, 0.7}, sit = {-.3, 0, -.3, .3, 1.2, .3}}
 	local defaultbox = {-.3, 0, -.3, .3, 1.7, .3}
 	collisionboxes.recumbantleft = collisionboxes.lay
