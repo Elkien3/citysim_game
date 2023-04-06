@@ -234,7 +234,7 @@ minetest.register_entity("anticombatlog:entity", {
 			minetest.show_formspec(name, "bones_inv", formspec)
 		end
     end,
-	on_step = function(self, dtime)
+	on_step = function(self, dtime, moveresult)
 		if not self.owner or not bodytable[self.owner] then remove_body(self) return end
 		if self.time <= os.time() then
 			remove_body(self)
