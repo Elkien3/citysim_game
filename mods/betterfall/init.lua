@@ -1,4 +1,5 @@
 -- MOD STRUCT INITIALIZATION
+if true then return end
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
 betterfall.ghost_nodes = {} -- those nodes will just disappear instead of falling
@@ -111,7 +112,7 @@ function betterfall.should_node_fall(n, p)
 end
 
 minetest.check_single_for_falling = function(p)
-    local n = core.get_node(p)
+    local n = core.get_node_or_nil(p)
 	if not n then return false end
     local meta = minetest.get_meta(p);
 
@@ -122,7 +123,7 @@ minetest.check_single_for_falling = function(p)
 
         if result then
             meta:set_int("falling", 1)
-            n = core.get_node(p)
+            n = core.get_node_or_nil(p)
             betterfall.enqueue_falling_node(p, n, meta)
         end
 

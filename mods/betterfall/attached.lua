@@ -1,7 +1,7 @@
 --inherited from builtin/falling.lua
 
 function drop_attached_node(p)
-	local n = core.get_node(p)
+	local n = core.get_node_or_nil(p)
 	local drops = core.get_node_drops(n, "")
 	local def = core.registered_items[n.name]
 	if def and def.preserve_metadata then
@@ -37,7 +37,7 @@ function check_attached_node(p, n)
         d.y = -1
     end
     local p2 = vector.add(p, d)
-    local nn = core.get_node(p2).name
+    local nn = core.get_node_or_nil(p2).name
     local def2 = core.registered_nodes[nn]
     if def2 and not def2.walkable then
         return false
