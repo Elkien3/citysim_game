@@ -14,6 +14,19 @@ if minetest.settings:get_bool("enable_lavacooling") ~= false then
 	minetest.override_item("default:lava_flowing", {groups = {lava = 3, liquid = 2,not_in_creative_inventory = 1}}) --disable lava flowing from burning things
 end
 
+local function warnfarplayers()
+	for i, player in pairs(minetest.get_connected_players()) do
+		local p = player:get_pos()
+		local a = math.abs
+		local d = 2000
+		if a(p.x) > d or a(p.y) > d or a(p.z) > d then
+			minetest.chat_send_player(player, "WARNING: the world past 2000 may be deleted in the future.")
+		end
+	end
+	minetest.after(10, warnfarplayers)
+end
+minetest.after(10, warnfarplayers)
+
 --FIRE
 
 local fire_enabled = minetest.settings:get_bool("enable_fire")
