@@ -23,9 +23,9 @@ local function warnfarplayers()
 			minetest.chat_send_player(player:get_player_name(), "WARNING: the world past "..tostring(d).." may be deleted in the future.")
 		end
 	end
-	minetest.after(10, warnfarplayers)
+	minetest.after(30, warnfarplayers)
 end
-minetest.after(10, warnfarplayers)
+minetest.after(30, warnfarplayers)
 
 --FIRE
 
