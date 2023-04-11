@@ -20,7 +20,7 @@ local function warnfarplayers()
 		local a = math.abs
 		local d = 2000
 		if a(p.x) > d or a(p.y) > d or a(p.z) > d then
-			minetest.chat_send_player(player, "WARNING: the world past "..tostring(d).." may be deleted in the future.")
+			minetest.chat_send_player(player:get_player_name(), "WARNING: the world past "..tostring(d).." may be deleted in the future.")
 		end
 	end
 	minetest.after(10, warnfarplayers)
