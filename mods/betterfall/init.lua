@@ -1,5 +1,4 @@
 -- MOD STRUCT INITIALIZATION
-if true then return end
 betterfall = {}
 betterfall.path = minetest.get_modpath("betterfall")
 betterfall.ghost_nodes = {} -- those nodes will just disappear instead of falling
