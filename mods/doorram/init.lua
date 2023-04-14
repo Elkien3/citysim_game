@@ -183,7 +183,7 @@ minetest.register_entity("doorram:ram", {
 			end
 			return
 		end
-		if (side["left"] or "") == name or (side["right"] or "") == name then return end
+		if (self.side["left"] or "") == name or (self.side["right"] or "") == name then return end
 		self[side] = name
 	end,
 })
