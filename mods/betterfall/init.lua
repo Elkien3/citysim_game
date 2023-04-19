@@ -122,7 +122,6 @@ minetest.check_single_for_falling = function(p)
 
         if result then
             meta:set_int("falling", 1)
-            n = core.get_node_or_nil(p)
             betterfall.enqueue_falling_node(p, n, meta)
         end
 
