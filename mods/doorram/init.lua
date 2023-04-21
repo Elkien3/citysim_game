@@ -177,13 +177,14 @@ minetest.register_entity("doorram:ram", {
 		if angle > 0 then
 			side = "right"
 		end
-		if self[side] then
-			if self[side] == name then
-				self[side] = nil
+		for i, tempside in pairs({"left", "right"})
+			if self[tempside] then
+				if self[tempside] == name then
+					self[tempside] = nil
+				end
+				return
 			end
-			return
 		end
-		if (self["left"] or "") == name or (self["right"] or "") == name then return end
 		self[side] = name
 	end,
 })
