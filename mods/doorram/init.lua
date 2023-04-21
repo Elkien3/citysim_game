@@ -181,8 +181,8 @@ minetest.register_entity("doorram:ram", {
 			if self[tempside] then
 				if self[tempside] == name then
 					self[tempside] = nil
+					return
 				end
-				return
 			end
 		end
 		self[side] = name
