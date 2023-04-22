@@ -15,7 +15,7 @@ minetest.register_entity("mumblereward:tag", {
 	visual_size = {x=.3, y=.3, z=.3},
 	on_activate = function(self, staticdata, dtime_s)
 		minetest.after(.1, function()
-			if not self.owner or not minetest.get_player_by_name(self.owner):is_player() then self.object:remove() end
+			if self and (not self.owner or not minetest.get_player_by_name(self.owner)) then self.object:remove() end
 		end)
 	end,
 })
