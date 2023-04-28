@@ -84,6 +84,20 @@ armor:register_armor("clothes:brown_jacket", {
     armor_groups = {fleshy=0},
     damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+register_dyed_clothes("clothes:shirt_checker", {
+	description = ("Checkered Shirt"),
+	inventory_image = "clothes_inv_shirt_checker.png",
+	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+register_dyed_clothes("clothes:shirt_blouse", {
+    description = ("Blouse"),
+    inventory_image = "clothes_inv_shirt_blouse.png",
+    groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=800},
+    armor_groups = {fleshy=0},
+    damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 armor:register_armor("clothes:pants_jeans", {
 	description = ("Jeans"),
 	inventory_image = "clothes_inv_pants_jeans.png",
@@ -133,6 +147,20 @@ register_dyed_clothes("clothes:pants_shorts", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:pants_overalls", {
+	description = ("Overalls"),
+	inventory_image = "clothes_inv_pants_overalls.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:pants_canvas", {
+	description = ("Canvas Pants"),
+	inventory_image = "clothes_inv_pants_canvas.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 register_dyed_clothes("clothes:hat_wool", {
 	description = ("Woolen Hat"),
 	inventory_image = "clothes_inv_hat_wool.png",
@@ -172,6 +200,13 @@ register_dyed_clothes("clothes:boots_sneakers", {
 armor:register_armor("clothes:boots_police", {
 	description = ("Police Shoes"),
 	inventory_image = "clothes_inv_boots_police.png",
+	groups = {armor_feet=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:boots_kneehigh", {
+	description = ("Kneehigh Boots"),
+	inventory_image = "clothes_inv_boots_kneehigh.png",
 	groups = {armor_feet=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
