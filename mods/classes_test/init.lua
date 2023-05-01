@@ -9,7 +9,7 @@ local classes = {
 	["snooper"] = "Can peek in chests with lockpicks, and use the /grief_check command.",
 }
 class_switch_time = 3*24*60*60--3 days
-class_switch_cost = 20
+class_switch_cost = 15
 
 function class_get(name, class)
 	if not name then return end
@@ -77,17 +77,17 @@ minetest.register_chatcommand("class_set", {
 		if param == "" then
 			return false, "do '/class_set unclassed' to go to unclassed"
 		elseif classes[param] then
-			if money3 and money3.dec(name, class_switch_cost) then
-				return false, "You need to pay 20cr to change class."
+			local paidtext = ""
+			if oldclass and money3 then--only charge money if you've changed class before
+				if money3.dec(name, class_switch_cost) then
+					return false, "You need to pay "..tostring(class_switch_cost).."cr to change class."
+				end
+				if taxes and taxes.add then taxes.add(class_switch_cost) end
+				paidtext = " (paid "..tostring(class_switch_cost).."cr)"
 			end
-			if taxes and taxes.add then taxes.add(class_switch_cost) end
 			classtbl[name] = {name = param, time = os.time()}
 			storage:set_string("classtbl", minetest.serialize(classtbl))
-			if money3 then
-				return true, "You are now "..param.." (paid "..tostring(class_switch_cost).."cr)"
-			else
-				return true, "You are now "..param
-			end
+			return true, "You are now "..param..paidtext
 		else
 			return false, "Invalid Input. do ./classes to see class list."
 		end
