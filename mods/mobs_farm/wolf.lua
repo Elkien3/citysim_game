@@ -71,6 +71,7 @@ local wolf = {
 			dog:set_yaw(yaw)
 			ent = dog:get_luaentity()
 			ent.owner = clicker:get_player_name()
+			ent.tamed = true
 			ent.health = self.health
 			ent.food = self.food
 			self.object:remove()
