@@ -82,6 +82,7 @@ minetest.register_on_newplayer(function(player)
 	set_timer(name, "lockpick", 4*60)
 	set_timer(name, "griefing", 4*60)
 	set_timer(name, "voting", 4*60)
+	set_timer(name, "money", 2*60)
 	set_timer(name, "refer", 2*60)
 end)
 
@@ -154,6 +155,14 @@ timerfunctions["griefing"] = function(name)
 	privs.griefing = true
 	minetest.set_player_privs(name, privs)
 	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'griefing' privilege.")
+end
+timerfunctions["money"] = function(name)
+	if not minetest.registered_privileges["money"] then return end
+	local privs = minetest.get_player_privs(name)
+	if privs.money then return end
+	privs.money = true
+	minetest.set_player_privs(name, privs)
+	minetest.chat_send_player(name, "[playercontrol] You have been granted the 'money' privilege.")
 end
 timerfunctions["voting"] = function(name)
 	if not minetest.registered_privileges["vote"] then return end
