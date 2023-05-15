@@ -112,7 +112,9 @@ minetest.register_node("money3:admin_shop", {
 					return true
 				end
 			end
-			minetest.chat_send_player(sender_name, "You bought " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. money3.format(tonumber(meta:get_string("costbuy"))) .. ".")
+			local msgtext = " bought " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of " .. money3.format(tonumber(meta:get_string("costbuy"))) .. "."
+			minetest.chat_send_player(sender_name, "You"..msgtext)
+			minetest.log("action", sender_name..msgtext)
 		elseif fields["buttonsell"] then
 			local sender_name = sender:get_player_name()
 			local sender_inv = sender:get_inventory()
@@ -132,7 +134,9 @@ minetest.register_node("money3:admin_shop", {
 				end
 			end
 			sender_inv:remove_item("main", meta:get_string("nodename") .. " " .. meta:get_string("amount"))
-			minetest.chat_send_player(sender_name, "You sold " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of "  .. money3.format(tonumber(meta:get_string("costsell"))) .. ".")
+			local msgtext = " sold " .. meta:get_string("amount") .. " " .. meta:get_string("nodename") .. " at a price of "  .. money3.format(tonumber(meta:get_string("costsell"))) .. "."
+			minetest.chat_send_player(sender_name, "You"..msgtext)
+			minetest.log("action", sender_name..msgtext)
 		end
 	end,
 })
