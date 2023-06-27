@@ -172,7 +172,11 @@ minetest.register_on_joinplayer(function(player)
 		end
 	end
 
-	-- Disable animation & local animation
+	-- First update `character_anim` with the current animation
+	-- which mods like `player_api` might have already set
+	-- (note: these two methods are already hooked)
+	player:set_animation(player:get_animation())
+	-- Then disable animation & local animation
 	local no_anim = {x = 0, y = 0}
 	set_animation(player, no_anim, 0, 0, false)
 	set_local_animation(player, no_anim, no_anim, no_anim, no_anim, 1)
