@@ -5,7 +5,7 @@ clothes_loot =
 "clothes:shirt_hoodie", "clothes:shirt_police", "clothes:shirt_military", "clothes:shirt_swat", "clothes:shirt_buttonup",
 "clothes:pants_jeans", "clothes:pants_cargo", "clothes:pants_shorts", "clothes:pants_police", "clothes:pants_military",
 "clothes:hat_wool","clothes:hat_balaclava", "clothes:hat_bandit", "clothes:hat_sunglasses",
-"clothes:boots_sneakers", "clothes:boots_police", "clothes:boots_military", "clothes:boots_hiking"
+"clothes:boots_sneakers", "clothes:boots_police", "clothes:boots_military", "clothes:boots_hiking", "clothes:pants_black"
 }
 --]]
 
@@ -249,6 +249,13 @@ armor:register_armor("clothes:shirt_prisoner", {
 armor:register_armor("clothes:pants_prisoner", {
 	description = ("Prisoner Pants"),
 	inventory_image = "clothes_inv_pants_prisoner.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:pants_black", {
+	description = ("Black Jeans"),
+	inventory_image = "clothes_inv_pants_black.png",
 	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
