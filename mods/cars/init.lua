@@ -929,7 +929,7 @@ local lagcounter = 1
 local function car_step(self, dtime, moveresult)
 	if dtime > .2 then dtime = .2 end
 	local def = cars_registered_cars[self.name]
-	if self.deathtime and os.time()-self.deathtime >= 1800 then--repair the car within 30 minutes and it will be saved
+	if self.deathtime and os.time()-self.deathtime >= 7200 then--repair the car within 2 hours and it will be saved
 		self.object:remove()
 		return
 	end
@@ -1860,7 +1860,9 @@ function cars_register_car(def)
 			if self.hp < 1 then self.hp = 1 end
 			self.object:set_hp(self.hp)
 			local halfmax = (def.initial_properties.hp_max or 20)/2
-			if self.hp <= halfmax then
+			if self.hp < halfmax then
+				local smoketex = "tnt_smoke.png"
+				if self.hp == 1 then smoketex = "fire_basic_flame.png" end
 				self.enginesmoke = minetest.add_particlespawner({
 					amount = 1,
 					time = 0,
@@ -1875,7 +1877,7 @@ function cars_register_car(def)
 					collisiondetection = true,
 					attached = self.object,
 					vertical = false,
-					texture = "tnt_smoke.png",
+					texture = smoketex,
 				})
 			end
 		end,
@@ -2025,7 +2027,9 @@ function cars_register_car(def)
 			local hp = self.object:get_hp() - tool_capabilities.damage_groups.vehicle
 			self.hp = hp
 			local halfmax = (def.initial_properties.hp_max or 20)/2
-			if self.hp <= halfmax then
+			if self.hp < halfmax then
+				local smoketex = "tnt_smoke.png"
+				if self.hp == 1 then smoketex = "fire_basic_flame.png" end
 				self.enginesmoke = minetest.add_particlespawner({
 					amount = 1,
 					time = 0,
@@ -2040,7 +2044,7 @@ function cars_register_car(def)
 					collisiondetection = true,
 					attached = self.object,
 					vertical = false,
-					texture = "tnt_smoke.png",
+					texture = smoketex,
 				})
 			end
 			if hp <= 1 then
