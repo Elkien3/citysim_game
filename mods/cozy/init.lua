@@ -20,6 +20,7 @@ minetest.register_chatcommand("sit", {
 	description = "Sit down",
 	func = function(name)
 		local player = minetest.get_player_by_name(name)
+		if not player then return end
 		if default.player_attached[name] then
 			player:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
 --			player:set_physics_override(1, 1, 1)
@@ -38,6 +39,7 @@ minetest.register_chatcommand("lay", {
 	description = "Lay down",
 	func = function(name)
 		local player = minetest.get_player_by_name(name)
+		if not player then return end
 		if default.player_attached[name] then
 			player:set_eye_offset({x=0, y=0, z=0}, {x=0, y=0, z=0})
 --			player:set_physics_override(1, 1, 1)
