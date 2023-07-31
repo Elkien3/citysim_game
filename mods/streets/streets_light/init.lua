@@ -4,7 +4,7 @@
 	Optional: true
 ]]
 
-local rules = {
+--[[local rules = {
 	{x= 0, y= 0, z=-1},
 	{x= 0, y= 0, z= 1},
 	{x= 1, y= 0, z= 0},
@@ -190,7 +190,7 @@ local def_mesecons =
 
 
 
-
+--]]
 --[[
 minetest.register_abm({
 	nodenames = {"group:streets_light"},
@@ -238,11 +238,11 @@ minetest.register_node(":streets:light_vertical_off", {
 			{-5/16, -0.5, -5/16, 5/16, 0.5, 5/16},
 		}
 	},
-	on_construct = on_construct,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_construct,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 minetest.register_node(":streets:light_vertical_on", {
@@ -260,11 +260,11 @@ minetest.register_node(":streets:light_vertical_on", {
 		}
 	},
 	drop = "streets:light_vertical_off",
-	on_construct = on_constract,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_constract,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 
@@ -283,11 +283,11 @@ minetest.register_node(":streets:light_horizontal_off", {
 			{-3/16, -3/16, -0.5, 3/16, 3/16, 0.5},
 		}
 	},
-	on_construct = on_construct,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_construct,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 minetest.register_node(":streets:light_horizontal_on", {
@@ -305,11 +305,11 @@ minetest.register_node(":streets:light_horizontal_on", {
 		}
 	},
 	drop = "streets:light_horizontal_off",
-	on_construct = on_constract,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_constract,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 
@@ -328,11 +328,11 @@ minetest.register_node(":streets:light_hanging_off", {
 			{-3/16, 2/16, -0.5, 3/16, 0.5, 0.5},
 		}
 	},
-	on_construct = on_construct,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_construct,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 minetest.register_node(":streets:light_hanging_on", {
@@ -350,15 +350,15 @@ minetest.register_node(":streets:light_hanging_on", {
 		}
 	},
 	drop = "streets:light_hanging_off",
-	on_construct = on_constract,
-	on_punch = on_punch,
-	on_receive_fields = on_receive_fields,
-	digiline = def_digiline,
-	mesecons = def_mesecons
+	--on_construct = on_constract,
+	--on_punch = on_punch,
+	--on_receive_fields = on_receive_fields,
+	--digiline = def_digiline,
+	--mesecons = def_mesecons
 })
 
 minetest.register_craft({
-	output = "streets:light_vertical_off 3",
+	output = "streets:light_vertical_on 3",
 	recipe = {
 		{"", "default:steel_ingot", ""},
 		{"", "default:meselamp", ""},
@@ -367,7 +367,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "streets:light_horizontal_off 3",
+	output = "streets:light_horizontal_on 3",
 	recipe = {
 		{"", "", ""},
 		{"default:steel_ingot", "default:meselamp", "default:steel_ingot"},
@@ -376,7 +376,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "streets:light_hanging_off 3",
+	output = "streets:light_hanging_on 3",
 	recipe = {
 		{"default:steel_ingot", "default:meselamp", "default:steel_ingot"},
 		{"", "", ""},
@@ -387,12 +387,12 @@ minetest.register_craft({
 
 minetest.register_craft({
 	type = "shapeless",
-	output = "streets:light_horizontal_off",
-	recipe = {"streets:light_hanging_off"}
+	output = "streets:light_horizontal_on",
+	recipe = {"streets:light_hanging_on"}
 })
 
 minetest.register_craft({
 	type = "shapeless",
-	output = "streets:light_hanging_off",
-	recipe = {"streets:light_horizontal_off"}
+	output = "streets:light_hanging_on",
+	recipe = {"streets:light_horizontal_on"}
 })
