@@ -194,9 +194,9 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 						if source_node == "thirsty:water_clean_source" then
 							local meta = minetest.get_meta(sink.pos)
 							local water = meta:get_float("water")
-							if water <= 100 then
-								meta:set_float("water", water + 100)
-								meta:set_string("infotext", "Drinking Fountain "..(water + 100).."L")
+							if water <= 200 then
+								meta:set_float("water", water + 200)
+								meta:set_string("infotext", "Drinking Fountain "..(water + 200).."L")
 								minetest.swap_node(source_pos, {name="air"})
 							end
 						else
