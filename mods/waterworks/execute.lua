@@ -198,6 +198,8 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 								meta:set_float("water", water + 200)
 								meta:set_string("infotext", "Drinking Fountain "..(water + 200).."L")
 								minetest.swap_node(source_pos, {name="air"})
+							else
+								sink_pos = nil
 							end
 						else
 							source_pos = nil
