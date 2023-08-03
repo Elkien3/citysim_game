@@ -7,7 +7,7 @@ See init.lua for license.
 ]]
 
 local PPA = thirsty.persistent_player_attributes
-local drink_per_block = 50
+local drink_per_block = 200
 
 PPA.register({
     name = 'thirsty_hydro',
