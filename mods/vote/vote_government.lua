@@ -306,7 +306,7 @@ if money3 then
 	})
 
 	minetest.register_chatcommand("vote_initial_amount", {
-		params = "<name>",
+		params = "<amount>",
 		description = "Start a vote to change how much money a new player starts with. (integers only)",
 		privs = {
 			vote_government = true,
@@ -337,6 +337,44 @@ if money3 then
 						minetest.chat_send_all(S("The starting money has been changed from @1 to @2. (@3/@4)", oldval, param, #yes, votesneeded))
 					else
 						minetest.chat_send_all(S("Failed to change the starting money from @1 to @2. (@3/@4)", oldval, param, #yes, votesneeded))
+					end
+				end,
+
+				on_vote = function(self, voter, value)
+					minetest.chat_send_all(voter .. " voted " .. value .. " to '" ..
+							self.description .. "'")
+				end
+			})
+		end
+	})
+	
+	minetest.register_chatcommand("vote_get_balance", {
+		params = "<name>",
+		description = "Start a vote to see how much money a player has in their account.",
+		privs = {
+			vote_government = true,
+		},
+		func = function(name, param)
+			if not param or not minetest.player_exists(param) or not money3.get(param) then
+				return false, "Player does exist or does not have a money account."
+			end
+			return vote.new_vote(name, {
+				description = "Get "..param.."'s money balance",
+				help = "/yes,  /no  or  /abstain",
+				name = name,
+				duration = 15,
+				perc_needed = 0,
+
+				can_vote = function(self, pname)
+					return minetest.check_player_privs(pname,{vote_government = true})
+				end,
+
+				on_result = function(self, result, results)
+					local yes = results.yes or {}
+					if #yes >= votesneeded then
+						minetest.chat_send_all(S("@1's money balance: @2. (@3/@4)", param, money3.format(money3.get(param)), #yes, votesneeded))
+					else
+						minetest.chat_send_all(S("Failed to get @1's money balance (@2/@3)", param, #yes, votesneeded))
 					end
 				end,
 
