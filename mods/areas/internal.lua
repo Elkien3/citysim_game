@@ -315,7 +315,7 @@ function areas:isAreaOwner(id, name)
 			if not jobs.list[jobname] then return false end
 			if jobs.list[jobname].ceo == name then
 				return true
-			elseif rank == "supervisor" and jobs.getrank(name, jobname) == 3 then
+			elseif rank == "supervisor" and jobs.getrank(name, jobname) == "supervisor" then
 				return true
 			else
 				return false
