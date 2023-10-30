@@ -16,7 +16,7 @@ if minetest.get_modpath("digilines") then
 
 	local S = technic.getter
 
-	if minetest.get_modpath("digistuff") then
+	--[[if minetest.get_modpath("digistuff") then
 		minetest.register_craft({
 			output = 'technic:lv_digi_cable 1',
 			type = "shapeless",
@@ -31,7 +31,14 @@ if minetest.get_modpath("digilines") then
 				{'digilines:wire_std_00000000', 'digilines:wire_std_00000000', 'digilines:wire_std_00000000'},
 			}
 		})
-	end
+	end]]--
+
+	minetest.register_craft({
+			output = 'technic:lv_digi_cable 1',
+			type = "shapeless",
+			recipe = {'digilines:wire_std_00000000', 'technic:lv_cable'}
+		})
+	
 
 	technic.register_cable("LV", 2/16, S("LV Cable (digiline)"), "_digi", {
 		digiline = {
