@@ -104,3 +104,25 @@ minetest.override_item("default:large_cactus_seedling", {
 		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
 	end,
 })
+
+
+--CORAL grow ABM(after removal through default update)
+
+minetest.register_abm({
+    nodenames = {"default:coral_skeleton"},
+    neighbors = {"static_ocean:water_source"},
+    interval = 600, 
+    chance = 200, --Grows 1 block in 100 every 10 mins (3 times as fast as growing mushrooms since its a building block)
+    action = function(pos, node)
+            local pos = minetest.find_node_near(pos, 1, "static_ocean:water_source")
+            if pos == nil then return end
+            pos.y = pos.y+1
+            if minetest.get_node(pos).name ~= "static_ocean:water_source" then return end
+            pos.y = pos.y-1
+            if math.random(1,2) == 1 then
+                    minetest.set_node(pos, { name = "default:coral_brown" })
+            else
+                    minetest.set_node(pos, { name = "default:coral_orange" })
+            end
+    end,
+})
