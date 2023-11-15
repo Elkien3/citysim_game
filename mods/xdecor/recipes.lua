@@ -1,10 +1,10 @@
-minetest.register_craft({ 
+minetest.register_craft({
 	output = "xdecor:baricade 2",
 	recipe = {
 		{"group:stick", "", "group:stick"},
 		{"", "default:steel_ingot", ""},
 		{"group:stick", "", "group:stick"}
-	} 
+	}
 })
 
 minetest.register_craft({
@@ -24,11 +24,11 @@ minetest.register_craft({
 	}
 })
 --]]
-minetest.register_craft({ 
+minetest.register_craft({
 	output = "xdecor:candle",
 	recipe = {
 		{"default:torch"}
-	} 
+	}
 })
 
 minetest.register_craft({
@@ -63,12 +63,12 @@ minetest.register_craft({
 	}
 })--]]
 
-minetest.register_craft({ 
+minetest.register_craft({
 	output = "realchess:chessboard",
 	recipe = {
 		{"dye:black", "dye:white", "dye:black"},
 		{"stairs:slab_wood", "stairs:slab_wood", "stairs:slab_wood"}
-	} 
+	}
 })
 
 minetest.register_craft({
@@ -134,7 +134,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({ 
+minetest.register_craft({
 	output = "xdecor:crafting_guide",
 	type = "shapeless",
 	recipe = {"default:book"}
@@ -154,7 +154,7 @@ minetest.register_craft({
 		{"default:desert_cobble", "default:desert_cobble"}
 	}
 })
-	
+
 minetest.register_craft({
 	output = "xdecor:empty_shelf",
 	recipe = {
@@ -190,7 +190,7 @@ minetest.register_craft({
 		{"group:stick", "group:stick", "group:stick"}
 	}
 })
-	
+
 minetest.register_craft({
 	output = "xdecor:hammer",
 	recipe = {
@@ -219,9 +219,9 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "xdecor:iron_lightbox",
 	recipe = {
-		{"xpanes:bar", "default:torch", "xpanes:bar"},
-		{"xpanes:bar", "default:glass", "xpanes:bar"},
-		{"xpanes:bar", "default:torch", "xpanes:bar"}
+		{"xpanes:bar_flat", "default:torch", "xpanes:bar_flat"},
+		{"xpanes:bar_flat", "default:glass", "xpanes:bar_flat"},
+		{"xpanes:bar_flat", "default:torch", "xpanes:bar_flat"}
 	}
 })
 
@@ -232,7 +232,7 @@ minetest.register_craft({
 		{"group:leaves"}
 	}
 })
-	
+
 minetest.register_craft({
 	output = "xdecor:lantern 2",
 	recipe = {
@@ -317,7 +317,7 @@ minetest.register_craft({
 		{"farming:string"}
 	}
 })
-	
+
 minetest.register_craft({
 	output = "xdecor:stone_tile 4",
 	recipe = {
@@ -325,7 +325,7 @@ minetest.register_craft({
 		{"default:cobble", "default:cobble"}
 	}
 })
-	
+
 minetest.register_craft({
 	output = "xdecor:stone_rune 8",
 	recipe = {
@@ -389,11 +389,11 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({ 
+minetest.register_craft({
 	output = "xdecor:tatami 3",
 	recipe = {
 		{"farming:wheat", "farming:wheat", "farming:wheat"}
-	} 
+	}
 })
 --[[
 minetest.register_craft({
