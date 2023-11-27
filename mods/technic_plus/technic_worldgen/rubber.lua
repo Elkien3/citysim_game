@@ -12,6 +12,14 @@ minetest.register_node(":moretrees:rubber_tree_sapling", {
 	walkable = false,
 	groups = {dig_immediate=3, flammable=2, sapling=1},
 	sounds = default.node_sound_defaults(),
+	on_construct = function(pos)
+		local growth_time = 12*60*60
+		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
+	end,
+	on_timer = function(pos, elapsed),
+		minetest.remove_node(pos)
+		minetest.spawn_tree(pos, technic.rubber_tree_model)
+	end,
 })
 
 minetest.register_craft({
@@ -70,7 +78,7 @@ technic.rubber_tree_model={
 	trunk_type = "double",
 	thin_branches = true
 }
-
+--[[
 minetest.register_abm({
 	nodenames = {"moretrees:rubber_tree_sapling"},
 	label = "Worldgen: grow rubber tree sapling",
@@ -81,7 +89,15 @@ minetest.register_abm({
 		minetest.spawn_tree(pos, technic.rubber_tree_model)
 	end
 })
-
+--]]
+minetest.register_lbm({
+	name = "technic_worldgen:convert_saplings_to_node_timer",
+	nodenames = {"moretrees:rubber_tree_sapling"},
+	action = function(pos)
+		local growth_time = 12*60*60
+		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
+	end
+})
 if technic.config:get_bool("enable_rubber_tree_generation") then
 	minetest.register_on_generated(function(minp, maxp, blockseed)
 		if math.random(1, 100) > 5 then
