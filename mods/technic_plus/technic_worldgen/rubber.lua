@@ -16,7 +16,7 @@ minetest.register_node(":moretrees:rubber_tree_sapling", {
 		local growth_time = 12*60*60
 		minetest.get_node_timer(pos):start(math.random(growth_time*.8, growth_time))
 	end,
-	on_timer = function(pos, elapsed),
+	on_timer = function(pos, elapsed)
 		minetest.remove_node(pos)
 		minetest.spawn_tree(pos, technic.rubber_tree_model)
 	end,
