@@ -190,8 +190,9 @@ local flow_through = minetest.settings:get_bool("dynamic_liquid_flow_through", t
 if flow_through then
 
 	local flow_through_directions = {
-		{{x=1,z=0},{x=0,z=1}},
-		{{x=0,z=1},{x=1,z=0}},
+		{x=1,y=0,z=0},{x=-1,y=0,z=0},
+		{x=1,y=0,z=0},{x=-1,y=0,z=0},
+		{x=0,y=1,z=0},{x=0,y=-1,z=0},
 	}
 	
 	minetest.register_abm({
@@ -217,17 +218,17 @@ if flow_through then
 				end
 			end
 			
-			local perm = flow_through_directions[math.random(2)]
+			local perm = flow_through_directions[math.random(6)]
 			local dirs -- declare outside of loop so it won't keep entering/exiting scope
-			for i=1,2 do
-				dirs = perm[i]
+			--for i=1,2 do
+				dirs = perm--[i]
 				-- reuse to avoid allocating a new table
 				source_pos.x = pos.x + dirs.x 
-				source_pos.y = pos.y
+				source_pos.y = pos.y + dirs.y 
 				source_pos.z = pos.z + dirs.z
 				
 				dest_pos.x = pos.x - dirs.x 
-				dest_pos.y = pos.y
+				dest_pos.y = pos.y - dirs.y
 				dest_pos.z = pos.z - dirs.z			
 				
 				source_node = get_node(source_pos)
@@ -242,7 +243,7 @@ if flow_through then
 					set_node(dest_pos, source_node)
 					return
 				end
-			end		
+			--end		
 		end,
 	})
 
