@@ -34,6 +34,14 @@ minetest.register_abm({
 	interval = 4,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		minetest.remove_node(pos)
+		if node.name ~= "default:water_source" then--for some reason abms seem to be behind whatever makes the water move around, so gotta chase it.
+			for i, perm in pairs{{0, 1}, {0, -1}, {1, 0}, {-1, 0}} do
+				local newpos = vector.offset(pos, perm[1], 0, perm[2])
+				if minetest.get_node(newpos).name == "default:water_source" then
+					pos = newpos
+				end
+			end
+		end
+		minetest.add_node(pos, {name = "air"})
 	end,
 })
