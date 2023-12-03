@@ -1,6 +1,0 @@
-print("[Army] Loading....")
-dofile(minetest.get_modpath("army").."/fences.lua")
-print("[Camo] Fences loaded!")
-dofile(minetest.get_modpath("army").."/blocks.lua")
-print("[Camo] Blocks loaded!")
-print("[Army] Army Mod Fully Loaded!")
