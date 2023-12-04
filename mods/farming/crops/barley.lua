@@ -26,6 +26,12 @@ minetest.register_craftitem("farming:barley", {
 	groups = {food_barley = 1, flammable = 2},
 })
 
+minetest.register_craft({
+	type = "shapeless",
+	output = "farming:seed_barley",
+	recipe = {"farming:barley"},
+})
+
 -- flour
 minetest.register_craft({
 	type = "shapeless",

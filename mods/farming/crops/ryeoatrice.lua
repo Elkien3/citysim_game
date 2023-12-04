@@ -34,6 +34,12 @@ minetest.register_craft({
 	replacements = {{"group:food_mortar_pestle", "farming:mortar_pestle"}},
 })
 
+minetest.register_craft({
+	type = "shapeless",
+	output = "farming:seed_rye",
+	recipe = {"farming:rye"},
+})
+
 -- Oats
 
 farming.register_plant("farming:oat", {
@@ -63,6 +69,12 @@ minetest.register_craft({
 		"farming:mortar_pestle"
 	},
 	replacements = {{"group:food_mortar_pestle", "farming:mortar_pestle"}},
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "farming:seed_oat",
+	recipe = {"farming:oat"},
 })
 
 -- Rice
