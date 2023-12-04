@@ -32,8 +32,8 @@ default.shop.formspec = {
 		"list["..list_name..";owner_wants;5,0.5;3,2;]"..
 		"label[5,2.5;In exchange, you give:]"..
 		"list["..list_name..";owner_gives;5,3;3,2;]"..
-		"label[0,5;Owner, Use(E)+Place(RMB) for customer interface]"..
-		"list[current_player;main;0,5.5;8,4;]"
+		"list[current_player;main;0,5.5;8,4;]"..
+		"button[3,1;2,1;tocustomer;Customer View]"
 		if counter then formspec = formspec.."label[4,.25;"..tostring(counter).."]" end--.."button[3,.75;2,1;resetcounter;Reset Counter]" end
 		return formspec
 	end,
@@ -133,7 +133,7 @@ minetest.register_node("currency:shop", {
 	on_rightclick = function(pos, node, clicker, itemstack)
 		local inv = clicker:get_inventory()
 		local nodeinv = minetest.get_inventory({type="node", pos=pos})
-		
+
 		--convert old shops with player inv gives and gets to node inv gives and gets
 		if nodeinv:get_size("customer_gives") == 0 then
 			nodeinv:set_size("customer_gives", 3*2)
@@ -182,6 +182,11 @@ minetest.register_node("currency:shop", {
 })
 
 minetest.register_on_player_receive_fields(function(sender, formname, fields)
+	if formname == "currency:shop_formspec" and fields.tocustomer ~= nil and fields.tocustomer ~= "" then
+		local name = sender:get_player_name()
+		local pos = default.shop.current_shop[name]
+		minetest.show_formspec(name,"currency:shop_formspec",default.shop.formspec.customer(pos))
+	end
 	if formname == "currency:shop_formspec" and fields.exchange ~= nil and fields.exchange ~= "" then
 		local name = sender:get_player_name()
 		local pos = default.shop.current_shop[name]
