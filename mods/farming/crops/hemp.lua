@@ -69,7 +69,7 @@ minetest.register_craft({
 })
 
 -- hemp fibre
-minetest.register_craftitem("farming:hemp_fibre", { 
+minetest.register_craftitem("farming:hemp_fibre", {
 	description = S("Hemp Fibre"),
 	inventory_image = "farming_hemp_fibre.png",
 })
@@ -109,6 +109,11 @@ minetest.register_craft( {
 		{"farming:hemp_fibre", "farming:hemp_fibre", "farming:hemp_fibre"},
 		{"farming:hemp_fibre", "farming:hemp_fibre", "farming:hemp_fibre"}
 	},
+})
+
+minetest.register_craft( {
+	output = "farming:hemp_fibre 9",
+	recipe = {{"farming:hemp_block"}},
 })
 
 -- check and register stairs
