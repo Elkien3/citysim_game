@@ -573,7 +573,7 @@ if displace_liquid then
 end
 
 --abm to dry up stray water sources in order to reduce server load
-local isday = nil
+--local isday = nil
 minetest.register_abm({
 	label = "Dry up stray water sources",
 	nodenames = {"default:water_source"},
@@ -584,7 +584,7 @@ minetest.register_abm({
 	min_y = 0,
 	max_y = 32767,
 	action = function(pos, node, _, _)
-		if isday == nil then--only bother during the day (any only check if its day once per interval)
+		--[[if isday == nil then--only bother during the day (any only check if its day once per interval)
 			local tod = minetest.get_timeofday()
 			if tod >= 0.24 and tod <= 0.76 then
 				isday = true
@@ -592,9 +592,9 @@ minetest.register_abm({
 				isday = false
 			end
 			minetest.after(60, function() isday = nil end)
-		end
-		if isday then
-			if minetest.get_natural_light(vector.offset(pos, 0, 1, 0)) >= 15 then
+		end--]]
+		--if isday then
+			if minetest.get_natural_light(vector.offset(pos, 0, 1, 0)) >= 15 or math.random(6) == 1 then
 				if node.name ~= "default:water_source" then--for some reason abms seem to be behind whatever makes the water move around, so gotta chase it.
 					for i, perm in pairs{{0, 1}, {0, -1}, {1, 0}, {-1, 0}} do
 						local newpos = vector.offset(pos, perm[1], 0, perm[2])
@@ -605,6 +605,6 @@ minetest.register_abm({
 				end
 				minetest.add_node(pos, {name = "air"})
 			end
-		end
+		--end
 	end,
 })
