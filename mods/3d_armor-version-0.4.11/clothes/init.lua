@@ -254,6 +254,13 @@ armor:register_armor("clothes:pants_prisoner", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:pants_black", {
+	description = ("Black Jeans"),
+	inventory_image = "clothes_inv_pants_black.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 armor:register_armor("clothes:pants_firefighter", {
 	description = ("Firefighter Pants"),
 	inventory_image = "clothes_inv_pants_firefighter.png",
