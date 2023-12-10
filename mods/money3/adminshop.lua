@@ -26,6 +26,10 @@ minetest.register_node("money3:admin_shop", {
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
+		if not minetest.check_player_privs(sender:get_player_name(), {money = true}) then
+			minetest.chat_send_player(sender:get_player_name(), "You do not have the money priv.")
+			return true
+		end
 		if meta:get_string("form") == "yes" then
 			--if minetest.registered_items[fields.nodename] and tonumber(fields.amount) and tonumber(fields.amount) >= 1 and tonumber(fields.amount) <= 99 and (meta:get_string("owner") == sender:get_player_name() or minetest.get_player_privs(sender:get_player_name())["money_admin"]) then
 			if tonumber(fields.amount) and tonumber(fields.amount) >= 1 and tonumber(fields.amount) <= 99 and (meta:get_string("owner") == sender:get_player_name() or minetest.get_player_privs(sender:get_player_name())["money_admin"]) then

@@ -167,6 +167,7 @@ function register_electrical_light(name, node_on)
 	end
 	newdef.on_receive_fields = function(pos, formname, fields, sender)
 		if not fields.channel or not tonumber(fields.channel) then return end
+		if minetest.is_protected(pos, sender:get_player_name()) then return end
 		local meta = minetest.get_meta(pos)
 		fields.channel = math.floor(tonumber(fields.channel))
 		meta:set_string("switch_id", fields.channel)
@@ -382,6 +383,7 @@ for _, onoff in ipairs ({"on", "off"}) do
 		end,
 		on_receive_fields = function(pos, formname, fields, sender)
 			if not fields.channel or not tonumber(fields.channel) or math.floor(tonumber(fields.channel)) == 0 then return end
+			if minetest.is_protected(pos, sender:get_player_name()) then return end
 			local meta = minetest.get_meta(pos)
 			fields.channel = math.floor(tonumber(fields.channel))
 			meta:set_string("switch_id", fields.channel)

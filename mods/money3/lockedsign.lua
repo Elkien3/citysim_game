@@ -31,7 +31,10 @@ minetest.register_on_punchnode(function(pos, node, puncher)
 		(not tonumber(cost)) then
 			return true
 		end
-	
+		if not minetest.check_player_privs(puncher_name, {money = true}) then
+			minetest.chat_send_player(puncher_name, "You do not have the money priv.")
+			return true
+		end
 		if ( not money.has_credit(owner_name) ) then	
 			minetest.chat_send_player(puncher_name, "Owner does not have a credit account.")
 		end
