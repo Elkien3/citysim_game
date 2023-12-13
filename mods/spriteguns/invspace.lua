@@ -73,8 +73,8 @@ local function update_weapon(player)
 	end
 	local player_inv = player:get_inventory()
 	local newspace = invsize-gunspace
-	if newspace < 1 then newspace = 1
-	if invsize-gunspace ~= player_inv:get_size("main") then
+	if newspace < 1 then newspace = 1 end
+	if newspace ~= player_inv:get_size("main") then
 		for i = newspace+1, invsize do
 			minetest.item_drop(player_inv:get_stack("main", i), player, player:get_pos())
 		end
