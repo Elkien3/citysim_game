@@ -76,7 +76,11 @@ local function update_weapon(player)
 		for i = invsize-gunspace+1, invsize do
 			minetest.item_drop(player_inv:get_stack("main", i), player, player:get_pos())
 		end
-		player_inv:set_size("main", invsize-gunspace)
+		if invsize-gunspace < 1 then
+			player_inv:set_size("main", 1)
+		else
+			player_inv:set_size("main", invsize-gunspace)
+		end
 	end
 	if not weapon then
 		if gunitems[name] then
