@@ -121,10 +121,13 @@ for _,pole in pairs(fishing_setting.poles) do
 				if not def or not def.buildable_to then
 					return nil
 				end
-				local def_pt = minetest.registered_items[pt.name]
-				if not def_pt or not def_pt.drawtype ~= "airlike" then
-						return nil
+					
+				local pt_above_name = minetest.get_node(pt.above).name
+				local def_above = minetest.registered_nodes[pt_above_name]
+				if not def_above or def_above.drawtype ~= "airlike" then
+					return nil
 				end
+					
 				minetest.set_node(pt.above, {name="fishing:pole_".. pole.name .."_deco", param2=direction})
 				local meta = minetest.get_meta(pt.above)
 				meta:set_int("wear", wear)
