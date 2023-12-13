@@ -118,7 +118,7 @@ for _,pole in pairs(fishing_setting.poles) do
 				local p = vector.add(pt.above, dir)
 				local n2 = minetest.get_node_or_nil(p)
 				local def = n2 and minetest.registered_items[n2.name]
-				if not def or not def.buildable_to or def.drawtype ~= "airlike" then
+				if not def or def.drawtype ~= "airlike" then
 					return nil
 				end
 				minetest.set_node(pt.above, {name="fishing:pole_".. pole.name .."_deco", param2=direction})
