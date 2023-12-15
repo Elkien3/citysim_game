@@ -185,15 +185,25 @@ minetest.register_on_joinplayer(function(player, last_login)
 end)
 
 local waspunched = {}
+local playerpunched = {}
 minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
 	local name = hitter:get_player_name()
 	local plName = player:get_player_name()
 	if not name or not plName then return false end
-	if not minetest.check_player_privs(name, {pvp=true}) and not waspunched[name] then
-		damage = damage/3
+	if not minetest.check_player_privs(name, {pvp=true}) and (not waspunched[name] or playerpunched[name]) then
+		damage = damage/4
 		player:set_hp(math.floor(player:get_hp()-damage+.5), "punch")
+		playerpunched[name] = (playerpunched[name] or 0) + 1
+		minetest.after(10, function()
+			if playerpunched[name] then
+				playerpunched[name] = playerpunched[plName] - 1
+				if playerpunched[name] <= 0 then
+					playerpunched[name] = nil
+				end
+			end
+		end)
 		return true
-	elseif not minetest.check_player_privs(plName, {pvp=true}) then
+	elseif not minetest.check_player_privs(plName, {pvp=true}) and not playerpunched[plName] then
 		waspunched[plName] = (waspunched[plName] or 0) + 1
 		minetest.after(60, function()
 			if waspunched[plName] then
