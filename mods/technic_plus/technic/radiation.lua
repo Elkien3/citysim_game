@@ -319,6 +319,9 @@ local function calculate_object_center(object)
 end
 
 local function dmg_object(pos, object, strength)
+	if not object or not object:get_pos() then
+		return
+	end
 	local obj_pos = vector.add(object:get_pos(), calculate_object_center(object))
 	local mul
 	if armor_enabled or entity_damage then
