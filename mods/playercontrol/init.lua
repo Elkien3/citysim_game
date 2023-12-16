@@ -1,4 +1,4 @@
-uhlocal storage = minetest.get_mod_storage()
+local storage = minetest.get_mod_storage()
 
 local postable = {}
 local timertable = {}
