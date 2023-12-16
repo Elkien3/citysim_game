@@ -608,6 +608,7 @@ end, false)
 
 minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
 	damage = -damage--hpchange does negative so this should too
+	if hitter:get_player_name() and playercontrol and playercontrol.can_pvp and not playercontrol.can_pvp(hitter:get_player_name()) then damage = damage/4 end
 	if damage >= 0 then return false end
 	if damage < -20 then damage = -20 end--cap this at -20
 	--minetest.chat_send_all(dump(dir))

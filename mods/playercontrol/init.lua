@@ -186,11 +186,15 @@ end)
 
 local waspunched = {}
 local playerpunched = {}
+
+function playercontrol.can_pvp(name)
+	return minetest.check_player_privs(name, {pvp=true}) or waspunched[name]
+end
 minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
 	local name = hitter:get_player_name()
 	local plName = player:get_player_name()
 	if not name or not plName then return false end
-	if not minetest.check_player_privs(name, {pvp=true}) and (not waspunched[name] or playerpunched[name]) then
+	if not playercontrol.can_pvp(name) then
 		damage = damage/4
 		player:set_hp(math.floor(player:get_hp()-damage+.5), "punch")
 		playerpunched[name] = (playerpunched[name] or 0) + 1
