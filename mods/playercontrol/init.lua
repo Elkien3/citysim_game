@@ -198,7 +198,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 		damage = damage/4
 		player:set_hp(math.floor(player:get_hp()-damage+.5), "punch")
 		playerpunched[name] = (playerpunched[name] or 0) + 1
-		minetest.after(10, function()
+		minetest.after(60, function()
 			if playerpunched[name] then
 				playerpunched[name] = playerpunched[name] - 1
 				if playerpunched[name] <= 0 then
