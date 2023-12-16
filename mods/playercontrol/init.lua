@@ -1,4 +1,4 @@
-local storage = minetest.get_mod_storage()
+uhlocal storage = minetest.get_mod_storage()
 
 local postable = {}
 local timertable = {}
@@ -196,7 +196,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 		playerpunched[name] = (playerpunched[name] or 0) + 1
 		minetest.after(10, function()
 			if playerpunched[name] then
-				playerpunched[name] = playerpunched[plName] - 1
+				playerpunched[name] = playerpunched[name] - 1
 				if playerpunched[name] <= 0 then
 					playerpunched[name] = nil
 				end
