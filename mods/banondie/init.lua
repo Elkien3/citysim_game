@@ -35,14 +35,14 @@ local function banondie_save()
 end
 
 minetest.register_on_dieplayer(function(player)
-	if minetest.get_player_privs(player:get_player_name()).ban == nil then
+	if minetest.get_player_privs(player:get_player_name()).server == nil then
 		deadbanned[player:get_player_name()] = os.time()
 		banondie_save()
 	end
 end)
 
 minetest.register_on_respawnplayer(function(player)
-	if minetest.get_player_privs(player:get_player_name()).ban == nil then
+	if minetest.get_player_privs(player:get_player_name()).server == nil then
 		minetest.kick_player(player:get_player_name(), message)
 	end
 end)
@@ -52,7 +52,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
 		if (os.time() - deadbanned[name]) > deathlength then
 			deadbanned[name] = nil
 			banondie_save()
-		elseif minetest.get_player_privs(name).ban == nil then
+		elseif minetest.get_player_privs(name).server == nil then
 			return message
 		end
 	end
