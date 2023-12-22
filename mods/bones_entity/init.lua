@@ -27,7 +27,7 @@ local function deserializeContents(data)
 end
 
 function bones_take_one(self, player, stack)
-	if playercontrol and not minetest.check_player_privs(player, {pvp = true}) then return false end
+	if playercontrol and (not minetest.check_player_privs(player, {pvp = true}) or not minetest.check_player_privs(self.owner, {pvp = true})) then return false end
 	if stack and string.find(stack:get_name(), "currency:minegeld") then return true end
 	if stack and string.find(stack:get_name(), "medical:") then return true end
 	if not minetest.settings:get_bool("bones_steal_one", false) then return false end
