@@ -23,8 +23,17 @@ minetest.register_globalstep(function(dtime)
 end)
 local function set_collision(player)
 	if not player then return end
+	local playerlist = minetest.get_connected_players()
+	
+	for index, value in pairs(playerlist) do
+		if value == player then
+			break
+		end
+		return
+	end
+	
 	local props = player:get_properties()
-	if not props then minetest.after(1, set_collision, player) end
+	if not props then minetest.after(1, set_collision, player);return end
 	props.physical = true
 	props.collisionbox = {-.26, 0, -.26, 0.26, 1.7, .26}--{-.3, 0, -.3, 0.3, 1.7, .3}
 	player:set_properties(props)
