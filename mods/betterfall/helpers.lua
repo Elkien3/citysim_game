@@ -1,5 +1,5 @@
 function betterfall.register_ghostnode(nodename) 
-    table.insert(betterfall.ghost_nodes, nodename)
+    betterfall.ghost_nodes[nodename] = true
 end
 
 function betterfall.set_falling_timer(timer) 

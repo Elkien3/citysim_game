@@ -121,8 +121,12 @@ minetest.check_single_for_falling = function(p)
         local result = betterfall.should_node_fall(n, p, falling_node_group - 1)
 
         if result then
-            meta:set_int("falling", 1)
-            betterfall.enqueue_falling_node(p, n, meta)
+			if betterfall.ghost_nodes[n.name] then
+				minetest.remove_node(p)
+			else
+				meta:set_int("falling", 1)
+				betterfall.enqueue_falling_node(p, n, meta)
+			end
         end
 
         return result

@@ -101,6 +101,9 @@ minetest.register_node("technic:dummy_light_source", {
 		type = "fixed",
 		fixed = {}
 		},
+	on_place = function ()
+        return
+    end,
 	drawtype = "airlike",
 	buildable_to = true,
 	light_source = 14,
@@ -108,6 +111,16 @@ minetest.register_node("technic:dummy_light_source", {
 	diggable = false,
 	walkable = false,
 	groups = { not_in_creative_inventory = 1 }
+})
+
+minetest.register_lbm({
+	label = "Delete dummy light blocks",
+	name = "technic:delete_dummy_lights",
+	nodenames = {"technic:dummy_light_source"},
+	run_at_every_load = true,
+	action = function (pos)
+        minetest.remove_node(pos)
+    end
 })
 
 minetest.register_node("technic:lv_led", {
