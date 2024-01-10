@@ -104,6 +104,7 @@ jobs.purge_unread()--do some culling every startup
 local function add_unread(name, jobname, channel)
 	if not unread_msg[name] then unread_msg[name] = {} end
 	if not unread_msg[name][jobname] then unread_msg[name][jobname] = {} end
+	if unread_msg[name][jobname] == true then return end -- stops function when whole table is true 
 	if not unread_msg[name][jobname][channel] and unread_msg[name][jobname] ~= true then
 		unread_msg[name][jobname][channel] = true
 		local isfull = 0

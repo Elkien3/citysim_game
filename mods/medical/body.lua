@@ -227,6 +227,7 @@ minetest.register_on_rightclickplayer(function(player, clicker)
 				allow_take = function(inv, listname, index, stack, player2)
 					local returnval = allowfunc(inv, listname, index, stack, player2, count)
 					if returnval == 0 then return returnval end
+					medical.data[name].owner = name
 					if not bones_take_one or bones_take_one(medical.data[name], player2, stack) then
 						return returnval
 					end
