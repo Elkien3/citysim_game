@@ -26,7 +26,7 @@ minetest.register_node("waterworks:pipe", {
 	paramtype = "light",
 
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_pipe = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_pipe = 1, cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
 	on_construct = function(pos)
 		waterworks.place_pipe(pos)
@@ -57,7 +57,7 @@ minetest.register_node("waterworks:valve_on", {
 	paramtype = "light",
 
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_pipe = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_pipe = 1, cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
 	on_construct = function(pos)
 		waterworks.place_pipe(pos)
@@ -91,7 +91,7 @@ minetest.register_node("waterworks:valve_off", {
 	drops = "waterworks:valve_on",
 
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_inert = 1, not_in_creative_inventory = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_inert = 1, not_in_creative_inventory = 1, cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 		node.name = "waterworks:valve_on"
@@ -121,7 +121,7 @@ minetest.register_node("waterworks:inlet", {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1, cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
 	paramtype = "light",
 	drawtype = "nodebox",
@@ -165,7 +165,7 @@ minetest.register_node("waterworks:pumped_inlet", {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1, cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
 	paramtype = "light",
 	drawtype = "normal",
@@ -205,7 +205,7 @@ minetest.register_node("waterworks:outlet", {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1, cracky = 3},
 	
 	paramtype = "light",
 	drawtype = "nodebox",
@@ -251,7 +251,7 @@ minetest.register_node("waterworks:grate", {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1},
+	groups = {oddly_breakable_by_hand = 1, waterworks_connected = 1, cracky = 3},
 	
 	paramtype = "light",
 	drawtype = "nodebox",
