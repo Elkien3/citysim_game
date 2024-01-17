@@ -105,7 +105,7 @@ minetest.register_chatcommand("get_playercontrol_timer", {
 		if not param or param == "" then param = name end
 		if not timertable[param] then return false, "No timers found for '"..param.."'" end
 		local str = "Timers for '"..param.."': "
-		for id, timer in pairs(timertable[name]) do
+		for id, timer in pairs(timertable[param]) do
 			str = str.."["..id.."] = "..timer.." minutes "
 		end
 		return true, str
@@ -115,8 +115,9 @@ minetest.register_chatcommand("get_playercontrol_timer", {
 minetest.register_chatcommand("get_playtime", {
     func = function(name, param)
         if not param or param == "" then param = name end
-		if not timertable[param] or not timertable[param]["playtime"] then return false, "No playtime found for '"..param.."'" end
-		local playtime = timertable[param]["playtime"]/60
+		local str = minetest.deserialize(storage:get_string(param))
+		if not str or not str["playtime"] then return false, "No playtime found for '"..param.."'" end
+		local playtime = str["playtime"]/60
 		playtime = math.floor(playtime*100)/100
 		return true, "'"..param.."' has "..tostring(playtime).." hours of playtime"
     end,
