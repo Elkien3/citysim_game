@@ -41,6 +41,11 @@ technic_cnc.programs = {
 			{-0.5, -0.5, -0.3, -0.3, 0.5, 0.3}},
 		desc  = S("Element Edge Double")
 	},
+	
+	{ suffix  = "technic_cnc_element_eigthslab_double",
+		model = {-0.5, -0.5, -0.5, 0.5, 0.25, 0.5},
+		desc  = S("Element Eigthslab Double")
+	},
 
 	{ suffix  = "technic_cnc_element_straight_double",
 		model = {-0.3, -0.5, -0.5, 0.3, 0.5, 0.5},
@@ -73,6 +78,11 @@ technic_cnc.programs = {
 			{-0.3, -0.5, -0.5, 0.3, 0, 0.3},
 			{-0.5, -0.5, -0.3, -0.3, 0, 0.3}},
 		desc  = S("Element Edge")
+	},
+	
+	{ suffix  = "technic_cnc_element_eigthslab",
+		model = {-0.5, -0.5, -0.5, 0.5, 0.125, 0.5},
+		desc  = S("Element Eigthslab")
 	},
 
 	{ suffix  = "technic_cnc_element_straight",
@@ -333,7 +343,7 @@ function technic_cnc.register_slope_edge_etc(recipeitem, groups, images, desc_sl
 				desc_slope_upsdown, desc_slope_edge, desc_slope_inner_edge, desc_slope_upsdwn_edge,
 				desc_slope_upsdwn_inner_edge, desc_pyramid, desc_spike, desc_onecurvededge, desc_twocurvededge,
 				desc_cylinder, desc_cylinder_horizontal, desc_spheroid, desc_element_straight, desc_element_edge,
-				desc_element_t, desc_element_cross, desc_element_end)
+				desc_element_t, desc_element_cross, desc_element_end, desc_element_eigthslab)
 
          technic_cnc.register_slope(recipeitem, groups, images, desc_slope)
          technic_cnc.register_slope_lying(recipeitem, groups, images, desc_slope_lying)
@@ -354,6 +364,7 @@ function technic_cnc.register_slope_edge_etc(recipeitem, groups, images, desc_sl
          technic_cnc.register_element_t(recipeitem, groups, images, desc_element_t)
          technic_cnc.register_element_cross(recipeitem, groups, images, desc_element_cross)
          technic_cnc.register_element_end(recipeitem, groups, images, desc_element_end)
+         technic_cnc.register_element_eigthslab(recipeitem, groups, images, desc_element_eigthslab)
 end
 
 -- REGISTER STICKS: noncubic.register_xyz(recipeitem, groups, images, desc_element_xyz)
@@ -369,5 +380,6 @@ function technic_cnc.register_elements(recipeitem, groups, images, desc_element_
          technic_cnc.register_element_t_double(recipeitem, groups, images, desc_element_t_double)
          technic_cnc.register_element_cross_double(recipeitem, groups, images, desc_element_cross_double)
          technic_cnc.register_element_end_double(recipeitem, groups, images, desc_element_end_double)
+         technic_cnc.register_element_eigthslab_double(recipeitem, groups, images, desc_element_eigthslab_double)
 end
 
