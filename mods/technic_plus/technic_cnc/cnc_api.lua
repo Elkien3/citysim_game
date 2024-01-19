@@ -43,7 +43,7 @@ technic_cnc.programs = {
 	},
 	
 	{ suffix  = "technic_cnc_element_eigthslab_double",
-		model = {-0.5, -0.5, -0.5, 0.5, 0.25, 0.5},
+		model = {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5},
 		desc  = S("Element Eigthslab Double")
 	},
 
@@ -81,7 +81,7 @@ technic_cnc.programs = {
 	},
 	
 	{ suffix  = "technic_cnc_element_eigthslab",
-		model = {-0.5, -0.5, -0.5, 0.5, 0.125, 0.5},
+		model = {-0.5, -0.5, -0.5, 0.5, -0.375, 0.5},
 		desc  = S("Element Eigthslab")
 	},
 

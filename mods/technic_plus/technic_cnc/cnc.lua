@@ -130,7 +130,7 @@ local cnc_formspec =
 	"image_button[4,4;1,1;technic_cnc_element_cross.png;element_cross; ]"..
 	"image_button[5,4;1,1;technic_cnc_element_t.png;element_t; ]"..
 	"image_button[6,4;1,1;technic_cnc_element_edge.png;element_edge; ]"..
-	"image_button[6,4;1,1;technic_cnc_element_eigthslab.png;element_eigthslab; ]"..
+	"image_button[7,4;1,1;technic_cnc_element_eigthslab.png;element_eigthslab; ]"..
 
 	"label[0, 5.5;"..S("In:").."]"..
 	"list[context;src;0.5,5.5;1,1;]"..
