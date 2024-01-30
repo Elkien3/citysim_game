@@ -1,4 +1,4 @@
-local S = unified_inventory.gettext
+local S = minetest.get_translator("unified_inventory")
 local F = minetest.formspec_escape
 
 -- Create detached creative inventory after loading all mods
@@ -187,7 +187,7 @@ end
 function unified_inventory.go_home(player)
 	local pos = unified_inventory.home_pos[player:get_player_name()]
 	if pos then
-		player:setpos(pos)
+		player:set_pos(pos)
 	end
 end
 
@@ -305,4 +305,3 @@ function unified_inventory.is_creative(playername)
 	return minetest.check_player_privs(playername, {creative=true})
 		or minetest.settings:get_bool("creative_mode")
 end
-
