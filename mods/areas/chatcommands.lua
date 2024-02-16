@@ -184,10 +184,17 @@ minetest.register_chatcommand("find_areas", {
 
 
 minetest.register_chatcommand("list_areas", {
-	description = S("List your areas, or all areas if you are an admin."),
+	params = S("<name>"),
+	description = S("List all areas of given name, or all areas if you are an admin."),
 	func = function(name, param)
 		local admin = minetest.check_player_privs(name, areas.adminPrivs)
+		local name = tostring(param)
 		local areaStrings = {}
+		if not name or not type(name) == "string" then
+			return false, S("Invalid usage, see"
+					.." /help @1.", "list_areas")
+		end
+
 		for id, area in pairs(areas.areas) do
 			if admin or areas:isAreaOwner(id, name) then
 				table.insert(areaStrings, areas:toString(id))
@@ -199,6 +206,29 @@ minetest.register_chatcommand("list_areas", {
 		return true, table.concat(areaStrings, "\n")
 	end
 })
+
+
+minetest.register_chatcommand("find_area_by_id", {
+	params = S("<id>"),
+	description = S("Find given area"),
+	func = function(name, param)
+		local id = tonumber(param)
+		local areaStrings = {}
+		if not id or not type(name) == "number" then
+			return false, S("Invalid usage, see"
+					.." /help @1.", "find_area_by_id")
+		end
+
+		if areas.areas[id] then
+			table.insert(areaStrings, areas:toString(id))
+		end
+		if #areaStrings == 0 then
+			return true, S("No Area with that ID")
+		end
+		return true, table.concat(areaStrings, "\n")
+	end
+})
+
 
 
 minetest.register_chatcommand("recursive_remove_areas", {
