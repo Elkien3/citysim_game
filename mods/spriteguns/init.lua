@@ -372,6 +372,7 @@ local function fire(player, def, itemstack)
 				texture = "gunslinger_decal.png",
 				vertical = true
 			})
+			minetest.check_for_falling(pointed.under)
 		end
 		-- Projectile particle
 		minetest.add_particle({
