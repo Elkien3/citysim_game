@@ -1,4 +1,4 @@
-local S = unified_inventory.gettext
+local S = minetest.get_translator("unified_inventory")
 local F = minetest.formspec_escape
 
 local hud_colors = {
@@ -35,13 +35,13 @@ unified_inventory.register_page("waypoints", {
 				"ui_" .. i .. "_icon.png;" ..
 				"select_waypoint" .. i .. ";]" ..
 				"tooltip[select_waypoint" .. i .. ";"
-					.. (S("Select Waypoint #%d"):format(i)).."]"
+					.. S("Select Waypoint #@1", i).."]"
 		end
 
 		local i = waypoints.selected or 1
 		local waypoint = waypoints[i] or {}
 		local temp = waypoints_temp[player_name][i] or {}
-		local default_name = string.format(S("Waypoint %d"), i)
+		local default_name = S("Waypoint @1", i)
 
 		-- Main buttons:
 		formspec = formspec ..
@@ -174,7 +174,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 		if fields["set_waypoint"..i] then
 			hit = true
-			local pos = player:getpos()
+			local pos = player:get_pos()
 			pos.x = math.floor(pos.x)
 			pos.y = math.floor(pos.y)
 			pos.z = math.floor(pos.z)
