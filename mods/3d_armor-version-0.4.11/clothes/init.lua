@@ -127,6 +127,13 @@ armor:register_armor("clothes:pants_police", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:pants_swat", {
+	description = ("SWAT Pants"),
+	inventory_image = "clothes_inv_pants_swat.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 armor:register_armor("clothes:pants_military", {
 	description = ("Military Pants"),
 	inventory_image = "clothes_inv_pants_military.png",
