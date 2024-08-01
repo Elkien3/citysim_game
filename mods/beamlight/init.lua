@@ -44,7 +44,7 @@ local function make_beam(pos, dir, length)
 			end
 			if pointed.intersection_point and pointed.type == "node" then
 				local node = minetest.get_node(pointed.under)
-				if (not node or not minetest.registered_nodes[node.name]) or minetest.registered_nodes[node.name].sunlight_propagates == true then
+				if node and minetest.registered_nodes[node.name] and minetest.registered_nodes[node.name].sunlight_propagates == true then
 					goto next
 				end
 			end
