@@ -267,8 +267,20 @@ local function handle_griefing(pos, name, placing, nodename)
 		return true
 	end
 end
+
+function default_tweaks.exempt_dig_node(pos, digger)
+	if not pos then return end
+	exempt_dig_node[minetest.pos_to_string(pos)] = true
+	minetest.dig_node(pos, digger)
+end
+
+local exempttbl = {}
+
 function minetest.is_protected(pos, name, placing, nodename)
-	if name == "cars:drill" then return false end
+	if exempttbl[minetest.pos_to_string(pos)] then
+		exempttbl[minetest.pos_to_string(pos)] = nil
+		return false
+	end
 	local nodename = minetest.get_node(pos).name
 	local player = minetest.get_player_by_name(name)
 	if player and player:is_player() then

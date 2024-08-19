@@ -1,5 +1,5 @@
 local modpath = minetest.get_modpath("default_tweaks")
-
+default_tweaks = {}
 --LAVA COOLING
 
 if minetest.settings:get_bool("enable_lavacooling") ~= false then
