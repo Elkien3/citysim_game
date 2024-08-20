@@ -868,10 +868,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				end
 			elseif car.ignition and fields.drillselect and minetest.check_player_privs(name, {griefing=true}) then
 				car.drill = tonumber(fields.drillselect)
-				--car.driller = name
+				car.driller = name
 				if car.drill == 1 then
 					car.drill = nil
-					--car.driller = nil
+					car.driller = nil
 					if car.drillsound then
 						minetest.sound_fade(car.drillsound, 10, 0)
 						car.drillsound = nil
@@ -1466,8 +1466,8 @@ local function car_step(self, dtime, moveresult)
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
 					if drilledblocks[posstring].health <= 0 then
 						drilledblocks[posstring] = nil
-						if default_tweaks and default_tweaks.exempt_node_dig then
-							default_tweaks.exempt_node_dig(drillpos, drillnode, self.object)
+						if default_tweaks and default_tweaks.exempt_dig_node then
+							default_tweaks.exempt_dig_node(drillpos, minetest.get_player_by_name(self.driller))
 						else
 							drill_remove_node(drillpos, drillnode)
 						end
