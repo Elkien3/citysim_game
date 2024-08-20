@@ -268,13 +268,12 @@ local function handle_griefing(pos, name, placing, nodename)
 	end
 end
 
+local exempttbl = {}
 function default_tweaks.exempt_dig_node(pos, digger)
 	if not pos then return end
-	exempt_dig_node[minetest.pos_to_string(pos)] = true
+	exempttbl[minetest.pos_to_string(pos)] = true
 	minetest.dig_node(pos, digger)
 end
-
-local exempttbl = {}
 
 function minetest.is_protected(pos, name, placing, nodename)
 	if exempttbl[minetest.pos_to_string(pos)] then
