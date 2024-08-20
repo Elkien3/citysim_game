@@ -720,7 +720,7 @@ local function register_lightentity(carname)
 	})
 end
 
-local function drill_remove_node(pos, node)
+local function drill_remove_node(pos, node, digger)
 	diggername = "cars:drill"
 	local log = minetest.log
 	local def = core.registered_nodes[node.name]
@@ -766,6 +766,16 @@ local function drill_remove_node(pos, node)
 		core.sound_play(def.sounds.dug, {
 			pos = pos,
 		}, true)
+	end
+	
+	for _, callback in ipairs(core.registered_on_dignodes) do
+		local origin = core.callback_origins[callback]
+		core.set_last_run_mod(origin.mod)
+
+		-- Copy pos and node because callback can modify them
+		local pos_copy = vector.copy(pos)
+		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		callback(pos_copy, node_copy, digger)
 	end
 
 	return true
@@ -1466,11 +1476,7 @@ local function car_step(self, dtime, moveresult)
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
 					if drilledblocks[posstring].health <= 0 then
 						drilledblocks[posstring] = nil
-						if default_tweaks and default_tweaks.exempt_dig_node then
-							default_tweaks.exempt_dig_node(drillpos, minetest.get_player_by_name(self.driller))
-						else
-							drill_remove_node(drillpos, drillnode)
-						end
+						drill_remove_node(drillpos, drillnode, minetest.get_player_by_name(self.driller))
 					end
 				end
 			end
