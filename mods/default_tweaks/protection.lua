@@ -272,7 +272,6 @@ local exempttbl = {}
 function default_tweaks.exempt_dig_node(pos, digger)
 	if not pos then return end
 	exempttbl[minetest.pos_to_string(pos)] = true
-	minetest.dig_node(pos, digger)
 end
 
 function minetest.is_protected(pos, name, placing, nodename)

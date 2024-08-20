@@ -721,6 +721,9 @@ local function register_lightentity(carname)
 end
 
 local function drill_remove_node(pos, node, digger)
+	if default_tweaks and default_tweaks.exempt_dig_node then
+		default_tweaks.exempt_dig_node(pos, digger)
+	end
 	diggername = "cars:drill"
 	local log = minetest.log
 	local def = core.registered_nodes[node.name]
