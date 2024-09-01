@@ -293,11 +293,15 @@ minetest.register_node("streets:roadwork_delineator_bottom", {
 		minetest.env:add_node(pos, node)
 		pos.y = pos.y + 1
 		node.name = "streets:roadwork_delineator_top"
-		minetest.env:add_node(pos, node)
+		if minetest.get_item_group(minetest.get_node(pos).name, "airlike") > 0 then
+			minetest.env:add_node(pos, node)
+		end
 	end,
 	after_dig_node = function(pos)
 		pos.y = pos.y + 1
-		minetest.env:remove_node(pos)
+		if minetest.get_node(pos).name == "streets:roadwork_delineator_top" then
+			minetest.env:remove_node(pos)
+		end
 	end,
 })
 
@@ -422,11 +426,16 @@ minetest.register_node("streets:roadwork_delineator_light_bottom", {
 		minetest.env:add_node(pos, node)
 		pos.y = pos.y + 1
 		node.name = "streets:roadwork_delineator_light_off_top"
-		minetest.env:add_node(pos, node)
+		if minetest.get_item_group(minetest.get_node(pos).name, "airlike") > 0 then
+			minetest.env:add_node(pos, node)
+		end
 	end,
 	after_dig_node = function(pos)
 		pos.y = pos.y + 1
-		minetest.env:remove_node(pos)
+		local nodename = minetest.get_node(pos).name
+		if nodename == "streets:roadwork_delineator_light_on_top" or nodename == "streets:roadwork_delineator_light_off_top" then
+			minetest.env:remove_node(pos)
+		end
 	end,
 })
 
