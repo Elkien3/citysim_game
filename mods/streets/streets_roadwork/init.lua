@@ -293,7 +293,7 @@ minetest.register_node("streets:roadwork_delineator_bottom", {
 		minetest.env:add_node(pos, node)
 		pos.y = pos.y + 1
 		node.name = "streets:roadwork_delineator_top"
-		if minetest.get_item_group(minetest.get_node(pos).name, "airlike") > 0 then
+		if minetest.registered_nodes[minetest.get_node(pos).name].drawtype == "airlike" then
 			minetest.env:add_node(pos, node)
 		end
 	end,
@@ -426,7 +426,7 @@ minetest.register_node("streets:roadwork_delineator_light_bottom", {
 		minetest.env:add_node(pos, node)
 		pos.y = pos.y + 1
 		node.name = "streets:roadwork_delineator_light_off_top"
-		if minetest.get_item_group(minetest.get_node(pos).name, "airlike") > 0 then
+		if minetest.registered_nodes[minetest.get_node(pos).name].drawtype == "airlike" then
 			minetest.env:add_node(pos, node)
 		end
 	end,
