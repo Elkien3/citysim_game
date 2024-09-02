@@ -225,12 +225,12 @@ minetest.register_on_player_receive_fields(function(sender, formname, fields)
 			end
 			if can_exchange then
 				for i, item in pairs(wants) do
-					minv:remove_item("customer_gives",item)
-					minv:add_item("customers_gave",item)
+					local cust_gave_item = minv:remove_item("customer_gives",item)
+					minv:add_item("customers_gave",cust_gave_item)
 				end
 				for i, item in pairs(gives) do
-					minv:remove_item("stock",item)
-					minv:add_item("customer_gets",item)
+					local stock_item = minv:remove_item("stock",item)
+					minv:add_item("customer_gets",stock_item)
 				end
 				minetest.chat_send_player(name,"Exchanged!")
 				local counter = meta:get_string("counter")
