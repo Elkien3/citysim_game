@@ -47,7 +47,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 		local stack_meta = stack:get_meta()
 		local def = minetest.registered_items[name]
 		if def and def.expiration and stack_meta:get_int("ed") == 0 then
-			local newexpiration = minetest.get_day_count() + def.expiredef
+			local newexpiration = minetest.get_day_count() + def.expiration
 			drops[index] = ItemStack(stack)
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
