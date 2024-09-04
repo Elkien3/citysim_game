@@ -25,7 +25,7 @@ foodspoil.format_unixday = format_unixday
 local function get_new_expiration(expiredef)
 	local todayunixday = get_unixday()
 	local expireunixday = todayunixday + expiredef
-	return unix_to_dateint(expireunixday)
+	return expireunixday
 end
 foodspoil.get_new_expiration = get_new_expiration
 
