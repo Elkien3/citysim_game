@@ -32,11 +32,11 @@ end
 foodspoil.get_new_expiration = get_new_expiration
 
 local function get_expire_factor(expire, expiredef, foreating)
-	local expirefactor = ((expire - get_unixday())/expiredef)
+	local expirefactor = (expire - get_unixday())/expiredef
 	if foreating then--if we are eating the item, we want the factor to stay at 1 until it passes the expiration
 		expirefactor = expirefactor + 1
+		if expirefactor < -1 then expirefactor = -1 end
 	end
-	if expirefactor < -1 then expirefactor = -1 end
 	if expirefactor > 1 then expirefactor = 1 end
 	return expirefactor
 end
@@ -53,18 +53,13 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 		local expire = meta:get_int("ed")
 		local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
 		if expire ~= 0 and usedexpiredef then
-			local expirefactor = get_expire_factor(expire, usedexpiredef)
-			table.insert(expirations, expirefactor)
+			table.insert(expirations, get_expire_factor(expire, usedexpiredef))
 		end
 	end
 	for index, val in pairs(expirations) do
 		avg = avg + val
 	end
-	if #expirations > 0 then
-		avg = avg/#expirations
-	else
-		avg = 1
-	end
+	avg = avg/#expirations
 
 	--make and set new expire time based on average of items used
 	local newexpiration = get_new_expiration(expiredef*avg)
@@ -145,6 +140,7 @@ minetest.register_on_mods_loaded(function()
 	local org_eat = core.do_item_eat
 	core.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		local expire = itemstack:get_meta():get_int("ed")
+		if expire < 10000 then expire = 0 end--allow eating of old food using the minetest days
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 			local expirefactor = get_expire_factor(expire, usedexpiredef, true)
