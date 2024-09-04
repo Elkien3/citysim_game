@@ -1,8 +1,8 @@
 foodspoil = {}
 
-foodspoil.fast = 2
-foodspoil.medium = 15
-foodspoil.slow = 60
+foodspoil.fast = 3
+foodspoil.medium = 30
+foodspoil.slow = 120
 
 local fs_f = foodspoil.fast
 local fs_m = foodspoil.medium
