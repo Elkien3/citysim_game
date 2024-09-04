@@ -73,7 +73,7 @@ local function dateint_to_unix(dateint)
 	local datestring = add_date_zero(dateint)
 	if string.len(datestring)) ~= 8 then
 		return 0
-	false
+	end
 	local day = tonumber(string.sub(datestring, 1, 2))
 	local month = tonumber(string.sub(datestring, 3, 4))
 	local year = tonumber(string.sub(datestring, 5, 8))
