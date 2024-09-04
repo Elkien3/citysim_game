@@ -63,7 +63,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	--if the output has no expiration, don't do anything.
 	local expiredef = minetest.registered_items[name].expiration
 	if not expiredef then return itemstack end
-	local avg = 1
+	local avg = 0
 	--if the item is being cooked, dosnt matter how old the items used are
 	--local method = minetest.get_craft_recipe(name).method
 	--if method ~= "cooking" and method ~= "baking" and method ~= "stovecook" then
@@ -85,6 +85,8 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 		end
 		if #expirations > 0 then
 			avg = avg/#expirations
+		else
+			avg = 1
 		end
 	--end
 
