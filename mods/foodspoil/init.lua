@@ -69,6 +69,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 			if expire ~= 0 and usedexpiredef then
 				local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 				local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
+				expirefactor = expirefactor + 1
 				if expirefactor < -1 then expirefactor = -1 end
 				if expirefactor > 1 then expirefactor = 1 end
 				table.insert(expirations, expirefactor)
@@ -163,7 +164,7 @@ minetest.register_on_mods_loaded(function()
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 			local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
-			--expirefactor = expirefactor + 1
+			expirefactor = expirefactor + 1
 			if expirefactor < -1 then expirefactor = -1 end
 			if expirefactor > 1 then expirefactor = 1 end
 			hp_change = hp_change*expirefactor
