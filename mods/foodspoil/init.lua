@@ -43,9 +43,8 @@ end
 foodspoil.dateint_to_unix = dateint_to_unix
 
 local function get_new_expiration(expiredef)
-	local datetbl = os.date("*t")
-	local todayunix = os.time({year = datetbl.year, month = datetbl.month, day = datetbl.day})
-	local expireunix = todayunix + (expiredef*DAY_LENGTH)
+	local todayunix = math.floor(os.time()/DAY_LENGTH)*DAY_LENGTH
+	local expireunix = todayunix + math.floor(expiredef*DAY_LENGTH)
 	return unix_to_dateint(expireunix)
 end
 foodspoil.get_new_expiration = get_new_expiration
@@ -90,10 +89,10 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	--end
 
 	--make and set new expire time based on average of items used
-	local newexpiration = get_new_expiration(math.floor(expiredef*avg))
+	local newexpiration = get_new_expiration(expiredef*avg)
 	local meta = itemstack:get_meta()
 	meta:set_int("ed", newexpiration)
-	meta:set_string("description", minetest.registered_items[name].description.." ed: "..newexpiration)
+	meta:set_string("description", minetest.registered_items[name].description.." ed: "..add_date_zero(newexpiration))
 	return itemstack
 end
 
