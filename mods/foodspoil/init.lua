@@ -47,8 +47,16 @@ minetest.handle_node_drops = function(pos, drops, digger)
 		local stack_meta = stack:get_meta()
 		local def = minetest.registered_items[name]
 		if def and def.expiration and stack_meta:get_int("ed") == 0 then
+			local node = minetest.get_node(pos)
 			local newexpiration = minetest.get_day_count() + def.expiration
-			drops[index] = ItemStack(stack)
+			if index == 1 and node.name == name then
+				-- Drop is from the node itself dropping; try copying node's ed
+				local node_exp = minetest.get_meta(pos):get_int("ed")
+				if node_exp > 0 then
+					newexpiration = node_exp
+				end
+			end
+			drops[index] = stack
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
 			meta:set_string("description", def.description.." ed: "..newexpiration)
