@@ -70,7 +70,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	local newexpiration = get_new_expiration(expiredef*avg)
 	local meta = itemstack:get_meta()
 	meta:set_int("ed", newexpiration)
-	meta:set_string("description", minetest.registered_items[name].description.." ed: "..add_date_zero(newexpiration))
+	meta:set_string("description", minetest.registered_items[name].description.." ed: "..format_unixday(newexpiration))
 	return itemstack
 end
 
