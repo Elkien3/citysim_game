@@ -43,7 +43,7 @@ end
 foodspoil.dateint_to_unix = dateint_to_unix
 
 local function get_new_expiration(expiredef)
-	local datetbl = os.date("*t", unix)
+	local datetbl = os.date("*t")
 	local todayunix = os.time({year = datetbl.year, month = datetbl.month, day = datetbl.day})
 	local expireunix = todayunix + (expiredef*DAY_LENGTH)
 	return unix_to_dateint(expireunix)
@@ -55,7 +55,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	--if the output has no expiration, don't do anything.
 	local expiredef = minetest.registered_items[name].expiration
 	if not expiredef then return itemstack end
-	local avg = 0
+	local avg = 1
 	--if the item is being cooked, dosnt matter how old the items used are
 	--local method = minetest.get_craft_recipe(name).method
 	--if method ~= "cooking" and method ~= "baking" and method ~= "stovecook" then
@@ -64,9 +64,11 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 		for index, stack in pairs(old_craft_grid) do
 			local meta = stack:get_meta()
 			local expire = meta:get_int("ed")
+			expire = dateint_to_unix(expire)/DAY_LENGTH
 			local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
 			if expire ~= 0 and usedexpiredef then
-				local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
+				local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
+				local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
 				if expirefactor < -1 then expirefactor = -1 end
 				if expirefactor > 1 then expirefactor = 1 end
 				table.insert(expirations, expirefactor)
@@ -161,7 +163,7 @@ minetest.register_on_mods_loaded(function()
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 			local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
-			expirefactor = expirefactor + 1
+			--expirefactor = expirefactor + 1
 			if expirefactor < -1 then expirefactor = -1 end
 			if expirefactor > 1 then expirefactor = 1 end
 			hp_change = hp_change*expirefactor
