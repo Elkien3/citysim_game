@@ -71,7 +71,7 @@ foodspoil.unix_to_dateint = unix_to_dateint
 
 local function dateint_to_unix(dateint)
 	local datestring = add_date_zero(dateint)
-	if string.len(datestring)) ~= 8 then
+	if string.len(datestring) ~= 8 then
 		return 0
 	end
 	local day = tonumber(string.sub(datestring, 1, 2))
