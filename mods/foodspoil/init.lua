@@ -160,7 +160,7 @@ minetest.register_on_mods_loaded(function()
 		expire = dateint_to_unix(expire)/DAY_LENGTH
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = (expire - math.floor(os.time()/DAY_LENGTH)/usedexpiredef
+			local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
 			expirefactor = expirefactor + 1
 			if expirefactor < -1 then expirefactor = -1 end
 			if expirefactor > 1 then expirefactor = 1 end
