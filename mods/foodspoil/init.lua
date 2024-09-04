@@ -54,7 +54,7 @@ local function add_date_zero(str)
 	if type(str) ~= "string" then
 		str = tostring(str)
 	end
-	if string.len(str) == 1 or if string.len(str) == 7 then
+	if string.len(str) == 1 or string.len(str) == 7 then
 		return "0"..str
 	else
 		return str
