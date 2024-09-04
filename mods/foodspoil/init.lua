@@ -60,6 +60,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 		avg = avg + val
 	end
 	avg = avg/#expirations
+	if #expirations == 0 then avg = 1 end
 
 	--make and set new expire time based on average of items used
 	local newexpiration = get_new_expiration(expiredef*avg)
