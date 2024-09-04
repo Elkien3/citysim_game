@@ -75,7 +75,6 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 			expire = dateint_to_unix(expire)/DAY_LENGTH
 			local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
 			if expire ~= 0 and usedexpiredef then
-				local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 				local expirefactor = get_expire_factor(expire, usedexpiredef)
 				table.insert(expirations, expirefactor)
 			end
