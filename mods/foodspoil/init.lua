@@ -50,6 +50,14 @@ local function get_new_expiration(expiredef)
 end
 foodspoil.get_new_expiration = get_new_expiration
 
+local function get_expire_factor(expire, usedexpiredef)
+	local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
+	expirefactor = expirefactor + 1
+	if expirefactor < -1 then expirefactor = -1 end
+	if expirefactor > 1 then expirefactor = 1 end
+	return expirefactor
+end
+
 function cooking_aftercraft(itemstack, old_craft_grid)
 	local name = itemstack:get_name()
 	--if the output has no expiration, don't do anything.
@@ -68,10 +76,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 			local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
 			if expire ~= 0 and usedexpiredef then
 				local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-				local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
-				expirefactor = expirefactor + 1
-				if expirefactor < -1 then expirefactor = -1 end
-				if expirefactor > 1 then expirefactor = 1 end
+				local expirefactor = get_expire_factor(expire, usedexpiredef)
 				table.insert(expirations, expirefactor)
 			end
 		end
@@ -163,10 +168,7 @@ minetest.register_on_mods_loaded(function()
 		expire = dateint_to_unix(expire)/DAY_LENGTH
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
-			expirefactor = expirefactor + 1
-			if expirefactor < -1 then expirefactor = -1 end
-			if expirefactor > 1 then expirefactor = 1 end
+			local expirefactor = get_expire_factor(expire, usedexpiredef)
 			hp_change = hp_change*expirefactor
 		end
 		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
