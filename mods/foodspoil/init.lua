@@ -1,9 +1,20 @@
+foodspoil = {}
+
+foodspoil.fast = 3
+foodspoil.medium = 30
+foodspoil.slow = 120
+
+local fs_f = foodspoil.fast
+local fs_m = foodspoil.medium
+local fs_s = foodspoil.slow
+
+local DAY_LENGTH = 86400
+
 function cooking_aftercraft(itemstack, old_craft_grid)
 	local name = itemstack:get_name()
 	--if the output has no expiration, don't do anything.
 	local expiredef = minetest.registered_items[name].expiration
 	if not expiredef then return itemstack end
-	local day_count = minetest.get_day_count()
 	local avg = 0
 	--if the item is being cooked, dosnt matter how old the items used are
 	--local method = minetest.get_craft_recipe(name).method
@@ -28,7 +39,7 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	--end
 
 	--make and set new expire time based on average of items used
-	local newexpiration = day_count + math.floor(expiredef*avg)
+	local newexpiration = get_new_expiration(math.floor(expiredef*avg))
 	local meta = itemstack:get_meta()
 	meta:set_int("ed", newexpiration)
 	meta:set_string("description", minetest.registered_items[name].description.." ed: "..newexpiration)
@@ -39,6 +50,46 @@ minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv
 	cooking_aftercraft(itemstack, old_craft_grid)
 end)
 
+local function add_date_zero(str)
+	if type(str) ~= "string" then
+		str = tostring(str)
+	end
+	if string.len(str) == 1 or if string.len(str) == 7 then
+		return "0"..str
+	else
+		return str
+	end
+end
+foodspoil.add_date_zero = add_date_zero
+
+local function unix_to_dateint(unix)
+	local datetbl = os.date("*t", unix)
+	local datestring = add_date_zero(datetbl.day)..add_date_zero(datetbl.month)..tostring(datetbl.year)
+	return tonumber(datestring)
+end
+foodspoil.unix_to_dateint = unix_to_dateint
+
+local function dateint_to_unix(dateint)
+	local datestring = add_date_zero(dateint)
+	if string.len(datestring)) ~= 8 then
+		return 0
+	false
+	local day = tonumber(string.sub(datestring, 1, 2))
+	local month = tonumber(string.sub(datestring, 3, 4))
+	local year = tonumber(string.sub(datestring, 5, 8))
+	if day > 31 or day == 0 or month > 12 or month == 0 or year < 24 then return 0 end
+	return os.time({year = year, month = month, day = day})
+end
+foodspoil.dateint_to_unix = dateint_to_unix
+
+local function get_new_expiration(expiredef)
+	local datetbl = os.date("*t", unix)
+	local todayunix = os.time({year = datetbl.year, month = datetbl.month, day = datetbl.day})
+	local expireunix = todayunix + (expiredef*DAY_LENGTH)
+	return unix_to_dateint(expireunix)
+end
+foodspoil.get_new_expiration = get_new_expiration
+
 local old_func = minetest.handle_node_drops
 minetest.handle_node_drops = function(pos, drops, digger)
 	for index, stack_raw in pairs(drops) do
@@ -48,7 +99,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 		local def = minetest.registered_items[name]
 		if def and def.expiration and stack_meta:get_int("ed") == 0 then
 			local node = minetest.get_node(pos)
-			local newexpiration = minetest.get_day_count() + def.expiration
+			local newexpiration = get_new_expiration(def.expiration)
 			if index == 1 and node.name == name then
 				-- Drop is from the node itself dropping; try copying node's ed
 				local node_exp = minetest.get_meta(pos):get_int("ed")
@@ -59,7 +110,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 			drops[index] = stack
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
-			meta:set_string("description", def.description.." ed: "..newexpiration)
+			meta:set_string("description", def.description.." ed: "..foodspoil.add_date_zero(newexpiration))
 		end
 	end
 	return old_func(pos, drops, digger)
@@ -78,7 +129,7 @@ minetest.add_item = function(pos, item)
 		local expiredef = def.expiration
 		local newexpiration = minetest.get_day_count() + expiredef
 		meta:set_int("ed", newexpiration)
-		meta:set_string("description", minetest.registered_items[name].description.." ed: "..newexpiration)
+		meta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.add_date_zero(newexpiration))
 	end
 	return func(pos, item)
 end
@@ -106,9 +157,10 @@ minetest.register_on_mods_loaded(function()
 	local org_eat = core.do_item_eat
 	core.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		local expire = itemstack:get_meta():get_int("ed")
+		expire = dateint_to_unix(expire)/DAY_LENGTH
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = (expire - minetest.get_day_count())/usedexpiredef
+			local expirefactor = (expire - math.floor(os.time()/DAY_LENGTH)/usedexpiredef
 			expirefactor = expirefactor + 1
 			if expirefactor < -1 then expirefactor = -1 end
 			if expirefactor > 1 then expirefactor = 1 end
@@ -119,104 +171,104 @@ minetest.register_on_mods_loaded(function()
 end)
 
 local foodtable = {
-	["default:apple"] = 32,
-	["default:blueberries"] = 24,
-	["ethereal:banana"] = 32,
-	["ethereal:orange"] = 32,
-	["ethereal:strawberry"] = 32,
-	["farming:baked_potato"] = false,
-	["farming:barley"] = 120,
-	["farming:beans"] = false,
-	["farming:beetroot"] = false,
-	["farming:beetroot_soup"] = 32,
-	["farming:blueberries"] = 32,
-	["farming:blueberry_pie"] = 32,
-	["farming:bread"] = 32,
-	["farming:bread_multigrain"] = 36,
-	["farming:bread_slice"] = 36,
-	["farming:carrot"] = false,
-	["farming:carrot_juice"] = false,
-	["farming:chili_bowl"] = false,
-	["farming:chili_pepper"] = false,
-	["farming:chocolate_dark"] = false,
-	["farming:cocoa_beans"] = false,
-	["farming:coffee_beans"] = false,
-	["farming:coffee_cup"] = 3,
-	["farming:cookie"] = 32,
-	["farming:corn"] = false,
-	["farming:corn_cob"] = false,
-	["farming:cornstarch"] = 120,
-	["farming:cucumber"] = false,
-	["farming:donut"] = 32,
-	["farming:donut_apple"] = 32,
-	["farming:donut_chocolate"] = 32,
-	["farming:flour"] = 36,
-	["farming:flour_multigrain"] = 36,
-	["farming:garlic"] = false,
-	["farming:garlic_braid"] = false,
-	["farming:garlic_bread"] = 36,
-	["farming:garlic_clove"] = false,
-	["farming:grapes"] = 32,
-	["farming:jaffa_cake"] = 32,
-	["farming:melon_slice"] = 32,
-	["farming:melon_8"] = false,
-	["farming:melon_9"] = false,
-	["farming:melon_slice"] = false,
-	["farming:muffin_blueberry"] = 32,
-	["farming:oat"] = 120,
-	["farming:onion"] = false,
-	["farming:pea_pod"] = false,
-	["farming:pea_soup"] = 32,
-	["farming:peas"] = false,
-	["farming:pepper"] = false,
-	["farming:pineapple"] = 32,
-	["farming:pineapple_juice"] = false,
-	["farming:pineapple_ring"] = false,
-	["farming:porridge"] = 32,
-	["farming:potato"] = false,
-	["farming:potato_salad"] = 32,
-	["farming:pumpkin_8"] = false,
-	["farming:pumpkin_9"] = false,
-	["farming:pumpkin_bread"] = 32,
-	["farming:pumpkin_dough"] = 32,
-	["farming:pumpkin_slice"] = 32,
-	["farming:raspberries"] = 32,
-	["farming:rhubarb"] = 32,
-	["farming:rhubarb_pie"] = 32,
-	["farming:rice"] = 120,
-	["farming:rice_bread"] = false,
-	["farming:rice_flour"] = false,
-	["farming:rye"] = 120,
-	["farming:smoothie_raspberry"] = false,
-	["farming:straw" ]= 120,
-	["farming:toast"] = 32,
-	["farming:toast_sandwich"] = 32,
-	["farming:tomato"] = 32,
-	["farming:turkish_delight"] = 32,
-	["farming:wheat"] = 120,
-	["flowers:mushroom_brown"] = false,
-	["flowers:mushroom_red"] = false,
-	["cake:cake_uncooked"] = 32,
-	["cake:cake"] = 32,
-	["mobs:meat_raw"] = 32,
-	["mobs:meat"] = 32,
-	["mobs:chicken_raw"] = 32,
-	["mobs:chicken_cooked"] = 32,
-	["mobs:butter"] = 32,
-	["mobs:bucket_milk"] = 7,
-	["mobs:cheese"] = 36,
-	["mobs:egg"] = 32,
-	["fishing:fish_raw"] = 32,
-	["fishing:fish_baked"] = 32,
+	["default:apple"] = fs_m,
+	["default:blueberries"] = fs_m,
+	["ethereal:banana"] = fs_m,
+	["ethereal:orange"] = fs_m,
+	["ethereal:strawberry"] = fs_m,
+	["farming:baked_potato"] = fs_m,
+	["farming:barley"] = fs_s,
+	["farming:beans"] = fs_m,
+	["farming:beetroot"] = fs_m,
+	["farming:beetroot_soup"] = fs_f,
+	["farming:blueberries"] = fs_m,
+	["farming:blueberry_pie"] = fs_f,
+	["farming:bread"] = fs_m,
+	["farming:bread_multigrain"] = fs_m,
+	["farming:bread_slice"] = fs_m,
+	["farming:carrot"] = fs_m,
+	["farming:carrot_juice"] = fs_m,
+	["farming:chili_bowl"] = fs_m,
+	["farming:chili_pepper"] = fs_m,
+	["farming:chocolate_dark"] = fs_m,
+	["farming:cocoa_beans"] = fs_m,
+	["farming:coffee_beans"] = fs_m,
+	["farming:coffee_cup"] = fs_f,
+	["farming:cookie"] = fs_m,
+	["farming:corn"] = fs_s,
+	["farming:corn_cob"] = fs_m,
+	["farming:cornstarch"] = fs_s,
+	["farming:cucumber"] = fs_m,
+	["farming:donut"] = fs_m,
+	["farming:donut_apple"] = fs_m,
+	["farming:donut_chocolate"] = fs_m,
+	["farming:flour"] = fs_s,
+	["farming:flour_multigrain"] = fs_s,
+	["farming:garlic"] = fs_s,
+	["farming:garlic_braid"] = fs_s,
+	["farming:garlic_bread"] = fs_m,
+	["farming:garlic_clove"] = fs_s,
+	["farming:grapes"] = fs_m,
+	["farming:jaffa_cake"] = fs_m,
+	["farming:melon_slice"] = fs_m,
+	["farming:melon_8"] = fs_m,
+	["farming:melon_9"] = fs_m,
+	["farming:melon_slice"] = fs_m,
+	["farming:muffin_blueberry"] = fs_m,
+	["farming:oat"] = fs_s,
+	["farming:onion"] = fs_s,
+	["farming:pea_pod"] = fs_s,
+	["farming:pea_soup"] = fs_m,
+	["farming:peas"] = fs_s,
+	["farming:pepper"] = fs_s,
+	["farming:pineapple"] = fs_m,
+	["farming:pineapple_juice"] = fs_m,
+	["farming:pineapple_ring"] = fs_m,
+	["farming:porridge"] = fs_m,
+	["farming:potato"] = fs_s,
+	["farming:potato_salad"] = fs_m,
+	["farming:pumpkin_8"] = fs_m,
+	["farming:pumpkin_9"] = fs_m,
+	["farming:pumpkin_bread"] = fs_m,
+	["farming:pumpkin_dough"] = fs_m,
+	["farming:pumpkin_slice"] = fs_m,
+	["farming:raspberries"] = fs_m,
+	["farming:rhubarb"] = fs_m,
+	["farming:rhubarb_pie"] = fs_m,
+	["farming:rice"] = fs_s,
+	["farming:rice_bread"] = fs_m,
+	["farming:rice_flour"] = fs_m,
+	["farming:rye"] = fs_s,
+	["farming:smoothie_raspberry"] = fs_m,
+	["farming:straw" ]= fs_s,
+	["farming:toast"] = fs_m,
+	["farming:toast_sandwich"] = fs_m,
+	["farming:tomato"] = fs_m,
+	["farming:turkish_delight"] = fs_m,
+	["farming:wheat"] = fs_s,
+	["flowers:mushroom_brown"] = fs_m,
+	["flowers:mushroom_red"] = fs_m,
+	["cake:cake_uncooked"] = fs_m,
+	["cake:cake"] = fs_m,
+	["mobs:meat_raw"] = fs_m,
+	["mobs:meat"] = fs_m,
+	["mobs:chicken_raw"] = fs_m,
+	["mobs:chicken_cooked"] = fs_m,
+	["mobs:butter"] = fs_m,
+	["mobs:bucket_milk"] = fs_f,
+	["mobs:cheese"] = fs_m,
+	["mobs:egg"] = fs_m,
+	["fishing:fish_raw"] = fs_m,
+	["fishing:fish_baked"] = fs_m,
 }
 
 for i, stairtype in pairs({"slab", "stair_inner", "stair_outer", "stair"}) do
-	foodtable["stairs:"..stairtype.."_straw"] = 120
+	foodtable["stairs:"..stairtype.."_straw"] = fs_s
 end
 
 minetest.register_on_mods_loaded(function()
 	for name, days in pairs(foodtable) do
-		foodspoil_register(name, days or 60)
+		foodspoil_register(name, days or fs_m)
 	end
 end)
 
