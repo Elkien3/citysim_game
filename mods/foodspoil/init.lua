@@ -17,7 +17,7 @@ foodspoil.get_unixday = get_unixday
 
 local function format_unixday(unixday)
 	local datetbl = os.date("*t", unixday*DAY_LENGTH)
-	local datestring = add_date_zero(datetbl.day)..add_date_zero(datetbl.month)..tostring(datetbl.year)
+	local datestring = tostring(datetbl.day)..tostring(datetbl.month)..tostring(datetbl.year)
 	return datestring
 end
 foodspoil.format_unixday = format_unixday
