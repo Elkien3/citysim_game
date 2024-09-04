@@ -321,7 +321,7 @@ icebox_register_chest("foodspoil:icebox_locked", {
 
 local function handle_icebox(pos, node)
 	local meta = minetest.get_meta(pos)
-	local day = math.floor(os.time()/DAY_LENGTH
+	local day = math.floor(os.time()/DAY_LENGTH)
 	local metaday = meta:get_int("day")
 	local icecount = 0
 	if metaday == 0 then meta:set_int("day", day) return end--todo change behavior when there is no ice
