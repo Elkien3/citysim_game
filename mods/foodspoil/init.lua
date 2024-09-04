@@ -11,7 +11,7 @@ local fs_s = foodspoil.slow
 local DAY_LENGTH = 86400
 
 local function get_unixday(unix)
-	math.floor(os.time(unix)/DAY_LENGTH)
+	return math.floor(os.time(unix)/DAY_LENGTH)
 end
 foodspoil.get_unixday = get_unixday
 
