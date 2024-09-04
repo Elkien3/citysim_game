@@ -211,7 +211,7 @@ local function icebox_register_chest(prefixed_name, d)
 			local infotext = update_infotext(meta:get_string("infotext"))
 			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == stack:get_count() then--if the only ice in the inv is what you jut put in start the "timer"
-				meta:set_int("day", math.floor(os.time()/DAY_LENGTH)
+				meta:set_int("day", math.floor(os.time()/DAY_LENGTH))
 			end
 		end
 		minetest.log("action", player:get_player_name() ..
@@ -232,7 +232,7 @@ local function icebox_register_chest(prefixed_name, d)
 			local infotext = update_infotext(meta:get_string("infotext"))
 			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == 0 then--all out of ice :(
-				meta:set_int("day", math.floor(os.time()/DAY_LENGTH)
+				meta:set_int("day", math.floor(os.time()/DAY_LENGTH))
 			end
 		end
 		minetest.log("action", player:get_player_name() ..
