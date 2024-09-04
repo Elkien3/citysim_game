@@ -15,7 +15,7 @@ local function get_unixday(unix)
 end
 foodspoil.get_unixday = get_unixday
 
-local monthtbl = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"}
+local monthtbl = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"}
 
 local function format_unixday(unixday)
 	local datetbl = os.date("*t", unixday*DAY_LENGTH)
