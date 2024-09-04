@@ -49,9 +49,11 @@ local function get_new_expiration(expiredef)
 end
 foodspoil.get_new_expiration = get_new_expiration
 
-local function get_expire_factor(expire, usedexpiredef)
+local function get_expire_factor(expire, usedexpiredef, foreating)
 	local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
-	expirefactor = expirefactor + 1
+	if foreating then--if we are eating the item, we want the factor to stay at 1 until it passes the expiration
+		expirefactor = expirefactor + 1
+	end
 	if expirefactor < -1 then expirefactor = -1 end
 	if expirefactor > 1 then expirefactor = 1 end
 	return expirefactor
@@ -63,30 +65,25 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	local expiredef = minetest.registered_items[name].expiration
 	if not expiredef then return itemstack end
 	local avg = 0
-	--if the item is being cooked, dosnt matter how old the items used are
-	--local method = minetest.get_craft_recipe(name).method
-	--if method ~= "cooking" and method ~= "baking" and method ~= "stovecook" then
-		--get the average expiration percentage of each item in recipe
-		local expirations = {}
-		for index, stack in pairs(old_craft_grid) do
-			local meta = stack:get_meta()
-			local expire = meta:get_int("ed")
-			expire = dateint_to_unix(expire)/DAY_LENGTH
-			local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
-			if expire ~= 0 and usedexpiredef then
-				local expirefactor = get_expire_factor(expire, usedexpiredef)
-				table.insert(expirations, expirefactor)
-			end
+	local expirations = {}
+	for index, stack in pairs(old_craft_grid) do--get the average expiration percentage of each item in recipe
+		local meta = stack:get_meta()
+		local expire = meta:get_int("ed")
+		expire = dateint_to_unix(expire)/DAY_LENGTH
+		local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
+		if expire ~= 0 and usedexpiredef then
+			local expirefactor = get_expire_factor(expire, usedexpiredef)
+			table.insert(expirations, expirefactor)
 		end
-		for index, val in pairs(expirations) do
-			avg = avg + val
-		end
-		if #expirations > 0 then
-			avg = avg/#expirations
-		else
-			avg = 1
-		end
-	--end
+	end
+	for index, val in pairs(expirations) do
+		avg = avg + val
+	end
+	if #expirations > 0 then
+		avg = avg/#expirations
+	else
+		avg = 1
+	end
 
 	--make and set new expire time based on average of items used
 	local newexpiration = get_new_expiration(expiredef*avg)
@@ -170,7 +167,7 @@ minetest.register_on_mods_loaded(function()
 		expire = dateint_to_unix(expire)/DAY_LENGTH
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
-			local expirefactor = get_expire_factor(expire, usedexpiredef)
+			local expirefactor = get_expire_factor(expire, usedexpiredef, true)
 			hp_change = hp_change*expirefactor
 		end
 		return org_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
