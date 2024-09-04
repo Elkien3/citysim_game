@@ -160,7 +160,7 @@ local function icebox_register_chest(prefixed_name, d)
 		def.on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", "Icebox \n(0 ice)")
-			meta:set_int("day", math.floor(os.time()/DAY_LENGTH))
+			meta:set_int("day", foodspoil.get_unixday())
 			local inv = meta:get_inventory()
 			inv:set_size("main", 8*2)
 		end
@@ -211,7 +211,7 @@ local function icebox_register_chest(prefixed_name, d)
 			local infotext = update_infotext(meta:get_string("infotext"))
 			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == stack:get_count() then--if the only ice in the inv is what you jut put in start the "timer"
-				meta:set_int("day", math.floor(os.time()/DAY_LENGTH))
+				meta:set_int("day", foodspoil.get_unixday())
 			end
 		end
 		minetest.log("action", player:get_player_name() ..
@@ -232,7 +232,7 @@ local function icebox_register_chest(prefixed_name, d)
 			local infotext = update_infotext(meta:get_string("infotext"))
 			meta:set_string("infotext", infotext.." \n("..tostring(icecount).." ice)")
 			if icecount == 0 then--all out of ice :(
-				meta:set_int("day", math.floor(os.time()/DAY_LENGTH))
+				meta:set_int("day", foodspoil.get_unixday())
 			end
 		end
 		minetest.log("action", player:get_player_name() ..
@@ -321,7 +321,7 @@ icebox_register_chest("foodspoil:icebox_locked", {
 
 local function handle_icebox(pos, node)
 	local meta = minetest.get_meta(pos)
-	local day = math.floor(os.time()/DAY_LENGTH)
+	local day = foodspoil.get_unixday()
 	local metaday = meta:get_int("day")
 	local icecount = 0
 	if metaday == 0 then meta:set_int("day", day) return end--todo change behavior when there is no ice
@@ -345,14 +345,10 @@ local function handle_icebox(pos, node)
 				local stackmeta = stack:get_meta()
 				local expire = stackmeta:get_int("ed")
 				if expire ~= 0 then
-					expire = foodspoil.dateint_to_unix(expire)
-					if expire == 0 then
-						expire = foodspoil.get_new_expiration(minetest.registered_items[name].expiration)
-					else
-						expire = foodspoil.unix_to_dateint(expire + DAY_LENGTH)
+						expire = expire + 1
 					end
 					stackmeta:set_int("ed", expire)
-					stackmeta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.add_date_zero(expire))
+					stackmeta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.format_unixday(expire))
 					inv:set_stack("main", index, stack)
 				end
 			end

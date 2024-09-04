@@ -1,8 +1,8 @@
 foodspoil = {}
 
-foodspoil.fast = 3
-foodspoil.medium = 30
-foodspoil.slow = 120
+foodspoil.fast = 2
+foodspoil.medium = 15
+foodspoil.slow = 60
 
 local fs_f = foodspoil.fast
 local fs_m = foodspoil.medium
@@ -10,47 +10,27 @@ local fs_s = foodspoil.slow
 
 local DAY_LENGTH = 86400
 
-local function add_date_zero(str)
-	if type(str) ~= "string" then
-		str = tostring(str)
-	end
-	if string.len(str) == 1 or string.len(str) == 7 then
-		return "0"..str
-	else
-		return str
-	end
+local function get_unixday(unix)
+	math.floor(os.time(unix)/DAY_LENGTH))
 end
-foodspoil.add_date_zero = add_date_zero
+foodspoil.get_unixday = get_unixday
 
-local function unix_to_dateint(unix)
-	local datetbl = os.date("*t", unix)
+local function format_unixday(unixday)
+	local datetbl = os.date("*t", unixday*DAY_LENGTH)
 	local datestring = add_date_zero(datetbl.day)..add_date_zero(datetbl.month)..tostring(datetbl.year)
-	return tonumber(datestring)
+	return datestring
 end
-foodspoil.unix_to_dateint = unix_to_dateint
-
-local function dateint_to_unix(dateint)
-	local datestring = add_date_zero(dateint)
-	if string.len(datestring) ~= 8 then
-		return 0
-	end
-	local day = tonumber(string.sub(datestring, 1, 2))
-	local month = tonumber(string.sub(datestring, 3, 4))
-	local year = tonumber(string.sub(datestring, 5, 8))
-	if day > 31 or day == 0 or month > 12 or month == 0 or year < 24 then return 0 end
-	return os.time({year = year, month = month, day = day})
-end
-foodspoil.dateint_to_unix = dateint_to_unix
+foodspoil.format_unixday = format_unixday
 
 local function get_new_expiration(expiredef)
-	local todayunix = math.floor(os.time()/DAY_LENGTH)*DAY_LENGTH
-	local expireunix = todayunix + math.floor(expiredef*DAY_LENGTH)
-	return unix_to_dateint(expireunix)
+	local todayunixday = get_unixday()
+	local expireunixday = todayunixday + expiredef
+	return unix_to_dateint(expireunixday)
 end
 foodspoil.get_new_expiration = get_new_expiration
 
-local function get_expire_factor(expire, usedexpiredef, foreating)
-	local expirefactor = ((expire - math.floor(os.time()/DAY_LENGTH))/usedexpiredef)
+local function get_expire_factor(expire, expiredef, foreating)
+	local expirefactor = ((expire - get_unixday())/expiredef)
 	if foreating then--if we are eating the item, we want the factor to stay at 1 until it passes the expiration
 		expirefactor = expirefactor + 1
 	end
@@ -69,7 +49,6 @@ function cooking_aftercraft(itemstack, old_craft_grid)
 	for index, stack in pairs(old_craft_grid) do--get the average expiration percentage of each item in recipe
 		local meta = stack:get_meta()
 		local expire = meta:get_int("ed")
-		expire = dateint_to_unix(expire)/DAY_LENGTH
 		local usedexpiredef = minetest.registered_items[stack:get_name()].expiration
 		if expire ~= 0 and usedexpiredef then
 			local expirefactor = get_expire_factor(expire, usedexpiredef)
@@ -117,7 +96,7 @@ minetest.handle_node_drops = function(pos, drops, digger)
 			drops[index] = stack
 			local meta = drops[index]:get_meta()
 			meta:set_int("ed", newexpiration)
-			meta:set_string("description", def.description.." ed: "..foodspoil.add_date_zero(newexpiration))
+			meta:set_string("description", def.description.." ed: "..format_unixday(newexpiration))
 		end
 	end
 	return old_func(pos, drops, digger)
@@ -134,9 +113,9 @@ minetest.add_item = function(pos, item)
 	local meta = item:get_meta()
 	if def and def.expiration and meta:get_int("ed") == 0 then
 		local expiredef = def.expiration
-		local newexpiration = minetest.get_day_count() + expiredef
+		local newexpiration = get_new_expiration(expiredef)
 		meta:set_int("ed", newexpiration)
-		meta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.add_date_zero(newexpiration))
+		meta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.format_unixday(newexpiration))
 	end
 	return func(pos, item)
 end
@@ -164,7 +143,6 @@ minetest.register_on_mods_loaded(function()
 	local org_eat = core.do_item_eat
 	core.do_item_eat = function(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		local expire = itemstack:get_meta():get_int("ed")
-		expire = dateint_to_unix(expire)/DAY_LENGTH
 		if expire ~= 0 then
 			local usedexpiredef = minetest.registered_items[itemstack:get_name()].expiration
 			local expirefactor = get_expire_factor(expire, usedexpiredef, true)
