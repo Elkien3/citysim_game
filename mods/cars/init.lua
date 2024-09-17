@@ -70,6 +70,11 @@ function cars.set_database_entry(licenseplate, tbl)
 	storage:set_string("database", minetest.serialize(db))
 end
 
+function cars.get_car_pos(target)
+	local db = cars.get_database()
+	return db[target] and db[target].lastpos
+end
+
 function cars.setlighttexture(obj, table, prefix)
 	if not obj or not table then return end
 	local texture = "invisible.png"
@@ -910,7 +915,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 						if car.color then
 							color = cars_dyes[car.color][3]
 						end
-						cars.set_database_entry(car.platenumber.text, {color = color, owner = car.owner, desc = def.description})
+						cars.set_database_entry(car.platenumber.text, {color = color, owner = car.owner, desc = def.description, lastpos = vector.round(car.object:get_pos())})
 						minetest.chat_send_player(name, "Vehicle owner set to "..fields.owner)
 					else
 						minetest.chat_send_player(name, "Invalid owner name")
@@ -1309,6 +1314,9 @@ local function car_step(self, dtime, moveresult)
 			if self.wheel.backright then self.wheel.backright:set_attach(self.object, "", {z=-11.75,y=2.5,x=-8.875}, {x=0,y=0,z=0}) end
 			if self.wheel.backleft then self.wheel.backleft:set_attach(self.object, "", {z=-11.75,y=2.5,x=8.875}, {x=0,y=0,z=0}) end
 			if self.lights then self.lights:set_attach(self.object, "", {x=0,y=0,z=0}, {x=0,y=0,z=0}) end
+			local db = cars.get_database()[self.platenumber.text]
+			db.lastpos = vector.round(self.object:get_pos())
+			cars.set_database_entry(self.platenumber.text, db)
 		end
 		self.lastctrl = ctrl
 	else
@@ -1770,6 +1778,10 @@ function cars_register_car(def)
 				if self.platenumber then
 					cars.set_database_entry(self.platenumber.text, nil)
 				end
+			else
+				local db = cars.get_database()[self.platenumber.text]
+				db.lastpos = vector.round(self.object:get_pos())
+				cars.set_database_entry(self.platenumber.text, db)
 			end
 		end,
 		on_death = function(self, killer)--i think i wont need this since hp is always kept at least 1hp till its removed by the death timer
@@ -1843,7 +1855,7 @@ function cars_register_car(def)
 				if self.color then
 					color = cars_dyes[self.color][3]
 				end
-				cars.set_database_entry(self.platenumber.text, {color = color, owner = self.owner, desc = def.description})
+				cars.set_database_entry(self.platenumber.text, {color = color, owner = self.owner, desc = def.description, lastpos = vector.round(self.object:get_pos())})
 			end
 			updatetextures(self, def)
 			self.object:setacceleration({x=0, y=-10, z=0})
@@ -2013,7 +2025,7 @@ function cars_register_car(def)
 					local color = string.sub(punchitem, 5)
 					if color and cars_dyes[color] and punchstack:get_count() >= (def.dyecost or 5) then
 						self.color = color
-						cars.set_database_entry(self.platenumber.text, {color = cars_dyes[color][3], owner = self.owner, desc = def.description})
+						cars.set_database_entry(self.platenumber.text, {color = cars_dyes[color][3], owner = self.owner, desc = def.description, lastpos = vector.round(self.object:get_pos())})
 						updatetextures(self, def)
 						punchstack:take_item(def.dyecost or 5)
 						minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
