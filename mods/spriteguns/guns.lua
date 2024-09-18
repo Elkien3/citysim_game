@@ -118,10 +118,11 @@ if fancycrafts then
 	minetest.register_craft({
 		output = "spriteguns:remington870 1 65534",
 		recipe = {
-			{"gun_lathe:gun_barrel_carbon_steel", "", ""},
-			{"group:tree", "gun_lathe:gun_barrel_carbon_steel", ""},
-			{"", "group:tree", "moreores:mithril_ingot"},
-			{"", "group:tree", "group:tree"},
+			{"gun_lathe:gun_barrel_carbon_steel", "", "", "", ""},
+			{"gun_lathe:gun_barrel_carbon_steel", "gun_lathe:gun_barrel_carbon_steel", "", "", ""},
+			{"group:tree", "gun_lathe:gun_barrel_carbon_steel", "gun_lathe:gun_barrel_carbon_steel", "technic:carbon_steel_ingot", ""},
+			{"", "group:tree", "group:tree", "moreores:mithril_ingot", ""},
+			{"", "", "", "group:tree", "group:tree"},
 		}
 	})
 else
@@ -247,9 +248,9 @@ spriteguns.register_gun("spriteguns:cz527",{
 		hipidle = "hipidle.png",
 		hipidlenomag = "hipidlenomag.png",
 		hipfire = "hipfire.png",
-		hippostfire = "hipidle.png",
+		hippostfire = "hippostfire.png",
 		aimidle = "aimidle.png",
-		aimidlenomag = "aimidle.png",
+		aimidlenomag = "aimidlenomag.png",
 		aimfire = "aimfire.png",
 		aimpostfire = "aimidle.png",
 		load = {
@@ -309,7 +310,7 @@ minetest.register_craft({
 })
 
 spriteguns.register_gun("spriteguns:mini14",{
-	description = "Mini-14 Rifle",
+	description = "Mini-30 Rifle",
 	inventory_image = "mini14_inv.png",
 	zoomfov = 60,
 	scale = 7.5,
@@ -382,7 +383,7 @@ else
 end
 
 minetest.register_tool("spriteguns:mag_mini14", {
-	description = "Mini-14 Magazine",
+	description = "Mini-30 Magazine",
 	inventory_image = "rangedweapons_ak47_mag.png",
 })
 spriteguns.register_magazine("spriteguns:mag_mini14", "spriteguns:bullet_762", 15)
@@ -429,7 +430,7 @@ spriteguns.register_gun("spriteguns:pardini",{
 		load = {
 			length = 4*.25,
 			sounds = {nil, "thompson_charge"},
-			frames = {"load1.png", "load2.png", "load3.png", "load1.png"},
+			frames = {"load1.png", "load2.png", "load3.png", "load4.png"},
 		},
 		reload = {
 			length = 4*.33,
@@ -529,7 +530,7 @@ spriteguns.register_gun("spriteguns:coltarmy",{
 			loopstart = 2,
 			loopend = 3,
 			sounds = {nil, nil, "gunslinger_charge"},
-			frames = {"reload1.png", "reload3.png", "reload2.png", "reload1.png", }
+			frames = {"reload1.png", "reload3.png", "reload4.png", "reload1.png", }
 		},
 	},
 })
