@@ -1,0 +1,20 @@
+license info is WIP, I borrowed code and textures/sounds from a lot of places so if you find license info that I have forgotten please let me know.
+
+Code: Elkien3 (CC BY-SA 3.0)
+Textures:
+	binoculars_binoculars.png (from Minetest Game): Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) Copyright (C) 2017 paramat
+	rangedweapons_*: bullets unedited, most of the others are edited from the guns from rangedweapons. (cc-by-sa 4.0 davidthecreator)
+	model based sprites: Elkien3 (CC BY-SA 3.0)
+	pixel based sprites: vanadiumheart (CC BY-SA 4.0)
+Models: (CC BY-SA 3.0)
+	Modelers: Elkien3 (Colt Army), Extex (Remington870, Thompson, Pardini), FatalError (CZ, Mini14, Binoculars).
+	All tweaked and animated by Elkien3
+Sounds:
+	I renamed some of them and don't remember exactly where each of them came from.
+	I do know some came from rangedweapons (cc-by-sa 4.0 davidthecreator)
+	The rest were sourced from youtube that were largely marked royalty free.
+
+
+
+Comments: 
+vanadiumheart: "Credits and thanks to Talos, who supported me through the spriting process and helped out with finding niche gun knowledge and references."
