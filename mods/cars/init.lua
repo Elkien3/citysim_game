@@ -735,7 +735,7 @@ local function drill_remove_node(pos, node, digger)
 		end
 		
 	end
-	diggername = "cars:drill"
+	diggername = digger or "cars:drill"
 	local log = minetest.log
 	local def = core.registered_nodes[node.name]
 	-- Copy pos because the callback could modify it
