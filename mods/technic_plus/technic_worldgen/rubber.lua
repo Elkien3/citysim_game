@@ -67,9 +67,9 @@ minetest.register_node(":moretrees:rubber_tree_leaves", {
 })
 
 technic.rubber_tree_model={
-	axiom = "FFFFA",
-	rules_a = "[&FFBFA]////[&BFFFA]",
-	rules_b = "[&FFA]////[&FFA]",
+	axiom = "FFFFFFFA",
+	rules_a = "[&FBFA]////[&BFA]",
+	rules_b = "[&FFA]////[&FA]",
 	trunk = "moretrees:rubber_tree_trunk",
 	leaves = "moretrees:rubber_tree_leaves",
 	angle = 35,
