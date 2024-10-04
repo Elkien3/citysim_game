@@ -17,7 +17,7 @@ if not cars then
 elseif last_known_accuracy < 1 then
 	car_last_known_accuracy_mode = 5
 end
-local chestlist = {"default:chest", "default:chest_open", "default:chest_locked", "default:chest_locked_open", "digilines:chest", "currency:safe", "currency:shop", "xdecor:cabinet", "xdecor:cabinet_half", "xdecor:barrel", "inbox:empty", "inbox:full", "package:package", "foodspoil:icebox", "foodspoil:icebox_open", "foodspoil:icebox_locked", ""foodspoil:icebox_locked_open"}
+local chestlist = {"default:chest", "default:chest_open", "default:chest_locked", "default:chest_locked_open", "digilines:chest", "currency:safe", "currency:shop", "xdecor:cabinet", "xdecor:cabinet_half", "xdecor:barrel", "inbox:empty", "inbox:full", "package:package", "foodspoil:icebox", "foodspoil:icebox_open", "foodspoil:icebox_locked", "foodspoil:icebox_locked_open"}
 
 local function is_table_empty(tbl)
 	for _ in pairs(tbl) do
