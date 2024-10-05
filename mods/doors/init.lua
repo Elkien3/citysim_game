@@ -451,6 +451,7 @@ function doors.register(name, def)
 	end
 
 	def.drawtype = "mesh"
+	def.use_texture_alpha = true,
 	def.paramtype = "light"
 	def.paramtype2 = "facedir"
 	def.sunlight_propagates = true
@@ -610,6 +611,7 @@ function doors.register_trapdoor(name, def)
 
 	-- Common trapdoor configuration
 	def.drawtype = "nodebox"
+	def.use_texture_alpha = true,
 	def.paramtype = "light"
 	def.paramtype2 = "facedir"
 	def.is_ground_content = false
@@ -786,6 +788,7 @@ function doors.register_fencegate(name, def)
 	local fence = {
 		description = def.description,
 		drawtype = "mesh",
+		use_texture_alpha = true,
 		tiles = {},
 		paramtype = "light",
 		paramtype2 = "facedir",
