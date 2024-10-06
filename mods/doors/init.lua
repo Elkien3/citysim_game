@@ -451,7 +451,6 @@ function doors.register(name, def)
 	end
 
 	def.drawtype = "mesh"
-	def.use_texture_alpha = true,
 	def.paramtype = "light"
 	def.paramtype2 = "facedir"
 	def.sunlight_propagates = true
