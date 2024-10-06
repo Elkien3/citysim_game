@@ -610,7 +610,6 @@ function doors.register_trapdoor(name, def)
 
 	-- Common trapdoor configuration
 	def.drawtype = "nodebox"
-	def.use_texture_alpha = true,
 	def.paramtype = "light"
 	def.paramtype2 = "facedir"
 	def.is_ground_content = false
