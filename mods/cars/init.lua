@@ -1493,7 +1493,7 @@ local function car_step(self, dtime, moveresult)
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
 					if drilledblocks[posstring].health <= 0 then
 						drilledblocks[posstring] = nil
-						drill_remove_node(drillpos, drillnode, minetest.get_player_by_name(self.driller))
+						drill_remove_node(drillpos, drillnode, self.driller)
 					end
 				end
 			end
