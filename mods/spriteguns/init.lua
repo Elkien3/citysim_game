@@ -189,14 +189,18 @@ local function add_gun(name, gunname)
 		world_pos = {x=0,y=0,z=0},
 		z_index = -10000
 	})
+	-- Whether hotbar alignment is correct on the client. This is the case since 5.10.0:
+	-- It was fixed in https://github.com/luanti-org/luanti/commit/4e6e8b7bf1c4a60c6d2f630367862a8645ccbf0c
+	local hotbar_placement_fixed = core.get_player_information(name).protocol_version >= 46
 	gun_huds[name].hotbar = player:hud_add({
 		hud_elem_type = "inventory",
 		text = "main",
 		number = 8,
-		alignment = {x=0,y=0},
+		alignment = hotbar_placement_fixed and {x = 0, y = -1} or {x = 0, y = 0},
 		position  = {x = 0.5, y = 1},
 		item = player:get_wield_index(),
-		offset = {x=-224,y=-60}
+		-- c.f. builtin/game/hud.lua in Luanti
+		offset = hotbar_placement_fixed and {x = 0, y = -4} or {x = -224, y = -60},
 	})
 	gun_huds[name].lastlook = player:get_look_dir()
 end
