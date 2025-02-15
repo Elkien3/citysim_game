@@ -70,24 +70,6 @@ end
 
 metatable.__eq = equals
 
-function less_than(v, w)
-	for k, v in pairs(v) do
-		if v >= w[k] then return false end
-	end
-	return true
-end
-
-metatable.__lt = less_than
-
-function less_or_equal(v, w)
-	for k, v in pairs(v) do
-		if v > w[k] then return false end
-	end
-	return true
-end
-
-metatable.__le = less_or_equal
-
 function combine(v, w, f)
 	local new_vector = {}
 	for key, value in pairs(v) do
@@ -205,11 +187,28 @@ function dot(v, w)
 	return sum
 end
 
+function reflect(v, normal --[[**normalized** plane normal vector]])
+	return subtract(v, multiply_scalar(normal, 2 * dot(v, normal))) -- reflection of v at the plane
+end
+
 --+ Angle between two vectors
 --> Signed angle in radians
 function angle(v, w)
 	-- Based on dot(v, w) = |v| * |w| * cos(x)
 	return math.acos(dot(v, w) / length(v) / length(w))
+end
+
+-- See https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToAngle/
+function axis_angle3(euler_rotation)
+	assert(#euler_rotation == 3)
+	euler_rotation = divide_scalar(euler_rotation, 2)
+	local cos = apply(euler_rotation, math.cos)
+	local sin = apply(euler_rotation, math.sin)
+	return normalize_zero{
+		sin[1] * sin[2] * cos[3] + cos[1] * cos[2] * sin[3],
+		sin[1] * cos[2] * cos[3] + cos[1] * sin[2] * sin[3],
+		cos[1] * sin[2] * cos[3] - sin[1] * cos[2] * sin[3],
+	}, 2 * math.acos(cos[1] * cos[2] * cos[3] - sin[1] * sin[2] * sin[3])
 end
 
 -- Uses Rodrigues' rotation formula
