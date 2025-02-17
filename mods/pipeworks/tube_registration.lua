@@ -81,6 +81,7 @@ local register_one_tube = function(name, tname, dropname, desc, plain, noctrs, e
 	local nodedef = {
 		description = tubedesc,
 		drawtype = "nodebox",
+		use_texture_alpha = true,
 		tiles = outimgs,
 		sunlight_propagates = true,
 		inventory_image = iimg,
