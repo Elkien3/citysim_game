@@ -7,9 +7,10 @@ local modpath = minetest.get_modpath(minetest.get_current_modname())
 local ie, req_ie = _G, minetest.request_insecure_environment
 if req_ie then ie = req_ie() end
 if not ie then
-	error("The IRC mod requires access to insecure functions in order "..
+	minetest.log("warning", "The IRC mod requires access to insecure functions in order "..
 		"to work.  Please add the irc mod to your secure.trusted_mods "..
 		"setting or disable the irc mod.")
+	return -- just disable the mod
 end
 
 ie.package.path =
@@ -28,6 +29,12 @@ if not rawget(_G, "jit") and package.config:sub(1, 1) == "/" then
 			";/usr/share/lua/5.1/?/init.lua"
 	ie.package.cpath = ie.package.cpath..
 			";/usr/lib/lua/5.1/?.so"
+end
+
+local status, err = pcall(ie.require, "socket")
+if not status then
+	minetest.log("warning", "The IRC mod can not find luasocket: " .. err)
+	return
 end
 
 -- Temporarily set require so that LuaIRC can access it

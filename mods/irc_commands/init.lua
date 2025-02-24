@@ -1,3 +1,7 @@
+if not minetest.global_exists("irc") then
+	minetest.log("warning", "IRC is disabled, hence IRC commands are disabled too.")
+	return
+end
 
 local irc_users = {}
 
