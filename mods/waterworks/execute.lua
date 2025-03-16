@@ -213,8 +213,8 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 					elseif sink_pos ~= nil then
 						minetest.swap_node(sink_pos, {name=source_node})
 						minetest.swap_node(source_pos, {name="air"})
+						count = count + 1
 					end
-					count = count + 1
 				--end
 			end
 			
