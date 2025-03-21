@@ -786,7 +786,6 @@ function doors.register_fencegate(name, def)
 	local fence = {
 		description = def.description,
 		drawtype = "mesh",
-		use_texture_alpha = true,
 		tiles = {},
 		paramtype = "light",
 		paramtype2 = "facedir",

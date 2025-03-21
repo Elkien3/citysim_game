@@ -105,7 +105,7 @@ minetest.register_globalstep(function(dtime)
 		save_data()
 		for index, _ in pairs(nets_near_players) do
 			--minetest.chat_send_all("executing index " .. tostring(index))
-			waterworks.execute_pipes(index, 1)
+			waterworks.execute_pipes(index, 8)
 		end
 	end
 end)

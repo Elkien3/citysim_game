@@ -29,8 +29,6 @@ local valid_source = function(node_name)
 	return waterworks.registered_liquids[node_name] ~= nil
 end
 
-
-local floodtbl = {}
 -- breadth-first search passing through water searching for air or flowing water, limited to y <= pressure.
 -- I could try to be fancy about water flowing downward preferentially, let's leave that as a TODO for now.
 local flood_search_outlet = function(start_pos, pressure)
@@ -61,10 +59,6 @@ local flood_search_outlet = function(start_pos, pressure)
 				if valid_source(new_node_name) then
 					table.insert(queue, new_pos)
 				end
-			elseif new_pos.y > pressure and not floodtbl[minetest.pos_to_string(start_pos)] then
-				local posstring = minetest.pos_to_string(start_pos)
-				minetest.log("action", "Possible flood started at "..posstring)
-				floodtbl[posstring] = true
 			end
 		end		
 	end

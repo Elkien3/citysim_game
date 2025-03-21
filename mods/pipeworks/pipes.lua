@@ -62,7 +62,6 @@ for index, connects in ipairs(cconnects) do
 	minetest.register_node("pipeworks:pipe_"..index.."_empty", {
 		description = pipedesc,
 		drawtype = "mesh",
-		use_texture_alpha = true,
 		mesh = mesh,
 		tiles = outimg_e,
 		sunlight_propagates = true,

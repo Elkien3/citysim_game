@@ -932,7 +932,6 @@ for white  = 0, 1 do
 	minetest.register_node(node_name, {
 		description = "Lua controlled Tube",
 		drawtype = "nodebox",
-		use_texture_alpha = true,
 		tiles = tiles,
 		paramtype = "light",
 		is_ground_content = false,

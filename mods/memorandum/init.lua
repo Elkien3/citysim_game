@@ -25,7 +25,6 @@ minetest.register_craftitem(":default:paper", {
 
 minetest.register_node("memorandum:letter_empty", {
     drawtype = "nodebox",
-	use_texture_alpha = true,
     tiles = {"memorandum_letter_empty.png"},
     paramtype = "light",
     paramtype2 = "facedir",

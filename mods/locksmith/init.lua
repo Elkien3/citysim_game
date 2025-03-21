@@ -11,7 +11,6 @@ end
 
 local orig_func = default.can_interact_with_node
 default.can_interact_with_node = function(player, pos)
-	if not player then return false end
 	local orig_val = orig_func(player, pos)
 	if orig_val == true then return true end
 	local name = player:get_player_name()

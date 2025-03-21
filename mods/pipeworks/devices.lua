@@ -138,7 +138,6 @@ for s in ipairs(states) do
 	minetest.register_node(pumpname, {
 		description = S("Pump/Intake Module"),
 		drawtype = "mesh",
-		use_texture_alpha = true,
 		mesh = "pipeworks_pump"..polys..".obj",
 		tiles = { "pipeworks_pump_"..states[s]..".png" },
 		paramtype = "light",
@@ -284,7 +283,6 @@ minetest.register_node("pipeworks:grating", {
 		"pipeworks_grating_sides.png"
 	},
 	drawtype = "nodebox",
-	use_texture_alpha = true,
 	node_box = {
 		type = "fixed",
 		fixed = { -0.49, -0.49, -0.49, 0.49, 0.5, 0.49 }

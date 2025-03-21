@@ -726,16 +726,10 @@ local function register_lightentity(carname)
 end
 
 local function drill_remove_node(pos, node, digger)
-	if default_tweaks and default_tweaks.exempt_dig_node and areas and areas.siege_get then
-		for id, area in pairs(areas:getAreasAtPos(pos)) do
-			local siegetbl = areas.siege_get(id)
-			if siegetbl and siegetbl.unixhour == areas.get_unixhour() then
-				default_tweaks.exempt_dig_node(pos, digger)
-			end
-		end
-		
-	end
-	diggername = digger or "cars:drill"
+	--[[if default_tweaks and default_tweaks.exempt_dig_node then
+		default_tweaks.exempt_dig_node(pos, digger)
+	end--]]
+	diggername = "cars:drill"
 	local log = minetest.log
 	local def = core.registered_nodes[node.name]
 	-- Copy pos because the callback could modify it
@@ -1493,7 +1487,7 @@ local function car_step(self, dtime, moveresult)
 					drilledblocks[posstring].health = drilledblocks[posstring].health - 1
 					if drilledblocks[posstring].health <= 0 then
 						drilledblocks[posstring] = nil
-						drill_remove_node(drillpos, drillnode, self.driller)
+						drill_remove_node(drillpos, drillnode, minetest.get_player_by_name(self.driller))
 					end
 				end
 			end

@@ -22,7 +22,6 @@ end
 minetest.register_node("default:torch", {
 	description = S("Torch"),
 	drawtype = "mesh",
-	use_texture_alpha = true,
 	mesh = "torch_floor.obj",
 	inventory_image = "default_torch_on_floor.png",
 	wield_image = "default_torch_on_floor.png",

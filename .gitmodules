@@ -4,6 +4,3 @@
 [submodule "mods/cooking_fr"]
 	path = mods/cooking_fr
 	url = https://github.com/Elkien3/cooking_fr.git
-[submodule "mods/alpha_workaround_minus"]
-	path = mods/alpha_workaround_minus
-	url = https://codeberg.org/appgurueu/alpha_workaround_minus.git

@@ -97,7 +97,6 @@ function army_panes.register_pane(name, def)
 	minetest.register_node(":army:" .. name .. "_flat", {
 		description = def.description,
 		drawtype = "nodebox",
-		use_texture_alpha = true,
 		paramtype = "light",
 		is_ground_content = false,
 		sunlight_propagates = true,
@@ -132,7 +131,6 @@ function army_panes.register_pane(name, def)
 	groups.not_in_creative_inventory = 1
 	minetest.register_node(":army:" .. name, {
 		drawtype = "nodebox",
-		use_texture_alpha = true,
 		paramtype = "light",
 		is_ground_content = false,
 		sunlight_propagates = true,

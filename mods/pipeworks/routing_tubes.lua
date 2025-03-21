@@ -143,7 +143,6 @@ if pipeworks.enable_one_way_tube then
 			"pipeworks_one_way_tube_input.png", "pipeworks_one_way_tube_side.png", "pipeworks_one_way_tube_top.png"},
 		paramtype2 = "facedir",
 		drawtype = "nodebox",
-		use_texture_alpha = true,
 		paramtype = "light",
 		node_box = {type = "fixed",
 			fixed = {{-1/2, -9/64, -9/64, 1/2, 9/64, 9/64}}},

@@ -9,7 +9,6 @@ for l,def in pairs(ladders) do
         tiles = { def[2], def[2], def[3], def[3], def[3], def[3] },
         use_texture_alpha = 'clip',
         drawtype = 'nodebox',
-		use_texture_alpha = true,
         paramtype = 'light',
         node_box = {
             type = 'fixed',

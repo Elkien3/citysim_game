@@ -81,7 +81,6 @@ local chains_sbox = {
 minetest.register_node("basic_materials:chain_steel", {
 	description = S("Chain (steel, hanging)"),
 	drawtype = "mesh",
-	use_texture_alpha = true,
 	mesh = "basic_materials_chains.obj",
 	tiles = {"basic_materials_chain_steel.png"},
 	walkable = false,

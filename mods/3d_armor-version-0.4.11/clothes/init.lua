@@ -233,18 +233,16 @@ armor:register_armor("clothes:boots_hiking", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
-register_dyed_clothes("clothes:shirt_suit", {
+armor:register_armor("clothes:shirt_suit", {
 	description = ("Suit Coat"),
 	inventory_image = "clothes_inv_shirt_suit.png",
-	texmask = "clothes_shirt_suit_mask.png",
 	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
-register_dyed_clothes("clothes:pants_suit", {
+armor:register_armor("clothes:pants_suit", {
 	description = ("Suit Pants"),
 	inventory_image = "clothes_inv_pants_suit.png",
-	texmask = "clothes_pants_suit_mask.png",
 	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},

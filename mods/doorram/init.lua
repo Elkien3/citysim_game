@@ -97,14 +97,7 @@ minetest.register_entity("doorram:ram", {
 			end
 			if not collide.touching_ground and collide.collides then
 				for i, hit in pairs(collide.collisions) do
-					local pointAxis
-					local absyaw = math.abs(math.deg(obj:get_yaw()))
-					if absyaw < 45 or absyaw > 135 then--pointing north-south
-						pointAxis = "z"
-					else--pointing east-west	
-						pointAxis = "x"
-					end
-					if hit.axis == pointAxis then--do door check up here
+					if hit.axis ~= "y" then--do door check up here
 						local strength = math.abs(hit.old_velocity[hit.axis]-hit.new_velocity[hit.axis])
 						if strength > 2 then
 							local node = minetest.get_node(hit.node_pos)
