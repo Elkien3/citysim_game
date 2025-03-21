@@ -37,7 +37,10 @@ local flood_search_outlet = function(start_pos, pressure)
 	if valid_sink(start_node_name) then
 		return start_pos
 	end
-
+	local diff = pressure-start_pos.y
+	if diff > 4 then
+		pressure = start_pos.y + 4
+	end
 	local visited = {}
 	visited[minetest.hash_node_position(start_pos)] = true
 	local queue = {start_pos}
@@ -207,8 +210,8 @@ waterworks.execute_pipes = function(net_index, net_capacity)
 					elseif sink_pos ~= nil then
 						minetest.swap_node(sink_pos, {name=source_node})
 						minetest.swap_node(source_pos, {name="air"})
+						count = count + 1
 					end
-					count = count + 1
 				--end
 			end
 			

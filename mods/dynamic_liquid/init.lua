@@ -559,7 +559,7 @@ if displace_liquid then
 		return nil
 	end
 
-	-- Conserve liquids, when placing nodes in liquids try to find a place to displace the liquid to.
+	--[[ Conserve liquids, when placing nodes in liquids try to find a place to displace the liquid to.
 	minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
 		local flowing = dynamic_liquid.registered_liquids[oldnode.name]
 		if flowing ~= nil then
@@ -568,7 +568,7 @@ if displace_liquid then
 				minetest.swap_node(dest, oldnode)
 			end
 		end
-	end)
+	end)--]]
 
 end
 
