@@ -41,11 +41,15 @@ minetest.register_globalstep(function(dtime)
 					areas:save()
 				end
 			end
-
-			table.insert(areaStrings, ("%s [%u] (%s%s%s)")
-					:format(area.name, id, area.owner,
-					area.open and S(":open") or "",
-					faction_info and ": "..faction_info or ""))
+			
+			local str = ("%s [%u] (%s%s%s)")
+				:format(area.name, id, area.owner,
+				area.open and S(":open") or "",
+				faction_info and ": "..faction_info or "")
+			if areas.siege_get and areas.siege_get(id) ~= nil then
+				str = str.." "..areas.get_siege_infotext(id, name)
+			end
+			table.insert(areaStrings, str)
 		end
 
 		for i, area in pairs(areas:getExternalHudEntries(pos)) do

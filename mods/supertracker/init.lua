@@ -17,7 +17,7 @@ if not cars then
 elseif last_known_accuracy < 1 then
 	car_last_known_accuracy_mode = 5
 end
-local chestlist = {"default:chest", "default:chest_open", "default:chest_locked", "default:chest_locked_open", "digilines:chest", "currency:safe", "currency:shop", "xdecor:cabinet", "xdecor:cabinet_half", "xdecor:barrel", "inbox:empty", "inbox:full", "package:package"}
+local chestlist = {"default:chest", "default:chest_open", "default:chest_locked", "default:chest_locked_open", "digilines:chest", "currency:safe", "currency:shop", "xdecor:cabinet", "xdecor:cabinet_half", "xdecor:barrel", "inbox:empty", "inbox:full", "package:package", "foodspoil:icebox", "foodspoil:icebox_open", "foodspoil:icebox_locked", "foodspoil:icebox_locked_open"}
 
 local function is_table_empty(tbl)
 	for _ in pairs(tbl) do
@@ -337,7 +337,7 @@ local function on_tracker_use(itemstack, player, pointed_thing, place)
 	local meta = itemstack:get_meta()
 	local mode = meta:get_int("mode")
 	if mode == 0 then mode = 1 end
-	if (last_known_accuracy < 1 and mode == 5) or (car_last_known_accuracy < 1 and mode == 6) then
+	if (last_known_accuracy < 1 and car_last_known_accuracy < 0 and mode == 5) or (car_last_known_accuracy < 1 and mode == 6) then
 		mode = 1
 	end
 	local target = meta:get_string("target") or ""
@@ -355,16 +355,16 @@ local function on_tracker_use(itemstack, player, pointed_thing, place)
 					end
 				end
 			end
-		elseif mode == 5 then--last know position mode
-			if last_track[target] then
-				local lastchunk = vector.add(vector.multiply(vector.floor(vector.divide(last_track[target], last_known_accuracy)), last_known_accuracy), last_known_accuracy/2)
-				add_hud(player, lastchunk, "Last known (within "..last_known_accuracy..")")
-			end
 		elseif mode == car_last_known_accuracy_mode then
 			local carpos = cars.get_car_pos(target)
 			if carpos then
 				carpos = vector.add(vector.multiply(vector.floor(vector.divide(carpos, car_last_known_accuracy)), car_last_known_accuracy), car_last_known_accuracy/2)
 				add_hud(player, carpos, "Car last known (within "..car_last_known_accuracy..")")
+			end
+		elseif mode == 5 then--last know position mode
+			if last_track[target] then
+				local lastchunk = vector.add(vector.multiply(vector.floor(vector.divide(last_track[target], last_known_accuracy)), last_known_accuracy), last_known_accuracy/2)
+				add_hud(player, lastchunk, "Last known (within "..last_known_accuracy..")")
 			end
 		else
 			local tbl

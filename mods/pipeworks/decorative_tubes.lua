@@ -47,6 +47,7 @@ local pane_box = {
 }
 minetest.register_node("pipeworks:steel_pane_embedded_tube", {
 	drawtype = "nodebox",
+	use_texture_alpha = true,
 	description = S("Airtight panel embedded tube"),
 	tiles = {
 		"pipeworks_pane_embedded_tube_sides.png^[transformR90",
