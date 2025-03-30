@@ -1,6 +1,7 @@
 local ip = minetest.settings:get("mumble_ip") or "!set mumble_ip!"
 local channel = minetest.settings:get("mumble_channel") or 0
 local port = minetest.settings:get("port") or "30000"
+local context = minetest.settings:get("mumble_context") or "Minetest "..tostring(ip)..":"..tostring(port)
 mumblereward_players = {}
 local formtimer = {}
 
@@ -57,14 +58,14 @@ local function checkfile()
 	for line in input:lines() do
 			local data = string.split(line, " ")
 			local name = data[1]
-			local context = data [2]
+			local playerContext = data [2]
 			local chan = data[3]
 			local deaf = data[4] == "True"
 			if minetest.get_player_by_name(name) then
-				if context == "quit" then
+				if playerContext == "quit" then
 					mumblereward_players[name] = nil
 					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: You quit Mumble.")
-				elseif context ~= "TWluZXRlc3QAMTM4LjE5Ny4yMi4xM" then
+				elseif playerContext ~= context then
 					mumblereward_players[name] = nil
 					minetest.chat_send_player(name, "*!Mumblerewards!* Disconnected from Positional Audio. Reason: Incorrect Server/Context.")
 				elseif chan ~= channel then
