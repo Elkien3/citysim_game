@@ -1,7 +1,7 @@
 local ip = minetest.settings:get("mumble_ip") or "!set mumble_ip!"
 local channel = minetest.settings:get("mumble_channel") or 0
 local port = minetest.settings:get("port") or "30000"
-local context = minetest.settings:get("mumble_context") or "Minetest "..tostring(ip)..":"..tostring(port)
+local context = minetest.settings:get("mumble_context") or tostring(ip)..":"..tostring(port)
 mumblereward_players = {}
 local formtimer = {}
 
