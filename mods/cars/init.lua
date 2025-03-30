@@ -725,6 +725,12 @@ local function register_lightentity(carname)
 	})
 end
 
+local drill_inv_blacklist = {
+	["pipeworks:autocrafter"] = {recipe = true},
+	["pipeworks:mese_filter"] = {main = true},
+	["pipeworks:filter"] = {main = true},
+}
+
 local function drill_remove_node(pos, node, digger)
 	if default_tweaks and default_tweaks.exempt_dig_node and areas and areas.siege_get then
 		for id, area in pairs(areas:getAreasAtPos(pos)) do
@@ -763,8 +769,10 @@ local function drill_remove_node(pos, node, digger)
 	local inv = minetest.get_inventory({type="node", pos=pos})
 	if inv then
 		for listname, listtbl in pairs(inv:get_lists()) do
-			for i = 1, inv:get_size(listname) do
-				table.insert(drops, inv:get_stack(listname, i))
+			if not drill_inv_blacklist[node.name] or not drill_inv_blacklist[node.name][listname] then
+				for i = 1, inv:get_size(listname) do
+					table.insert(drops, inv:get_stack(listname, i))
+				end
 			end
 		end
 	end
