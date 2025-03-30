@@ -1921,6 +1921,9 @@ function cars_register_car(def)
 					texture = smoketex,
 				})
 			end
+			if not cars.get_database()[self.platenumber.text] then
+				cars.set_database_entry(self.platenumber.text, {color = color, owner = self.owner, desc = def.description, lastpos = vector.round(self.object:get_pos())})
+			end
 		end,
 		get_staticdata = function(self)
 			return minetest.serialize({
