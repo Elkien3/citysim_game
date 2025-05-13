@@ -30,7 +30,7 @@ function email.load()
 		local from_file = minetest.deserialize(file:read("*all"))
 		file:close()
 		if type(from_file) == "table" then
-			if from_file.mod == "email" and tonumber(from_file.ver_min) <= 1 then
+			if from_file.inboxes then
 				email.inboxes = from_file.inboxes
 			else
 				error("[Email] Attempt to read incompatible email.txt file.")
