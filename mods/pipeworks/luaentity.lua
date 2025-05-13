@@ -23,7 +23,7 @@ end
 
 local function read_entities()
 	local t = read_file()
-	for _, entity in pairs(t) do
+	for index, entity in pairs(t) do
 		if entity.start_pos then
 			local x=entity.start_pos.x
 			local y=entity.start_pos.y
@@ -41,6 +41,8 @@ local function read_entities()
 			entity.start_pos.z = z
 
 			setmetatable(entity, luaentity.registered_entities[entity.name])
+		else
+			t[index] = nil
 		end
 	end
 	return t
