@@ -2034,7 +2034,7 @@ function cars_register_car(def)
 						punchstack = new_stack
 					else
 						if inv:add_item("main", new_stack):get_count() > 0 then
-							minetest.add_item(user:get_pos(), new_stack)
+							minetest.add_item(puncher:get_pos(), new_stack)
 						end -- else: added to inventory successfully
 					end
 					minetest.after(0, function() puncher:set_wielded_item(punchstack) end)
