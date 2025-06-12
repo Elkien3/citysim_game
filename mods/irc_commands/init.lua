@@ -1,3 +1,8 @@
+if not core.global_exists("irc") then
+	-- HACK don't crash the game when testing locally
+	-- Ideally this should be in a separate modpack
+	return
+end
 
 local irc_users = {}
 
