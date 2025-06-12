@@ -43,9 +43,9 @@ minetest.register_globalstep(function(dtime)
 	for _, player in pairs(minetest.get_connected_players()) do
 		local player_name = player:get_player_name()
 		local player_controls = player:get_player_control()
-		for cname, cbool in pairs(player_controls) do
+		for cname in pairs(controls.players[player_name]) do
+			local cbool = player_controls[cname]
 			--Press a key
-			assert(controls.players[player_name][cname], cname)
 			if cbool==true and controls.players[player_name][cname][1]==false then
 				for _, func in pairs(controls.registered_on_press) do
 					func(player, cname)

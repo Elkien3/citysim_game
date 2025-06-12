@@ -1,6 +1,6 @@
 local dir_delim = ...
 -- Localize globals
-local io, minetest, modlib, string = io, minetest, modlib, string
+local assert, io, minetest, modlib, string, pcall = assert, io, minetest, modlib, string, pcall
 
 -- Set environment
 local _ENV = {}
@@ -19,13 +19,35 @@ end
 get_extension = split_extension
 
 function split_path(filepath)
-	return modlib.text.split(filepath, dir_delim)
+	return modlib.text.split_unlimited(filepath, dir_delim, true)
 end
 
 -- concat_path is set by init.lua to avoid code duplication
 
+-- Lua 5.4 has `<close>` for this, but we're restricted to 5.1,
+-- so we need to roll our own `try  f = io.open(...); return func(f) finally f:close() end`.
+function with_open(filename, mode, func --[[function(file), called with `file = io.open(filename, mode)`]])
+	local file = assert(io.open(filename, mode or "r"))
+	-- Throw away the stacktrace. The alternative would be to use `xpcall`
+	-- to bake the stack trace into the error string using `debug.traceback`.
+	-- Lua will have prepended `<source>:<line>:` already however.
+	return (function(status, ...)
+		file:close()
+		assert(status, ...)
+		return ...
+	end)(pcall(func, file))
+end
+
 function read(filename)
 	local file, err = io.open(filename, "r")
+	if file == nil then return nil, err end
+	local content = file:read"*a"
+	file:close()
+	return content
+end
+
+function read_binary(filename)
+	local file, err = io.open(filename, "rb")
 	if file == nil then return nil, err end
 	local content = file:read"*a"
 	file:close()
@@ -113,11 +135,8 @@ end
 function process_bridge_listen(name, line_consumer, step)
 	local bridge = process_bridges[name]
 	modlib.minetest.register_globalstep(step or 0.1, function()
-		local content = io.open(bridge.input, "r")
-		local line = content:read()
-		while line do
+		for line in io.lines(bridge.input) do
 			line_consumer(line)
-			line = content:read()
 		end
 		write(bridge.input, "")
 	end)
