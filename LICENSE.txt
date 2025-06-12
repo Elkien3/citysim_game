@@ -6,7 +6,13 @@ See README.txt in each mod directory for information about other authors.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
+License of menu/icon.png
+Copyright (C) 2025 luatic CC BY-SA 3.0, trivial modification of erle's misc/luanti.svg
+Copyright (C) erle CC BY-SA 3.0
+See also https://github.com/luanti-org/luanti/blob/master/LICENSE.txt
+
 License of menu/header.png
+Copyright (C) 2025 luatic CC BY-SA 3.0, changed text to "CITYSIM" based on paramat's work
 Copyright (C) 2015 paramat CC BY-SA 3.0
 
 
