@@ -3,8 +3,6 @@ local assert, error, math_huge, modlib, minetest, setmetatable, type, table_inse
 
 local sqlite3 = ...
 
---! experimental
-
 --[[
 	Currently uses reference counting to immediately delete tables which aren't reachable from the root table anymore, which has two issues:
 	1. Deletion might trigger a large deletion chain
@@ -240,6 +238,7 @@ function ptab:rewrite()
 end
 
 function ptab:set(table, key, value)
+	exec(self, "BEGIN EXCLUSIVE TRANSACTION")
 	local previous_value = table[key]
 	if previous_value == value then
 		-- no change
@@ -247,6 +246,7 @@ function ptab:set(table, key, value)
 	end
 	set(self, table, key, value)
 	table[key] = value
+	exec(self, "COMMIT TRANSACTION")
 end
 
 function ptab:set_root(key, value)
