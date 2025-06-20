@@ -51,7 +51,7 @@ minetest.register_entity("bones_entity:entity", {
 	textures = {"invisible.png"},
 	is_visible = true,
 	makes_footstep_sound = false,
-    automatic_rotate = false,
+    automatic_rotate = 0,
     on_activate = function(self, staticdata, dtime_s)
 		if not self.owner then
 			local deserialized = minetest.deserialize(staticdata)
