@@ -1,9 +1,20 @@
 -- Localize globals
-local Settings, _G, assert, dofile, error, getmetatable, ipairs, loadfile, loadstring, minetest, modlib, pairs, rawget, rawset, setfenv, setmetatable, tonumber, type = Settings, _G, assert, dofile, error, getmetatable, ipairs, loadfile, loadstring, minetest, modlib, pairs, rawget, rawset, setfenv, setmetatable, tonumber, type
+local Settings, _G, assert, dofile, error, getmetatable, ipairs, loadfile, loadstring, minetest, modlib, pairs, rawget, rawset, setfenv, setmetatable, tonumber, type, table_concat, unpack
+	= Settings, _G, assert, dofile, error, getmetatable, ipairs, loadfile, loadstring, minetest, modlib, pairs, rawget, rawset, setfenv, setmetatable, tonumber, type, table.concat, unpack
 
 -- Set environment
 local _ENV = {}
 setfenv(1, _ENV)
+
+local loaded = {}
+function require(filename)
+	local modname = minetest.get_current_modname()
+	loaded[modname] = loaded[modname] or {}
+	-- Minetest ensures that `/` works even on Windows (path normalization)
+	loaded[modname][filename] = loaded[modname][filename] -- already loaded?
+		or dofile(minetest.get_modpath(modname) .. "/" .. filename:gsub("%.", "/") .. ".lua")
+	return loaded[modname][filename]
+end
 
 function loadfile_exports(filename)
 	local env = setmetatable({}, {__index = _G})
@@ -57,15 +68,36 @@ function init(modname)
 	extend(modname, "main")
 end
 
---! deprecated
-function extend_string(modname, string)
-	if not string then
-		string = modname
-		modname = minetest.get_current_modname()
+-- TODO `require` relative to current mod
+
+local warn_parent_leaf = "modlib: setting %s used both as parent setting and as leaf, ignoring children"
+local function build_tree(dict)
+	local tree = {}
+	for key, value in pairs(dict) do
+		local path = modlib.text.split_unlimited(key, ".", true)
+		local subtree = tree
+		for i = 1, #path - 1 do
+			local index = tonumber(path[i]) or path[i]
+			subtree[index] = subtree[index] or {}
+			subtree = subtree[index]
+			if type(subtree) ~= "table" then
+				minetest.log("warning", warn_parent_leaf:format(table_concat({unpack(path, 1, i)}, ".")))
+				break
+			end
+		end
+		if type(subtree) == "table" then
+			if type(subtree[path[#path]]) == "table" then
+				minetest.log("warning", warn_parent_leaf:format(key))
+			end
+			subtree[path[#path]] = value
+		end
 	end
-	include_env(string, rawget(_G, modname), true)
+	return tree
 end
 
+settings = build_tree(minetest.settings:to_table())
+
+--> conf, schema
 function configuration(modname)
 	modname = modname or minetest.get_current_modname()
 	local schema = modlib.schema.new(assert(include(modname, "schema.lua")))
@@ -104,7 +136,9 @@ function configuration(modname)
 				check_type(value)
 				return value
 			end},
-			{extension = "conf", read = function(text) return modlib.conf.build_setting_tree(Settings(text):to_table()) end, convert_strings = true},
+			{extension = "conf", read = function(text)
+				return build_tree(Settings(text):to_table())
+			end, convert_strings = true},
 			{extension = "json", read = minetest.parse_json}
 		} do
 			local content = modlib.file.read(path .. "." .. format.extension)
@@ -116,7 +150,7 @@ function configuration(modname)
 	end
 	add(minetest.get_worldpath() .. "/conf/" .. modname)
 	add(get_resource(modname, "conf"))
-	local minetest_conf = modlib.conf.settings[schema.name]
+	local minetest_conf = settings[schema.name]
 	if minetest_conf then
 		overrides = modlib.table.deep_add_all(overrides, minetest_conf)
 		conf = schema:load(overrides, {convert_strings = true, error_message = true})
@@ -141,9 +175,9 @@ function configuration(modname)
 		end
 	end
 	if conf == nil then
-		return schema:load({}, {error_message = true})
+		return schema:load({}, {error_message = true}), schema
 	end
-	return conf
+	return conf, schema
 end
 
 -- Export environment
