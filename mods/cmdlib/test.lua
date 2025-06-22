@@ -46,12 +46,6 @@ function test_chatcommands(explicit_supercommand)
         end
     })
     cmdlib.unregister_chatcommand("cmdlib_test shout loud")
-    minetest.register_chatcommand("cmdlib_test_override", {
-        func = function() return false, "Not overridden!" end
-    })
-    minetest.override_chatcommand("cmdlib_test_override", {
-        func = function() return true, "Overridden." end
-    })
 end
 
 function test_trie()
@@ -72,7 +66,7 @@ function test_info()
     end)
 end
 
-test_chatcommands()
-test_format()
-test_trie()
-test_info()
+-- test_chatcommands()
+-- test_format()
+-- test_trie()
+-- test_info()

@@ -3,13 +3,14 @@ local _ENV = {}
 local components = {}
 for _, value in pairs{
 	"mod",
+	"log",
+	"player",
+	"conf", -- deprecated
 	"luon",
 	"raycast",
 	"schematic",
 	"colorspec",
 	"media",
-	"obj",
-	"texmod",
 } do
 	components[value] = value
 end
@@ -54,10 +55,8 @@ for filename, comps in pairs{
 		"named_colors",
 		"colorspec_to_colorstring"
 	},
-	boxes = {
-		"get_node_boxes",
-		"get_node_collisionboxes",
-		"get_node_selectionboxes",
+	collisionboxes = {
+		"get_node_collisionboxes"
 	},
 	png = {
 		"decode_png",

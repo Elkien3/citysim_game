@@ -1,6 +1,6 @@
 -- Localize globals
-local assert, math, math_floor, minetest, modlib_table_reverse, os, string_char, select, setmetatable, table_insert, table_concat
-	= assert, math, math.floor, minetest, modlib.table.reverse, os, string.char, select, setmetatable, table.insert, table.concat
+local math, math_floor, minetest, modlib_table_reverse, os, string_char, setmetatable, table_insert, table_concat
+	= math, math.floor, minetest, modlib.table.reverse, os, string.char, setmetatable, table.insert, table.concat
 
 local inf = math.huge
 
@@ -25,50 +25,6 @@ end
 
 function clamp(number, min, max)
 	return math.min(math.max(number, min), max)
-end
-
--- Random integer from 0 to 2^53 - 1 (inclusive)
-local function _randint()
-	return math.random(0, 2^27 - 1) * 2^26 + math.random(0, 2^26 - 1)
-end
-
--- Random float from 0 to 1 (exclusive)
-local function _randfloat()
-	return _randint() / (2^53)
-end
-
---+ Increased randomness float random without overflows
---+ `random()`: Random number from `0` to `1` (exclusive)
---+ `random(max)`: Random number from `0` to `max` (exclusive)
---+ `random(min, max)`: Random number from `min` to `max` (exclusive)
-function random(...)
-	local n = select("#", ...)
-	if n == 0 then
-		return _randfloat()
-	end if n == 1 then
-		local max = ...
-		return _randfloat() * max
-	end do assert(n == 2)
-		local min, max = ...
-		return min + (max - min) * _randfloat()
-	end
-end
-
--- Increased randomness integer random
---+ `randint()`: Random integer from `0` to `2^53 - 1` (inclusive)
---+ `randint(max)`: Random integer from `0` to `max` (inclusive)
---+ `randint(min, max)`: Random integer from `min` to `max` (inclusive)
-function randint(...)
-	local n = select("#", ...)
-	if n == 0 then
-		return _randint()
-	end if n == 1 then
-		local max = ...
-		return math.floor(_randfloat() * max + 0.5)
-	end do assert(n == 2)
-		local min, max = ...
-		return min + math.floor(_randfloat() * (max - min) + 0.5)
-	end
 end
 
 log = setmetatable({}, {
@@ -152,9 +108,6 @@ function tostring(number, base, digit_function, precision)
 end
 
 -- See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/fround#polyfill
--- Rounds a 64-bit float to a 32-bit float;
--- if the closest 32-bit float is out of bounds,
--- the appropriate infinity is returned.
 function fround(number)
 	if number == 0 or number ~= number then
 		return number
@@ -164,18 +117,14 @@ function fround(number)
 		sign = -1
 		number = -number
 	end
-	local _, exp = math.frexp(number)
-	exp = exp - 1 -- we want 2^exponent >= number > 2^(exponent-1)
+	local exp = math_floor(math.log(number, 2))
 	local powexp = 2 ^ math.max(-126, math.min(exp, 127))
-	local leading = exp <= -127 and 0 or 1 -- subnormal number?
-	local mantissa = math.floor((number / powexp - leading) * 0x800000 + 0.5)
-	if
-		mantissa > 0x800000 -- doesn't fit in mantissa
-		or (exp >= 127 and mantissa == 0x800000) -- fits if the exponent can be increased
-	then
+	local leading = exp < -127 and 0 or 1
+	local mantissa = math_floor((leading - number / powexp) * 0x800000 + 0.5)
+	if mantissa <= -0x800000 then
 		return sign * inf
 	end
-	return sign * powexp * (leading + mantissa / 0x800000)
+	return sign * powexp * (leading - mantissa / 0x800000)
 end
 
 -- Export environment

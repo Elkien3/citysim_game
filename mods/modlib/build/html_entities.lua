@@ -5,7 +5,7 @@ local res, code = https.request"https://html.spec.whatwg.org/entities.json"
 assert(code == 200)
 local entity_map = {}
 for entity, chars in pairs(assert(modlib.json:read_string(res))) do
-	entity_map[entity:sub(2, #entity - 1)] = table.concat(modlib.table.map(chars.codepoints, modlib.utf8.char))
+	entity_map[entity:sub(2, #entity - 1)] = table.concat(modlib.table.map(chars.codepoints, modlib.text.utf8))
 end
 local entries = {}
 for entity, chars in pairs(entity_map) do

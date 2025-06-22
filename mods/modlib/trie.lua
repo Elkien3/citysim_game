@@ -7,8 +7,6 @@ setfenv(1, _ENV)
 
 local metatable = {__index = _ENV}
 
--- Setting the metatable is fine as it does not contain single-character keys.
--- TODO (?) encapsulate in "root" field for better code quality?
 function new(table) return setmetatable(table or {}, metatable) end
 
 function insert(self, word, value, overwrite)
