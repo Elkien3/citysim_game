@@ -1,13 +1,6 @@
 -- This file is licensed under the terms of the BSD 2-clause license.
 -- See LICENSE.txt for details.
 
-if not minetest.settings:get("irc.server") then
-	-- HACK don't crash the game when testing locally
-	-- Ideally this should be in a separate modpack
-	core.log("info", "IRC is not configured: irc.server missing")
-	return
-end
-
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 -- Handle mod security if needed
