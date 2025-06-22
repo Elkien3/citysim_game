@@ -1,5 +1,4 @@
-assert(modlib.version >= 103, "character_anim requires at least version rolling-103 of modlib")
-local workaround_model = modlib.mod.require"workaround"
+assert(modlib.version >= 93, "character_anim requires at least version rolling-93 of modlib")
 
 character_anim = {}
 
@@ -8,38 +7,7 @@ character_anim.conf = modlib.mod.configuration()
 local quaternion = modlib.quaternion
 -- TODO deduplicate code: move to modlib (see ghosts mod)
 local media_paths = modlib.minetest.media.paths
-
-local static_model_names = {}
-local animated_model_names = {}
-for name in pairs(media_paths) do
-	if (name:find"character" or name:find"player") and name:match"%.b3d$" then
-		local fixed, data = pcall(workaround_model, name)
-		if fixed then
-			local static_name = "_character_anim_" .. name
-			minetest.dynamic_add_media({
-				filename = static_name,
-				filedata = data,
-			})
-			static_model_names[name] = static_name
-			animated_model_names[static_name] = name
-		else
-			minetest.log("warning", "character_anim: failed to workaround model " .. name)
-		end
-	end
-end
-
-local function find_node(root, name)
-	if root.name == name then return root end
-	for _, child in ipairs(root.children) do
-		local node = find_node(child, name)
-		if node then return node end
-	end
-end
-
 local models = setmetatable({}, {__index = function(self, filename)
-	if animated_model_names[filename] then
-		return self[animated_model_names[filename]]
-	end
 	local _, ext = modlib.file.get_extension(filename)
 	if not ext or ext:lower() ~= "b3d" then
 		-- Only B3D support currently
@@ -123,30 +91,6 @@ minetest.register_on_joinplayer(function(player)
 	if not set_bone_position then
 		local PlayerRef = getmetatable(player)
 
-		-- Keep our model hack completely opaque to the outside world
-
-		local set_properties = PlayerRef.set_properties
-		function PlayerRef:set_properties(props)
-			if not self:is_player() then
-				return set_properties(self, props)
-			end
-			local old_mesh = props.mesh
-			props.mesh = static_model_names[old_mesh] or old_mesh
-			set_properties(self, props)
-			props.mesh = old_mesh
-		end
-
-		local get_properties = PlayerRef.get_properties
-		function PlayerRef:get_properties()
-			if not self:is_player() then
-				return get_properties(self)
-			end
-			local props = get_properties(self)
-			if not props then return nil end
-			props.mesh = animated_model_names[props.mesh] or props.mesh
-			return props
-		end
-
 		set_bone_position = PlayerRef.set_bone_position
 		function PlayerRef:set_bone_position(bonename, position, rotation)
 			if self:is_player() then
@@ -228,11 +172,7 @@ minetest.register_on_joinplayer(function(player)
 		end
 	end
 
-	-- First update `character_anim` with the current animation
-	-- which mods like `player_api` might have already set
-	-- (note: these two methods are already hooked)
-	player:set_animation(player:get_animation())
-	-- Then disable animation & local animation
+	-- Disable animation & local animation
 	local no_anim = {x = 0, y = 0}
 	set_animation(player, no_anim, 0, 0, false)
 	set_local_animation(player, no_anim, no_anim, no_anim, no_anim, 1)
@@ -259,22 +199,8 @@ local function normalize_rotation(euler_rotation)
 end
 
 function handle_player_animations(dtime, player)
-	if not player then return end -- HACK shouldn't be necessary?
-	local mesh
-	do
-		local props = player:get_properties()
-		if not props then
-			-- HACK inside on_joinplayer, the player object may be invalid
-			-- causing get_properties() to return nothing - just ignore this
-			return
-		end
-		mesh = props.mesh
-	end
-	if static_model_names[mesh] then
-		player:set_properties{mesh = mesh}
-	elseif animated_model_names[mesh] then
-		mesh = animated_model_names[mesh]
-	end
+	if not player or not player:get_properties() then return end
+	local mesh = player:get_properties().mesh
 	local model = models[mesh]
 	if not model then
 		return
@@ -299,13 +225,8 @@ function handle_player_animations(dtime, player)
 		keyframe = math.min(range_max, range_min + animation_time * frame_speed)
 	end
 	local bones = {}
-	local animated_bone_props = model:get_animated_bone_properties(keyframe, true)
-	local body_quaternion
-	for _, props in ipairs(animated_bone_props) do
+	for _, props in ipairs(model:get_animated_bone_properties(keyframe, true)) do
 		local bone = props.bone_name
-		if bone == "Body" then
-			body_quaternion = props.rotation
-		end
 		local position, rotation = modlib.vector.to_minetest(props.position), props.rotation
 		-- Invert quaternion to match Minetest's coordinate system
 		rotation = {-rotation[1], -rotation[2], -rotation[3], rotation[4]}
@@ -314,13 +235,13 @@ function handle_player_animations(dtime, player)
 	end
 	assert(bones.Body and bones.Head and bones.Arm_Right, "Player model is missing Body, Head or Arm_Right bones")
 	local Body, Head, Arm_Right = bones.Body.euler_rotation, bones.Head.euler_rotation, bones.Arm_Right.euler_rotation
-	local look_vertical = math.deg(player:get_look_vertical())
-	Head.x = -look_vertical
+	local look_vertical = -math.deg(player:get_look_vertical())
+	Head.x = look_vertical
 	local interacting = character_anim.is_interacting(player)
 	if interacting then
 		local interaction_time = player_animation.interaction_time
-		-- Note: -90 instead of -Arm_Right.x because it looks better
-		Arm_Right.x = -90 - look_vertical - math.sin(-interaction_time) * conf.arm_right.radius
+		-- Note: +90 instead of +Arm_Right.x because it looks better
+		Arm_Right.x = 90 + look_vertical - math.sin(-interaction_time) * conf.arm_right.radius
 		Arm_Right.y = Arm_Right.y + math.cos(-interaction_time) * conf.arm_right.radius
 		player_animation.interaction_time = interaction_time + dtime * math.rad(conf.arm_right.speed)
 	else
@@ -353,7 +274,7 @@ function handle_player_animations(dtime, player)
 			if interacting then rotate_relative(Arm_Right) end
 		end
 	elseif not modlib.table.nilget(rawget(_G, "player_api"), "player_attached", player:get_player_name()) then
-		Body.y = Body.y + lag_behind
+		Body.y = Body.y - lag_behind
 		Head.y = Head.y + lag_behind
 		if interacting then Arm_Right.y = Arm_Right.y + lag_behind end
 	end
@@ -410,12 +331,9 @@ function handle_player_animations(dtime, player)
 		swordrot.y = -swordrot.y
 		bones.Arm_Left.euler_rotation = swordrot
 	else
-		-- HACK this essentially only works for very character.b3d-like models;
-		-- it tries to find the (sole) X-rotation of the body relative to a subsequent (180°) Y-rotation.
-		local body_rotation = assert(assert(find_node(model.node, "Body")).rotation)
-		local body_x = quaternion.to_euler_rotation(modlib.quaternion.compose(body_rotation, body_quaternion)).x
-		Head.x = normalize_angle(Head.x - body_x)
-		if interacting then Arm_Right.x = normalize_angle(Arm_Right.x - body_x) end
+		-- HACK assumes that Body is root & parent bone of Head, only takes rotation around X-axis into consideration
+		Head.x = normalize_angle(Head.x + Body.x)
+		if interacting then Arm_Right.x = normalize_angle(Arm_Right.x - Body.x) end
 
 		Head.x = clamp(Head.x, conf.head.pitch)
 		Head.y = clamp(Head.y, conf.head.yaw)
@@ -424,7 +342,7 @@ function handle_player_animations(dtime, player)
 		end
 		Arm_Right.y = clamp(Arm_Right.y, conf.arm_right.yaw)
 	end
-
+	
 	-- Replace animation with serverside bone animation
 	for bone, values in pairs(bones) do
 		local overridden_values = player_animation.bone_positions[bone]

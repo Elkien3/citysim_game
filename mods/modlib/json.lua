@@ -1,9 +1,10 @@
-local modlib, setmetatable, pairs, assert, error, table_insert, table_concat, tonumber, tostring, math_huge, string, type, next
-	= modlib, setmetatable, pairs, assert, error, table.insert, table.concat, tonumber, tostring, math.huge, string, type, next
+local modlib, setmetatable, pairs, assert, error, table, table_insert, table_concat, tonumber, tostring, math_huge, string, type, next
+	= modlib, setmetatable, pairs, assert, error, table, table.insert, table.concat, tonumber, tostring, math.huge, string, type, next
 
 local _ENV = {}
 setfenv(1, _ENV)
 
+--! experimental
 -- See https://tools.ietf.org/id/draft-ietf-json-rfc4627bis-09.html#unichars and https://json.org
 
 -- Null
@@ -17,7 +18,7 @@ do
 	null = setmetatable({}, metatable)
 end
 
-local metatable = {__index = _ENV}
+local metatable = {__index = self}
 _ENV.metatable = metatable
 function new(self)
 	return setmetatable(self, metatable)
@@ -100,7 +101,7 @@ for i = 0, 5 do
 end
 
 -- TODO SAX vs DOM
-local utf8_char = modlib.utf8.char
+local utf8 = modlib.text.utf8
 function read(self, read_)
 	local index = 0
 	local char
@@ -148,7 +149,7 @@ function read(self, read_)
 		end
 	end
 	local function utf8_codepoint(codepoint)
-		return syntax_assert(utf8_char(codepoint), "invalid codepoint")
+		return syntax_assert(utf8(codepoint), "invalid codepoint")
 	end
 	local function string()
 		local chars = {}

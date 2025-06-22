@@ -1,13 +1,15 @@
 -- Localize globals
-local assert, error, ipairs, math_floor, math_abs, math_huge, modlib, next, pairs, setmetatable, string, table_insert, type, unpack
-	= assert, error, ipairs, math.floor, math.abs, math.huge, modlib, next, pairs, setmetatable, string, table.insert, type, unpack
+local assert, error, ipairs, math_floor, math_huge, modlib, next, pairs, setmetatable, string, table_insert, type, unpack
+	= assert, error, ipairs, math.floor, math.huge, modlib, next, pairs, setmetatable, string, table.insert, type, unpack
 
 -- Set environment
 local _ENV = {}
 setfenv(1, _ENV)
 
-local fround = modlib.math.fround
-local write_single, write_double = modlib.binary.write_single, modlib.binary.write_double
+--! experimental
+
+local no_op = modlib.func.no_op
+local write_float = modlib.binary.write_float
 
 local metatable = {__index = _ENV}
 
@@ -45,7 +47,7 @@ for _, type in ipairs{
 	{"number", 1};
 	{"string_constant", 1};
 	{"string", uint_types};
-	-- (M0, M8, M16, M32, M64) x (L0, L8, L16, L32, L64)
+	-- (T0, T8, T16, T32, T64) x (L0, L8, L16, L32, L64)
 	{"table", (uint_types + 1) ^ 2};
 	{"reference", uint_types}
 } do
@@ -120,8 +122,11 @@ function len(self, value)
 		if value % 1 == 0 then
 			return 1 + uint_len(value > 0 and value or -value)
 		end
+		-- HACK use write_float to get the length
 		local bytes = 4
-		if fround(value) ~= value then bytes = 8 end
+		write_float(no_op, value, function(double)
+			if double then bytes = 8 end
+		end)
 		return 1 + bytes
 	end
 	local id = object_ids[value]
@@ -179,14 +184,11 @@ function write(self, value, stream)
 		byte(base + type_offset)
 		uint(type_offset, _uint)
 	end
+	local function float_on_write(double)
+		byte(double and type_ranges.number or type_ranges.number_f32)
+	end
 	local function float(number)
-		if fround(number) == number then
-			byte(type_ranges.number_f32)
-			write_single(byte, number)
-		else
-			byte(type_ranges.number)
-			write_double(byte, number)
-		end
+		write_float(byte, number, float_on_write)
 	end
 	local aux_write = self.aux_write
 	local function _write(value)
@@ -201,7 +203,7 @@ function write(self, value, stream)
 				stream:write(constant_nan)
 				return
 			end
-			if value % 1 == 0 and math_abs(value) < 2^64 then
+			if value % 1 == 0 then
 				uint_with_type(value > 0 and type_ranges.number_constant or type_ranges.number_negative, value > 0 and value or -value)
 				return
 			end

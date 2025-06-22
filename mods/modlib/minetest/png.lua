@@ -17,19 +17,6 @@ local function bit_xor(a, b)
 	return res
 end
 
--- Try to use `bit` library (if available) for a massive speed boost
-local bit = rawget(_G, "bit")
-if bit then
-	local bxor = bit.bxor
-	function bit_xor(a, b)
-		local res = bxor(a, b)
-		if res < 0 then -- convert signed to unsigned
-			return res + 2^32
-		end
-		return res
-	end
-end
-
 local crc_table = {}
 for i = 0, 255 do
 	local c = i
@@ -90,7 +77,7 @@ local adam7_passes = {
 	y_min = { 0, 0, 4, 0, 2, 0, 1 },
 	x_step = { 8, 8, 4, 4, 2, 2, 1 },
 	y_step = { 8, 8, 8, 4, 4, 2, 2 },
-};
+}
 
 (...).decode_png = function(stream)
 	local chunk_crc

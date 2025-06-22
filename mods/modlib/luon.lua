@@ -1,13 +1,14 @@
--- Lua module to serialize values as Lua code
-
-local assert, error, rawget, pairs, pcall, type, setfenv, setmetatable, select, loadstring, loadfile
-	= assert, error, rawget, pairs, pcall, type, setfenv, setmetatable, select, loadstring, loadfile
-
-local table_concat, string_format, math_huge
-	= table.concat, string.format, math.huge
+local assert, next, pairs, pcall, error, type, table_insert, table_concat, string_format, string_match, setmetatable, select, setfenv, math_huge, loadfile, loadstring
+	= assert, next, pairs, pcall, error, type, table.insert, table.concat, string.format, string.match, setmetatable, select, setfenv, math.huge, loadfile, loadstring
 
 local count_objects = modlib.table.count_objects
 local is_identifier = modlib.text.is_identifier
+
+-- Build a table with the succeeding character from A-Z
+local succ = {}
+for char = ("A"):byte(), ("Z"):byte() - 1 do
+	succ[string.char(char)] = string.char(char + 1)
+end
 
 local function quote(string)
 	return string_format("%q", string)
@@ -30,93 +31,73 @@ end
 aux_read = {}
 
 function write(self, value, write)
-	-- TODO evaluate custom aux. writers *before* writing for circular structs
-	local reference, refnum = "1", 1
-	-- [object] = reference
-	local references = {}
-	-- Circular tables that must be filled using `table[key] = value` statements
-	local to_fill = {}
-
-	-- TODO (?) sort objects by count, give frequently referenced objects shorter references
-	for object, count in pairs(count_objects(value)) do
-		local type_ = type(object)
-		-- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
-		if count >= 2 and (type_ ~= "string" or #reference + 5 < #object) then
-			if refnum == 1 then
-				write"local _={};" -- initialize reference table
-			end
-			write"_["
-			write(reference)
-			write"]="
-			if type_ == "table" then
-				write"{}"
-			elseif type_ == "string" then
-				write(quote(object))
-			end
-			write";"
-			references[object] = reference
-			if type_ == "table" then
-				to_fill[object] = reference
-			end
-			refnum = refnum + 1
-			reference = string_format("%d", refnum)
+	local reference = {"A"}
+	local function increment_reference(place)
+		if not reference[place] then
+			reference[place] = "B"
+		elseif reference[place] == "Z" then
+			reference[place] = "A"
+			return increment_reference(place + 1)
+		else
+			reference[place] = succ[reference[place]]
 		end
 	end
-	-- Used to decide whether we should do "key=..."
-	local function use_short_key(key)
+	local references = {}
+	local to_fill = {}
+	-- TODO sort objects by count, give frequently referenced objects shorter references
+	for object, count in pairs(count_objects(value)) do
+		local type_ = type(object)
+		if count >= 2 and (type_ ~= "string" or #reference + 2 < #object) then
+			local ref = table_concat(reference)
+			write(ref)
+			write"="
+			write(type_ == "table" and "{}" or quote(object))
+			write";"
+			references[object] = ref
+			if type_ == "table" then
+				to_fill[object] = ref
+			end
+			increment_reference(1)
+		end
+	end
+	local function is_short_key(key)
 		return not references[key] and type(key) == "string" and is_identifier(key)
 	end
 	local function dump(value)
 		-- Primitive types
 		if value == nil then
 			return write"nil"
-		end if value == true then
+		end
+		if value == true then
 			return write"true"
-		end if value == false then
+		end
+		if value == false then
 			return write"false"
 		end
 		local type_ = type(value)
 		if type_ == "number" then
-			-- Explicit handling of special values for forwards compatibility
-			if value ~= value then -- nan
-				return write"0/0"
-			end if value == math_huge then
-				return write"1/0"
-			end if value == -math_huge then
-				return write"-1/0"
-			end
 			return write(string_format("%.17g", value))
 		end
 		-- Reference types: table and string
 		local ref = references[value]
 		if ref then
 			-- Referenced
-			write"_["
-			write(ref)
-			return write"]"
-		end if type_ == "string" then
+			return write(ref)
+		elseif type_ == "string" then
 			return write(quote(value))
-		end if type_ == "table" then
+		elseif type_ == "table" then
+			local first = true
 			write"{"
-			-- First write list keys:
-			-- Don't use the table length #value here as it may horribly fail
-			-- for tables which use large integers as keys in the hash part;
-			-- stop at the first "hole" (nil value) instead
-			local len = 0
-			local first = true -- whether this is the first entry, which may not have a leading comma
-			while true do
-				local v = rawget(value, len + 1) -- use rawget to avoid metatables like the vector metatable
-				if v == nil then break end
-				if first then first = false else write(",") end
-				dump(v)
-				len = len + 1
+			local len = #value
+			for i = 1, len do
+				if not first then write";" end
+				dump(value[i])
+				first = false
 			end
-			-- Now write map keys ([key] = value)
-			for k, v in pairs(value) do
-				-- We have written all non-float keys in [1, len] already
+			for k, v in next, value do
 				if type(k) ~= "number" or k % 1 ~= 0 or k < 1 or k > len then
-					if first then first = false else write(",") end
-					if use_short_key(k) then
+					if not first then write";" end
+					if is_short_key(k) then
 						write(k)
 					else
 						write"["
@@ -125,36 +106,36 @@ function write(self, value, write)
 					end
 					write"="
 					dump(v)
+					first = false
 				end
 			end
-			return write"}"
+			write"}"
+		else
+			-- TODO move aux_write to start, to allow dealing with metatables etc.?
+			(function(func, ...)
+				-- functions are the only way to deal with varargs
+				if not func then
+					return error("unsupported type: " .. type_)
+				end
+				write(func)
+				write"("
+				local n = select("#", ...)
+				local args = {...}
+				for i = 1, n - 1 do
+					dump(args[i])
+					write","
+				end
+				if n > 0 then
+					write(args[n])
+				end
+				write")"
+			end)(self:aux_write(value))
 		end
-		-- TODO move aux_write to start, to allow dealing with metatables etc.?
-		return (function(func, ...)
-			-- functions are the only way to deal with varargs
-			if not func then
-				return error("unsupported type: " .. type_)
-			end
-			write(func)
-			write"("
-			local n = select("#", ...)
-			for i = 1, n - 1 do
-				dump(select(i, ...))
-				write","
-			end
-			if n > 0 then
-				dump(select(n, ...))
-			end
-			write")"
-		end)(self:aux_write(value))
 	end
-	-- Write the statements to fill circular tables
 	for table, ref in pairs(to_fill) do
 		for k, v in pairs(table) do
-			write"_["
 			write(ref)
-			write"]"
-			if use_short_key(k) then
+			if is_short_key(k) then
 				write"."
 				write(k)
 			else
@@ -180,14 +161,15 @@ end
 function write_string(self, value)
 	local rope = {}
 	self:write(value, function(text)
-		rope[#rope + 1] = text
+		table_insert(rope, text)
 	end)
 	return table_concat(rope)
 end
 
 function read(self, ...)
 	local read = assert(...)
-	-- math.huge was serialized to inf, 0/0 was serialized to -nan by `%.17g`
+	-- math.huge is serialized to inf, 0/0 is serialized to -nan
+	-- TODO verify this is actually the case, see https://en.wikipedia.org/wiki/Printf_format_string
 	setfenv(read, setmetatable({inf = math_huge, nan = 0/0}, {__index = self.aux_read}))
 	local success, value_or_err = pcall(read)
 	if success then

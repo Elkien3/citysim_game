@@ -1,4 +1,4 @@
-modlib.mod.extend("trie")
+modlib.mod.extend("cmdlib", "trie")
 error_format = minetest.get_color_escape_sequence("#FF0000") .. "%s"
 success_format = minetest.get_color_escape_sequence("#00FF00") .. "%s"
 function scope_func(scope)
@@ -149,7 +149,7 @@ function register_chatcommand(name, def, override)
         end
     end
     if #scopes == 1 then
-        chatcommand_info[name] = modlib.table.copy(definition)
+        chatcommand_info[name] = modlib.table.tablecopy(definition)
         insert_info_by_mod(name)
         trie.insert(chatcommands, name, definition, override)
     else
@@ -234,7 +234,8 @@ function unregister_chatcommand(name)
     head_info[head_name] = nil
 end
 
-local function wrap_line(text, max)
+function wrap_text(text, max)
+    max = max or 80
     local res = {text}
     while res[#res]:len() > max do
         for i = max, 1, -1 do
@@ -246,18 +247,6 @@ local function wrap_line(text, max)
         end
     end
     return res
-end
-
-function wrap_text(text, max)
-    local lines = {}
-    for line in text:gmatch"[^\n]+" do
-        local wraps = wrap_line(line, max)
-        if #wraps > 1 and #lines > 1 then
-            table.insert(lines, "") -- add blank line
-        end
-        modlib.table.append(lines, wraps)
-    end
-    return lines
 end
 
 function handle_chat_message(sendername, message)
@@ -328,10 +317,7 @@ function build_info(chatcommands)
         newdef.is_mod = def.is_mod
         newdef.implicit_call = def.implicit_call
         newdef.description = def.description or ""
-        newdef.descriptions = wrap_text(def.description or "", 100)
-        if #newdef.descriptions > 1 then
-            table.insert(newdef.descriptions, "") -- add blank line
-        end
+        newdef.descriptions = wrap_text(def.description or "", 60)
         newdef.privs = next(newprivs) and newprivs
         newdef.forbidden_privs = next(newforbiddenprivs) and newforbiddenprivs
         newdef.params = def.params or ""
