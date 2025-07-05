@@ -7,3 +7,6 @@
 [submodule "mods/alpha_workaround_minus"]
 	path = mods/alpha_workaround_minus
 	url = https://codeberg.org/appgurueu/alpha_workaround_minus.git
+[submodule "mods/ecliptic_cycle"]
+	path = mods/ecliptic_cycle
+	url = https://github.com/Extex101/ecliptic_cycle.git
