@@ -141,7 +141,7 @@ local function update_punches()
 	jobs.storage:set_string("punches", minetest.serialize(jobs.punches))
 	minetest.after(punch_tick, update_punches)
 end
-update_punches()
+minetest.after(punch_tick, update_punches)
 
 local setup_form =
     "size[5,5]" ..
