@@ -116,7 +116,7 @@ local function update_punches()
 				goto next
 			end
 		end
-		if not jobs.players[name] or jobs.players[name][jobname] then jobs.punches[name] = nil goto next end
+		if not jobs.players[name] or not jobs.players[name][jobname] then jobs.punches[name] = nil goto next end
 		if not jobs.list[jobname].pay then jobs.punches[name] = nil goto next end
 		if not jobs.list[jobname].pay[jobs.players[name][jobname]] then jobs.punches[name] = nil goto next end
 		local pay = jobs.list[jobname].pay[jobs.players[name][jobname]]
