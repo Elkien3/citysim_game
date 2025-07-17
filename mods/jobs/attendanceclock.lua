@@ -107,18 +107,18 @@ end
 local function update_punches()
 	for name, data in pairs(jobs.punches) do
 		local jobname = data.jobname
-		if not jobname or not jobs.list[jobname] then jobs.punches[name] = nil return end
+		if not jobname or not jobs.list[jobname] then jobs.punches[name] = nil goto next end
 		local pos = data.pos
 		local player = minetest.get_player_by_name(name)
 		if data.dist then
 			if player and vector.distance(pos, player:getpos()) > data.dist then
 				jobs.punch(name, pos)
-				return
+				goto next
 			end
 		end
-		if not jobs.players[name] or jobs.players[name][jobname] then jobs.punches[name] = nil return end
-		if not jobs.list[jobname].pay then jobs.punches[name] = nil return end
-		if not jobs.list[jobname].pay[jobs.players[name][jobname]] then jobs.punches[name] = nil return end
+		if not jobs.players[name] or jobs.players[name][jobname] then jobs.punches[name] = nil goto next end
+		if not jobs.list[jobname].pay then jobs.punches[name] = nil goto next end
+		if not jobs.list[jobname].pay[jobs.players[name][jobname]] then jobs.punches[name] = nil goto next end
 		local pay = jobs.list[jobname].pay[jobs.players[name][jobname]]
 		if player then--todo check if player is inactive/afk
 			if data.inactivetime then data.inactivetime = nil end
@@ -127,7 +127,7 @@ local function update_punches()
 				data.shifttime = data.shifttime - punch_tick
 				if data.shifttime <= 0 then
 					jobs.punch(name, pos)
-					return
+					goto next
 				end
 			end
 		else
@@ -137,6 +137,7 @@ local function update_punches()
 				jobs.punch(name, pos)
 			end
 		end
+		::next::
 	end
 	jobs.storage:set_string("punches", minetest.serialize(jobs.punches))
 	minetest.after(punch_tick, update_punches)
