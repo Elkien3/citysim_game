@@ -136,7 +136,7 @@ minetest.register_chatcommand("getbiome", {
 	description = "Tells you the biome you are in",
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
-		return true, minetest.get_biome_name(minetest.get_biome_data(player:get_pos()).biome)
+		return true, player and minetest.get_biome_name(minetest.get_biome_data(player:get_pos()).biome)
 	end,
 })
 
