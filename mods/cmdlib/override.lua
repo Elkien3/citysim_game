@@ -3,15 +3,15 @@ minetest.original_override_chatcommand = minetest.override_chatcommand
 minetest.original_unregister_chatcommand = minetest.unregister_chatcommand
 
 function minetest_register_chatcommand_generator(override)
-    return function(name, def, override)
-        register_chatcommand(name, {
+    return function(name, def)
+        register_chatcommand(name, modlib.table.complete({
             description = def.description,
             privs = def.privs,
             params = def.params,
             custom_syntax = true,
             func = def.func,
             mod = def.mod_origin
-        }, override)
+        }, override and minetest.registered_chatcommands[name] or {}), override)
     end
 end
 
