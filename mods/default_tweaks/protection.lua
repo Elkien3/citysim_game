@@ -280,7 +280,7 @@ function minetest.is_protected(pos, name, placing, nodename)
 		return false
 	end
 	local nodename = minetest.get_node(pos).name
-	local player = minetest.get_player_by_name(name)
+	local player = name and minetest.get_player_by_name(name)
 	if player and player:is_player() then
 		local stack = player:get_wielded_item()
 		--minetest.chat_send_all(nodename.." "..tostring(list[nodename]))
