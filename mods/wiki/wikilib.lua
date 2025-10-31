@@ -188,8 +188,8 @@ function wikilib.get_wiki_page_formspec(player, name)
 	end
 
 	return ("size[16,10]"
-		.. "label[-0.1,0;Page]field_close_on_enter[Page;false]"
-		.. "field[1.5,0.1;13,1;page;;"..esc(name).."]"
+		.. "label[-0.1,0;Page]"
+		.. "field[1.5,0.1;13,1;page;;"..esc(name).."]field_close_on_enter[page;false]"
 		.. "button[14,0;1,0.5;go;Go]"
 		.. "button_exit[15,0;1,0.5;close;X]"
 		.. "textarea[0.2,1.1;12,9;text;"..esc(name)..";"..esc(text).."]"
