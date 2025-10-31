@@ -207,13 +207,18 @@ function wikilib.show_wiki_page(player, name)
 end
 
 minetest.register_node("wiki:wiki", {
-	description = "Wiki",
-	tiles = {
-		"default_wood.png", "default_wood.png",
-		"[combine:16x16:0,0=default_bookshelf.png:0,0=wiki_wiki_front.png"
+	description = "Computer",
+	tiles = { 'wiki_pc_top.png',
+		  'wiki_pc_bottom.png',
+		  'wiki_pc_left.png^[transformFX',
+		  'wiki_pc_left.png',
+		  'wiki_pc_back.png',
+		  'wiki_pc_front.png',
 	},
+	light_source = 2,
 	groups = { choppy=3, oddly_breakable_by_hand=2, flammable=3 },
 	sounds = default.node_sound_wood_defaults(),
+	paramtype2 = "facedir",
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", "Wiki")
@@ -235,11 +240,14 @@ minetest.register_privilege("wiki_admin", {
 	give_to_singleplayer = false,
 })
 
-local BS = "default:bookshelf"
-local BSL = { BS, BS }
+
 minetest.register_craft({
 	output = "wiki:wiki",
-	recipe = { BSL, BSL },
+	recipe = {
+	{"basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet"},
+	{"basic_materials:plastic_sheet", "xpanes:pane_flat", "basic_materials:plastic_sheet"},
+	{"basic_materials:ic", "basic_materials:energy_crystal_simple", "basic_materials:ic"}
+	}
 })
 
 function wikilib.handle_formspec(player, formname, fields)

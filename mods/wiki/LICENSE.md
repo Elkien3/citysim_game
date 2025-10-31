@@ -23,3 +23,8 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org/>
+
+Texture assets "wiki_pc_back.png", "wiki_pc_bottom.png" 
+"wiki_pc_left.png", "wiki_pc_top.png", and "wiki_pc_front.png"
+by vanadiumheart (https://github.com/vanadiumheart) and are 
+licensed under CC BY-NC-SA 4.0.
