@@ -39,6 +39,9 @@ local function doskinny(player, skindata)
 	local sd = skindata
 	if not sd then sd = minetest.deserialize(mod_storage:get_string(name)) end
 	if not sd or sd == "" then sd = defaultskin end
+	for attribute, val in pairs(defaultskin) do
+		if not sd[attribute] then sd[attribute] = val end
+	end
 	local skin
 	if spood_get_effect then
 		local speed, sideeffect = spood_get_effect(name)

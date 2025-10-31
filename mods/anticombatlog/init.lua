@@ -101,7 +101,7 @@ minetest.register_entity("anticombatlog:entity", {
 		if not bodytable[self.owner] then self.object:remove() return end
 		storage:set_string("bodytable", minetest.serialize(bodytable))
 		self.sleeping = deserialized.sleeping
-		self.time = deserialized.expiretime
+		self.time = deserialized.expiretime or os.time() + ghost_time
 		self.hp = deserialized.hp
 		self.steallist = deserialized.steallist
 		self.armor_groups = deserialized.armor_groups
