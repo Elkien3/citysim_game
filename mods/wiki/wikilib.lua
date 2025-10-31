@@ -255,6 +255,16 @@ function wikilib.handle_formspec(player, formname, fields)
 	if fields.quit or fields.close then return end
 	local plname = player:get_player_name()
 	if fields.save then
+		if wikilib.permission(fields.page, plname, true) then--allow owner of page to change owner or editors
+			if fields.owner ~= wikilib.owners[fields.page] then
+				if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (jobs and jobs.permissionstring(plname, fields.owner) ~= nil) then
+					wikilib.owners[fields.page] = fields.owner
+					wikilib.owners_save()
+				end
+			end
+			wikilib.editors[fields.page] = wikilib.split(fields.editors, ",")
+			wikilib.editors_save()
+		end
 		local r = save_page(fields.page, plname, fields.text)
 		if type(r) == "string" then
 			wikilib.show_wiki_page(plname, r)
@@ -267,7 +277,7 @@ function wikilib.handle_formspec(player, formname, fields)
 		return true
 	elseif fields.key_enter_field and wikilib.permission(fields.page, plname, true) then
 		if fields.key_enter_field == "owner" then
-			if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (not jobs or jobs.permissionstring(plname, fields.owner) ~= nil) then
+			if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (jobs and jobs.permissionstring(plname, fields.owner) ~= nil) then
 				wikilib.owners[fields.page] = fields.owner
 				wikilib.owners_save()
 				wikilib.show_wiki_page(plname, fields.page)
