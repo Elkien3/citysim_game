@@ -13,7 +13,7 @@ local capstage = 1000--you dont wear your arm out past this
 local ticktime = 86.4--you recover from digging one second every ticktime seconds
 
 local function updatestonestage()
-	local currenttime = os.time()
+	local currenttime = os.time() + 1
 	local addtime = math.floor((currenttime-lastupdated)/ticktime)
 	local update = false
 	for name, amount in pairs(stonestagetbl) do
