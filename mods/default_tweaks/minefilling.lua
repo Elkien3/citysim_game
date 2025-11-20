@@ -3,7 +3,7 @@ local fill_limit = -50
 
 --this tweak was not tested with large multiplayer use, so it may or may not be included based on effect on multiplayer world
 --it also adds (very little) meta to ALL blocks placed in natural caves.
-
+--[[
 local orig_func = minetest.remove_node
 function minetest.remove_node(pos)
 	local node = minetest.get_node(pos)
@@ -27,14 +27,14 @@ function minetest.remove_node(pos)
 	end
 	return val
 end
-
+--]]
 --todo: could make the filling sediment harden under pressure (when surrounded by all sides) into the biome stone
 local function get_biome_stone(pos)
 	local biomeid = minetest.get_biome_data(pos).biome
 	local biomename = minetest.get_biome_name(biomeid)
 	return minetest.registered_biomes[biomename].node_stone or "default:stone"
 end
-
+--[[
 local orig_func2 = minetest.set_node
 function minetest.add_node(pos, node)
 	local oldnode = minetest.get_node(pos)
@@ -51,7 +51,7 @@ function minetest.add_node(pos, node)
 	return val
 end
 minetest.set_node = minetest.add_node
-
+--]]
 minetest.register_node("default_tweaks:tunnel_filler", {
 	description = "Tunnel Filler",
 	groups = {not_in_creative_inventory = 1, light_replaceable = 1},
@@ -66,6 +66,16 @@ minetest.register_node("default_tweaks:tunnel_filler", {
 	buildable_to = true,
 	floodable = true,
 	on_blast = function(pos, intensity) return end,
+})
+
+minetest.register_lbm({
+    label = "Yeet tunnel filler"
+    name = "default_tweaks:filleryeet",
+    nodenames = {"default_tweaks:tunnel_filler"},
+    run_at_every_load = false,
+    action = function(pos, node, dtime_s)
+		minetest.remove_node(pos)
+	end
 })
 
 minetest.register_on_liquid_transformed(function(pos_list, node_list)
@@ -88,7 +98,7 @@ minetest.register_on_liquid_transformed(function(pos_list, node_list)
 		end
 	end
 end)
-
+--[[
 minetest.register_abm({
 	label = "Tunnel Filling",
 	nodenames = {"default_tweaks:tunnel_filler"},
@@ -129,4 +139,4 @@ minetest.register_abm({
 		minetest.set_node(pos, {name = (stone_tbl[biomestone] or "default:gravel")})
 		minetest.check_single_for_falling(pos)
 	end,
-})
+})--]]
