@@ -69,7 +69,7 @@ minetest.register_node("default_tweaks:tunnel_filler", {
 })
 
 minetest.register_lbm({
-    label = "Yeet tunnel filler"
+    label = "Yeet tunnel filler",
     name = "default_tweaks:filleryeet",
     nodenames = {"default_tweaks:tunnel_filler"},
     run_at_every_load = false,
