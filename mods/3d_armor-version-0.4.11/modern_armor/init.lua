@@ -15,6 +15,14 @@ armor:register_armor("modern_armor:vest_civilian", {
 	armor_groups = {fleshy=10},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("modern_armor:vest_construction", {
+	description = ("Construction Vest"),
+	inventory_image = "modern_armor_inv_vest_construction.png",
+	groups = {armor_torso=1, armor_heal=0, armor_use=800,
+		physics_speed=-0.00, physics_gravity=0.00},
+	armor_groups = {fleshy=5},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 armor:register_armor("modern_armor:vest_police", {
 	description = ("Police Soft Armor"),
 	inventory_image = "modern_armor_inv_vest_police.png",
@@ -64,6 +72,16 @@ armor:register_armor("modern_armor:helmet_construction", {
 	
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+
+armor:register_armor("modern_armor:helmet_police", {
+	description = ("Police Hat"),
+	inventory_image = "modern_armor_inv_helmet_police.png",
+	groups = {armor_head=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=4},
+	
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
 armor:register_armor("modern_armor:helmet_biker", {
 	description = ("Biker Helmet"),
 	inventory_image = "modern_armor_inv_helmet_biker.png",
@@ -91,6 +109,14 @@ minetest.register_craft({
 		{"modern_armor:kevlar","","modern_armor:kevlar"},
 		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"},
 		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:vest_construction",
+	recipe = {
+		{"wool:orange","","wool:orange"},
+		{"wool:yellow","technic:gold_dust","wool:yellow"},
+		{"wool:orange","homedecor:plastic_sheeting","wool:orange"}
 	}
 })
 minetest.register_craft({
@@ -138,6 +164,14 @@ minetest.register_craft({
 	recipe = {
 		{"homedecor:plastic_sheeting","homedecor:plastic_sheeting","homedecor:plastic_sheeting"},
 		{"homedecor:plastic_sheeting","wool:yellow","homedecor:plastic_sheeting"}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_police",
+	recipe = {
+		{"wool:blue","default:gold_ingot","wool:blue"},
+		{"wool:blue","homedecor:plastic_sheeting","wool:blue"},
+		{"","dye:black",""}
 	}
 })
 minetest.register_craft({

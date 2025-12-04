@@ -481,7 +481,7 @@ minetest.register_craft({
 })
 
 spriteguns.register_gun("spriteguns:coltarmy",{
-	description = "Colt  Army Revolver",
+	description = "Colt Army Revolver",
 	inventory_image = "coltarmy_inv.png",
 	zoomfov = 60,
 	scale = 7.5,
