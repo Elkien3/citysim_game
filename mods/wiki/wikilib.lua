@@ -189,7 +189,7 @@ function wikilib.get_wiki_page_formspec(player, name)
 
 	return ("size[16,10]"
 		.. "label[-0.1,0;Page]"
-		.. "field[1.5,0.1;13,1;page;;"..esc(name).."]"
+		.. "field[1.5,0.1;13,1;page;;"..esc(name).."]field_close_on_enter[page;false]"
 		.. "button[14,0;1,0.5;go;Go]"
 		.. "button_exit[15,0;1,0.5;close;X]"
 		.. "textarea[0.2,1.1;12,9;text;"..esc(name)..";"..esc(text).."]"
@@ -255,6 +255,16 @@ function wikilib.handle_formspec(player, formname, fields)
 	if fields.quit or fields.close then return end
 	local plname = player:get_player_name()
 	if fields.save then
+		if wikilib.permission(fields.page, plname, true) then--allow owner of page to change owner or editors
+			if fields.owner ~= wikilib.owners[fields.page] then
+				if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (jobs and jobs.permissionstring(plname, fields.owner) ~= nil) then
+					wikilib.owners[fields.page] = fields.owner
+					wikilib.owners_save()
+				end
+			end
+			wikilib.editors[fields.page] = wikilib.split(fields.editors, ",")
+			wikilib.editors_save()
+		end
 		local r = save_page(fields.page, plname, fields.text)
 		if type(r) == "string" then
 			wikilib.show_wiki_page(plname, r)
@@ -262,12 +272,12 @@ function wikilib.handle_formspec(player, formname, fields)
 			wikilib.show_wiki_page(plname, fields.page)
 		end
 		return true
-	elseif fields.go then
+	elseif fields.go or (fields.key_enter_field and fields.key_enter_field == "page") then
 		wikilib.show_wiki_page(plname, fields.page)
 		return true
 	elseif fields.key_enter_field and wikilib.permission(fields.page, plname, true) then
 		if fields.key_enter_field == "owner" then
-			if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (not jobs or jobs.permissionstring(plname, fields.owner) ~= nil) then
+			if minetest.player_exists(fields.owner) or fields.owner == ":public:" or (jobs and jobs.permissionstring(plname, fields.owner) ~= nil) then
 				wikilib.owners[fields.page] = fields.owner
 				wikilib.owners_save()
 				wikilib.show_wiki_page(plname, fields.page)
