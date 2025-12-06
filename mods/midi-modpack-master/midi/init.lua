@@ -353,6 +353,7 @@ minetest.register_chatcommand("midistopall", {
 minetest.register_chatcommand("midiconvert", {
 	description = "Convert midi file to Base64 string.",
 	params = "<midiname>",
+	privs = {server = true},
 	func = function(name, param)
 		local midi_name = param
 		if not midi_name then
