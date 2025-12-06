@@ -20,7 +20,7 @@ armor:register_armor("modern_armor:vest_construction", {
 	inventory_image = "modern_armor_inv_vest_construction.png",
 	groups = {armor_torso=1, armor_heal=0, armor_use=800,
 		physics_speed=-0.00, physics_gravity=0.00},
-	armor_groups = {fleshy=5},
+	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("modern_armor:vest_police", {
