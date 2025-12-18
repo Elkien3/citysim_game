@@ -70,6 +70,13 @@ armor:register_armor("clothes:shirt_swat", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:shirt_trenchcoat", {
+	description = ("Trenchcoat"),
+	inventory_image = "clothes_inv_shirt_trenchcoat.png",
+	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 register_dyed_clothes("clothes:shirt_buttonup", {
 	description = ("Button-Up Shirt"),
 	inventory_image = "clothes_inv_shirt_buttonup.png",
@@ -148,6 +155,20 @@ register_dyed_clothes("clothes:pants_sweatpants", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+register_dyed_clothes("clothes:pants_skirt", {
+	description = ("Knee Length Skirt"),
+	inventory_image = "clothes_inv_pants_skirt.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+register_dyed_clothes("clothes:pants_skirt_midi", {
+	description = ("Midi Skirt"),
+	inventory_image = "clothes_inv_pants_skirt_midi.png",
+	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 register_dyed_clothes("clothes:pants_shorts", {
 	description = ("Shorts"),
 	inventory_image = "clothes_inv_pants_shorts.png",
@@ -197,6 +218,34 @@ armor:register_armor("clothes:hat_sunglasses", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("clothes:hat_military", {
+	description = ("Military Cap"),
+	inventory_image = "clothes_inv_hat_military.png",
+	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:hat_cowboy", {
+	description = ("Cowboy Hat"),
+	inventory_image = "clothes_inv_hat_cowboy.png",
+	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=100, abovehair = 1},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:hat_cowboy_white", {
+	description = ("Cowboy Hat (White)"),
+	inventory_image = "clothes_inv_hat_cowboy_white.png",
+	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=100, abovehair = 1},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:hat_fedora", {
+	description = ("Fedora"),
+	inventory_image = "clothes_inv_hat_fedora.png",
+	groups = {armor_head=2, clothing=1, armor_heal=0, armor_use=100, abovehair = 1},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 register_dyed_clothes("clothes:boots_sneakers", {
 	description = ("Sneakers"),
 	inventory_image = "clothes_inv_boots_sneakers.png",
@@ -215,6 +264,13 @@ armor:register_armor("clothes:boots_police", {
 armor:register_armor("clothes:boots_kneehigh", {
 	description = ("Kneehigh Boots"),
 	inventory_image = "clothes_inv_boots_kneehigh.png",
+	groups = {armor_feet=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:boots_woodland", {
+	description = ("Woodland Boots"),
+	inventory_image = "clothes_inv_boots_woodland.png",
 	groups = {armor_feet=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
@@ -241,6 +297,14 @@ register_dyed_clothes("clothes:shirt_suit", {
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+register_dyed_clothes("clothes:shirt_dress_midi", {
+	description = ("Midi Swing Dress"),
+	inventory_image = "clothes_inv_shirt_dress_midi.png",
+	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
 register_dyed_clothes("clothes:pants_suit", {
 	description = ("Suit Pants"),
 	inventory_image = "clothes_inv_pants_suit.png",
@@ -271,32 +335,46 @@ armor:register_armor("clothes:pants_black", {
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("clothes:pants_firefighter", {
-	description = ("Firefighter Pants"),
+	description = ("Firefighter Trousers"),
 	inventory_image = "clothes_inv_pants_firefighter.png",
 	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("clothes:shirt_firefighter", {
-	description = ("Firefighter Shirt"),
+	description = ("Firefighter Coat"),
 	inventory_image = "clothes_inv_shirt_firefighter.png",
 	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("clothes:pants_firefighter2", {
-	description = ("Firefighter Pants 2"),
+	description = ("Firefighter Trousers (Black)"),
 	inventory_image = "clothes_inv_pants_firefighter2.png",
 	groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 armor:register_armor("clothes:shirt_firefighter2", {
-	description = ("Firefighter Shirt 2"),
+	description = ("Firefighter Coat (Black)"),
 	inventory_image = "clothes_inv_shirt_firefighter2.png",
 	groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
 	armor_groups = {fleshy=0},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:shirt_firefighteruniform", {
+    description = ("Firefighter Uniform Shirt"),
+    inventory_image = "clothes_inv_shirt_firefighteruniform.png",
+    groups = {armor_torso=2, clothing=1, armor_heal=0, armor_use=100},
+    armor_groups = {fleshy=0},
+    damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("clothes:pants_firefighteruniform", {
+    description = ("Firefighter Uniform Pants"),
+    inventory_image = "clothes_inv_pants_firefighteruniform.png",
+    groups = {armor_legs=2, clothing=1, armor_heal=0, armor_use=100},
+    armor_groups = {fleshy=0},
+    damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 
 for itemstring, def in pairs(minetest.registered_items) do
