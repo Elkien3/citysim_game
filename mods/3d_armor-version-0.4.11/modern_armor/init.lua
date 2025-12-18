@@ -82,6 +82,15 @@ armor:register_armor("modern_armor:helmet_police", {
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 
+armor:register_armor("modern_armor:helmet_firefighter", {
+	description = ("Firefighter Helmet"),
+	inventory_image = "modern_armor_inv_helmet_firefighter.png",
+	groups = {armor_head=1, armor_heal=0, armor_use=800, abovehair = 1},
+	armor_groups = {fleshy=4},
+	
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
 armor:register_armor("modern_armor:helmet_biker", {
 	description = ("Biker Helmet"),
 	inventory_image = "modern_armor_inv_helmet_biker.png",
@@ -172,6 +181,14 @@ minetest.register_craft({
 		{"wool:blue","default:gold_ingot","wool:blue"},
 		{"wool:blue","homedecor:plastic_sheeting","wool:blue"},
 		{"","dye:black",""}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_firefighter",
+	recipe = {
+		{"homedecor:plastic_sheeting","default:gold_ingot","homedecor:plastic_sheeting"},
+		{"homedecor:plastic_sheeting","modern_armor:kevlar","homedecor:plastic_sheeting"},
+		{"modern_armor:kevlar","wool:red","modern_armor:kevlar"}
 	}
 })
 minetest.register_craft({

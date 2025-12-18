@@ -206,7 +206,7 @@ minetest.register_node("oil:tar", {
 })
 minetest.register_craftitem("oil:tar_item", {
 	description = "Tar",
-	inventory_image = "cars_oil_source.png",
+	inventory_image = "cars_oil_tar_item.png",
 })
 minetest.register_craft({
 	recipe = {
@@ -237,7 +237,7 @@ bucket.register_liquid(
 	"oil:gasoline_source",
 	"oil:gasoline_flowing",
 	"oil:bucket_gasoline",
-	"bucket_water.png",
+	"bucket_gasoline.png",
 	"Gasoline Bucket",
 	{tool = 1, gasoline_bucket = 1}
 )
@@ -245,7 +245,7 @@ bucket.register_liquid(
 	"oil:oil_source",
 	"oil:oil_flowing",
 	"oil:bucket_oil",
-	"bucket_water.png",
+	"bucket_oil.png",
 	"Oil Bucket",
 	{tool = 1, oil_bucket = 1}
 )
