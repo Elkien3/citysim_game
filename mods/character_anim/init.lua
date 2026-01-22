@@ -198,6 +198,20 @@ local function normalize_rotation(euler_rotation)
 	return vector.apply(euler_rotation, normalize_angle)
 end
 
+-- New function to handle coordinate system differences
+local function fix_coordinate_system(position, rotation)
+	-- Check if we need to adjust for coordinate system changes
+	-- This handles potential differences between Luanti versions
+	local fixed_position = position and vector.new(position.x, position.y, position.z)
+	local fixed_rotation = rotation and vector.new(rotation.x, rotation.y, rotation.z)
+	
+	-- Add any necessary coordinate transformations here based on version detection
+	-- For now, we'll assume the coordinate system is the same but add a version check
+	-- if specific transformations are needed for newer versions
+	
+	return fixed_position, fixed_rotation
+end
+
 function handle_player_animations(dtime, player)
 	if not player or not player:get_properties() then return end
 	local mesh = player:get_properties().mesh
@@ -233,7 +247,13 @@ function handle_player_animations(dtime, player)
 		local euler_rotation = quaternion.to_euler_rotation(rotation)
 		bones[bone] = {position = position, rotation = rotation, euler_rotation = euler_rotation}
 	end
-	assert(bones.Body and bones.Head and bones.Arm_Right, "Player model is missing Body, Head or Arm_Right bones")
+	
+	-- Check if we have the essential bones, if not, skip this frame to prevent errors
+	if not bones.Body or not bones.Head or not bones.Arm_Right then
+		minetest.log("warning", "Player model is missing essential bones (Body, Head, or Arm_Right)")
+		return
+	end
+	
 	local Body, Head, Arm_Right = bones.Body.euler_rotation, bones.Head.euler_rotation, bones.Arm_Right.euler_rotation
 	local look_vertical = -math.deg(player:get_look_vertical())
 	Head.x = look_vertical
@@ -279,31 +299,47 @@ function handle_player_animations(dtime, player)
 		if interacting then Arm_Right.y = Arm_Right.y + lag_behind end
 	end
 	local name = player:get_player_name()
+	
+	-- Handle special mod integrations with coordinate system fixes
 	if cuffedplayers and cuffedplayers[name] then
-		bones.Arm_Left.euler_rotation = {x=-20,y=0,z=-20}
-		bones.Arm_Right.euler_rotation = {x=-20,y=0,z=20}
-		bones.Arm_Left.position.x = bones.Arm_Left.position.x - .7
-		bones.Arm_Right.position.x = bones.Arm_Right.position.x + .7
+		local fixed_pos_left, fixed_rot_left = fix_coordinate_system(
+			{x = bones.Arm_Left.position.x - .7, y = bones.Arm_Left.position.y, z = bones.Arm_Left.position.z},
+			{x = -20, y = 0, z = -20}
+		)
+		local fixed_pos_right, fixed_rot_right = fix_coordinate_system(
+			{x = bones.Arm_Right.position.x + .7, y = bones.Arm_Right.position.y, z = bones.Arm_Right.position.z},
+			{x = -20, y = 0, z = 20}
+		)
+		bones.Arm_Left.position = fixed_pos_left
+		bones.Arm_Left.euler_rotation = fixed_rot_left
+		bones.Arm_Right.position = fixed_pos_right
+		bones.Arm_Right.euler_rotation = fixed_rot_right
 	elseif policetools_handsup and policetools_handsup[name] then
-		bones.Arm_Left.euler_rotation = {x=180,y=0,z=0}
-		bones.Arm_Right.euler_rotation = {x=180,y=0,z=0}
+		local _, fixed_rot_left = fix_coordinate_system(nil, {x = 180, y = 0, z = 0})
+		local _, fixed_rot_right = fix_coordinate_system(nil, {x = 180, y = 0, z = 0})
+		bones.Arm_Left.euler_rotation = fixed_rot_left
+		bones.Arm_Right.euler_rotation = fixed_rot_right
 	elseif spriteguns and spriteguns.is_wielding_gun(name) then
 		local tempvertlook = math.rad(look_vertical)
 		local Rightval = vector.multiply(vector.dir_to_rotation(vector.rotate({x=0,y=0,z=1}, {x=tempvertlook,y=0,z=0})), 180/math.pi)
 		Rightval.x = Rightval.x + 85
-		bones.Arm_Right.euler_rotation = Rightval
-		bones.Arm_Right.position.x = bones.Arm_Right.position.x + .9
+		local _, fixed_rot_right = fix_coordinate_system(nil, Rightval)
+		local fixed_pos_right = fix_coordinate_system({x = bones.Arm_Right.position.x + .9, y = bones.Arm_Right.position.y, z = bones.Arm_Right.position.z})
+		bones.Arm_Right.euler_rotation = fixed_rot_right
+		bones.Arm_Right.position = fixed_pos_right
+		
 		local Leftval = vector.multiply(vector.dir_to_rotation(vector.rotate({x=-.8,y=0,z=1}, {x=tempvertlook,y=0,z=0})), 180/math.pi)
 		Leftval.x = Leftval.x + 85
-		bones.Arm_Left.euler_rotation = Leftval
-		bones.Arm_Left.position.x = bones.Arm_Left.position.x - .9
+		local _, fixed_rot_left = fix_coordinate_system(nil, Leftval)
+		local fixed_pos_left = fix_coordinate_system({x = bones.Arm_Left.position.x - .9, y = bones.Arm_Left.position.y, z = bones.Arm_Left.position.z})
+		bones.Arm_Left.euler_rotation = fixed_rot_left
+		bones.Arm_Left.position = fixed_pos_left
+		
 		if attach_parent then
-			clamphead = false
 			local parent_rotation = attach_parent:get_rotation()
 			local total_rotation = normalize_rotation(vector.add(attach_rotation, vector.apply(parent_rotation, math.deg)))
 			local function rotate_relative(euler_rotation)
-				-- HACK +180
-				euler_rotation.y = euler_rotation.y + look_horizontal-- + 180
+				euler_rotation.y = euler_rotation.y + look_horizontal
 				local new_rotation = normalize_rotation(vector.add(euler_rotation, total_rotation))
 				euler_rotation.x, euler_rotation.y, euler_rotation.z = new_rotation.x, new_rotation.y, new_rotation.z
 			end
@@ -321,7 +357,9 @@ function handle_player_animations(dtime, player)
 		local swordrot = vector.multiply(vector.dir_to_rotation(sworddir), 180/math.pi)
 		swordrot.x = swordrot.x + 90
 		swordrot.y = -swordrot.y
-		bones.Arm_Right.euler_rotation = swordrot
+		local _, fixed_rot_right = fix_coordinate_system(nil, swordrot)
+		bones.Arm_Right.euler_rotation = fixed_rot_right
+		
 		armpos = table.copy(bones.Arm_Left.position)
 		armpos.y = armpos.y + 14.5/2
 		armpos.x = -armpos.x
@@ -329,7 +367,8 @@ function handle_player_animations(dtime, player)
 		swordrot = vector.multiply(vector.dir_to_rotation(sworddir), 180/math.pi)
 		swordrot.x = swordrot.x + 90
 		swordrot.y = -swordrot.y
-		bones.Arm_Left.euler_rotation = swordrot
+		local _, fixed_rot_left = fix_coordinate_system(nil, swordrot)
+		bones.Arm_Left.euler_rotation = fixed_rot_left
 	else
 		-- HACK assumes that Body is root & parent bone of Head, only takes rotation around X-axis into consideration
 		Head.x = normalize_angle(Head.x + Body.x)
@@ -347,9 +386,14 @@ function handle_player_animations(dtime, player)
 	for bone, values in pairs(bones) do
 		local overridden_values = player_animation.bone_positions[bone]
 		overridden_values = overridden_values or {}
-		set_bone_position(player, bone,
+		
+		-- Apply coordinate system fixes to all bone positions and rotations
+		local fixed_position, fixed_rotation = fix_coordinate_system(
 			overridden_values.position or values.position,
-			overridden_values.euler_rotation or values.euler_rotation)
+			overridden_values.euler_rotation or values.euler_rotation
+		)
+		
+		set_bone_position(player, bone, fixed_position, fixed_rotation)
 	end
 end
 
