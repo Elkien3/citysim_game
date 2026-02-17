@@ -293,7 +293,7 @@ local function updatetextures(self, def)
 end
 
 local function remove_towline(car)
-	if not car and not car.towline and not car.get_luaentity then return end
+	if not car or not car.towline or not car.get_luaentity then return end
 	if not car.towline then car = car:get_luaentity() end
 	local ent = car.towline
 	if ent.finishobj and ent.finishobj.get_luaentity and ent.finishobj:get_luaentity() then
@@ -1770,6 +1770,7 @@ function cars_register_car(def)
 			if self.drillsound then
 				minetest.sound_fade(self.drillsound, 10, 0)
 			end
+			remove_towline(self)
 			if removal then
 				for id, wheel in pairs(self.wheel) do
 					wheel:remove()
