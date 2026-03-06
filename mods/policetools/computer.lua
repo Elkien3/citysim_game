@@ -569,12 +569,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if button == "approve" then
 				if apptbl.clearer then--its a warrant or citation clear request
 					if apptbl.fine and citations[apptbl.subject] and citations[apptbl.subject][apptbl.id] then
-							table.remove(citations[apptbl.subject], apptbl.id)
-							if #citations[apptbl.subject] == 0 then
-								citations[apptbl.subject] = nil
-							end
-							storage:set_string("citations", minetest.serialize(citations))
+						table.remove(citations[apptbl.subject], apptbl.id)
+						if #citations[apptbl.subject] == 0 then
+							citations[apptbl.subject] = nil
 						end
+						storage:set_string("citations", minetest.serialize(citations))
 					elseif not apptbl.fine and warrants[apptbl.subject] and warrants[apptbl.subject][apptbl.id] then
 						warrants[apptbl.subject][apptbl.id].clearer = apptbl.clearer
 						warrants[apptbl.subject][apptbl.id].clearapprover = name
