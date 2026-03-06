@@ -102,14 +102,12 @@ local function tbl_length(tbl)
 	return i
 end
 
-local function fix_approval_ids(name, id, is_citation)
+local function fix_approval_ids()
 	local save = false
 	for appid, apptbl in pairs(approvals) do
-		if apptbl.id and apptbl.subject == name and ((apptbl.fine and is_citation) or (not apptbl.fine and not is_citation)) then
-			if id < apptbl.id then
-				approvals[appid].id = approvals[appid].id - 1
-				save = true
-			end
+		if apptbl.id ~= appid then
+			approvals[appid].id = appid
+			save = true
 		end
 	end
 	if save then
@@ -457,7 +455,6 @@ function pages.playerwarrants(name)
 	for id, tbl in pairs(plwarrants) do--recently cleared
 		if tbl.cleartime and (os.time()-tbl.cleartime)/86400 > 60 then--warrant was cleared more than 60 days ago, remove.
 			table.remove(plwarrants, id)
-			fix_approval_ids(form_table[name].name, id, false)
 			savewarrants = true
 		elseif tbl.clearer then
 			local infostring = string.format("Warrant: %s, issued by %s, approved by %s %s ago, cleared by %s and approved by %s %s ago.", tbl.law, tbl.issuer, tbl.approver, get_time_string(tbl.issuetime), tbl.clearer, tbl.clearapprover, get_time_string(tbl.cleartime))
@@ -570,23 +567,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if rank < apptbl.minrank then tbl.error = "Rank too low" show_police_formspec(name) return end
 			if (rank ~= 4 and button ~= "escalate") and (apptbl.issuer == name or apptbl.subject == name) then tbl.error = "Self approve/reject" show_police_formspec(name) return end--only allow chief to self approve/reject, allow people to escalate their own approval requests.
 			if button == "approve" then
-				if apptbl.fine then
-					update_form("citations")
-					update_form("playercitations", apptbl.subject)
-				else
-					update_form("warrants")
-					update_form("playerwarrants", apptbl.subject)
-				end
-				update_form("playerfile", apptbl.subject)
 				if apptbl.clearer then--its a warrant or citation clear request
-					if apptbl.fine then
-						table.remove(citations[apptbl.subject], apptbl.id)
-						if #citations[apptbl.subject] == 0 then
-							citations[apptbl.subject] = nil
+					if apptbl.fine and citations[apptbl.subject] and citations[apptbl.subject][apptbl.id] then
+							table.remove(citations[apptbl.subject], apptbl.id)
+							if #citations[apptbl.subject] == 0 then
+								citations[apptbl.subject] = nil
+							end
+							storage:set_string("citations", minetest.serialize(citations))
 						end
-						fix_approval_ids(apptbl.subject, apptbl.id, true)
-						storage:set_string("citations", minetest.serialize(citations))
-					else
+					elseif not apptbl.fine and warrants[apptbl.subject] and warrants[apptbl.subject][apptbl.id] then
 						warrants[apptbl.subject][apptbl.id].clearer = apptbl.clearer
 						warrants[apptbl.subject][apptbl.id].clearapprover = name
 						warrants[apptbl.subject][apptbl.id].cleartime = os.time()
@@ -606,9 +595,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 						storage:set_string("warrants", minetest.serialize(warrants))
 					end
 				end
+				
+				if apptbl.fine then
+					update_form("citations")
+					update_form("playercitations", apptbl.subject)
+				else
+					update_form("warrants")
+					update_form("playerwarrants", apptbl.subject)
+				end
+				update_form("playerfile", apptbl.subject)
+				
 				table.remove(approvals, id)
+				fix_approval_ids(apptbl.subject, apptbl.id, true)
+				
 			elseif button == "reject" then
 				table.remove(approvals, id)
+				fix_approval_ids(apptbl.subject, apptbl.id, true)
 			else--escalate
 				apptbl.minrank = math.min(apptbl.minrank+1, 4)
 			end
