@@ -1025,6 +1025,7 @@ function spriteguns.register_magazine(magazine, ammunition, size)
 end
 local oldfunc3 = minetest.get_craft_result
 minetest.get_craft_result = function(input)
+	if not input then minetest.log("Missing input for autocrafter") return end
 	local output, decremented_input = oldfunc3(input)
 	if input and input.items then
 		for i, item in pairs(input.items) do
