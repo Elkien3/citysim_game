@@ -198,13 +198,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if minetest.check_player_privs(name, interact.priv) and not (interacthandler and interacthandler.player[name]) then
 			minetest.chat_send_player(name, rule_table[language].interact_msg1)
 			minetest.chat_send_player(name, rule_table[language].interact_msg2)
-			local privs = minetest.get_player_privs(name)
-			privs.interact = true
-			minetest.set_player_privs(name, privs)
-			minetest.log("action", "Granted " ..name.. " interact.")
-			minetest.chat_send_all(name.. " passed the rules test, welcome him/her into CitySim")
+			--local privs = minetest.get_player_privs(name)
+			--privs.interact = true
+			--minetest.set_player_privs(name, privs)
+			--minetest.log("action", "Granted " ..name.. " interact.")
+			minetest.chat_send_all(name.. " passed the rules test, grant him/her interact and welcome him/her into CitySim")
 			if minetest.get_modpath("irc") ~= nil then
-				irc.say(name.. " passed the rules test, welcome him/her into CitySim")
+				irc.say(name..  " passed the rules test, grant him/her interact and welcome him/her into CitySim")
 			end
 		end
 	elseif fields.submit then
