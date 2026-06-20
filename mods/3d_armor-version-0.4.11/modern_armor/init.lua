@@ -15,6 +15,22 @@ armor:register_armor("modern_armor:vest_civilian", {
 	armor_groups = {fleshy=10},
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
+armor:register_armor("modern_armor:vest_civilian_white", {
+	description = ("Civilian Soft Armor (White)"),
+	inventory_image = "modern_armor_inv_vest_civilian_white.png",
+	groups = {armor_torso=1, armor_heal=0, armor_use=800,
+		physics_speed=-0.04, physics_gravity=0.04},
+	armor_groups = {fleshy=10},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+armor:register_armor("modern_armor:vest_civilian_darkgrey", {
+	description = ("Civilian Soft Armor (Dark Grey)"),
+	inventory_image = "modern_armor_inv_vest_civilian_darkgrey.png",
+	groups = {armor_torso=1, armor_heal=0, armor_use=800,
+		physics_speed=-0.04, physics_gravity=0.04},
+	armor_groups = {fleshy=10},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
 armor:register_armor("modern_armor:vest_construction", {
 	description = ("Construction Vest"),
 	inventory_image = "modern_armor_inv_vest_construction.png",
@@ -64,10 +80,37 @@ armor:register_armor("modern_armor:helmet_military", {
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 
+armor:register_armor("modern_armor:helmet_riot_swat", {
+	description = ("Riot Helmet"),
+	inventory_image = "modern_armor_inv_helmet_riot_swat.png",
+	groups = {armor_head=1, armor_heal=5, armor_use=800,
+		physics_speed=-0.01, physics_gravity=0.01},
+	armor_groups = {fleshy=5},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
+armor:register_armor("modern_armor:boots_riotshield", {
+	description = ("Riot Shield"),
+	inventory_image = "modern_armor_inv_boots_riotshield.png",
+	groups = {armor_feet=3, armor_heal=10, armor_use=800,
+		physics_speed=-0.04, physics_gravity=0.04},
+	armor_groups = {fleshy=3},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
 armor:register_armor("modern_armor:helmet_construction", {
 	description = ("Construction Helmet"),
 	inventory_image = "modern_armor_inv_helmet_construction.png",
 	groups = {armor_head=1, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=3},
+	
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
+armor:register_armor("modern_armor:helmet_welding", {
+	description = ("Welding Mask"),
+	inventory_image = "modern_armor_inv_helmet_welding.png",
+	groups = {armor_head=1, armor_heal=2, armor_use=800},
 	armor_groups = {fleshy=3},
 	
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
@@ -99,6 +142,22 @@ armor:register_armor("modern_armor:helmet_biker", {
 	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
 })
 
+armor:register_armor("modern_armor:helmet_anon", {
+	description = ("Fawkes Mask"),
+	inventory_image = "modern_armor_inv_helmet_anon.png",
+	groups = {armor_head=2, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
+armor:register_armor("modern_armor:helmet_clown", {
+	description = ("Clown Mask"),
+	inventory_image = "modern_armor_inv_helmet_clown.png",
+	groups = {armor_head=2, armor_heal=0, armor_use=800},
+	armor_groups = {fleshy=0},
+	damage_groups = {cracky=2, snappy=3, choppy=2, crumbly=1, level=2},
+})
+
 if enable_craft then
 minetest.register_craftitem("modern_armor:kevlar", {
 	description = "Kevlar",
@@ -116,6 +175,22 @@ minetest.register_craft({
 	output = "modern_armor:vest_civilian",
 	recipe = {
 		{"modern_armor:kevlar","","modern_armor:kevlar"},
+		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"},
+		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:vest_civilian_white",
+	recipe = {
+		{"modern_armor:kevlar","dye:white","modern_armor:kevlar"},
+		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"},
+		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:vest_civilian_darkgrey",
+	recipe = {
+		{"modern_armor:kevlar","dye:dark_grey","modern_armor:kevlar"},
 		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"},
 		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"}
 	}
@@ -156,8 +231,24 @@ minetest.register_craft({
 	output = "modern_armor:helmet_swat",
 	recipe = {
 		{"modern_armor:kevlar","modern_armor:kevlar","modern_armor:kevlar"},
-		{"modern_armor:kevlar","default:glass","modern_armor:kevlar"},
+		{"modern_armor:kevlar","homedecor:plastic_sheeting","modern_armor:kevlar"},
 		{"default:steel_ingot","",""}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_riot_swat",
+	recipe = {
+		{"homedecor:plastic_sheeting","homedecor:plastic_sheeting","homedecor:plastic_sheeting"},
+		{"technic:stainless_steel_ingot","modern_armor:helmet_swat","technic:stainless_steel_ingot"},
+		{"","default:obsidian_glass",""}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:boots_riotshield",
+	recipe = {
+		{"homedecor:plastic_sheeting","default:obsidian_glass","homedecor:plastic_sheeting"},
+		{"modern_armor:kevlar","technic:stainless_steel_ingot","modern_armor:kevlar"},
+		{"modern_armor:kevlar","technic:copper_plate","modern_armor:kevlar"}
 	}
 })
 minetest.register_craft({
@@ -173,6 +264,14 @@ minetest.register_craft({
 	recipe = {
 		{"homedecor:plastic_sheeting","homedecor:plastic_sheeting","homedecor:plastic_sheeting"},
 		{"homedecor:plastic_sheeting","wool:yellow","homedecor:plastic_sheeting"}
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_welding",
+	recipe = {
+		{"basic_materials:steel_strip","default:steel_ingot","basic_materials:steel_strip"},
+		{"basic_materials:steel_strip","default:obsidian_glass","basic_materials:steel_strip"},
+		{"basic_materials:steel_strip","default:steel_ingot","basic_materials:steel_strip"}
 	}
 })
 minetest.register_craft({
@@ -197,6 +296,22 @@ minetest.register_craft({
 		{"homedecor:plastic_sheeting","homedecor:plastic_sheeting","homedecor:plastic_sheeting"},
 		{"homedecor:plastic_sheeting","default:glass","homedecor:plastic_sheeting"},
 		{"homedecor:plastic_sheeting","wool:black","homedecor:plastic_sheeting"},
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_anon",
+	recipe = {
+		{"dye:black","homedecor:plastic_sheeting","dye:black"},
+		{"homedecor:plastic_sheeting","dye:black","homedecor:plastic_sheeting"},
+		{"","homedecor:plastic_sheeting",""},
+	}
+})
+minetest.register_craft({
+	output = "modern_armor:helmet_clown",
+	recipe = {
+		{"dye:blue","homedecor:plastic_sheeting","dye:red"},
+		{"homedecor:plastic_sheeting","dye:red","homedecor:plastic_sheeting"},
+		{"","homedecor:plastic_sheeting",""},
 	}
 })
 end
