@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Object UUIDs API Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/api.html">api</a></li>
+  <li><a href="../modules/init.html">init</a></li>
+  <li><a href="../modules/internal.html">internal</a></li>
+  <li><a href="../modules/patches.html">patches</a></li>
+  <li><strong>util</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>util</code></h1>
+<p>Generic utility functions.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.util.patch_entity_def">objectuuids.util.patch_entity_def (def, patches)</a></td>
+	<td class="summary">Applies a patch to an entity definition.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.util.canonicalise_uuid">objectuuids.util.canonicalise_uuid (uuid)</a></td>
+	<td class="summary">Canonicalises and validates a UUID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.util.generate_uuid4">objectuuids.util.generate_uuid4 (random)</a></td>
+	<td class="summary">Generates a version 4 (random) UUID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.util.generate_uuid5">objectuuids.util.generate_uuid5 (namespace, name)</a></td>
+	<td class="summary">Generates a version 5 (SHA-1) UUID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.util.uuid_to_bytes">objectuuids.util.uuid_to_bytes (uuid)</a></td>
+	<td class="summary">Converts a UUID to a packed binary representation.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "objectuuids.util.patch_entity_def"></a>
+    <strong>objectuuids.util.patch_entity_def (def, patches)</strong>
+    </dt>
+    <dd>
+    Applies a patch to an entity definition.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">def</span>
+             [table] The entity definition table. Modified in-place.
+        </li>
+        <li><span class="parameter">patches</span>
+         [table] A table of functions. Each function receives the original function as its first argument.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.util.canonicalise_uuid"></a>
+    <strong>objectuuids.util.canonicalise_uuid (uuid)</strong>
+    </dt>
+    <dd>
+    Canonicalises and validates a UUID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uuid</span>
+         [string] A UUID, in lenient form.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] The same UUID, in strict form.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.util.generate_uuid4"></a>
+    <strong>objectuuids.util.generate_uuid4 (random)</strong>
+    </dt>
+    <dd>
+    Generates a version 4 (random) UUID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">random</span>
+         [function|nil] Overrides the random number generator.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string]       A UUID.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.util.generate_uuid5"></a>
+    <strong>objectuuids.util.generate_uuid5 (namespace, name)</strong>
+    </dt>
+    <dd>
+    Generates a version 5 (SHA-1) UUID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">namespace</span>
+         [string] The namespace UUID.
+        </li>
+        <li><span class="parameter">name</span>
+              [string] The string to hash.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] A UUID.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.util.uuid_to_bytes"></a>
+    <strong>objectuuids.util.uuid_to_bytes (uuid)</strong>
+    </dt>
+    <dd>
+    Converts a UUID to a packed binary representation.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uuid</span>
+         [string] A UUID.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] The same UUID in binary form.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-06-11 02:20:13 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

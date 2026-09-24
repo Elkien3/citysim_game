@@ -1,0 +1,180 @@
+msgid ""
+msgstr ""
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MTTranslate\n"
+
+#: api.lua:85
+msgid "Lead attached"
+msgstr ""
+
+#: api.lua:86
+msgid "Lead removed"
+msgstr ""
+
+#: api.lua:87
+msgid "Lead stretches"
+msgstr ""
+
+#: api.lua:88
+msgid "Lead snaps"
+msgstr ""
+
+#: api.lua:113
+msgid "You cannot leash something to itself."
+msgstr ""
+
+#: api.lua:130
+msgid "Failed to create lead."
+msgstr ""
+
+#: api.lua:427
+msgid "You cannot leash this."
+msgstr ""
+
+#: api.lua:433
+msgid "You do not own this."
+msgstr ""
+
+#: items.lua:34
+#: leads.lua:64
+msgid "Lead"
+msgstr ""
+
+#: items.lua:42
+msgid "Leads can be used for moving and tethering animals. They can also be attached between two fences for decoration."
+msgstr ""
+
+#: items.lua:43
+msgid "Right-click on an animal or fence to attach a lead. Punch the lead to release it, or right-click on a fence to tether it."
+msgstr ""
+
+#: knots.lua:36
+msgid "Lead Knot"
+msgstr ""
+
+#: mod.conf:2
+msgid "Leads"
+msgstr ""
+
+#: mod.conf:3
+msgid "Adds leads for moving and tethering animals."
+msgstr ""
+
+#: settingtypes.txt:2
+#. Setting: leads.lead_length (float)
+msgid "Lead length"
+msgstr ""
+
+#: settingtypes.txt:5
+#. Setting: leads.lead_strength (float)
+msgid "Lead strength"
+msgstr ""
+
+#: settingtypes.txt:11
+#. Setting: leads.drop_mode (enum)
+msgid "Item drop mode"
+msgstr ""
+
+#: settingtypes.txt:15
+#. Setting: leads.symmetrical (bool)
+msgid "Symmetrical physics"
+msgstr ""
+
+#: settingtypes.txt:18
+msgid "Visuals"
+msgstr ""
+
+#: settingtypes.txt:21
+#. Setting: leads.dynamic_textures (bool)
+msgid "Dynamic textures"
+msgstr ""
+
+#: settingtypes.txt:25
+#. Setting: leads.rotate_selection_box (bool)
+msgid "Long selection box"
+msgstr ""
+
+#: settingtypes.txt:29
+#. Setting: leads.enable_slack (bool)
+msgid "Enable visual slack"
+msgstr ""
+
+#: settingtypes.txt:32
+#. Setting: leads.chat_messages (bool)
+msgid "Show chat messages"
+msgstr ""
+
+#: settingtypes.txt:35
+msgid "Protection and Ownership"
+msgstr ""
+
+#: settingtypes.txt:38
+#. Setting: leads.respect_protection (bool)
+msgid "Respect protection"
+msgstr ""
+
+#: settingtypes.txt:41
+#. Setting: leads.allow_leash_unowned (bool)
+msgid "Allow leashing unowned mobs"
+msgstr ""
+
+#: settingtypes.txt:44
+#. Setting: leads.allow_leash_owned_other (bool)
+msgid "Allow leashing mobs owned by others"
+msgstr ""
+
+#: settingtypes.txt:47
+msgid "Object Types"
+msgstr ""
+
+#: settingtypes.txt:50
+#. Setting: leads.allow_leash_player (bool)
+msgid "Allow leashing players"
+msgstr ""
+
+#: settingtypes.txt:53
+#. Setting: leads.allow_leash_animal (bool)
+msgid "Allow leashing animals"
+msgstr ""
+
+#: settingtypes.txt:56
+#. Setting: leads.allow_leash_monster (bool)
+msgid "Allow leashing monsters"
+msgstr ""
+
+#: settingtypes.txt:59
+#. Setting: leads.allow_leash_npc (bool)
+msgid "Allow leashing NPCs"
+msgstr ""
+
+#: settingtypes.txt:62
+#. Setting: leads.allow_leash_vehicle (bool)
+msgid "Allow leashing vehicles"
+msgstr ""
+
+#: settingtypes.txt:65
+#. Setting: leads.allow_leash_other (bool)
+msgid "Allow leashing other"
+msgstr ""
+
+#: settingtypes.txt:68
+msgid "Advanced"
+msgstr ""
+
+#: settingtypes.txt:73
+#. Setting: leads.allow_leash_all (bool)
+msgid "Allow leashing any object"
+msgstr ""
+
+#: settingtypes.txt:76
+#. Setting: leads.pull_force (float)
+msgid "Pull force"
+msgstr ""
+
+#: settingtypes.txt:79
+#. Setting: leads.debug (bool)
+msgid "Debug mode"
+msgstr ""

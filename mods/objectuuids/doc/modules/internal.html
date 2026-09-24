@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Object UUIDs API Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/api.html">api</a></li>
+  <li><a href="../modules/init.html">init</a></li>
+  <li><strong>internal</strong></li>
+  <li><a href="../modules/patches.html">patches</a></li>
+  <li><a href="../modules/util.html">util</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>internal</code></h1>
+<p>Internal functions.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.uuid_to_whitespace">objectuuids.uuid_to_whitespace (uuid)</a></td>
+	<td class="summary">Converts a UUID to whitespace format.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.whitespace_to_uuid">objectuuids.whitespace_to_uuid (whitespace)</a></td>
+	<td class="summary">Converts a UUID from whitespace format.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.embed_uuid_in_staticdata">objectuuids.embed_uuid_in_staticdata (staticdata, uuid)</a></td>
+	<td class="summary">Embeds a UUID into an entity's Lua or JSON data.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.extract_uuid_from_staticdata">objectuuids.extract_uuid_from_staticdata (staticdata)</a></td>
+	<td class="summary">Extracts an embedded UUID from an entity's Lua or JSON data.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.on_joinplayer">objectuuids.on_joinplayer (player, dtime)</a></td>
+	<td class="summary">Assigns a UUID to any player who joins.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "objectuuids.uuid_to_whitespace"></a>
+    <strong>objectuuids.uuid_to_whitespace (uuid)</strong>
+    </dt>
+    <dd>
+    Converts a UUID to whitespace format.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uuid</span>
+         [string] The UUID the convert.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] The UUID in whitespace format.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.whitespace_to_uuid"></a>
+    <strong>objectuuids.whitespace_to_uuid (whitespace)</strong>
+    </dt>
+    <dd>
+    Converts a UUID from whitespace format.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">whitespace</span>
+         [string] The UUID to convert, in whitespace format.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] The UUID.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.embed_uuid_in_staticdata"></a>
+    <strong>objectuuids.embed_uuid_in_staticdata (staticdata, uuid)</strong>
+    </dt>
+    <dd>
+    Embeds a UUID into an entity's Lua or JSON data.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">staticdata</span>
+         [string|nil] The data to embed the UUID into.
+        </li>
+        <li><span class="parameter">uuid</span>
+               [string]     The UUID to embed.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string]     The data with the UUID embedded.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.extract_uuid_from_staticdata"></a>
+    <strong>objectuuids.extract_uuid_from_staticdata (staticdata)</strong>
+    </dt>
+    <dd>
+    Extracts an embedded UUID from an entity's Lua or JSON data.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">staticdata</span>
+         [string]     The data with the UUID embedded.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        [string|nil] The embedded UUID, if any.</li>
+        <li>
+        [string]     The original staticdata.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.on_joinplayer"></a>
+    <strong>objectuuids.on_joinplayer (player, dtime)</strong>
+    </dt>
+    <dd>
+    Assigns a UUID to any player who joins.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">player</span>
+         [ObjectRef] The player who joined.
+        </li>
+        <li><span class="parameter">dtime</span>
+          [number]    Ignored.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-06-11 02:20:13 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

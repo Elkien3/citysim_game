@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Object UUIDs API Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>api</strong></li>
+  <li><a href="../modules/init.html">init</a></li>
+  <li><a href="../modules/internal.html">internal</a></li>
+  <li><a href="../modules/patches.html">patches</a></li>
+  <li><a href="../modules/util.html">util</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>api</code></h1>
+<p>Public API functions.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.get_uuid">objectuuids.get_uuid (objref)</a></td>
+	<td class="summary">Gets the UUID of the specified object.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.get_object_by_uuid">objectuuids.get_object_by_uuid (uuid)</a></td>
+	<td class="summary">Finds the object with the specified UUID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.set_uuid">objectuuids.set_uuid (objref, uuid)</a></td>
+	<td class="summary">Sets the UUID of the specified object.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.add_entity_with_uuid">objectuuids.add_entity_with_uuid (pos, name, uuid, staticdata)</a></td>
+	<td class="summary">Spawns an entity with its UUID already set.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#objectuuids.get_uuid_for_username">objectuuids.get_uuid_for_username (name)</a></td>
+	<td class="summary">Calculates the UUID that would be used for a player with the specified name.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "objectuuids.get_uuid"></a>
+    <strong>objectuuids.get_uuid (objref)</strong>
+    </dt>
+    <dd>
+    Gets the UUID of the specified object.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">objref</span>
+         [ObjectRef|LuaEntity] The object to get the UUID of.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string]              The object's UUID.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.get_object_by_uuid"></a>
+    <strong>objectuuids.get_object_by_uuid (uuid)</strong>
+    </dt>
+    <dd>
+    Finds the object with the specified UUID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uuid</span>
+         [string]        The object's UUID, in lenient form.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [ObjectRef|nil] The object associated with the UUID, or nil if it's unavailable.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.set_uuid"></a>
+    <strong>objectuuids.set_uuid (objref, uuid)</strong>
+    </dt>
+    <dd>
+    Sets the UUID of the specified object.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">objref</span>
+         [ObjectRef|LuaEntity] The object to change the UUID of.
+        </li>
+        <li><span class="parameter">uuid</span>
+           [string]              The new UUID, in lenient form.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.add_entity_with_uuid"></a>
+    <strong>objectuuids.add_entity_with_uuid (pos, name, uuid, staticdata)</strong>
+    </dt>
+    <dd>
+    Spawns an entity with its UUID already set.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pos</span>
+                [vector]        Where to spawn the entity.
+        </li>
+        <li><span class="parameter">name</span>
+               [string]        The name of the entity type.
+        </li>
+        <li><span class="parameter">uuid</span>
+               [string]        The UUID to assign to the object.
+        </li>
+        <li><span class="parameter">staticdata</span>
+         [string|nil]    The initial state of the entity.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [ObjectRef|nil] The spawned object, or nil on failure.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "objectuuids.get_uuid_for_username"></a>
+    <strong>objectuuids.get_uuid_for_username (name)</strong>
+    </dt>
+    <dd>
+    Calculates the UUID that would be used for a player with the specified name.
+ The player is not required to have ever been in the world.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         [string] The player's username.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        [string] The player's UUID.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-06-11 02:20:13 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,79 @@
+# The length a lead can reach before stretching, in metres.
+leads.lead_length (Lead length) float 8 1 16
+
+# The strength of a lead. The lower this number is, the more easily leads will break.
+leads.lead_strength (Lead strength) float 4 0 256
+
+# How to drop leads when broken.
+# drop: Drop the lead item.
+# give: Put the lead in the player's inventory.
+# auto: Matches the node drop behaviour of the game.
+leads.drop_mode (Item drop mode) enum auto drop,give,auto
+
+# If this is enabled, both leads will pull both ends equally.
+# Otherwise, only the follower will be pulled.
+leads.symmetrical (Symmetrical physics) bool false
+
+
+[Visuals]
+
+# If this is enabled, lead textures will dynamically update to match the length of the lead.
+leads.dynamic_textures (Dynamic textures) bool true
+
+# If this is enabled, leads will have a lead-shaped selection box. Otherwise, the selection box will be a cube in the middle of the lead.
+# This requires a 5.7.0+ client.
+leads.rotate_selection_box (Long selection box) bool true
+
+# If this is enabled, leads will curve downwards instead of being straight.
+# This is purely aesthetic.
+leads.enable_slack (Enable visual slack) bool true
+
+# Displays messages in the chat console when failing to use a lead.
+leads.chat_messages (Show chat messages) bool false
+
+
+[Protection and Ownership]
+
+# Disallows adding and removing knots in protected areas.
+leads.respect_protection (Respect protection) bool true
+
+# Allows using leads on mobs with no owner.
+leads.allow_leash_unowned (Allow leashing unowned mobs) bool true
+
+# Allows using leads on mobs owned by other players.
+leads.allow_leash_owned_other (Allow leashing mobs owned by others) bool true
+
+
+[Object Types]
+
+# Allows using leads on other players.
+leads.allow_leash_player (Allow leashing players) bool true
+
+# Allows using leads on animals.
+leads.allow_leash_animal (Allow leashing animals) bool true
+
+# Allows using leads on monsters.
+leads.allow_leash_monster (Allow leashing monsters) bool true
+
+# Allows using leads on NPCs.
+leads.allow_leash_npc (Allow leashing NPCs) bool true
+
+# Allows using leads on vehicles.
+leads.allow_leash_vehicle (Allow leashing vehicles) bool true
+
+# Allows using leads on miscellaneous entities.
+leads.allow_leash_other (Allow leashing other) bool true
+
+
+[Advanced]
+
+# Allows using leads on all entities.
+# Leashing an unsupported entity may cause unexpected behaviour.
+# This overrides all other leashable settings.
+leads.allow_leash_all (Allow leashing any object) bool false
+
+# How hard leads pull entities.
+leads.pull_force (Pull force) float 15 1 1000
+
+# Prints verbose debugging information to the chat console.
+leads.debug (Debug mode) bool false
