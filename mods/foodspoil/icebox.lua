@@ -345,11 +345,19 @@ local function handle_icebox(pos, node)
 				local stackmeta = stack:get_meta()
 				local expire = stackmeta:get_int("ed")
 				if expire ~= 0 then
-					expire = expire + 1
-					stackmeta:set_int("ed", expire)
-					stackmeta:set_string("description", minetest.registered_items[name].description.." ed: "..foodspoil.format_unixday(expire))
-					inv:set_stack("main", index, stack)
+				    expire = expire + 1
+				    stackmeta:set_int("ed", expire)
+
+				    local itemdef = minetest.registered_items[name]
+				    if itemdef and itemdef.description then
+					stackmeta:set_string("description", itemdef.description.." ed: "..foodspoil.format_unixday(expire))
+				    else
+					stackmeta:set_string("description", name.." ed: "..foodspoil.format_unixday(expire))
+				    end
+
+				    inv:set_stack("main", index, stack)
 				end
+
 			end
 		else
 			break
